@@ -27,7 +27,47 @@
 
 ---
 
-You asked your AI agent to "add a cache." A bare agent answered with a **150-line** cache class — config object, TTL logic, stats counters, the works. Chisle's answer to the same prompt: **7 lines.** Same model, same question, measured, receipts committed in [`benchmarks/`](benchmarks/results/).
+"Add debounce to a search input that currently fires an API call on every keystroke." Same model, same prompt, one difference — the injected ruleset. Both answers below are the **verbatim committed output** from [`benchmarks/results/raw/`](benchmarks/results/raw/):
+
+<table>
+<tr><th align="left" width="50%">bare agent — 142 lines, 1506 tokens</th><th align="left" width="50%">Chisle — 35 lines, 602 tokens</th></tr>
+<tr valign="top"><td>
+
+Opens with *"Let me show you the most common approaches"*, then ships a reusable generic `useDebounce<T>` hook in its own file…
+
+```typescript
+// useDebounce.ts
+export function useDebounce<T>(
+  value: T, delay: number
+): T {
+  const [debouncedValue, setDebouncedValue]
+    = useState<T>(value);
+  useEffect(() => { /* … */ }, [value, delay]);
+  return debouncedValue;
+}
+```
+
+…then **Option 2** and **Option 3**, a comparison table, and a caveats section.
+
+</td><td>
+
+Asks which framework, then answers the question that was actually asked — `setTimeout` in the effect you already have, no new file, no generic:
+
+```jsx
+useEffect(() => {
+  const timer = setTimeout(async () => {
+    if (query.trim()) { /* fetch */ }
+  }, 300);
+  return () => clearTimeout(timer);
+}, [query]);
+```
+
+Then two lines on why it works, and *"use `lodash.debounce` if already installed."*
+
+</td></tr>
+</table>
+
+Not golfed — **boring**. Same behaviour, one less abstraction, no second file, and it names the dependency you might already have instead of reinventing it.
 
 Most efficiency tools compress one thing. Chisle compresses **three**:
 
@@ -61,7 +101,7 @@ irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
 
 Preview first with `npx chisle --dry-run`, scope with `--only claude`, see everything with `npx chisle --help`. Remove with `npx chisle --uninstall`.
 
-**Requirements:** Node ≥18 (installer / `npx`) · Claude Code for live `/chisle` switching, the statusline badge, and input-side compression — the always-on ruleset still ships to every other agent · bash for the statusline (macOS/Linux; a PowerShell version ships for Windows).
+**Requirements:** Node ≥18 (installer / `npx`) · Claude Code for live `/chisle` switching and input-side compression — the always-on ruleset still ships to every other agent.
 
 ### Claude Code plugin (marketplace)
 
@@ -70,20 +110,18 @@ claude plugin marketplace add JayPokale/Chisle   # register the marketplace
 claude plugin install chisle@chisle              # enable the plugin
 ```
 
-<details>
-<summary>Statusline badge (manual setup)</summary>
+### See what it would do, before it does it
 
-Add to `~/.claude/settings.json`:
-
-```json
-{
-  "statusLine": {
-    "type": "command",
-    "command": "bash \"/path/to/chisle/hooks/chisle-statusline.sh\""
-  }
-}
+```bash
+npx chisle --dry-run    # prints every file it would touch, changes nothing
 ```
-</details>
+
+Want the savings measured on your own work rather than ours? Clone the repo and replay the compressor over your existing Claude Code transcripts — it reads them locally, writes nothing, and reports the tokens the input-side hook would have stripped:
+
+```bash
+git clone https://github.com/JayPokale/Chisle && cd Chisle
+node benchmarks/replay-compress.js
+```
 
 ---
 
@@ -110,6 +148,27 @@ Chisle wins all four columns: it cut the total 20-task bill **nearly in half** w
 The bar is the whole 20-task bill; the badge is each tool's worst single day. caveman's worst day cost **4.2×** a bare model; ponytail's — a tool whose entire job is writing less — **2.3×**. Chisle's worst day was 1.7×, it happened once, and the fix is measured and merged.
 
 On coding tasks Chisle is leanest (June: 22% of baseline vs caveman 46%, ponytail 29%; July: 64% vs 84% and 160%). On pure prose caveman is a hair leaner on a good day — credit where due. And in the July run all 24 answers, every arm, **graded correct**: nobody here buys token savings with wrong answers.
+
+#### Task by task
+
+Averages hide the interesting part, so here is every cell of the June suite — same six prompts, every arm, no cherry-picking:
+
+<p align="center">
+  <img src="assets/per-task.svg" width="820" alt="Billed output per task as a percent of the no-tool baseline across the six-task June suite: Chisle is leanest on five of six, caveman wins the cache task at 8% versus Chisle's 12%.">
+</p>
+
+Chisle is leanest on **5 of 6**. caveman takes `cache` (8% vs our 12%) — it wins by answering in prose where we still emit working code, which is the trade you would want on a task that asked for code. Note the two prose rows where ponytail lands **above** 100%: a tool built to write less made the model write *more* than using no tool at all. That is the failure mode the worst-case column above is really about.
+
+#### Where each tool actually helps
+
+|  | prose | code judgment | input/context | worst-case guard | publishes failures |
+|---|:---:|:---:|:---:|:---:|:---:|
+| caveman | ✅ | ❌ | ❌ | ❌ 424% | ❌ |
+| ponytail | ❌ | ✅ | ❌ | ❌ 227% | ❌ |
+| headroom | ❌ | ❌ | ✅ proxy | — | ❌ |
+| **Chisle** | ✅ | ✅ | ✅ hook | **173%, 1/20** | ✅ |
+
+The row that matters is the last one. Every tool here looks good on its best day; the numbers above are the only ones in this class published alongside the run that went wrong. [Full comparison →](docs/comparison.md)
 
 ### Input axis — tool-output compression (Claude Code)
 
@@ -189,24 +248,6 @@ Mark deliberate simplifications so "later" doesn't quietly become "never":
 
 ---
 
-## Statusline
-
-Badge shows the active level plus measured input-side savings. Plan users see rate-limit usage + reset countdown:
-
-```
-[CHISLE:ULTRA] Session: ███████░░░ 73% ⟳2h14m | Weekly: ████░░░░░░ 41% ⟳3d4h ⇣9k tok
-```
-
-API-key users have no rate limits, so they see session cost instead:
-
-```
-[CHISLE:ULTRA] Session: $0.42 ⇣9k tok
-```
-
-Orange. Rate limits pulled live from Claude's statusline JSON; the `⇣` figure is chars actually elided by the compressor (a real baseline — no fabricated counters). Renders nothing when chisle is off.
-
----
-
 ## Config
 
 **On by default.** After install, CHISLE activates automatically at `full` every session — no `/chisle` needed. Change the default level, or set `off` to stay dormant until you type `/chisle`:
@@ -269,7 +310,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Edit the skill (`skills/chisle/SKILL.md`
 Built by [Jay Pokale](https://github.com/JayPokale) with [Claude](https://claude.com/claude-code), [Antigravity](https://antigravity.google), and [Codex](https://openai.com/blog/openai-codex/) as co-engineers — the input-compression hook, the benchmark verification, and several of the bug hunts documented in the changelog were pair-work.
 
 ```bash
-npm test    # 56 tests: flag safety, tracker, settings merge, installer, compressor
+npm test    # 59 tests: flag safety, tracker, settings merge, installer, compressor
 ```
 
 ## License

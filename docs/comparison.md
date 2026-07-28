@@ -43,7 +43,11 @@ Visible answer size as % of the no-tool baseline, lower = leaner:
 | **non-coding** (tokens) | 100% | 79% | 121% | **71%** |
 | **all 6 tasks** | 100% | 57% | 61% | **39%** |
 
-On coding, Chisle is leanest (the "add a cache" prompt where vanilla wrote a **150-line** class became **7 lines**). On pure prose, caveman is a hair leaner on a good day — it's a dedicated prose compressor, credit where due.
+On coding, Chisle is leanest — clearest on the debounce prompt, where vanilla shipped a generic `useDebounce<T>` hook in its own file plus two alternative approaches (**142 lines**) and Chisle used `setTimeout` in the existing effect (**35 lines**), then pointed at `lodash.debounce` if it was already installed.
+
+One honest caveat on the `cache` prompt, the largest single drop in the table (4910 → 571 tokens): both runs were given a prompt with no codebase to look at. Vanilla invented a 150-line TypeScript cache class against a project it had never seen; Chisle's 7 lines were a request for the language and framework, not a cache implementation. Asking is the correct move under rung 2 of the ladder — but the saving on that row comes from *not guessing*, not from writing a leaner cache, and it would shrink on a repo where the context was actually available.
+
+On pure prose, caveman is a hair leaner on a good day — it's a dedicated prose compressor, credit where due.
 
 Full results: [live 4-arm](../benchmarks/results/2026-06-29-live-4arm.md) · [reliability](../benchmarks/results/2026-06-29-reliability.md) · [Sonnet cross-check](../benchmarks/results/2026-06-29-sonnet-cross-check.md).
 
