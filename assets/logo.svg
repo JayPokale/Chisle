@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="RDXmin logo">
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Chisle logo">
   <rect width="128" height="128" rx="24" fill="#1a1a1a"/>
-  <text x="64" y="58" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="34" font-weight="700" fill="#d78a3c" text-anchor="middle">RDX</text>
+  <text x="64" y="58" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="34" font-weight="700" fill="#d78a3c" text-anchor="middle">CHISLE</text>
   <text x="64" y="92" font-family="ui-monospace, monospace" font-size="14" fill="#9a9a9a" text-anchor="middle">less = more</text>
 </svg>
