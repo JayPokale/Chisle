@@ -159,6 +159,26 @@ Averages hide the interesting part, so here is every cell of the June suite — 
 
 Chisle is leanest on **5 of 6**. caveman takes `cache` (8% vs our 12%) — it wins by answering in prose where we still emit working code, which is the trade you would want on a task that asked for code. Note the two prose rows where ponytail lands **above** 100%: a tool built to write less made the model write *more* than using no tool at all. That is the failure mode the worst-case column above is really about.
 
+#### The headline average is hiding the good part
+
+Split the same 20 cells at their median baseline — short answers below, long answers above — and the tools separate sharply:
+
+<p align="center">
+  <img src="assets/by-size.svg" width="820" alt="Total billed output split by answer size. On short answers caveman and Chisle are level at about 84% of baseline and ponytail is above 100%. On long answers Chisle drops to about 46% while caveman is 79% and ponytail 59%.">
+</p>
+
+On **short** answers Chisle and caveman are level (84% each) — there is not much to cut in a three-line reply, and the ruleset overhead is proportionally at its worst. On **long** answers Chisle drops to **46%** while caveman only reaches 79%. The 52% headline is the blend of the two, so it understates the case where it matters and overstates the case where it doesn't.
+
+The effect is not driven by one lucky cell. Dropping the `cache` outlier (the row where the baseline invented 150 lines against a codebase it never saw) *widens* the gap on long answers: caveman degrades to **116%** — worse than using no tool — while Chisle holds at **65%**.
+
+Two honest limits. Per-task rank correlation between baseline size and leanness is weak (Spearman ρ = −0.15), so this is a difference between aggregate bills, not a tidy per-task law — with n=10 a side, treat it as a strong signal rather than a settled result. And much of the widening gap comes from the specialists getting *worse* on long answers, not only from Chisle getting better.
+
+These prompts were never designed to test this, which is the real caveat. To probe it directly:
+
+```bash
+SUITE=large bash benchmarks/run-live.sh <model> benchmarks/results/raw-large
+```
+
 #### Where each tool actually helps
 
 |  | prose | code judgment | input/context | worst-case guard | publishes failures |
