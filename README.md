@@ -9,6 +9,10 @@
 </p>
 
 <p align="center">
+  <em>The only tool in this class that publishes the runs where it lost.</em>
+</p>
+
+<p align="center">
   <a href="https://www.npmjs.com/package/chisle"><img src="https://img.shields.io/npm/v/chisle?style=flat-square&color=d78a3c" alt="npm version"></a>
   <img src="https://img.shields.io/badge/works%20with-8%20agents-d78a3c?style=flat-square" alt="Works with 8 agents">
   <a href="https://github.com/JayPokale/Chisle/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/JayPokale/Chisle/test.yml?style=flat-square&label=CI" alt="CI"></a>
@@ -18,7 +22,7 @@
 </p>
 
 <p align="center">
-  <strong>Half the output bill on 20 measured tasks &middot; compresses what the model writes AND reads &middot; one command</strong>
+  <strong>44% of a bare model on coding work &middot; 41% on the long ones &middot; one command</strong>
 </p>
 
 <p align="center">

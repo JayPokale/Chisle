@@ -102,7 +102,7 @@ export default function Hero() {
         variants={rise}
         className="mx-auto mb-5 w-fit rounded-full border border-line bg-panel px-3 py-1 text-xs text-dim"
       >
-        Measured against caveman &amp; ponytail — and wins
+        20 live tasks · receipts in the repo · the failures published too
       </motion.p>
       <motion.h1
         custom={1}
@@ -111,7 +111,8 @@ export default function Hero() {
         variants={rise}
         className="mx-auto max-w-3xl text-4xl font-semibold tracking-tight sm:text-6xl"
       >
-        Cut Claude Code&apos;s token bill on <span className="text-amber">three axes</span>
+        Your agent writes <span className="text-amber">less than half</span> as much.{" "}
+        <span className="text-dim">Same answers.</span>
       </motion.h1>
       <motion.p
         custom={2}
@@ -120,8 +121,10 @@ export default function Hero() {
         variants={rise}
         className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-dim"
       >
-        A terse dev persona, a tool-output compressor, and context-diet rules — one plugin.
-        Across 20 live tasks it billed 52% of a bare model, with 1 backfire instead of 6 or 8.
+        On coding work it bills <strong className="text-ink">44%</strong> of a bare model, and{" "}
+        <strong className="text-ink">41%</strong> on the long coding tasks where the bill actually
+        hurts. Every figure on this page is recomputed from transcripts committed to the repo —
+        including the task it loses.
       </motion.p>
       <motion.div
         custom={3}
@@ -140,11 +143,12 @@ export default function Hero() {
           GitHub →
         </a>
       </motion.div>
-      <motion.p custom={4} initial="hidden" animate="show" variants={rise} className="mt-5 text-xs text-dim">
-        or{" "}
+      <motion.p custom={4} initial="hidden" animate="show" variants={rise} className="mt-6 text-xs text-dim">
+        Zero dependencies · zero network calls · zero LLM calls ·{" "}
         <code className="rounded bg-panel px-1.5 py-0.5" style={{ fontFamily: "var(--font-mono)" }}>
-          claude plugin marketplace add JayPokale/Chisle
-        </code>
+          npx chisle --uninstall
+        </code>{" "}
+        puts everything back
       </motion.p>
     </header>
   );
