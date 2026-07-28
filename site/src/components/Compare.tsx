@@ -41,7 +41,7 @@ export default function Compare() {
           </h2>
           <p className="mt-3 max-w-2xl text-sm text-dim">
             Pick a task and an arm. Both panels are the{" "}
-            <strong className="text-fg">verbatim committed output</strong> from the benchmark run —
+            <strong className="text-ink">verbatim committed output</strong> from the benchmark run —
             not a mock-up written for this page. The arms differ only in the injected system prompt.
           </p>
         </Reveal>
@@ -56,7 +56,7 @@ export default function Compare() {
                 className={`rounded border px-3 py-1.5 font-mono text-xs transition-colors ${
                   t.id === taskId
                     ? "border-amber bg-amber-soft text-amber"
-                    : "border-line text-dim hover:border-amber/50 hover:text-fg"
+                    : "border-line text-dim hover:border-amber/50 hover:text-ink"
                 }`}
               >
                 {t.id}
@@ -80,7 +80,7 @@ export default function Compare() {
                   {base.tokens.toLocaleString()} tok · {base.lines} lines
                 </span>
               </header>
-              <pre className="max-h-96 flex-1 overflow-auto px-4 py-3 font-mono text-[11.5px] leading-relaxed text-dim">
+              <pre className="pane-scroll max-h-96 flex-1 overflow-auto px-4 py-3 font-mono text-[11.5px] leading-relaxed text-dim">
                 {base.text}
                 {base.truncated && "\n\n… truncated for the page; token count is the full response"}
               </pre>
@@ -98,7 +98,7 @@ export default function Compare() {
                       className={`rounded px-2 py-0.5 font-mono text-xs transition-colors ${
                         r.key === arm
                           ? "bg-amber-soft text-amber"
-                          : "text-dim hover:text-fg"
+                          : "text-dim hover:text-ink"
                       }`}
                     >
                       {r.label}
@@ -106,14 +106,14 @@ export default function Compare() {
                   ))}
                 </div>
                 <span className="shrink-0 font-mono text-xs">
-                  <span className={share > 100 ? "text-red-400" : "text-amber"}>{share}%</span>
+                  <span className={share > 100 ? "text-waste" : "text-amber"}>{share}%</span>
                   <span className="text-dim">
                     {" "}
                     · {cur.tokens.toLocaleString()} tok · {cur.lines} lines
                   </span>
                 </span>
               </header>
-              <pre className="max-h-96 flex-1 overflow-auto px-4 py-3 font-mono text-[11.5px] leading-relaxed">
+              <pre className="pane-scroll max-h-96 flex-1 overflow-auto px-4 py-3 font-mono text-[11.5px] leading-relaxed">
                 {cur.text}
                 {cur.truncated && "\n\n… truncated for the page; token count is the full response"}
               </pre>
@@ -130,7 +130,7 @@ export default function Compare() {
             baseline.{" "}
             {task.id === "cache" && (
               <>
-                <strong className="text-fg">Read this one carefully:</strong> the prompt shipped
+                <strong className="text-ink">Read this one carefully:</strong> the prompt shipped
                 with no codebase attached. The bare model invented a 150-line class for a project it
                 never saw; chisle&apos;s 7 lines are a request for the language and framework, not a
                 cache. The saving is real, but it comes from refusing to guess.{" "}
