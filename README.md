@@ -285,7 +285,9 @@ Primarily a Claude Code plugin, but ships to every agent with a rules/context fi
 ## FAQ
 
 **Doesn't injecting a persona every turn cost tokens?**
-Yes — a one-time ruleset at session start (~1.8k tokens) plus a ~40-token reminder per turn. Output is where it pays back: coding answers shrink 40–60% (benchmarks), and output bills several × higher than input, so net is positive after the first couple of turns. On a one-line throwaway prompt the overhead can exceed the saving. The input-side hook has no such tradeoff — it only ever removes tokens.
+Yes — a ruleset at session start (~1.6k tokens) plus a ~50-token reminder per turn. Output is where it pays back: coding answers shrink 40–60% (benchmarks), and output bills several × higher than input.
+
+Worth reading the dissent before you take that on faith: [@enc0ded](https://github.com/enc0ded) measured 173 of their own sessions ([#2](https://github.com/JayPokale/Chisle/issues/2)) and found the injection overhead roughly cancelling the compressor's savings — because the ruleset was being re-sent on every resume and clear, not just at startup. That re-injection is fixed, which removes most of the overhead they measured, but their wider point stands: prose is only ~25% of what the model emits, so the ceiling on the output axis is lower than the headline suggests, and on a one-line throwaway prompt the overhead still exceeds the saving.
 
 **Will it golf my code into clever one-liners?**
 No. Boring over clever. Deletion beats addition; obfuscation isn't deletion.
@@ -310,7 +312,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Edit the skill (`skills/chisle/SKILL.md`
 Built by [Jay Pokale](https://github.com/JayPokale) with [Claude](https://claude.com/claude-code), [Antigravity](https://antigravity.google), and [Codex](https://openai.com/blog/openai-codex/) as co-engineers — the input-compression hook, the benchmark verification, and several of the bug hunts documented in the changelog were pair-work.
 
 ```bash
-npm test    # 59 tests: flag safety, tracker, settings merge, installer, compressor
+npm test    # 67 tests: flag safety, tracker, settings merge, installer, compressor
 ```
 
 ## License
