@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Reveal from "./Reveal";
+import Markdown from "./Markdown";
 import samples from "@/data/samples.json";
 
 // Live before/after built from benchmarks/results/raw/ via scripts/build-samples.js.
@@ -80,10 +81,14 @@ export default function Compare() {
                   {base.tokens.toLocaleString()} tok · {base.lines} lines
                 </span>
               </header>
-              <pre className="max-h-96 flex-1 overflow-auto px-4 py-3 font-mono text-[11.5px] leading-relaxed text-dim">
-                {base.text}
-                {base.truncated && "\n\n… truncated for the page; token count is the full response"}
-              </pre>
+              <div className="pane-scroll max-h-96 flex-1 overflow-auto px-4 py-3 text-[12px] leading-relaxed text-dim">
+                <Markdown>{base.text}</Markdown>
+                {base.truncated && (
+                  <p className="mt-3 border-t border-line pt-2 font-mono text-[10.5px] text-dim">
+                    … truncated for the page — the token count is the full response
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* selected arm */}
@@ -113,10 +118,14 @@ export default function Compare() {
                   </span>
                 </span>
               </header>
-              <pre className="max-h-96 flex-1 overflow-auto px-4 py-3 font-mono text-[11.5px] leading-relaxed">
-                {cur.text}
-                {cur.truncated && "\n\n… truncated for the page; token count is the full response"}
-              </pre>
+              <div className="pane-scroll max-h-96 flex-1 overflow-auto px-4 py-3 text-[12px] leading-relaxed">
+                <Markdown>{cur.text}</Markdown>
+                {cur.truncated && (
+                  <p className="mt-3 border-t border-line pt-2 font-mono text-[10.5px] text-dim">
+                    … truncated for the page — the token count is the full response
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </Reveal>
