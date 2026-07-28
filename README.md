@@ -147,7 +147,22 @@ Chisle wins all four columns: it cut the total 20-task bill **nearly in half** w
 
 The bar is the whole 20-task bill; the badge is each tool's worst single day. caveman's worst day cost **4.2×** a bare model; ponytail's — a tool whose entire job is writing less — **2.3×**. Chisle's worst day was 1.7×, it happened once, and the fix is measured and merged.
 
-On coding tasks Chisle is leanest (June: 22% of baseline vs caveman 46%, ponytail 29%; July: 64% vs 84% and 160%). On pure prose caveman is a hair leaner on a good day — credit where due. And in the July run all 24 answers, every arm, **graded correct**: nobody here buys token savings with wrong answers.
+In the July run all 24 answers, every arm, **graded correct**: nobody here buys token savings with wrong answers.
+
+#### Code vs. explanation
+
+Across all 20 cells, split by what the prompt actually asks for:
+
+| | n | caveman | ponytail | **Chisle** |
+|---|--:|--:|--:|--:|
+| **coding** (wants working code) | 12 | 74% | 59% | **44%** |
+| **non-coding** (wants an explanation) | 8 | 103% | 104% | **87%** |
+
+Code is where the YAGNI ladder has something to bite on: an abstraction to skip, a stdlib call to reach for, a file not to create. Chisle bills **44%** of a bare model there — a third less than ponytail, which is the closest thing to a dedicated lazy-code tool.
+
+On explanation-only prompts the picture is worse for everyone. Both specialists land **above 100%** — a tool whose job is writing less made the model write *more* than using nothing at all. Chisle is the only arm that stays under water (87%), which is a smaller win than the coding number and worth saying plainly.
+
+This does revise a claim the earlier Sonnet writeup made. On that suite's three prose prompts caveman was leaner (44% vs 52%), and that still holds *for those cells*. Pooled across all eight non-coding cells it does not: caveman is at 103%. The prose win was suite-specific, not general.
 
 #### Task by task
 
@@ -172,6 +187,23 @@ On **short** answers Chisle and caveman are level (84% each) — there is not mu
 The effect is not driven by one lucky cell. Dropping the `cache` outlier (the row where the baseline invented 150 lines against a codebase it never saw) *widens* the gap on long answers: caveman degrades to **116%** — worse than using no tool — while Chisle holds at **65%**.
 
 Two honest limits. Per-task rank correlation between baseline size and leanness is weak (Spearman ρ = −0.15), so this is a difference between aggregate bills, not a tidy per-task law — with n=10 a side, treat it as a strong signal rather than a settled result. And much of the widening gap comes from the specialists getting *worse* on long answers, not only from Chisle getting better.
+
+#### Size or kind? Both, and they're tangled
+
+Coding prompts average ~1129 baseline tokens against ~393 for explanation prompts, so "long" and "code" largely describe the same cells. Crossing the two separates them as far as 20 tasks allow:
+
+| | n | caveman | ponytail | **Chisle** |
+|---|--:|--:|--:|--:|
+| coding · short | 5 | **62%** | 116% | 70% |
+| coding · long | 7 | 76% | 52% | **41%** |
+| non-coding · short | 5 | 104% | 98% | **96%** |
+| non-coding · long | 3 | 103% | 111% | **77%** |
+
+Size matters *within* each kind — coding goes 70% → 41%, non-coding 96% → 77% — so it isn't merely code in disguise. But the cells are thin, and the non-coding "long" bucket spans only 522–542 tokens, which is barely long at all.
+
+The one row Chisle loses is **short coding**, where caveman takes it 62% to 70%. That is the honest shape of it: on a small code question there is little to skip, and the ruleset costs more than the ladder saves. The tool earns its keep on the long ones.
+
+`SUITE=large` exists to fill the thin cells — see [below](#see-what-it-would-do-before-it-does-it).
 
 These prompts were never designed to test this, which is the real caveat. To probe it directly:
 
