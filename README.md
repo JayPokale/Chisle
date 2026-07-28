@@ -179,10 +179,10 @@ Chisle is leanest on **5 of 6**. caveman takes `cache` (8% vs our 12%) — it wi
 Split the same 20 cells at their median baseline — short answers below, long answers above — and the tools separate sharply:
 
 <p align="center">
-  <img src="assets/by-size.svg" width="820" alt="Total billed output split by answer size. On short answers caveman and Chisle are level at about 84% of baseline and ponytail is above 100%. On long answers Chisle drops to about 46% while caveman is 79% and ponytail 59%.">
+  <img src="assets/by-size.svg" width="820" alt="Total billed output split by answer size. On short answers caveman and Chisle are level at about 84% of baseline and ponytail is above 100%. On long answers Chisle drops to about 45% while caveman is 79% and ponytail 59%.">
 </p>
 
-On **short** answers Chisle and caveman are level (84% each) — there is not much to cut in a three-line reply, and the ruleset overhead is proportionally at its worst. On **long** answers Chisle drops to **46%** while caveman only reaches 79%. The 52% headline is the blend of the two, so it understates the case where it matters and overstates the case where it doesn't.
+On **short** answers Chisle and caveman are level (84% each) — there is not much to cut in a three-line reply, and the ruleset overhead is proportionally at its worst. On **long** answers Chisle drops to **45%** while caveman only reaches 79%. The 52% headline is the blend of the two, so it understates the case where it matters and overstates the case where it doesn't.
 
 The effect is not driven by one lucky cell. Dropping the `cache` outlier (the row where the baseline invented 150 lines against a codebase it never saw) *widens* the gap on long answers: caveman degrades to **116%** — worse than using no tool — while Chisle holds at **65%**.
 
@@ -198,6 +198,10 @@ Coding prompts average ~1129 baseline tokens against ~393 for explanation prompt
 | coding · long | 7 | 76% | 52% | **41%** |
 | non-coding · short | 5 | 104% | 98% | **96%** |
 | non-coding · long | 3 | 103% | 111% | **77%** |
+
+<p align="center">
+  <img src="assets/by-kind.svg" width="820" alt="Billed output by task kind crossed with answer size. Code and short: caveman 62%, ponytail 116%, Chisle 70%. Code and long: caveman 76%, ponytail 52%, Chisle 41%. Explanation and short: caveman 104%, ponytail 98%, Chisle 96%. Explanation and long: caveman 103%, ponytail 111%, Chisle 77%.">
+</p>
 
 Size matters *within* each kind — coding goes 70% → 41%, non-coding 96% → 77% — so it isn't merely code in disguise. But the cells are thin, and the non-coding "long" bucket spans only 522–542 tokens, which is barely long at all.
 
@@ -376,12 +380,6 @@ npm test    # 67 tests: flag safety, tracker, settings merge, installer, compres
 <a href="https://github.com/JayPokale/Chisle/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=JayPokale/Chisle" alt="GitHub contributors">
 </a>
-
-Some of the sharpest contributions here arrived as issues rather than commits:
-
-- **[@sovdchains](https://github.com/sovdchains)** ([#3](https://github.com/JayPokale/Chisle/issues/3)) — found that tool-output compression was silently rejected by Claude Code on every call, so the entire input axis had never actually applied. Came with the transcript evidence, the root cause, and the fix.
-- **[@enc0ded](https://github.com/enc0ded)** ([#2](https://github.com/JayPokale/Chisle/issues/2)) — measured 173 real sessions to show the ruleset was being re-injected on every resume and clear, cancelling most of the savings, and argued the standing instruction load was hurting instruction-following.
-- **[@TDimovski](https://github.com/TDimovski)** ([#1](https://github.com/JayPokale/Chisle/issues/1)) — reported the Windows statusline crash fixed in 1.2.1.
 
 **AI co-engineers** (pair-work credited in commit trailers and the changelog):
 
