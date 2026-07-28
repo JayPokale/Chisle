@@ -16,9 +16,21 @@ const path = require('path');
 
 const RAW = process.env.RAW_DIR ? path.resolve(process.env.RAW_DIR) : path.join(__dirname, 'results', 'raw');
 const ARMS = ['vanilla', 'caveman', 'ponytail', 'rdxmin'];  // 'rdxmin' = chisle; historical key, matches committed raw filenames
+// Task kinds. "coding" = the prompt wants working code back; "noncoding" = it
+// wants an explanation. Classified from what the prompt asks for, not from
+// whether the answer happens to contain a fenced block.
+//
+// palindrome is the one genuine borderline: it asks for a one-liner, so it is
+// filed as coding here, while the Sonnet writeup groups it with the small
+// prose prompts. Flipping it moves the coding/non-coding totals by ~1pt and
+// changes no conclusion — see the sensitivity note in the README.
 const KIND = {
   debounce: 'coding', cache: 'coding', 'auth-bug': 'coding',
   pooling: 'noncoding', 'rest-graphql': 'noncoding', 'regex-concept': 'noncoding',
+  // Sonnet suite
+  thread: 'coding', retry: 'coding', mixed: 'coding', signup: 'coding',
+  ratelimit: 'coding', caching: 'coding', palindrome: 'coding',
+  deadlock: 'noncoding', letconst: 'noncoding',
 };
 
 const estTok = (s) => Math.round((s || '').replace(/\s+/g, ' ').trim().length / 4);
