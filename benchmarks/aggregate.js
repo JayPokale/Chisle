@@ -125,4 +125,9 @@ function main() {
   }
 }
 
-main();
+if (require.main === module) main();
+
+// Single source of truth for task kinds — scripts/build-chart.js imports this
+// rather than keeping its own copy, which had already drifted to a different
+// vocabulary ('code'/'prose') and covered only six of the twenty tasks.
+module.exports = { KIND };

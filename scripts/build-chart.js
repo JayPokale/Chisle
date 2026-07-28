@@ -24,13 +24,13 @@ const RAW_DIRS = [
 const SVG_OUT = path.join(ROOT, 'assets', 'benchmark.svg');
 const TASK_SVG_OUT = path.join(ROOT, 'assets', 'per-task.svg');
 const SIZE_SVG_OUT = path.join(ROOT, 'assets', 'by-size.svg');
+const KIND_SVG_OUT = path.join(ROOT, 'assets', 'by-kind.svg');
 // Per-task chart uses the June suite alone: it is the one run where all four
 // arms answered the same six prompts, so the bars are directly comparable.
 const TASK_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw');
-const TASK_KIND = {
-  'debounce': 'code', 'cache': 'code', 'auth-bug': 'code',
-  'pooling': 'prose', 'rest-graphql': 'prose', 'regex-concept': 'prose',
-};
+const { KIND } = require('../benchmarks/aggregate');
+// Short labels for the per-task chart; kinds themselves come from KIND.
+const KIND_LABEL = { coding: 'code', noncoding: 'prose' };
 
 // Our own arm. The key is the token in the committed raw filenames
 // (raw*/<task>__rdxmin.json) and predates the RDXmin -> Chisle rename, so it
@@ -149,9 +149,12 @@ function collectAllCells() {
     const c = cells[key];
     const base = c.vanilla;
     if (!base) continue;
-    const row = { task: key.split('|')[1], base };
+    const row = { task: key.split('|')[1], base, tok: {} };
     if (ARMS.every(a => c[a.key])) {
-      for (const a of ARMS) row[a.key] = Math.round((c[a.key] / base) * 100);
+      for (const a of ARMS) {
+        row.tok[a.key] = c[a.key];              // raw tokens: exact aggregation
+        row[a.key] = Math.round((c[a.key] / base) * 100);  // display only
+      }
       rows.push(row);
     }
   }
@@ -160,9 +163,12 @@ function collectAllCells() {
 
 // Total bill for a group = sum(arm tokens) / sum(baseline tokens), so big
 // tasks carry the weight they actually carry on a real bill.
+// Aggregate from RAW tokens, never from the per-row percentages: rounding each
+// row first and summing those drifts a point against the same figure computed
+// honestly, which is exactly how a chart ends up contradicting its own README.
 function groupBill(group, key) {
   const base = group.reduce((s, r) => s + r.base, 0);
-  const arm = group.reduce((s, r) => s + r.base * r[key] / 100, 0);
+  const arm = group.reduce((s, r) => s + r.tok[key], 0);
   return base ? Math.round((arm / base) * 100) : 0;
 }
 
@@ -209,6 +215,56 @@ ${body}</svg>
 `;
 }
 
+// Kind x size. Coding prompts average ~3x the baseline of explanation prompts,
+// so the two axes are confounded; crossing them is the only way to see which is
+// doing the work. Cells are small (n=3..7) and the chart says so.
+function buildKindSvg(rows) {
+  const mid = Math.floor(rows.length / 2);
+  const median = rows[mid].base;
+  const pick = (kind, size) => rows.filter(r =>
+    (KIND[r.task] === kind) && (size === 'short' ? r.base < median : r.base >= median));
+  const groups = [
+    { label: 'code · short', rows: pick('coding', 'short') },
+    { label: 'code · long', rows: pick('coding', 'long') },
+    { label: 'explain · short', rows: pick('noncoding', 'short') },
+    { label: 'explain · long', rows: pick('noncoding', 'long') },
+  ].filter(g => g.rows.length);
+
+  const W = 860, left = 150, barH = 15, gap = 4, plotW = 560, top = 96;
+  const maxPct = 130, px = plotW / maxPct, line100 = left + 100 * px;
+  const blockH = ARMS.length * (barH + gap) + 26;
+  const H = top + groups.length * blockH + 18;
+
+  let body = `<line x1="${line100}" y1="${top - 14}" x2="${line100}" y2="${top + groups.length * blockH - 22}" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4 3"/>` +
+    `<text x="${line100}" y="${top - 20}" font-size="11" fill="#8b949e" text-anchor="middle">100% = no tool</text>`;
+
+  groups.forEach((g, gi) => {
+    const gy = top + gi * blockH;
+    body += `<text x="${left - 12}" y="${gy + 6}" font-size="12.5" font-weight="700" fill="#c9d1d9" text-anchor="end">${g.label}</text>` +
+            `<text x="${left - 12}" y="${gy + 20}" font-size="9.5" fill="#8b949e" text-anchor="end">n=${g.rows.length}</text>`;
+    const best = Math.min(...ARMS.map(a => groupBill(g.rows, a.key)));
+    ARMS.forEach((a, i) => {
+      const pct = groupBill(g.rows, a.key);
+      const y = gy + i * (barH + gap);
+      const w = Math.max(2, pct * px);
+      const win = pct === best ? ' font-weight="700"' : '';
+      body += `<rect x="${left}" y="${y}" width="${w}" height="${barH}" rx="3" fill="${a.color}"/>` +
+              `<text x="${left + w + 7}" y="${y + 11.5}" font-size="11" fill="#c9d1d9"${win}>${pct}%  ${a.label}</text>`;
+    });
+  });
+
+  const aria = 'Billed output by task kind crossed with answer size. ' + groups.map(g =>
+    `${g.label}: ` + ARMS.map(a => `${a.label} ${groupBill(g.rows, a.key)}%`).join(', ')).join('; ') + '.';
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}">
+<rect width="${W}" height="${H}" rx="10" fill="#0d1117"/>
+<text x="${W / 2}" y="34" font-size="17" font-weight="700" fill="#c9d1d9" text-anchor="middle">Code vs explanation, short vs long</text>
+<text x="${W / 2}" y="54" font-size="11.5" fill="#8b949e" text-anchor="middle">bold = leanest in that cell; split at the median baseline (${median} tok)</text>
+<text x="${W / 2}" y="72" font-size="11" fill="#8b949e" text-anchor="middle">small cells — directional, not a leaderboard</text>
+${body}</svg>
+`;
+}
+
 // Per-task bars: each arm's billed output as % of that task's vanilla run.
 function collectPerTask() {
   let files = [];
@@ -224,7 +280,7 @@ function collectPerTask() {
     if (!base) return null;
     return {
       task,
-      kind: TASK_KIND[task] || 'other',
+      kind: KIND_LABEL[KIND[task]] || 'other',
       arms: ARMS.map(a => ({
         ...a,
         pct: cells[task][a.key] ? Math.round((cells[task][a.key] / base) * 100) : null,
@@ -285,6 +341,7 @@ function main() {
     [SVG_OUT, buildSvg(stat, taskCount)],
     [TASK_SVG_OUT, buildTaskSvg(taskRows)],
     [SIZE_SVG_OUT, buildSizeSvg(sizeRows)],
+    [KIND_SVG_OUT, buildKindSvg(sizeRows)],
   ];
 
   if (process.argv.includes('--check')) {
