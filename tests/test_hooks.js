@@ -200,3 +200,31 @@ test('the changelog documents the shipped version', () => {
   const log = fs.readFileSync(path.join(root, 'CHANGELOG.md'), 'utf8');
   assert.ok(log.includes(`## [${v}]`), `CHANGELOG.md has no section for ${v}`);
 });
+
+// ── 3.0.0 upgrade path ───────────────────────────────────────────────────────
+// A lite/full/ultra setting from before 3.0.0 must not break anything, and must
+// not be ignored in silence either.
+
+const { legacySetting } = require('../hooks/chisle-config');
+
+test('a legacy level setting still resolves to on, not off', () => {
+  for (const stale of ['lite', 'full', 'ultra']) {
+    process.env.CHISLE_DEFAULT_MODE = stale;
+    assert.equal(getDefaultMode(), 'on', `${stale} should fall through to on`);
+  }
+  delete process.env.CHISLE_DEFAULT_MODE;
+});
+
+test('a legacy level setting is detected so it can be reported', () => {
+  process.env.CHISLE_DEFAULT_MODE = 'ultra';
+  const l = legacySetting();
+  assert.equal(l.value, 'ultra');
+  assert.equal(l.source, 'CHISLE_DEFAULT_MODE');
+  delete process.env.CHISLE_DEFAULT_MODE;
+});
+
+test('a current setting reports no legacy value', () => {
+  process.env.CHISLE_DEFAULT_MODE = 'on';
+  assert.equal(legacySetting(), null);
+  delete process.env.CHISLE_DEFAULT_MODE;
+});

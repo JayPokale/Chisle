@@ -9,7 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getDefaultMode, getClaudeDir, safeWriteFlag } = require('./chisle-config');
+const { getDefaultMode, getClaudeDir, safeWriteFlag, legacySetting } = require('./chisle-config');
 
 // ── Update-notice helpers (pure — tested directly) ─────────────────────────
 // Minor/patch releases stay quiet: a nudge per major is signal, more is spam.
@@ -138,6 +138,17 @@ function run(source) {
         'Proactively offer to set this up for the user on first interaction.';
     }
   } catch (e) {}
+
+  // 3b. One-time courtesy for the 3.0.0 upgrade: a lite/full/ultra setting is
+  // no longer meaningful. Chisle still runs (the value falls through to the
+  // default), but silently ignoring a setting someone chose is worse than
+  // saying so once.
+  const legacy = legacySetting();
+  if (legacy) {
+    output += '\n\nCHISLE NOTE: `' + legacy.value + '` came from ' + legacy.source +
+      '. Intensity levels were removed in 3.0.0 — there is one mode now, and it is ' +
+      'active. Set it to `on` or `off`, or drop it entirely. Mention this once.';
+  }
 
   // 4. Update notice, then emit. CHISLE_UPDATE_CHECK=0 disables.
   (async () => {

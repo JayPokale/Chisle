@@ -15,6 +15,25 @@ const os = require('os');
 // was the only one ever benchmarked. 'on' or 'off'.
 const VALID_MODES = ['off', 'on'];
 
+// Values that meant something before 3.0.0. Kept only so the upgrade can say
+// "your setting no longer does anything" instead of ignoring it in silence.
+const LEGACY_MODES = ['lite', 'full', 'ultra'];
+
+// Returns the stale value and where it came from, or null. Never throws.
+function legacySetting() {
+  const env = process.env.CHISLE_DEFAULT_MODE;
+  if (env && LEGACY_MODES.includes(String(env).toLowerCase())) {
+    return { value: String(env).toLowerCase(), source: 'CHISLE_DEFAULT_MODE' };
+  }
+  try {
+    const p = path.join(getConfigDir(), 'config.json');
+    const c = JSON.parse(fs.readFileSync(p, 'utf8'));
+    const v = c && c.defaultMode ? String(c.defaultMode).toLowerCase() : null;
+    if (v && LEGACY_MODES.includes(v)) return { value: v, source: p };
+  } catch (e) {}
+  return null;
+}
+
 function getClaudeDir() {
   return process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
 }
@@ -152,4 +171,7 @@ function readFlag(flagPath) {
   }
 }
 
-module.exports = { getDefaultMode, getClaudeDir, VALID_MODES, safeWriteFlag, readFlag };
+module.exports = {
+  LEGACY_MODES, legacySetting, getDefaultMode, getClaudeDir,
+  VALID_MODES, safeWriteFlag, readFlag,
+};
