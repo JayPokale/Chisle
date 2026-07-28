@@ -127,3 +127,47 @@ test('requiring chisle-activate has no side effects', () => {
   // emitted the ruleset or called process.exit before reaching here.
   assert.ok(true);
 });
+
+// ── SessionStart injection gating ────────────────────────────────────────────
+// Regression guard for #2 (@enc0ded): the full ruleset was re-injected on
+// resume/clear/compact as well as startup, so the plugin's own overhead ate
+// most of what the compressor saved.
+
+const { execFileSync } = require('child_process');
+const ACTIVATE = path.join(__dirname, '..', 'hooks', 'chisle-activate.js');
+
+function activate(stdin) {
+  const dir = tmpDir();
+  try {
+    return execFileSync(process.execPath, [ACTIVATE], {
+      input: stdin,
+      env: { ...process.env, CLAUDE_CONFIG_DIR: dir, CHISLE_DEFAULT_MODE: 'full', CHISLE_UPDATE_CHECK: '0' },
+      encoding: 'utf8',
+      timeout: 5000,
+    });
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+test('REGRESSION #2: startup gets the full ruleset', () => {
+  const out = activate(JSON.stringify({ source: 'startup' }));
+  assert.ok(out.length > 2000, `expected full ruleset, got ${out.length} chars`);
+  assert.match(out, /CHISLE MODE ACTIVE/);
+});
+
+test('REGRESSION #2: resume/clear/compact do not re-inject the ruleset', () => {
+  for (const source of ['resume', 'clear', 'compact']) {
+    const out = activate(JSON.stringify({ source }));
+    assert.ok(out.length < 400, `${source} re-injected ${out.length} chars`);
+    // still has to announce the mode, or the session silently loses it
+    assert.match(out, /CHISLE MODE ACTIVE/);
+  }
+});
+
+test('unknown or malformed source falls back to a full inject', () => {
+  // failing open (over-teaching once) beats a session with no ruleset at all
+  assert.ok(activate('not json').length > 2000);
+  assert.ok(activate('').length > 2000);
+  assert.ok(activate(JSON.stringify({})).length > 2000);
+});
