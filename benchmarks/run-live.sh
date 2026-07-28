@@ -12,6 +12,14 @@
 # Usage: bash benchmarks/run-live.sh [model] [raw-dir]
 #   raw-dir defaults to results/raw; pass a fresh dir to re-measure from scratch
 #   instead of reusing cached cells.
+#
+#   SUITE=large selects prompts that genuinely want a long answer. The default
+#   suite's baselines run 80-1506 tokens, which is small enough that the
+#   headline average is dominated by prompts where every arm has little to cut.
+#   Re-analysing the committed cells by baseline size suggests the gap widens
+#   on longer answers; this suite exists to test that directly rather than
+#   inferring it from tasks that were not designed for the question.
+#   Example: SUITE=large bash benchmarks/run-live.sh <model> results/raw-large
 set -uo pipefail
 
 MODEL="${1:-claude-haiku-4-5-20251001}"
@@ -44,6 +52,17 @@ strip_fm "$PONYTAIL_SKILL" > "$ISO/ponytail.txt"
 strip_fm "$CHISLE_SKILL" > "$ISO/rdxmin.txt"
 
 # Tasks: id<TAB>kind<TAB>prompt
+TASKS_LARGE=$(cat <<'EOF'
+migration	coding	Write a database migration script that moves a users table from a single full_name column to first_name/last_name, backfills existing rows, and is safely re-runnable. Show the code.
+statemachine	coding	Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected. Show the code.
+csvpipeline	coding	Write a script that reads a large CSV of transactions, validates each row, aggregates totals per customer, and writes a report, handling malformed rows without dying. Show the code.
+authflow	coding	Implement email-and-password signup and login with password hashing, session issuing, and rate limiting on failed attempts. Show the code.
+apidesign	noncoding	Design the REST API for a multi-tenant document store: resources, auth model, pagination, versioning and error format. Explain the decisions.
+postmortem	noncoding	Write an incident postmortem for a four-hour outage caused by a connection pool exhausted by a slow downstream dependency, including timeline, root cause and remediations.
+architecture	noncoding	Explain how you would migrate a monolith to services without a big-bang rewrite, covering ordering, data ownership, and how to keep it shippable throughout.
+EOF
+)
+
 TASKS=$(cat <<'EOF'
 debounce	coding	Add debounce to a search input that currently fires an API call on every keystroke. Show the code.
 cache	coding	Add a cache layer for our user profile API responses. Show the code.
@@ -53,6 +72,13 @@ rest-graphql	noncoding	Summarize the main tradeoffs between REST and GraphQL for
 regex-concept	noncoding	Explain what a regular expression backreference is, with one short example.
 EOF
 )
+
+# Pick the suite. Default stays byte-identical so previously committed cells
+# remain comparable; SUITE=large swaps in the long-answer prompts above.
+if [ "${SUITE:-default}" = "large" ]; then
+  TASKS="$TASKS_LARGE"
+  echo "suite: large (long-answer prompts)"
+fi
 
 run_cell() {
   local arm="$1" task_id="$2" prompt="$3"
