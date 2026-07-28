@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Live 4-arm benchmark: vanilla vs caveman vs ponytail vs rdxmin.
+# Live 4-arm benchmark: vanilla vs caveman vs ponytail vs chisle (arm key stays "rdxmin" — matches historical raw filenames).
 #
 # Drives the authenticated `claude` CLI headlessly. Each arm differs ONLY in the
 # system prompt appended (the respective SKILL.md body); vanilla appends nothing.
@@ -34,13 +34,14 @@ find_skill() {  # $1 = tool name → path to its SKILL.md, or empty
 }
 CAVEMAN_SKILL="$(find_skill caveman)"
 PONYTAIL_SKILL="$(find_skill ponytail)"
-RDX_SKILL="$HERE/../skills/rdx/SKILL.md"
+CHISLE_SKILL="$HERE/../skills/chisle/SKILL.md"
 
 strip_fm() { awk 'BEGIN{n=0} /^---[[:space:]]*$/{n++; next} n>=2{print} n<2 && !/^---/ && n==1{print}' "$1" 2>/dev/null || cat "$1"; }
-for f in "$CAVEMAN_SKILL" "$PONYTAIL_SKILL" "$RDX_SKILL"; do [ -f "$f" ] || { echo "missing skill: $f"; exit 1; }; done
+for f in "$CAVEMAN_SKILL" "$PONYTAIL_SKILL" "$CHISLE_SKILL"; do [ -f "$f" ] || { echo "missing skill: $f"; exit 1; }; done
 strip_fm "$CAVEMAN_SKILL" > "$ISO/caveman.txt"
 strip_fm "$PONYTAIL_SKILL" > "$ISO/ponytail.txt"
-strip_fm "$RDX_SKILL" > "$ISO/rdxmin.txt"
+# Arm key stays "rdxmin": renaming it would orphan every committed raw/*__rdxmin.json.
+strip_fm "$CHISLE_SKILL" > "$ISO/rdxmin.txt"
 
 # Tasks: id<TAB>kind<TAB>prompt
 TASKS=$(cat <<'EOF'

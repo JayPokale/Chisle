@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// rdxmin — replay benchmark for the tool-output compressor (input axis).
+// chisle — replay benchmark for the tool-output compressor (input axis).
 //
 // Feeds every tool_result in your local Claude Code transcripts through the
-// SAME code the shipped hook runs (hooks/rdx-compress-output.js) and reports
+// SAME code the shipped hook runs (hooks/chisle-compress-output.js) and reports
 // what it would have saved. Deterministic, zero LLM calls, zero network —
 // reads ~/.claude/projects/**/*.jsonl and prints a table.
 //
@@ -13,7 +13,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { extractText, transform, limitsFor, toolAllowed } = require('../hooks/rdx-compress-output');
+const { extractText, transform, limitsFor, toolAllowed } = require('../hooks/chisle-compress-output');
 
 const mode = process.argv[2] || 'full';
 const limits = limitsFor(mode);
@@ -79,7 +79,7 @@ walk(root);
 
 const saved = t.before - t.after + t.dedupChars;
 const pct = (a, b) => b ? (100 * a / b).toFixed(1) + '%' : 'n/a';
-console.log(`rdx-compress replay — mode=${mode} (maxChars=${limits.maxChars}, head=${limits.headLines}, tail=${limits.tailLines})`);
+console.log(`chisle-compress replay — mode=${mode} (maxChars=${limits.maxChars}, head=${limits.headLines}, tail=${limits.tailLines})`);
 console.log(`transcript root: ${root}\n`);
 console.log(`tool_results scanned:        ${t.results.toLocaleString('en-US')}  (${t.chars.toLocaleString('en-US')} chars)`);
 console.log(`scrubbed/elided outputs:     ${t.eligible.toLocaleString('en-US')}  (${t.before.toLocaleString('en-US')} → ${t.after.toLocaleString('en-US')} chars)`);

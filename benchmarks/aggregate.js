@@ -15,7 +15,7 @@ const fs = require('fs');
 const path = require('path');
 
 const RAW = process.env.RAW_DIR ? path.resolve(process.env.RAW_DIR) : path.join(__dirname, 'results', 'raw');
-const ARMS = ['vanilla', 'caveman', 'ponytail', 'rdxmin'];
+const ARMS = ['vanilla', 'caveman', 'ponytail', 'rdxmin'];  // 'rdxmin' = chisle; historical key, matches committed raw filenames
 const KIND = {
   debounce: 'coding', cache: 'coding', 'auth-bug': 'coding',
   pooling: 'noncoding', 'rest-graphql': 'noncoding', 'regex-concept': 'noncoding',
