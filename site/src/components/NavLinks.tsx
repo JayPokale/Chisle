@@ -8,8 +8,8 @@ import { useEffect, useState } from "react";
 const SECTIONS = [
   { id: "features", label: "Features" },
   { id: "compare", label: "Compare" },
-  { id: "numbers", label: "Benchmarks" },
   { id: "ladder", label: "Ladder" },
+  { id: "numbers", label: "Benchmarks" },
   { id: "faq", label: "FAQ" },
 ];
 

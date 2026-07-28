@@ -7,11 +7,11 @@ const AXES = [
   {
     name: "Terse persona",
     what: "How the model writes",
-    body: "Senior-dev voice: fragments over sentences, YAGNI-first code, reuse before new code. Three levels — /chisle lite, full, ultra. Commits and security warnings stay verbose on purpose.",
+    body: "Senior-dev voice: fragments over sentences, YAGNI-first code, reuse before new code. One mode, no dials. Commits and security warnings stay verbose on purpose.",
     demo: [
-      ["lite", "Component re-renders because you create a new object reference each render. Wrap it in `useMemo`."],
-      ["full", "New object ref each render. Inline object prop = new ref = re-render. `useMemo`."],
-      ["ultra", "Inline obj prop → new ref → re-render. `useMemo`. Why inline object at all?"],
+      ["prompt", "Why does this React component re-render?"],
+      ["bare model", "A component re-renders whenever its state or props change. In your case, you are creating a new object on every render, which means the prop identity changes each time…"],
+      ["chisle", "New object ref each render. Inline object prop = new ref = re-render. `useMemo`."],
     ],
   },
   {

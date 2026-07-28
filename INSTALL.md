@@ -66,7 +66,7 @@ Start a Claude Code session. You should see:
 CHISLE MODE ACTIVE — level: full
 ```
 
-in the session context. Then type `/chisle ultra` to switch levels.
+in the session context. `/chisle off` stops it.
 
 ## Uninstall
 
@@ -83,11 +83,11 @@ rm -f ~/.claude/.chisle-statusline-suffix
 Override default level via environment variable:
 
 ```bash
-export CHISLE_DEFAULT_MODE=ultra   # lite | full | ultra
+export CHISLE_DEFAULT_MODE=off   # on | off
 ```
 
 Or via config file at `~/.config/chisle/config.json`:
 
 ```json
-{ "defaultMode": "lite" }
+{ "defaultMode": "off" }
 ```

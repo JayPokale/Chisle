@@ -6,7 +6,7 @@ Small focused PRs beat big rewrites. Chisle is a small package — keep it that 
 
 | File | Purpose |
 |------|---------|
-| `skills/chisle/SKILL.md` | **Behavior source.** All rules, intensity levels, examples. The activate hook reads it at runtime. |
+| `skills/chisle/SKILL.md` | **Behaviour source.** All rules and examples. The activate hook reads it at runtime. |
 | `scripts/build-rules.js` | Condensed mirror of the skill for the 7 non-Claude agents. **Editing SKILL.md alone does not propagate here** — update the `BODY` too, then regenerate. |
 | `hooks/chisle-activate.js` | SessionStart: reads SKILL.md, writes flag, emits rules |
 | `hooks/chisle-mode-tracker.js` | UserPromptSubmit: `/chisle` commands, NL detection, per-turn reinforcement |
@@ -17,7 +17,7 @@ Small focused PRs beat big rewrites. Chisle is a small package — keep it that 
 
 ## What to edit
 
-**Changing behavior or intensity levels** → `skills/chisle/SKILL.md`, **and** the condensed `BODY` in `scripts/build-rules.js`, then `npm run build:rules`. CI checks the copies are in sync with the generator (not with SKILL.md — the mirror is manual, by design).
+**Changing behaviour** → `skills/chisle/SKILL.md`, **and** the condensed `BODY` in `scripts/build-rules.js`, then `npm run build:rules`. CI checks the copies are in sync with the generator (not with SKILL.md — the mirror is manual, by design).
 
 **Input-side compression** → `hooks/chisle-compress-output.js`. Correctness invariants that must survive any change: allowlist only (never `Read`/`Edit`), error-line salvage on any elision, dedup only within one session, every tier kill-switchable, hook never throws.
 

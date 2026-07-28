@@ -5,6 +5,30 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+- **BREAKING: one mode. `lite`, `full` and `ultra` are gone.** Three dials on a
+  tool whose argument is "fewer knobs" was the joke writing itself, and only the
+  middle setting was ever benchmarked. `/chisle` turns it on, `/chisle off`
+  turns it off. A stray `/chisle full` still just activates, so old habits keep
+  working.
+  - Compressor thresholds are now fixed at the old `full` values
+    (8k chars, 60 head lines, 40 tail) — the published numbers were measured
+    there. `CHISLE_COMPRESS_*` still overrides them.
+  - `CHISLE_DEFAULT_MODE` and `config.json` `defaultMode` now take `on` / `off`.
+    An existing `lite`/`full`/`ultra` value is no longer valid and falls through
+    to the default, which is `on` — so the tool stays enabled either way.
+  - Statusline renders `[CHISLE]` only; the `[CHISLE:ULTRA]` variant is gone.
+  - Note for anyone re-deriving the benchmarks: the injected ruleset changed
+    with this release (the intensity table left SKILL.md), so a fresh run will
+    not reproduce the committed cells byte-for-byte.
+
+- **Renamed project: RDXmin → Chisle.** Package, plugin, skills
+  (`chisle`, `chisle-audit`, `chisle-review`, `chisle-help`), commands
+  (`/chisle`, `/chisle-audit`, `/chisle-review`, `/chisle-help`), env vars
+  (`CHISLE_*`), config path (`~/.config/chisle/`), and all per-agent rule
+  mirrors renamed to match. Entries below predate the rename and refer to
+  the project by its former name, RDXmin.
+
 ### Fixed
 - **Tool-output compression never actually applied.** The `PostToolUse` hook
   returned the compressed text as a bare string, but Claude Code validates
@@ -30,14 +54,6 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
   overhead was cancelling most of the compressor's savings, and that the
   standing instruction load was competing with the user's actual requests — by
   [@enc0ded](https://github.com/enc0ded) (#2).
-
-### Changed
-- **Renamed project: RDXmin → Chisle.** Package, plugin, skills
-  (`chisle`, `chisle-audit`, `chisle-review`, `chisle-help`), commands
-  (`/chisle`, `/chisle-audit`, `/chisle-review`, `/chisle-help`), env vars
-  (`CHISLE_*`), config path (`~/.config/chisle/`), and all per-agent rule
-  mirrors renamed to match. Entries below predate the rename and refer to
-  the project by its former name, RDXmin.
 
 ## [1.2.2] — 2026-07-11
 

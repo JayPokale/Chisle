@@ -140,7 +140,7 @@ irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
 
 Preview first with `npx chisle --dry-run`, scope with `--only claude`, see everything with `npx chisle --help`. Remove with `npx chisle --uninstall`.
 
-**Requirements:** Node ≥18 (installer / `npx`) · Claude Code for live `/chisle` switching and input-side compression — the always-on ruleset still ships to every other agent.
+**Requirements:** Node ≥18 (installer / `npx`) · Claude Code for `/chisle` toggling and input-side compression — the always-on ruleset still ships to every other agent.
 
 ### Claude Code plugin (marketplace)
 
@@ -275,13 +275,13 @@ Measured over 171 real sessions ([receipts](benchmarks/results/2026-07-07-input-
 | **elide** | oversized output → head + tail, error-like lines salvaged from the cut | bounded, guarded |
 | **dedup** | byte-identical repeat of a tool's previous output (same session) → one-line marker | none — the copy is already in context |
 
-Replayed over the same 171 sessions: **~61k tokens** (full) / **~103k** (ultra) saved one-shot, ~46% off every eligible output — floor, not estimate, since each saved byte also stops being re-sent on every later request. Correctness rules: allowlist only (`Bash`, `Agent`, `WebFetch`, `WebSearch`, `Grep`, `Glob`, `mcp__*`) — never `Read`/`Edit`, whose exact bytes feed later edits. Honest ledger: dedup scored **0 hits** on this corpus (rtk-filtered at source); it's kept for the test-rerun case, kill-switchable, and labeled speculative until it earns a number. Replay it on your own transcripts:
+Replayed over the same 171 sessions: **~61k tokens** saved one-shot, ~46% off every eligible output — floor, not estimate, since each saved byte also stops being re-sent on every later request. Correctness rules: allowlist only (`Bash`, `Agent`, `WebFetch`, `WebSearch`, `Grep`, `Glob`, `mcp__*`) — never `Read`/`Edit`, whose exact bytes feed later edits. Honest ledger: dedup scored **0 hits** on this corpus (rtk-filtered at source); it's kept for the test-rerun case, kill-switchable, and labeled speculative until it earns a number. Replay it on your own transcripts:
 
 ```bash
 node benchmarks/replay-compress.js        # what it would have saved you
 ```
 
-Thresholds track the `/chisle` level (lite 16k / full 8k / ultra 5k chars). `stop chisle`, `CHISLE_COMPRESS=0`, `CHISLE_COMPRESS_SCRUB=0`, `CHISLE_COMPRESS_DEDUP=0` — every tier has an off switch.
+Outputs over 8k chars are elided. `stop chisle`, `CHISLE_COMPRESS=0`, `CHISLE_COMPRESS_SCRUB=0`, `CHISLE_COMPRESS_DEDUP=0` — every tier has an off switch.
 
 ### Prevention — the context diet
 
@@ -291,14 +291,11 @@ The biggest context whale (whole-file `Read`s — 5.6M chars in the measured cor
 
 ## What the output sounds like
 
-**"Why React component re-render?"** (full)
+**"Why does this React component re-render?"**
 > New object ref each render. Inline object prop = new ref = re-render. `useMemo`.
 
-**"Why React component re-render?"** (ultra)
-> Inline obj prop → new ref → re-render. `useMemo`. Why inline object at all?
-
-**"Add a cache for API responses."** (ultra)
-> No cache until profiler says so. When it does: `@lru_cache`. Hand-rolled TTL cache = bug farm with hit rate.
+**"Add a cache for API responses."**
+> `@lru_cache(maxsize=1000)` on the fetch fn. Skipped a custom cache class — add one when `lru_cache` measurably falls short.
 
 ---
 
@@ -306,15 +303,13 @@ The biggest context whale (whole-file `Read`s — 5.6M chars in the measured cor
 
 | Command | Effect |
 |---------|--------|
-| *(nothing)* | On automatically at `full` every session after install |
-| `/chisle` | Re-activate at default level if you'd stopped it |
-| `/chisle lite` | Tighter prose, flags the minimal alternative |
-| `/chisle full` | Full compression + YAGNI ladder enforced |
-| `/chisle ultra` | Extremist — abbreviate prose, delete before add, challenge requirements |
+| *(nothing)* | On automatically every session after install |
+| `/chisle` | Re-activate if you'd stopped it |
+| `/chisle off` | Deactivate |
 | `stop chisle` | Deactivate (ruleset *and* input-side compression) |
 | `normal mode` | Deactivate |
 
-Natural language works too: "activate chisle", "chisle mode", "chislify this". Across every level, code symbols, function/API names, and error strings stay verbatim — only the noise around them compresses.
+Natural language works too: "activate chisle", "chisle mode", "chislify this". Code symbols, function/API names, and error strings stay verbatim — only the noise around them compresses.
 
 ---
 
@@ -361,17 +356,17 @@ Mark deliberate simplifications so "later" doesn't quietly become "never":
 
 ## Config
 
-**On by default.** After install, CHISLE activates automatically at `full` every session — no `/chisle` needed. Change the default level, or set `off` to stay dormant until you type `/chisle`:
+**On by default.** After install, Chisle activates automatically every session — no `/chisle` needed. Set `off` to stay dormant until you type `/chisle`:
 
 ```bash
 # env var (highest priority)
-export CHISLE_DEFAULT_MODE=ultra
+export CHISLE_DEFAULT_MODE=off
 
 # config file (persists across shells)
-~/.config/chisle/config.json → { "defaultMode": "ultra" }
+~/.config/chisle/config.json → { "defaultMode": "off" }
 ```
 
-Resolution: env var → config file → `full`. Valid: `off`, `lite`, `full`, `ultra`.
+Resolution: env var → config file → `on`. Valid: `off`, `on`.
 
 ---
 

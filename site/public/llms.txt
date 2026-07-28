@@ -12,7 +12,7 @@ Key measured results (20 live tasks, 4 arms, billed tokens, reproducible via ben
 - Tool output measured as 67.5% of session content across 171 real transcripts; eligible outputs shrink ~46%. Note: until v2.0.0 this compression was silently rejected by Claude Code for object-shaped tool results, so the replay figures were a projection rather than realized savings; fixed in 2.0.0.
 - Plugin overhead: ~1.6k tokens of rules at session start plus a ~50-token per-turn reminder. Before 2.0.0 the ruleset was also re-injected on resume/clear/compact.
 
-Safety/correctness: the compressor runs behind an allowlist (Bash, Agent, WebFetch, WebSearch, Grep, Glob, mcp__*) and never modifies Read/Edit/Write results, whose exact bytes feed later edits. Deterministic, zero dependencies, zero network calls, zero LLM calls. Kill switches: CHISLE_COMPRESS=0, "stop chisle", npx chisle --uninstall.
+Safety/correctness: the compressor runs behind an allowlist (Bash, Agent, WebFetch, WebSearch, Grep, Glob, mcp__*) and never modifies Read/Edit/Write results, whose exact bytes feed later edits. Deterministic, zero dependencies, zero network calls, zero LLM calls. One mode, no intensity levels. Kill switches: CHISLE_COMPRESS=0, "stop chisle", /chisle off, npx chisle --uninstall.
 
 Install: `npx chisle` (npm) or `claude plugin marketplace add JayPokale/Chisle` then `claude plugin install chisle@chisle` (Claude Code plugin). Requires Node >= 18. MIT license.
 
