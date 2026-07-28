@@ -22,10 +22,25 @@ const RAW_DIRS = [
   path.join(ROOT, 'benchmarks', 'results', 'raw-verify'),
 ];
 const SVG_OUT = path.join(ROOT, 'assets', 'benchmark.svg');
+const TASK_SVG_OUT = path.join(ROOT, 'assets', 'per-task.svg');
+// Per-task chart uses the June suite alone: it is the one run where all four
+// arms answered the same six prompts, so the bars are directly comparable.
+const TASK_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw');
+const TASK_KIND = {
+  'debounce': 'code', 'cache': 'code', 'auth-bug': 'code',
+  'pooling': 'prose', 'rest-graphql': 'prose', 'regex-concept': 'prose',
+};
+
+// Our own arm. The key is the token in the committed raw filenames
+// (raw*/<task>__rdxmin.json) and predates the RDXmin -> Chisle rename, so it
+// stays put; only the display label follows the new name. Renaming the key
+// silently orphans all 20 result cells and zeroes our bar — reference it
+// through this constant so the two can never drift apart again.
+const SELF = 'rdxmin';
 const ARMS = [
-  { key: 'caveman',  label: 'caveman',  color: '#d9822b' },
+  { key: 'caveman',  label: 'caveman', color: '#d9822b' },
   { key: 'ponytail', label: 'ponytail', color: '#cf3b3b' },
-  { key: 'chisle', label: 'Chisle', color: '#2da44e' },
+  { key: SELF,       label: 'Chisle',  color: '#2da44e' },
 ];
 
 function tok(file) {
@@ -88,7 +103,7 @@ function buildSvg(stat, taskCount) {
     const s = stat[a.key];
     const y = top + i * rowH;
     const w = Math.max(2, s.total * px);
-    const bold = a.key === 'chisle' ? ' font-weight="700"' : '';
+    const bold = a.key === SELF ? ' font-weight="700"' : '';
     const badge = s.over === 0
       ? `worst day ${s.worst}% · never backfired`
       : `worst day ${s.worst}% · backfired ${s.over}/${taskCount} tasks`;
@@ -99,7 +114,7 @@ function buildSvg(stat, taskCount) {
   });
 
   // Only claim the fix when the data shows exactly the one backfire it fixed.
-  const fixNote = stat.chisle.over === 1
+  const fixNote = stat[SELF].over === 1
     ? `<text x="${W / 2}" y="${H - 14}" font-size="11" fill="#8b949e" text-anchor="middle">Chisle's single backfire was root-caused, the rule fixed, and re-validated live at 93% — benchmarks/results/2026-07-07-verify-rerun.md</text>`
     : '';
 
@@ -114,19 +129,100 @@ ${body}${fixNote}</svg>
 `;
 }
 
+// Per-task bars: each arm's billed output as % of that task's vanilla run.
+function collectPerTask() {
+  let files = [];
+  try { files = fs.readdirSync(TASK_DIR); } catch (_) { return []; }
+  const cells = {};
+  for (const f of files) {
+    if (!f.endsWith('.json')) continue;
+    const m = f.slice(0, -5).match(/^(.+)__([a-z]+)$/);
+    if (m) (cells[m[1]] ||= {})[m[2]] = tok(path.join(TASK_DIR, f));
+  }
+  return Object.keys(cells).sort().map(task => {
+    const base = cells[task].vanilla;
+    if (!base) return null;
+    return {
+      task,
+      kind: TASK_KIND[task] || 'other',
+      arms: ARMS.map(a => ({
+        ...a,
+        pct: cells[task][a.key] ? Math.round((cells[task][a.key] / base) * 100) : null,
+      })),
+    };
+  }).filter(Boolean);
+}
+
+function buildTaskSvg(rows) {
+  const W = 860, left = 132, top = 92, groupH = 62, barH = 15, plotW = 600;
+  const maxPct = 140, px = plotW / maxPct, line100 = left + 100 * px;
+  const H = top + rows.length * groupH + 44;
+
+  let body = `<line x1="${line100}" y1="${top - 14}" x2="${line100}" y2="${top + rows.length * groupH - 12}" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4 3"/>` +
+    `<text x="${line100}" y="${top - 20}" font-size="11" fill="#8b949e" text-anchor="middle">100% = no tool</text>`;
+
+  rows.forEach((r, i) => {
+    const gy = top + i * groupH;
+    body += `<text x="${left - 12}" y="${gy + 14}" font-size="12.5" fill="#c9d1d9" text-anchor="end">${r.task}</text>` +
+            `<text x="${left - 12}" y="${gy + 28}" font-size="9.5" fill="#8b949e" text-anchor="end">${r.kind}</text>`;
+    r.arms.forEach((a, j) => {
+      if (a.pct == null) return;
+      const y = gy + j * (barH + 2);
+      const w = Math.max(2, a.pct * px);
+      const win = a.key === SELF ? ' font-weight="700"' : '';
+      body += `<rect x="${left}" y="${y}" width="${w}" height="${barH}" rx="3" fill="${a.color}"/>` +
+              `<text x="${left + w + 7}" y="${y + 11.5}" font-size="10.5" fill="#c9d1d9"${win}>${a.pct}%</text>`;
+    });
+  });
+
+  const legend = ARMS.map((a, i) =>
+    `<rect x="${left + i * 132}" y="${H - 26}" width="10" height="10" rx="2" fill="${a.color}"/>` +
+    `<text x="${left + i * 132 + 15}" y="${H - 17}" font-size="11" fill="#8b949e">${a.label}</text>`).join('');
+
+  const wins = rows.filter(r => {
+    const self = r.arms.find(a => a.key === SELF);
+    return self && r.arms.every(a => a.pct == null || a.key === SELF || self.pct <= a.pct);
+  }).length;
+
+  const aria = `Billed output per task as percent of the no-tool baseline, June suite. ` +
+    rows.map(r => `${r.task}: ` + r.arms.map(a => `${a.label} ${a.pct}%`).join(', ')).join('; ') + '.';
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}">
+<rect width="${W}" height="${H}" rx="10" fill="#0d1117"/>
+<text x="${W / 2}" y="32" font-size="17" font-weight="700" fill="#c9d1d9" text-anchor="middle">Task by task — % of a bare model (lower = cheaper)</text>
+<text x="${W / 2}" y="52" font-size="11.5" fill="#8b949e" text-anchor="middle">June suite, Haiku, same six prompts to every arm — Chisle leanest on ${wins} of ${rows.length}</text>
+${body}${legend}</svg>
+`;
+}
+
 function main() {
   const { stat, taskCount } = collect();
-  if (process.argv.includes('--json')) { console.log(JSON.stringify({ stat, taskCount }, null, 2)); return; }
-  const svg = buildSvg(stat, taskCount);
+  const taskRows = collectPerTask();
+  if (process.argv.includes('--json')) { console.log(JSON.stringify({ stat, taskCount, taskRows }, null, 2)); return; }
+
+  const outputs = [
+    [SVG_OUT, buildSvg(stat, taskCount)],
+    [TASK_SVG_OUT, buildTaskSvg(taskRows)],
+  ];
+
   if (process.argv.includes('--check')) {
-    let have = '';
-    try { have = fs.readFileSync(SVG_OUT, 'utf8'); } catch (_) {}
-    if (have !== svg) { console.error('assets/benchmark.svg is stale. Run: node scripts/build-chart.js'); process.exit(1); }
-    console.log('benchmark.svg in sync.'); return;
+    for (const [file, svg] of outputs) {
+      let have = '';
+      try { have = fs.readFileSync(file, 'utf8'); } catch (_) {}
+      if (have !== svg) {
+        console.error(`assets/${path.basename(file)} is stale. Run: node scripts/build-chart.js`);
+        process.exit(1);
+      }
+    }
+    console.log('charts in sync.'); return;
   }
-  fs.mkdirSync(path.dirname(SVG_OUT), { recursive: true });
-  fs.writeFileSync(SVG_OUT, svg);
-  console.log(`wrote ${path.relative(ROOT, SVG_OUT)} — worst case: ` +
+
+  for (const [file, svg] of outputs) {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, svg);
+    console.log(`wrote ${path.relative(ROOT, file)}`);
+  }
+  console.log(`worst case: ` +
     ARMS.map(a => `${a.label} ${stat[a.key].worst}%`).join(', ') + ` over ${taskCount} tasks`);
 }
 
