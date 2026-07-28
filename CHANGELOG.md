@@ -1,7 +1,17 @@
 # Changelog
 
-All notable changes to RDXmin are documented here.
+All notable changes to Chisle are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
+
+## [Unreleased]
+
+### Changed
+- **Renamed project: RDXmin → Chisle.** Package, plugin, skills
+  (`chisle`, `chisle-audit`, `chisle-review`, `chisle-help`), commands
+  (`/chisle`, `/chisle-audit`, `/chisle-review`, `/chisle-help`), env vars
+  (`CHISLE_*`), config path (`~/.config/chisle/`), and all per-agent rule
+  mirrors renamed to match. Entries below predate the rename and refer to
+  the project by its former name, RDXmin.
 
 ## [1.2.2] — 2026-07-11
 
