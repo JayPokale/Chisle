@@ -83,6 +83,33 @@ html {
   border-radius: 999px;
 }
 
+/* Panels that scroll inside the page — transcripts, wide tables, the pipeline
+   SVG. Narrower and neutral: amber is right for the page rail, but two of these
+   sit side by side, and accent-coloured bars inside a panel compete with the
+   content they're framing. */
+.pane-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+.pane-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.pane-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pane-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border-radius: 999px;
+}
+
+.pane-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-dim);
+}
+
 
 .caret::after {
   content: "▌";
