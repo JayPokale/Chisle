@@ -62,7 +62,7 @@ export default function Axes() {
             <button
               onClick={() => setOpen(open === i ? null : i)}
               aria-expanded={open === i}
-              className="h-full w-full bg-paper p-6 text-left transition-colors hover:bg-panel/50"
+              className="lift h-full w-full border border-transparent bg-paper p-6 text-left hover:bg-panel/50"
             >
               <p className="text-xs text-amber">{a.what}</p>
               <h3 className="mt-2 text-lg font-semibold">{a.name}</h3>

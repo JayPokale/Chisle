@@ -22,7 +22,7 @@ export default function Stats() {
             onMouseEnter={() => setOpen(s.k)}
             onMouseLeave={() => setOpen(null)}
             onClick={() => setOpen(open === s.k ? null : s.k)}
-            className="group px-4 py-8 text-center transition-colors hover:bg-amber-soft/30"
+            className="lift group border border-transparent px-4 py-8 text-center hover:bg-amber-soft/30"
           >
             <p className="text-2xl font-semibold text-amber">{s.v}</p>
             <p className="mt-1.5 text-xs leading-snug text-dim">{s.k}</p>

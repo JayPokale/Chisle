@@ -111,6 +111,26 @@ html {
 }
 
 
+/* Hover treatment shared by the interactive cards: the element under the
+   cursor lifts and warms, rather than its neighbours being dimmed. Adding
+   attention reads better than removing it, and it degrades to nothing when
+   the user has asked for reduced motion. */
+.lift {
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.lift:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-amber);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lift,
+  .lift:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
 .caret::after {
   content: "▌";
   color: var(--color-term-amber);
