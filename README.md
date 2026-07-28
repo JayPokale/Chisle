@@ -323,6 +323,12 @@ npm test    # 59 tests: flag safety, tracker, settings merge, installer, compres
   <img src="https://contrib.rocks/image?repo=JayPokale/Chisle" alt="GitHub contributors">
 </a>
 
+Some of the sharpest contributions here arrived as issues rather than commits:
+
+- **[@sovdchains](https://github.com/sovdchains)** ([#3](https://github.com/JayPokale/Chisle/issues/3)) — found that tool-output compression was silently rejected by Claude Code on every call, so the entire input axis had never actually applied. Came with the transcript evidence, the root cause, and the fix.
+- **[@enc0ded](https://github.com/enc0ded)** ([#2](https://github.com/JayPokale/Chisle/issues/2)) — measured 173 real sessions to show the ruleset was being re-injected on every resume and clear, cancelling most of the savings, and argued the standing instruction load was hurting instruction-following.
+- **[@TDimovski](https://github.com/TDimovski)** ([#1](https://github.com/JayPokale/Chisle/issues/1)) — reported the Windows statusline crash fixed in 1.2.1.
+
 **AI co-engineers** (pair-work credited in commit trailers and the changelog):
 
 <p>
