@@ -6,7 +6,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 
 const {
-  extractText, scrub, compress, transform, limitsFor, toolAllowed, processPayload, THRESHOLDS,
+  extractText, rebuildResponse, scrub, compress, transform, limitsFor, toolAllowed, processPayload, THRESHOLDS,
 } = require('../hooks/chisle-compress-output');
 
 const FULL = THRESHOLDS.full;
@@ -188,4 +188,43 @@ test('processPayload never throws on garbage', () => {
   assert.equal(processPayload({}, 'full'), null);
   assert.equal(processPayload({ tool_name: 'Bash' }, 'full'), null);
   assert.equal(processPayload({ tool_name: 'Bash', tool_response: 12345 }, 'full'), null);
+});
+
+// ── rebuildResponse: the replacement must match the tool's output shape ──────
+// Regression guard for #3 (@sovdchains): emitting a bare string for an
+// object-shaped tool made Claude Code reject every replacement, so the
+// compressor silently did nothing while still logging savings.
+
+test('REGRESSION #3: object-shaped response stays an object', () => {
+  const res = { stdout: 'original', stderr: '', interrupted: false };
+  const out = rebuildResponse(res, 'compressed');
+  assert.equal(typeof out, 'object');
+  assert.equal(out.stdout, 'compressed');
+  // untouched fields survive, or the harness rejects on the schema again
+  assert.equal(out.interrupted, false);
+});
+
+test('REGRESSION #3: stderr is blanked so it is not duplicated', () => {
+  // extractText folds stderr into the compressed text; leaving it would repeat it
+  const out = rebuildResponse({ stdout: 'a', stderr: 'boom' }, 'a\nboom');
+  assert.equal(out.stdout, 'a\nboom');
+  assert.equal(out.stderr, '');
+});
+
+test('string-shaped response stays a string', () => {
+  assert.equal(rebuildResponse('original', 'compressed'), 'compressed');
+  assert.equal(rebuildResponse(null, 'compressed'), 'compressed');
+});
+
+test('alternative string carriers are found', () => {
+  assert.equal(rebuildResponse({ output: 'x' }, 'c').output, 'c');
+  assert.equal(rebuildResponse({ result: 'x' }, 'c').result, 'c');
+  assert.equal(rebuildResponse({ text: 'x' }, 'c').text, 'c');
+});
+
+test('unknown shapes are skipped, never guessed', () => {
+  // a wrong guess is silently rejected by the harness — the bug we are fixing
+  assert.equal(rebuildResponse([{ type: 'text', text: 'x' }], 'c'), null);
+  assert.equal(rebuildResponse({ content: [{ text: 'x' }] }, 'c'), null);
+  assert.equal(rebuildResponse({ nothing: 1 }, 'c'), null);
 });
