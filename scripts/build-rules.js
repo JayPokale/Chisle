@@ -13,8 +13,8 @@ const ROOT = path.join(__dirname, '..');
 
 // The canonical rule body for the per-agent copies. Edit HERE, then
 // `node scripts/build-rules.js`. NOTE: this is a condensed manual mirror of
-// skills/rdx/SKILL.md — editing SKILL.md alone does NOT propagate here.
-const BODY = `RDXmin — maximum-efficiency dev mode. Two compressions, always active together.
+// skills/chisle/SKILL.md — editing SKILL.md alone does NOT propagate here.
+const BODY = `Chisle — maximum-efficiency dev mode. Two compressions, always active together.
 
 **Prose:** Default to fragments. Drop articles, filler (just/really/basically/
 actually), pleasantries (sure/certainly/happy to), hedging, linking verbs where
@@ -47,22 +47,22 @@ you're about to edit — diet trims transport, not understanding.
 **Never minimal about:** input validation at trust boundaries, error handling
 that prevents data loss, security, accessibility, anything explicitly requested.
 
-Levels: lite / full (default) / ultra. Deactivate: "stop rdx" / "normal mode".`;
+Levels: lite / full (default) / ultra. Deactivate: "stop chisle" / "normal mode".`;
 
 // target file → frontmatter (or '' for none)
 const TARGETS = {
-  '.cursor/rules/rdxmin.mdc':
-    '---\ndescription: RDXmin — zero-fluff prose + YAGNI-first code\nalwaysApply: true\n---\n\n',
-  '.windsurf/rules/rdxmin.md':
+  '.cursor/rules/chisle.mdc':
+    '---\ndescription: Chisle — zero-fluff prose + YAGNI-first code\nalwaysApply: true\n---\n\n',
+  '.windsurf/rules/chisle.md':
     '---\ntrigger: always_on\n---\n\n',
-  '.clinerules/rdxmin.md': '',
-  '.kiro/steering/rdxmin.md':
+  '.clinerules/chisle.md': '',
+  '.kiro/steering/chisle.md':
     '---\ninclusion: always\n---\n\n',
   '.github/copilot-instructions.md': '',
 };
 
 function render(frontmatter) {
-  return frontmatter + '# RDXmin\n\n' + BODY + '\n';
+  return frontmatter + '# Chisle\n\n' + BODY + '\n';
 }
 
 function main() {

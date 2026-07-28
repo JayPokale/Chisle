@@ -25,7 +25,7 @@ const SVG_OUT = path.join(ROOT, 'assets', 'benchmark.svg');
 const ARMS = [
   { key: 'caveman',  label: 'caveman',  color: '#d9822b' },
   { key: 'ponytail', label: 'ponytail', color: '#cf3b3b' },
-  { key: 'rdxmin', label: 'RDXmin', color: '#2da44e' },
+  { key: 'chisle', label: 'Chisle', color: '#2da44e' },
 ];
 
 function tok(file) {
@@ -88,7 +88,7 @@ function buildSvg(stat, taskCount) {
     const s = stat[a.key];
     const y = top + i * rowH;
     const w = Math.max(2, s.total * px);
-    const bold = a.key === 'rdxmin' ? ' font-weight="700"' : '';
+    const bold = a.key === 'chisle' ? ' font-weight="700"' : '';
     const badge = s.over === 0
       ? `worst day ${s.worst}% · never backfired`
       : `worst day ${s.worst}% · backfired ${s.over}/${taskCount} tasks`;
@@ -99,8 +99,8 @@ function buildSvg(stat, taskCount) {
   });
 
   // Only claim the fix when the data shows exactly the one backfire it fixed.
-  const fixNote = stat.rdxmin.over === 1
-    ? `<text x="${W / 2}" y="${H - 14}" font-size="11" fill="#8b949e" text-anchor="middle">RDXmin's single backfire was root-caused, the rule fixed, and re-validated live at 93% — benchmarks/results/2026-07-07-verify-rerun.md</text>`
+  const fixNote = stat.chisle.over === 1
+    ? `<text x="${W / 2}" y="${H - 14}" font-size="11" fill="#8b949e" text-anchor="middle">Chisle's single backfire was root-caused, the rule fixed, and re-validated live at 93% — benchmarks/results/2026-07-07-verify-rerun.md</text>`
     : '';
 
   const aria = `Total billed output across ${taskCount} tasks as percent of the no-tool baseline. ` +
