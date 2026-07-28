@@ -3,7 +3,7 @@ export default function Footer() {
     <footer className="border-t border-line py-10">
       <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-5 text-xs text-dim sm:flex-row">
         <p>
-          <span className="text-amber" style={{ fontFamily: "var(--font-mono)" }}>[CHISLE]</span>min ·
+          <span className="text-amber" style={{ fontFamily: "var(--font-mono)" }}>[CHISLE]</span> ·
           MIT · Jay Pokale
         </p>
         <nav className="flex gap-5">

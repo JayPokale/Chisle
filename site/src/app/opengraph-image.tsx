@@ -32,7 +32,6 @@ export default function OG() {
           >
             [CHISLE]
           </div>
-          <div style={{ color: "#8f8574", fontSize: 32 }}>min</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ fontSize: 84, fontWeight: 700, lineHeight: 1.05 }}>
