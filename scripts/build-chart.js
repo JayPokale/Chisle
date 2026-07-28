@@ -23,6 +23,7 @@ const RAW_DIRS = [
 ];
 const SVG_OUT = path.join(ROOT, 'assets', 'benchmark.svg');
 const TASK_SVG_OUT = path.join(ROOT, 'assets', 'per-task.svg');
+const SIZE_SVG_OUT = path.join(ROOT, 'assets', 'by-size.svg');
 // Per-task chart uses the June suite alone: it is the one run where all four
 // arms answered the same six prompts, so the bars are directly comparable.
 const TASK_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw');
@@ -129,6 +130,85 @@ ${body}${fixNote}</svg>
 `;
 }
 
+// Every task cell across all suites, with each arm as a % of that task's own
+// vanilla baseline. Baseline size doubles as the "how big an answer did this
+// prompt want" axis.
+function collectAllCells() {
+  const cells = {};
+  for (const dir of RAW_DIRS) {
+    let files = [];
+    try { files = fs.readdirSync(dir); } catch (_) { continue; }
+    for (const f of files) {
+      if (!f.endsWith('.json')) continue;
+      const m = f.slice(0, -5).match(/^(.+)__([a-z]+)$/);
+      if (m) (cells[`${dir}|${m[1]}`] ||= {})[m[2]] = tok(path.join(dir, f));
+    }
+  }
+  const rows = [];
+  for (const key of Object.keys(cells)) {
+    const c = cells[key];
+    const base = c.vanilla;
+    if (!base) continue;
+    const row = { task: key.split('|')[1], base };
+    if (ARMS.every(a => c[a.key])) {
+      for (const a of ARMS) row[a.key] = Math.round((c[a.key] / base) * 100);
+      rows.push(row);
+    }
+  }
+  return rows.sort((x, y) => x.base - y.base);
+}
+
+// Total bill for a group = sum(arm tokens) / sum(baseline tokens), so big
+// tasks carry the weight they actually carry on a real bill.
+function groupBill(group, key) {
+  const base = group.reduce((s, r) => s + r.base, 0);
+  const arm = group.reduce((s, r) => s + r.base * r[key] / 100, 0);
+  return base ? Math.round((arm / base) * 100) : 0;
+}
+
+function buildSizeSvg(rows) {
+  const mid = Math.floor(rows.length / 2);
+  const groups = [
+    { label: 'short answers', rows: rows.slice(0, mid) },
+    { label: 'long answers', rows: rows.slice(mid) },
+  ];
+  const W = 860, left = 168, top = 104, barH = 20, gap = 6, plotW = 560;
+  const maxPct = 130, px = plotW / maxPct, line100 = left + 100 * px;
+  const blockH = ARMS.length * (barH + gap) + 42;
+  const H = top + groups.length * blockH + 26;
+
+  let body = `<line x1="${line100}" y1="${top - 16}" x2="${line100}" y2="${top + groups.length * blockH - 30}" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4 3"/>` +
+    `<text x="${line100}" y="${top - 22}" font-size="11" fill="#8b949e" text-anchor="middle">100% = no tool</text>`;
+
+  groups.forEach((g, gi) => {
+    const gy = top + gi * blockH;
+    const lo = g.rows[0].base, hi = g.rows[g.rows.length - 1].base;
+    body += `<text x="${left - 14}" y="${gy + 4}" font-size="13" font-weight="700" fill="#c9d1d9" text-anchor="end">${g.label}</text>` +
+            `<text x="${left - 14}" y="${gy + 19}" font-size="10" fill="#8b949e" text-anchor="end">${lo}–${hi} tok · n=${g.rows.length}</text>`;
+    ARMS.forEach((a, i) => {
+      const pct = groupBill(g.rows, a.key);
+      const y = gy + i * (barH + gap);
+      const w = Math.max(2, pct * px);
+      const bold = a.key === SELF ? ' font-weight="700"' : '';
+      body += `<rect x="${left}" y="${y}" width="${w}" height="${barH}" rx="3" fill="${a.color}"/>` +
+              `<text x="${left + w + 8}" y="${y + 14}" font-size="12" fill="#c9d1d9"${bold}>${pct}%  ${a.label}</text>`;
+    });
+  });
+
+  const small = groups[0].rows, large = groups[1].rows;
+  const sub = `Chisle ${groupBill(small, SELF)}% on short answers vs ${groupBill(large, SELF)}% on long ones — the headline average hides both`;
+  const aria = `Total billed output by answer size. ` + groups.map(g =>
+    `${g.label}: ` + ARMS.map(a => `${a.label} ${groupBill(g.rows, a.key)}%`).join(', ')).join('; ') + '.';
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}">
+<rect width="${W}" height="${H}" rx="10" fill="#0d1117"/>
+<text x="${W / 2}" y="34" font-size="17" font-weight="700" fill="#c9d1d9" text-anchor="middle">Does it pay off more on bigger answers?</text>
+<text x="${W / 2}" y="54" font-size="11.5" fill="#8b949e" text-anchor="middle">${rows.length} tasks split at the median baseline; bill weighted by task size</text>
+<text x="${W / 2}" y="72" font-size="11" fill="#8b949e" text-anchor="middle">${sub}</text>
+${body}</svg>
+`;
+}
+
 // Per-task bars: each arm's billed output as % of that task's vanilla run.
 function collectPerTask() {
   let files = [];
@@ -198,11 +278,13 @@ ${body}${legend}</svg>
 function main() {
   const { stat, taskCount } = collect();
   const taskRows = collectPerTask();
-  if (process.argv.includes('--json')) { console.log(JSON.stringify({ stat, taskCount, taskRows }, null, 2)); return; }
+  const sizeRows = collectAllCells();
+  if (process.argv.includes('--json')) { console.log(JSON.stringify({ stat, taskCount, taskRows, sizeRows }, null, 2)); return; }
 
   const outputs = [
     [SVG_OUT, buildSvg(stat, taskCount)],
     [TASK_SVG_OUT, buildTaskSvg(taskRows)],
+    [SIZE_SVG_OUT, buildSizeSvg(sizeRows)],
   ];
 
   if (process.argv.includes('--check')) {
