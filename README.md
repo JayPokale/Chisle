@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/logo.svg" width="120" alt="Chisle">
+  <img src="assets/thumbnail.png" width="820" alt="Chisle — less tokens, same results. Output compressor, context diet, terse persona, YAGNI ladder.">
 </p>
 
-<h1 align="center">🧨 Chisle</h1>
+<h1 align="center">Chisle</h1>
 
 <p align="center">
   <em>Your AI talks less, builds less, reads less — and says more. Like a senior dev who bills by the syllable.</em>
