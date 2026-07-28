@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
 import Reveal from "./Reveal";
+import samples from "@/data/samples.json";
 
 // Verified numbers — benchmarks/results/, 20 live tasks, billed output tokens.
 const ARMS = [
@@ -12,17 +13,16 @@ const ARMS = [
   { name: "bare model", pct: 100, note: "baseline" },
 ];
 
-// The 52% headline is a blend. Split by what the prompt asks for, and by
-// answer size, the tool separates sharply — see the README for the full 2x2
-// and its caveats (thin cells, weak per-task correlation).
-const SPLITS = [
-  { label: "coding prompts", n: 12, caveman: 74, ponytail: 59, chisle: 44 },
-  { label: "explanation prompts", n: 8, caveman: 103, ponytail: 104, chisle: 87 },
-  { label: "short answers", n: 10, caveman: 84, ponytail: 106, chisle: 84 },
-  { label: "long answers", n: 10, caveman: 79, ponytail: 59, chisle: 45 },
-];
-
+// Generated from every committed cell by scripts/build-samples.js — two
+// metrics, because they answer different questions: tokens is the bill, lines
+// is how much the reader actually wades through.
+const AGG = samples.aggregates;
+const METRICS = [
+  { key: "tokens", label: "billed tokens", hint: "what the model charged you" },
+  { key: "lines", label: "answer lines", hint: "what you actually read" },
+] as const;
 export default function Benchmarks() {
+  const [metric, setMetric] = useState<"tokens" | "lines">("tokens");
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -77,11 +77,33 @@ export default function Benchmarks() {
         </Reveal>
 
         <Reveal delay={0.15}>
-          <h3 className="mt-16 text-lg font-semibold tracking-tight">Where the average hides the story</h3>
-          <p className="mt-2 max-w-xl text-sm text-dim">
-            Same 20 cells, split two ways. Lower is cheaper; above 100% means the tool made the
-            model write <em>more</em> than using nothing at all.
-          </p>
+          <div className="mt-16 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold tracking-tight">Where the average hides the story</h3>
+              <p className="mt-2 max-w-xl text-sm text-dim">
+                Same 20 cells, sliced two ways. Above 100% means the tool made the model produce{" "}
+                <em>more</em> than using nothing at all.
+              </p>
+            </div>
+            <div className="flex gap-1.5">
+              {METRICS.map((m) => (
+                <button
+                  key={m.key}
+                  onClick={() => setMetric(m.key)}
+                  aria-pressed={metric === m.key}
+                  title={m.hint}
+                  className={`lift rounded border px-3 py-1.5 font-mono text-[11px] ${
+                    metric === m.key
+                      ? "border-amber bg-amber-soft text-amber"
+                      : "border-line text-dim hover:text-ink"
+                  }`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="mt-6 overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="text-xs uppercase tracking-wide text-dim">
@@ -94,23 +116,31 @@ export default function Benchmarks() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
-                {SPLITS.map((r) => (
-                  <tr key={r.label}>
-                    <td className="py-2 pr-4">{r.label}</td>
-                    <td className="py-2 pr-4 text-right text-dim">{r.n}</td>
-                    <td className={`py-2 pr-4 text-right ${r.caveman > 100 ? "text-waste" : ""}`}>{r.caveman}%</td>
-                    <td className={`py-2 pr-4 text-right ${r.ponytail > 100 ? "text-waste" : ""}`}>{r.ponytail}%</td>
-                    <td className="py-2 text-right font-semibold text-amber">{r.chisle}%</td>
-                  </tr>
-                ))}
+                {AGG.groups.map((g) => {
+                  const row = g[metric] as Record<string, number>;
+                  const best = Math.min(row.caveman, row.ponytail, row.rdxmin);
+                  const cell = (v: number) =>
+                    `py-2 pr-4 text-right tabular-nums ${v > 100 ? "text-waste" : ""} ${v === best ? "font-semibold" : ""}`;
+                  return (
+                    <tr key={g.label} className="transition-colors hover:bg-amber-soft/25">
+                      <td className="py-2 pr-4">{g.label}</td>
+                      <td className="py-2 pr-4 text-right text-dim tabular-nums">{g.n}</td>
+                      <td className={cell(row.caveman)}>{row.caveman}%</td>
+                      <td className={cell(row.ponytail)}>{row.ponytail}%</td>
+                      <td className={`py-2 text-right tabular-nums font-semibold text-amber ${row.rdxmin > 100 ? "text-waste" : ""}`}>
+                        {row.rdxmin}%
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
           <p className="mt-4 max-w-xl text-xs text-dim">
-            Honest reading: on <strong>short coding</strong> prompts caveman actually wins (62% to
-            our 70%) — there is little to skip and the ruleset costs more than the ladder saves.
-            Kind and size are also correlated, since coding prompts run ~3&times; the baseline of
-            explanation ones. Cells are small; directional, not a leaderboard.
+            Honest reading: on <strong className="text-ink">short coding</strong> prompts caveman
+            wins outright (62% to our 70%) — little to skip, and the ruleset costs more than the
+            ladder saves. Kind and size are correlated too, since coding prompts run ~3&times; the
+            baseline of explanation ones. Cells are small; directional, not a leaderboard.
           </p>
         </Reveal>
       </div>

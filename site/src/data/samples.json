@@ -212,5 +212,80 @@
         }
       }
     }
-  ]
+  ],
+  "aggregates": {
+    "median": 522,
+    "groups": [
+      {
+        "label": "all tasks",
+        "n": 20,
+        "tokens": {
+          "caveman": 80,
+          "ponytail": 68,
+          "rdxmin": 52
+        },
+        "lines": {
+          "caveman": 80,
+          "ponytail": 52,
+          "rdxmin": 43
+        }
+      },
+      {
+        "label": "coding",
+        "n": 12,
+        "tokens": {
+          "caveman": 74,
+          "ponytail": 59,
+          "rdxmin": 44
+        },
+        "lines": {
+          "caveman": 80,
+          "ponytail": 40,
+          "rdxmin": 37
+        }
+      },
+      {
+        "label": "explanation",
+        "n": 8,
+        "tokens": {
+          "caveman": 103,
+          "ponytail": 104,
+          "rdxmin": 87
+        },
+        "lines": {
+          "caveman": 80,
+          "ponytail": 103,
+          "rdxmin": 64
+        }
+      },
+      {
+        "label": "short answers",
+        "n": 10,
+        "tokens": {
+          "caveman": 84,
+          "ponytail": 106,
+          "rdxmin": 84
+        },
+        "lines": {
+          "caveman": 71,
+          "ponytail": 74,
+          "rdxmin": 71
+        }
+      },
+      {
+        "label": "long answers",
+        "n": 10,
+        "tokens": {
+          "caveman": 79,
+          "ponytail": 59,
+          "rdxmin": 45
+        },
+        "lines": {
+          "caveman": 83,
+          "ponytail": 43,
+          "rdxmin": 32
+        }
+      }
+    ]
+  }
 }
