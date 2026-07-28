@@ -43,6 +43,24 @@ claude plugin install chisle@chisle              # enable the plugin
 
 Restart Claude Code. Chisle activates automatically on every session.
 
+## Upgrading
+
+Re-run the installer — it is idempotent and overwrites the previous copy:
+
+```bash
+npx chisle                            # npm / standalone
+claude plugin update chisle@chisle    # Claude Code plugin
+```
+
+Chisle checks npm at session start and mentions a **major** release once
+(cached 3 days; `CHISLE_UPDATE_CHECK=0` silences it). Minor and patch releases
+stay quiet.
+
+**From 2.x to 3.0.0:** nothing to do. `lite`/`full`/`ultra` in
+`CHISLE_DEFAULT_MODE` or `config.json` no longer means anything, falls through
+to the default, and Chisle stays active — it just says so once rather than
+ignoring your setting silently. Replace it with `on`/`off` or delete it.
+
 ## Statusline badge
 
 To show the `[CHISLE]` badge with rate-limit usage (or session cost on API keys) in your Claude Code statusline, also add:

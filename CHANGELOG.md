@@ -16,7 +16,8 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
     there. `CHISLE_COMPRESS_*` still overrides them.
   - `CHISLE_DEFAULT_MODE` and `config.json` `defaultMode` now take `on` / `off`.
     An existing `lite`/`full`/`ultra` value is no longer valid and falls through
-    to the default, which is `on` — so the tool stays enabled either way.
+    to the default, which is `on` — so the tool stays enabled either way, and
+    SessionStart says once that the setting no longer does anything.
   - Statusline renders `[CHISLE]` only; the `[CHISLE:ULTRA]` variant is gone.
   - Note for anyone re-deriving the benchmarks: the injected ruleset changed
     with this release (the intensity table left SKILL.md), so a fresh run will

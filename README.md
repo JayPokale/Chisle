@@ -142,6 +142,24 @@ Preview first with `npx chisle --dry-run`, scope with `--only claude`, see every
 
 **Requirements:** Node ≥18 (installer / `npx`) · Claude Code for `/chisle` toggling and input-side compression — the always-on ruleset still ships to every other agent.
 
+### Upgrading
+
+Same command as installing — it is idempotent and overwrites the previous copy:
+
+```bash
+npx chisle              # npm / standalone install
+claude plugin update chisle@chisle   # Claude Code plugin install
+```
+
+Chisle checks npm on session start and mentions it once when a **major** version
+is out (cached 3 days, `CHISLE_UPDATE_CHECK=0` to silence). Minor and patch
+releases stay quiet on purpose.
+
+Upgrading to 3.0.0 from 2.x needs nothing: a `lite`/`full`/`ultra` value in
+`CHISLE_DEFAULT_MODE` or `config.json` is no longer meaningful, falls through to
+the default, and Chisle stays active. It says so once so the setting is not
+ignored silently — replace it with `on`/`off` or delete it.
+
 ### Claude Code plugin (marketplace)
 
 ```bash
