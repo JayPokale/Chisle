@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -14,6 +15,29 @@ import remarkGfm from "remark-gfm";
 //
 // No syntax highlighter: that is another dependency an order of magnitude
 // larger, to colour six committed samples. Monospace on a panel is enough.
+
+function CodeBlock({ children }: { children: React.ReactNode }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="group relative">
+      <pre className="pane-scroll my-2 overflow-x-auto rounded border border-line bg-paper/70 p-2.5">
+        {children}
+      </pre>
+      <button
+        onClick={(e) => {
+          const text = e.currentTarget.parentElement?.querySelector("pre")?.innerText ?? "";
+          navigator.clipboard.writeText(text);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1400);
+        }}
+        className="absolute right-1.5 top-3.5 rounded border border-line bg-panel px-1.5 py-0.5 font-mono text-[9.5px] text-dim opacity-0 transition-opacity hover:text-amber focus:opacity-100 group-hover:opacity-100"
+        aria-label="Copy code"
+      >
+        {copied ? "copied" : "copy"}
+      </button>
+    </div>
+  );
+}
 
 export default function Markdown({ children }: { children: string }) {
   return (
@@ -58,12 +82,7 @@ export default function Markdown({ children }: { children: string }) {
               </code>
             );
           },
-          pre: (p) => (
-            <pre
-              className="pane-scroll my-2 overflow-x-auto rounded border border-line bg-paper/70 p-2.5"
-              {...p}
-            />
-          ),
+          pre: (p) => <CodeBlock>{p.children}</CodeBlock>,
           table: (p) => (
             <div className="pane-scroll my-2 overflow-x-auto">
               <table className="w-full border-collapse text-[11px]" {...p} />

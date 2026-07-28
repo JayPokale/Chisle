@@ -1,5 +1,6 @@
 import { getRepoStats } from "@/lib/github";
 import ThemeToggle from "./ThemeToggle";
+import NavLinks from "./NavLinks";
 
 export default async function Nav() {
   const stats = await getRepoStats();
@@ -7,12 +8,10 @@ export default async function Nav() {
     <nav className="fixed top-0 z-40 w-full border-b border-line bg-paper/85 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3">
         <a href="#top" className="font-mono text-sm font-semibold" style={{ fontFamily: "var(--font-mono)" }}>
-          <span className="text-amber">[CHISLE]</span>min
+          <span className="text-amber">[CHISLE]</span>
         </a>
         <div className="flex items-center gap-5 text-sm text-dim">
-          <a href="#features" className="hidden transition-colors hover:text-ink sm:block">Features</a>
-          <a href="#numbers" className="hidden transition-colors hover:text-ink sm:block">Benchmarks</a>
-          <a href="#faq" className="hidden transition-colors hover:text-ink sm:block">FAQ</a>
+          <NavLinks />
           <a
             href="https://github.com/JayPokale/Chisle"
             target="_blank"
