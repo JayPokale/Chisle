@@ -3,7 +3,7 @@
 All notable changes to Chisle are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [3.0.0] — 2026-07-28
 
 ### Changed
 - **BREAKING: one mode. `lite`, `full` and `ultra` are gone.** Three dials on a
@@ -21,13 +21,6 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
   - Note for anyone re-deriving the benchmarks: the injected ruleset changed
     with this release (the intensity table left SKILL.md), so a fresh run will
     not reproduce the committed cells byte-for-byte.
-
-- **Renamed project: RDXmin → Chisle.** Package, plugin, skills
-  (`chisle`, `chisle-audit`, `chisle-review`, `chisle-help`), commands
-  (`/chisle`, `/chisle-audit`, `/chisle-review`, `/chisle-help`), env vars
-  (`CHISLE_*`), config path (`~/.config/chisle/`), and all per-agent rule
-  mirrors renamed to match. Entries below predate the rename and refer to
-  the project by its former name, RDXmin.
 
 ### Fixed
 - **Tool-output compression never actually applied.** The `PostToolUse` hook
@@ -54,6 +47,18 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
   overhead was cancelling most of the compressor's savings, and that the
   standing instruction load was competing with the user's actual requests — by
   [@enc0ded](https://github.com/enc0ded) (#2).
+
+## [2.0.0] — 2026-07-28
+
+### Changed
+- **Renamed project: RDXmin → Chisle.** Package, plugin, skills
+  (`chisle`, `chisle-audit`, `chisle-review`, `chisle-help`), commands
+  (`/chisle`, `/chisle-audit`, `/chisle-review`, `/chisle-help`), env vars
+  (`CHISLE_*`), config path (`~/.config/chisle/`), and all per-agent rule
+  mirrors renamed to match. Entries below predate the rename and refer to
+  the project by its former name, RDXmin.
+
+Published to npm as `chisle`; `rdxmin` deprecated with a pointer.
 
 ## [1.2.2] — 2026-07-11
 

@@ -1,6 +1,6 @@
 {
   "name": "chisle",
-  "version": "0.1.0",
+  "version": "3.0.0",
   "description": "Maximum-efficiency dev mode. Zero-fluff prose combined with YAGNI/ladder-first code decisions. One persona: the senior dev who deletes code for fun and bills by the syllable.",
   "hooks": {
     "SessionStart": [

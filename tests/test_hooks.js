@@ -169,3 +169,34 @@ test('unknown or malformed source falls back to a full inject', () => {
   assert.ok(activate('').length > 2000);
   assert.ok(activate(JSON.stringify({})).length > 2000);
 });
+
+// ── Version sync across manifests ────────────────────────────────────────────
+// The update notice reads .claude-plugin/plugin.json, not package.json. When
+// those drifted (plugin 1.2.2 vs published 2.0.0) every user on the current
+// release was told a major update was available. Keep them equal.
+
+test('every manifest carries the same version', () => {
+  const root = path.join(__dirname, '..');
+  const files = [
+    'package.json',
+    '.claude-plugin/plugin.json',
+    '.github/plugin/plugin.json',
+    '.codex-plugin/plugin.json',
+    'gemini-extension.json',
+  ];
+  const versions = files.map((f) => [
+    f,
+    JSON.parse(fs.readFileSync(path.join(root, f), 'utf8')).version,
+  ]);
+  const expected = versions[0][1];
+  for (const [f, v] of versions) {
+    assert.equal(v, expected, `${f} is ${v}, expected ${expected}`);
+  }
+});
+
+test('the changelog documents the shipped version', () => {
+  const root = path.join(__dirname, '..');
+  const v = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version;
+  const log = fs.readFileSync(path.join(root, 'CHANGELOG.md'), 'utf8');
+  assert.ok(log.includes(`## [${v}]`), `CHANGELOG.md has no section for ${v}`);
+});
