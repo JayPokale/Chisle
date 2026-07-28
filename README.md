@@ -77,6 +77,37 @@ Most efficiency tools compress one thing. Chisle compresses **three**:
 | **Output: code** | speculative abstractions, unrequested boilerplate | YAGNI efficiency ladder |
 | **Input: context** | oversized tool output flooding the window | `PostToolUse` hook — scrub, elide, dedup — plus prevention rules |
 
+Where each one attaches to a session:
+
+```mermaid
+flowchart LR
+    subgraph S["Session start"]
+        H1["SessionStart hook<br/>~1.6k tokens, new sessions only"]
+    end
+    subgraph T["Every turn"]
+        H2["UserPromptSubmit hook<br/>~50-token reminder"]
+    end
+    subgraph L["Every tool call"]
+        H3["PostToolUse hook<br/>scrub → elide → dedup"]
+    end
+
+    H1 --> M(["Model"])
+    H2 --> M
+    M -->|writes| O["Output:<br/>terser prose,<br/>YAGNI-first code"]
+    M -->|calls a tool| TOOL[["Bash / Grep / WebFetch / mcp__*"]]
+    TOOL -->|raw output| H3
+    H3 -->|"compressed, rebuilt into<br/>the tool's own shape"| M
+
+    RE["Read / Edit"] -.->|"never touched —<br/>exact bytes feed later edits"| M
+
+    style M fill:#1f2937,stroke:#d78a3c,color:#e6edf3
+    style O fill:#14532d,stroke:#2da44e,color:#e6edf3
+    style H3 fill:#1f2937,stroke:#2da44e,color:#e6edf3
+    style RE fill:#3f1d1d,stroke:#cf3b3b,color:#e6edf3
+```
+
+The loop on the right is the input axis: tool output is billed again on *every* later request in the session, so shrinking it once pays repeatedly. `Read` and `Edit` are deliberately outside it.
+
 Every "be concise" tool has a worst day — the day it makes the model write *more* than no tool at all. Across 20 measured tasks over two suites, the specialists had that day **6** and **8** times, blowing up to **424%** of the baseline. Chisle had it **once**, capped at 173% — and that one failure was root-caused, fixed in the ruleset, and re-validated live at 93%, with the whole investigation [committed to the repo](benchmarks/results/2026-07-07-verify-rerun.md). Think of it as downside insurance for your token bill: not always the single cheapest answer, always the smallest worst case — from the only tool in this class that publishes its own failures. [Why not caveman or ponytail? →](docs/comparison.md)
 
 ---
@@ -283,15 +314,31 @@ Natural language works too: "activate chisle", "chisle mode", "chislify this". A
 
 Before writing code, the agent stops at the first rung that holds:
 
+```mermaid
+flowchart TD
+    A[Request for code] --> R[Read the problem fully]
+    R --> Q1{Does this need<br/>to exist at all?}
+    Q1 -->|no| S1[Skip it. Say so in one line]
+    Q1 -->|yes| Q2{Already in<br/>this codebase?}
+    Q2 -->|yes| S2[Reuse it. Don't rewrite]
+    Q2 -->|no| Q3{Stdlib<br/>does it?}
+    Q3 -->|yes| S3[Use the stdlib]
+    Q3 -->|no| Q4{Native platform<br/>feature covers it?}
+    Q4 -->|yes| S4["CSS over JS, DB constraint<br/>over app code"]
+    Q4 -->|no| Q5{Already-installed<br/>dependency?}
+    Q5 -->|yes| S5[Use it. Never add a new dep<br/>for what a few lines do]
+    Q5 -->|no| Q6{Can it be<br/>one line?}
+    Q6 -->|yes| S6[One line]
+    Q6 -->|no| S7[The minimum code that works]
+
+    S1 & S2 & S3 & S4 & S5 & S6 & S7 --> OUT[Ship it + note what was skipped<br/>and when to add it]
+
+    style Q1 fill:#1f2937,stroke:#d78a3c,color:#e6edf3
+    style OUT fill:#14532d,stroke:#2da44e,color:#e6edf3
+    style R fill:#1f2937,stroke:#8b949e,color:#e6edf3
 ```
-1. Does this need to exist?   → no: skip it (YAGNI)
-2. Already in this codebase?  → reuse it, don't rewrite
-3. Stdlib does it?            → use it
-4. Native platform feature?   → use it
-5. Installed dependency?      → use it
-6. One line?                  → one line
-7. Only then: the minimum that works
-```
+
+The ladder runs **after** reading, never instead of it. Note the exit: every rung lands on the same obligation — say what you skipped, so "later" doesn't quietly become "never".
 
 The ladder runs *after* reading the code — lazy about the solution, never about understanding. Lazy is not negligent: trust-boundary validation, data-loss handling, security, and accessibility are never on the chopping block.
 
