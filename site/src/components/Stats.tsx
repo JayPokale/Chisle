@@ -1,7 +1,7 @@
 const STATS = [
   { v: "52%", k: "of a bare model's 20-task bill" },
+  { v: "44%", k: "on coding prompts — 45% on long answers" },
   { v: "1/20", k: "backfires — rivals hit 6 and 8" },
-  { v: "~46%", k: "shrink on oversized tool output" },
   { v: "0", k: "dependencies, network calls, LLM calls" },
 ];
 
