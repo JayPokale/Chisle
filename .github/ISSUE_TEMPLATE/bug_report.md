@@ -1,15 +1,15 @@
 ---
 name: Bug report
-about: RDXmin did something wrong
+about: Chisle did something wrong
 title: ''
 labels: bug
 assignees: ''
 ---
 
 **What you typed**
-The prompt or `/rdx` command.
+The prompt or `/chisle` command.
 
-**What RDXmin did**
+**What Chisle did**
 Actual behavior. Paste the response or statusline badge if relevant.
 
 **What you expected**
@@ -21,4 +21,4 @@ Expected behavior.
 - Level: lite / full / ultra
 
 **Flag state** (if relevant)
-Output of: `cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.rdx-active"`
+Output of: `cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.chisle-active"`

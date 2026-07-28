@@ -61,7 +61,7 @@ export default function Terminal() {
           <div className="flex items-center border-b border-term-line px-4 py-2.5">
             <span className="text-xs text-term-dim">PostToolUse · Bash</span>
             <span className="ml-auto rounded bg-term-amber/15 px-1.5 py-0.5 text-xs text-term-amber">
-              [RDX]{phase === "done" ? " ⇣9k tok" : ""}
+              [CHISLE]{phase === "done" ? " ⇣9k tok" : ""}
             </span>
           </div>
           <div className="h-64 overflow-hidden p-4 text-xs leading-relaxed">

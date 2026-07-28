@@ -4,7 +4,7 @@ const AXES = [
   {
     name: "Terse persona",
     what: "How the model writes",
-    body: "Senior-dev voice: fragments over sentences, YAGNI-first code, reuse before new code. Three levels — /rdx lite, full, ultra. Commits and security warnings stay verbose on purpose.",
+    body: "Senior-dev voice: fragments over sentences, YAGNI-first code, reuse before new code. Three levels — /chisle lite, full, ultra. Commits and security warnings stay verbose on purpose.",
   },
   {
     name: "Output compressor",
@@ -22,7 +22,7 @@ const EXTRAS = [
   { name: "Live savings statusline", body: "A ⇣9k tok badge showing measured chars elided — real baseline, not an estimate." },
   { name: "Works beyond Claude Code", body: "Generated rulesets for Cursor, Windsurf, Cline, Kiro, and Copilot ship in the same install." },
   { name: "Tested where it matters", body: "The compressor is where a bug corrupts files — it's covered by the test suite, with a hard allowlist." },
-  { name: "Easy off-switch", body: "\"stop rdx\" for the persona, RDX_COMPRESS=0 for the hook, npx rdxmin --uninstall for everything." },
+  { name: "Easy off-switch", body: "\"stop chisle\" for the persona, CHISLE_COMPRESS=0 for the hook, npx chisle --uninstall for everything." },
 ];
 
 export default function Axes() {

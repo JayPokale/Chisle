@@ -23,6 +23,6 @@ jobs:
       - name: Verify benchmark chart is in sync
         run: node scripts/build-chart.js --check
       - name: Lint shell scripts
-        run: bash -n hooks/rdx-statusline.sh && bash -n install.sh
+        run: bash -n hooks/chisle-statusline.sh && bash -n install.sh
       - name: Installer smoke test
         run: node bin/install.js --list && node bin/install.js --help

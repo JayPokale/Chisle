@@ -7,7 +7,7 @@ const assert = require('node:assert/strict');
 
 const {
   extractText, scrub, compress, transform, limitsFor, toolAllowed, processPayload, THRESHOLDS,
-} = require('../hooks/rdx-compress-output');
+} = require('../hooks/chisle-compress-output');
 
 const FULL = THRESHOLDS.full;
 
@@ -33,7 +33,7 @@ test('compress keeps head and tail, elides middle', () => {
   assert.ok(out.startsWith('line 0 '));
   assert.ok(out.trimEnd().endsWith('x'.repeat(80)));
   assert.ok(out.includes('line 499 '));         // tail survived
-  assert.ok(out.includes('[rdx: elided'));      // marker present
+  assert.ok(out.includes('[chisle: elided'));      // marker present
   assert.ok(!out.includes('line 250 '));        // middle gone
 });
 
@@ -66,7 +66,7 @@ test('scrub strips ANSI escapes', () => {
 test('scrub collapses identical consecutive lines', () => {
   const out = scrub(Array(10).fill('WARN: retrying connection').join('\n'));
   assert.ok(out.includes('WARN: retrying connection'));
-  assert.ok(out.includes('[rdx: line repeated 10×]'));
+  assert.ok(out.includes('[chisle: line repeated 10×]'));
   assert.equal(out.split('\n').length, 2);
 });
 
@@ -91,13 +91,13 @@ test('transform returns null when the win is trivial', () => {
 
 test('transform still elides oversized outputs after scrubbing', () => {
   const out = transform(bigOutput(500), THRESHOLDS.full);
-  assert.ok(out.includes('[rdx: elided'));
+  assert.ok(out.includes('[chisle: elided'));
 });
 
 // ── dedup ────────────────────────────────────────────────────────────────────
 
 test('identical consecutive tool output becomes a marker (isolated config dir)', () => {
-  const dir = require('fs').mkdtempSync(require('path').join(require('os').tmpdir(), 'rdx-dedup-'));
+  const dir = require('fs').mkdtempSync(require('path').join(require('os').tmpdir(), 'chisle-dedup-'));
   const saved = process.env.CLAUDE_CONFIG_DIR;
   process.env.CLAUDE_CONFIG_DIR = dir;
   try {
@@ -132,9 +132,9 @@ test('tighter mode, tighter thresholds', () => {
 });
 
 test('env vars override thresholds', () => {
-  process.env.RDX_COMPRESS_MAX_CHARS = '1234';
+  process.env.CHISLE_COMPRESS_MAX_CHARS = '1234';
   assert.equal(limitsFor('full').maxChars, 1234);
-  delete process.env.RDX_COMPRESS_MAX_CHARS;
+  delete process.env.CHISLE_COMPRESS_MAX_CHARS;
 });
 
 // ── toolAllowed — the correctness allowlist ──────────────────────────────────
@@ -152,19 +152,19 @@ test('Bash, Agent, mcp__ tools are compressible', () => {
   assert.equal(toolAllowed('mcp__tokensave__tokensave_read'), true);
 });
 
-test('RDX_COMPRESS_TOOLS overrides the allowlist', () => {
-  process.env.RDX_COMPRESS_TOOLS = 'Grep';
+test('CHISLE_COMPRESS_TOOLS overrides the allowlist', () => {
+  process.env.CHISLE_COMPRESS_TOOLS = 'Grep';
   assert.equal(toolAllowed('Bash'), false);
   assert.equal(toolAllowed('Grep'), true);
   assert.equal(toolAllowed('mcp__x__y'), false); // override disables mcp__ default
-  delete process.env.RDX_COMPRESS_TOOLS;
+  delete process.env.CHISLE_COMPRESS_TOOLS;
 });
 
 // ── processPayload — full pipeline ───────────────────────────────────────────
 
 test('processPayload compresses a big Bash output', () => {
   const out = processPayload({ tool_name: 'Bash', tool_response: { stdout: bigOutput(500) } }, 'full');
-  assert.ok(out && out.includes('[rdx: elided'));
+  assert.ok(out && out.includes('[chisle: elided'));
 });
 
 test('processPayload passes small outputs through (null)', () => {
@@ -177,10 +177,10 @@ test('processPayload does nothing when mode is off or missing', () => {
   assert.equal(processPayload(payload, null), null);
 });
 
-test('RDX_COMPRESS=0 is a kill switch', () => {
-  process.env.RDX_COMPRESS = '0';
+test('CHISLE_COMPRESS=0 is a kill switch', () => {
+  process.env.CHISLE_COMPRESS = '0';
   assert.equal(processPayload({ tool_name: 'Bash', tool_response: bigOutput(500) }, 'full'), null);
-  delete process.env.RDX_COMPRESS;
+  delete process.env.CHISLE_COMPRESS;
 });
 
 test('processPayload never throws on garbage', () => {

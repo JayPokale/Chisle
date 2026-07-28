@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# rdxmin — curl|bash shim. Delegates to the Node installer via npx.
+# chisle — curl|bash shim. Delegates to the Node installer via npx.
 #
-#   curl -fsSL https://raw.githubusercontent.com/JayPokale/RDXmin/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/JayPokale/Chisle/main/install.sh | bash
 #
 # Or, from a local clone:  ./install.sh [flags]
-# All flags are forwarded to bin/install.js (see: npx rdxmin --help).
+# All flags are forwarded to bin/install.js (see: npx chisle --help).
 set -euo pipefail
 
-REPO="JayPokale/RDXmin"
+REPO="JayPokale/Chisle"
 
 if ! command -v node >/dev/null 2>&1; then
-  echo "rdxmin: Node.js ≥18 is required. Install from https://nodejs.org and re-run." >&2
+  echo "chisle: Node.js ≥18 is required. Install from https://nodejs.org and re-run." >&2
   exit 1
 fi
 
@@ -21,7 +21,7 @@ if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/bin/install.js" ]; then
 fi
 
 if ! command -v npx >/dev/null 2>&1; then
-  echo "rdxmin: npx not found (ships with npm). Install Node.js ≥18 from https://nodejs.org." >&2
+  echo "chisle: npx not found (ships with npm). Install Node.js ≥18 from https://nodejs.org." >&2
   exit 1
 fi
 

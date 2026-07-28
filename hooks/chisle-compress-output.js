@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// rdxmin — PostToolUse hook: tool-output compression (the input axis).
+// chisle — PostToolUse hook: tool-output compression (the input axis).
 //
 // Prompt-side rules shrink what the agent WRITES; this shrinks what it READS.
 // Oversized tool results (Bash dumps, subagent reports, web fetches) get their
@@ -23,21 +23,21 @@
 // Plus dedup: a tool output byte-identical to that tool's immediately previous
 // output is replaced by a short marker — the content is already in context.
 //
-// Compression tracks the /rdx mode flag (off → untouched). Tunables via env:
-//   RDX_COMPRESS=0                 — kill switch
-//   RDX_COMPRESS_SCRUB=0           — disable the lossless scrub tier
-//   RDX_COMPRESS_DEDUP=0           — disable duplicate-output markers
-//   RDX_COMPRESS_MAX_CHARS         — outputs at/under this size are not elided
-//   RDX_COMPRESS_HEAD_LINES        — lines kept from the top
-//   RDX_COMPRESS_TAIL_LINES        — lines kept from the bottom
-//   RDX_COMPRESS_TOOLS=Bash,Grep   — override the tool allowlist
+// Compression tracks the /chisle mode flag (off → untouched). Tunables via env:
+//   CHISLE_COMPRESS=0                 — kill switch
+//   CHISLE_COMPRESS_SCRUB=0           — disable the lossless scrub tier
+//   CHISLE_COMPRESS_DEDUP=0           — disable duplicate-output markers
+//   CHISLE_COMPRESS_MAX_CHARS         — outputs at/under this size are not elided
+//   CHISLE_COMPRESS_HEAD_LINES        — lines kept from the top
+//   CHISLE_COMPRESS_TAIL_LINES        — lines kept from the bottom
+//   CHISLE_COMPRESS_TOOLS=Bash,Grep   — override the tool allowlist
 //
-// Savings accrue in <claudeDir>/.rdx-compress-stats.json for the statusline.
+// Savings accrue in <claudeDir>/.chisle-compress-stats.json for the statusline.
 
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { getClaudeDir, readFlag } = require('./rdx-config');
+const { getClaudeDir, readFlag } = require('./chisle-config');
 
 // Mode → thresholds. Tighter mode, tighter budget. Env overrides all.
 const THRESHOLDS = {
@@ -55,10 +55,10 @@ const MAX_SALVAGE_LINE = 300; // per-line char cap on salvaged lines
 
 function toolAllowed(name) {
   if (!name || typeof name !== 'string') return false;
-  const list = process.env.RDX_COMPRESS_TOOLS
-    ? process.env.RDX_COMPRESS_TOOLS.split(',').map(s => s.trim()).filter(Boolean)
+  const list = process.env.CHISLE_COMPRESS_TOOLS
+    ? process.env.CHISLE_COMPRESS_TOOLS.split(',').map(s => s.trim()).filter(Boolean)
     : SAFE_TOOLS;
-  return list.includes(name) || (!process.env.RDX_COMPRESS_TOOLS && name.startsWith('mcp__'));
+  return list.includes(name) || (!process.env.CHISLE_COMPRESS_TOOLS && name.startsWith('mcp__'));
 }
 
 function envInt(name, fallback) {
@@ -69,9 +69,9 @@ function envInt(name, fallback) {
 function limitsFor(mode) {
   const base = THRESHOLDS[mode] || THRESHOLDS.full;
   return {
-    maxChars: envInt('RDX_COMPRESS_MAX_CHARS', base.maxChars),
-    headLines: envInt('RDX_COMPRESS_HEAD_LINES', base.headLines),
-    tailLines: envInt('RDX_COMPRESS_TAIL_LINES', base.tailLines),
+    maxChars: envInt('CHISLE_COMPRESS_MAX_CHARS', base.maxChars),
+    headLines: envInt('CHISLE_COMPRESS_HEAD_LINES', base.headLines),
+    tailLines: envInt('CHISLE_COMPRESS_TAIL_LINES', base.tailLines),
   };
 }
 
@@ -116,7 +116,7 @@ function scrub(text) {
     while (j < lines.length && lines[j] === lines[i]) j++;
     const n = j - i;
     if (n >= REPEAT_MIN && lines[i].trim()) {
-      out.push(lines[i], `... [rdx: line repeated ${n}×] ...`);
+      out.push(lines[i], `... [chisle: line repeated ${n}×] ...`);
     } else {
       for (let k = 0; k < n; k++) out.push(lines[i]);
     }
@@ -133,11 +133,11 @@ function scrub(text) {
 const DEDUP_MIN = 2048;
 
 function dedupCheck(toolName, text, sessionId) {
-  if (process.env.RDX_COMPRESS_DEDUP === '0') return null;
+  if (process.env.CHISLE_COMPRESS_DEDUP === '0') return null;
   if (!sessionId || typeof sessionId !== 'string') return null;
   if (text.length < DEDUP_MIN) return null;
   try {
-    const p = path.join(getClaudeDir(), '.rdx-compress-last.json');
+    const p = path.join(getClaudeDir(), '.chisle-compress-last.json');
     try { if (fs.lstatSync(p).isSymbolicLink()) return null; } catch (e) { if (e.code !== 'ENOENT') return null; }
     let state = {};
     try { state = JSON.parse(fs.readFileSync(p, 'utf8')) || {}; } catch (e) {}
@@ -153,7 +153,7 @@ function dedupCheck(toolName, text, sessionId) {
     const lines = text.split('\n');
     const preview = lines.slice(0, 5)
       .map(l => l.length > MAX_SALVAGE_LINE ? l.slice(0, MAX_SALVAGE_LINE) + '…' : l);
-    return '[rdx: output byte-identical to the previous ' + toolName + ' result — ' +
+    return '[chisle: output byte-identical to the previous ' + toolName + ' result — ' +
       text.length.toLocaleString('en-US') + ' chars / ' + lines.length +
       ' lines, unchanged. First lines:]\n' + preview.join('\n');
   } catch (e) { return null; }
@@ -172,7 +172,7 @@ function compress(text, limits) {
     const elided = text.length - 2 * keep;
     if (elided <= 0) return null;
     return text.slice(0, keep) +
-      '\n... [rdx: elided ' + elided.toLocaleString('en-US') + ' chars from the middle] ...\n' +
+      '\n... [chisle: elided ' + elided.toLocaleString('en-US') + ' chars from the middle] ...\n' +
       text.slice(-keep);
   }
 
@@ -186,7 +186,7 @@ function compress(text, limits) {
     if (SALVAGE_RE.test(line)) salvaged.push(line.length > MAX_SALVAGE_LINE ? line.slice(0, MAX_SALVAGE_LINE) + '…' : line);
   }
 
-  const marker = '... [rdx: elided ' + middle.length.toLocaleString('en-US') +
+  const marker = '... [chisle: elided ' + middle.length.toLocaleString('en-US') +
     ' lines — kept first ' + headLines + ', last ' + tailLines +
     (salvaged.length ? ', and ' + salvaged.length + ' error-like line(s) below' : '') + '] ...';
 
@@ -198,7 +198,7 @@ function compress(text, limits) {
 // count — stats only, never worth a lock file.
 function recordSavings(saved) {
   try {
-    const p = path.join(getClaudeDir(), '.rdx-compress-stats.json');
+    const p = path.join(getClaudeDir(), '.chisle-compress-stats.json');
     try { if (fs.lstatSync(p).isSymbolicLink()) return; } catch (e) { if (e.code !== 'ENOENT') return; }
     let stats = { savedChars: 0, events: 0 };
     try {
@@ -217,7 +217,7 @@ function recordSavings(saved) {
 // win. Stateless — this is what the replay benchmark measures.
 function transform(text, limits) {
   if (!text || text.length <= SCRUB_MIN) return null;
-  let t = process.env.RDX_COMPRESS_SCRUB === '0' ? text : scrub(text);
+  let t = process.env.CHISLE_COMPRESS_SCRUB === '0' ? text : scrub(text);
   if (t.length > limits.maxChars) {
     const elided = compress(t, limits);
     if (elided != null) t = elided;
@@ -230,7 +230,7 @@ function transform(text, limits) {
 function processPayload(payload, mode) {
   if (!payload || typeof payload !== 'object') return null;
   if (!mode || mode === 'off') return null;
-  if (process.env.RDX_COMPRESS === '0') return null;
+  if (process.env.CHISLE_COMPRESS === '0') return null;
   if (!toolAllowed(payload.tool_name)) return null;
 
   const text = extractText(payload.tool_response != null ? payload.tool_response : payload.tool_output);
@@ -246,7 +246,7 @@ function main() {
   process.stdin.on('end', () => {
     try {
       const payload = JSON.parse(input.replace(/^﻿/, ''));
-      const mode = readFlag(path.join(getClaudeDir(), '.rdx-active'));
+      const mode = readFlag(path.join(getClaudeDir(), '.chisle-active'));
       const updated = processPayload(payload, mode);
       if (updated == null) return;
       const original = extractText(payload.tool_response != null ? payload.tool_response : payload.tool_output);

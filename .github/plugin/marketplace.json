@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "rdxmin",
+  "name": "chisle",
   "description": "Maximum-efficiency dev mode for Claude Code. Zero-fluff prose and YAGNI-first code decisions, always active simultaneously.",
   "owner": {
     "name": "Jay Pokale",
@@ -8,7 +8,7 @@
   },
   "plugins": [
     {
-      "name": "rdxmin",
+      "name": "chisle",
       "description": "Maximum signal. Minimum noise. Write less. Ship less. Mean more.",
       "source": "./",
       "category": "productivity"

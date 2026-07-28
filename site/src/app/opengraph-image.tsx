@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "RDXmin — cut Claude Code's token bill on three axes";
+export const alt = "Chisle — cut Claude Code's token bill on three axes";
 
 export default function OG() {
   return new ImageResponse(
@@ -30,7 +30,7 @@ export default function OG() {
               fontSize: 32,
             }}
           >
-            [RDX]
+            [CHISLE]
           </div>
           <div style={{ color: "#8f8574", fontSize: 32 }}>min</div>
         </div>
@@ -44,7 +44,7 @@ export default function OG() {
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 28, color: "#8f8574" }}>
           <div>52% of a bare model&apos;s 20-task bill · 1 backfire in 20</div>
-          <div style={{ color: "#d78700" }}>npx rdxmin</div>
+          <div style={{ color: "#d78700" }}>npx chisle</div>
         </div>
       </div>
     ),

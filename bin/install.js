@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// rdxmin — cross-platform installer.
+// chisle — cross-platform installer.
 //
-// Detects the AI coding agents on this machine and installs RDXmin for each:
+// Detects the AI coding agents on this machine and installs Chisle for each:
 //   - Claude Code  → plugin (marketplace add + install), fallback to standalone
 //                    hooks + settings.json merge + statusline badge
 //   - Gemini CLI   → gemini extensions install
@@ -9,12 +9,12 @@
 //   - Cursor/Windsurf/Cline/Kiro/Copilot → project rule file dropped into CWD
 //
 // Usage:
-//   npx rdxmin                 auto-detect + install
-//   npx rdxmin --list          show detected agents, install nothing
-//   npx rdxmin --only claude   install for one agent
-//   npx rdxmin --dry-run       print actions, change nothing
-//   npx rdxmin --uninstall     remove what we installed
-//   npx rdxmin --help
+//   npx chisle                 auto-detect + install
+//   npx chisle --list          show detected agents, install nothing
+//   npx chisle --only claude   install for one agent
+//   npx chisle --dry-run       print actions, change nothing
+//   npx chisle --uninstall     remove what we installed
+//   npx chisle --help
 //
 // Pure stdlib, zero runtime deps.
 
@@ -27,7 +27,7 @@ const cp = require('child_process');
 
 const SETTINGS = require('./lib/settings');
 
-const REPO = 'JayPokale/RDXmin';
+const REPO = 'JayPokale/Chisle';
 const IS_WIN = process.platform === 'win32';
 
 // Repo root = parent of bin/. Installed package or local clone both work.
@@ -42,13 +42,13 @@ const PROVIDERS = [
   { id: 'gemini',   label: 'Gemini CLI',    scope: 'global',  detect: 'cmd:gemini' },
   { id: 'codex',    label: 'Codex CLI',     scope: 'global',  detect: 'cmd:codex||dir:~/.codex' },
   { id: 'cursor',   label: 'Cursor',        scope: 'project', detect: 'cmd:cursor||dir:~/.cursor',
-    rule: '.cursor/rules/rdxmin.mdc' },
+    rule: '.cursor/rules/chisle.mdc' },
   { id: 'windsurf', label: 'Windsurf',      scope: 'project', detect: 'cmd:windsurf||dir:~/.windsurf||dir:~/.codeium/windsurf',
-    rule: '.windsurf/rules/rdxmin.md' },
+    rule: '.windsurf/rules/chisle.md' },
   { id: 'cline',    label: 'Cline',         scope: 'project', detect: 'vscode-ext:cline',
-    rule: '.clinerules/rdxmin.md' },
+    rule: '.clinerules/chisle.md' },
   { id: 'kiro',     label: 'Kiro',          scope: 'project', detect: 'cmd:kiro||dir:~/.kiro',
-    rule: '.kiro/steering/rdxmin.md' },
+    rule: '.kiro/steering/chisle.md' },
   { id: 'copilot',  label: 'GitHub Copilot',scope: 'project', detect: 'vscode-ext:github.copilot||vscode-ext:github.copilot-chat',
     rule: '.github/copilot-instructions.md' },
 ];
@@ -79,12 +79,12 @@ function parseArgs(argv) {
         opts.configDir = expandHome(v);
         break;
       }
-      default: die(`error: unknown flag: ${a}\nrun 'npx rdxmin --help' for usage`);
+      default: die(`error: unknown flag: ${a}\nrun 'npx chisle --help' for usage`);
     }
   }
   if (opts.only.length) {
     const known = new Set(PROVIDERS.map(p => p.id));
-    for (const id of opts.only) if (!known.has(id)) die(`error: unknown agent: ${id}\n  see 'npx rdxmin --list'`);
+    for (const id of opts.only) if (!known.has(id)) die(`error: unknown agent: ${id}\n  see 'npx chisle --list'`);
   }
   return opts;
 }
@@ -173,15 +173,15 @@ function installClaude(ctx) {
     let already = false;
     if (!opts.force) {
       const r = capture('claude', ['plugin', 'list']);
-      if (r.status === 0 && /rdxmin/i.test(r.stdout || '')) already = true;
+      if (r.status === 0 && /chisle/i.test(r.stdout || '')) already = true;
     }
     if (already) {
-      note('  rdxmin plugin already installed (use --force to reinstall)');
+      note('  chisle plugin already installed (use --force to reinstall)');
       results.skipped.push(['claude', 'plugin already installed']);
       pluginOK = true;
     } else {
       const r1 = run('claude', ['plugin', 'marketplace', 'add', REPO], opts.dryRun);
-      const r2 = run('claude', ['plugin', 'install', 'rdxmin@rdxmin'], opts.dryRun);
+      const r2 = run('claude', ['plugin', 'install', 'chisle@chisle'], opts.dryRun);
       if ((r1.status || 0) === 0 && (r2.status || 0) === 0) { results.installed.push('claude'); pluginOK = true; }
       else warn('  claude plugin install failed — falling back to standalone hooks');
     }
@@ -200,17 +200,17 @@ function installClaude(ctx) {
   process.stdout.write('\n');
 }
 
-// Standalone wiring — copy hooks into <configDir>/rdxmin-hooks/ and merge
+// Standalone wiring — copy hooks into <configDir>/chisle-hooks/ and merge
 // settings.json. Used when the plugin path is unavailable.
 function installClaudeHooks(ctx) {
   const { opts, warn, note } = ctx;
   const cfg = claudeDir(opts);
   const hooksSrc = path.join(REPO_ROOT, 'hooks');
-  const hooksDst = path.join(cfg, 'rdxmin-hooks');
+  const hooksDst = path.join(cfg, 'chisle-hooks');
   const settingsPath = path.join(cfg, 'settings.json');
-  const HOOK_FILES = ['package.json', 'rdx-config.js', 'rdx-activate.js',
-                      'rdx-mode-tracker.js', 'rdx-compress-output.js',
-                      'rdx-statusline.sh', 'rdx-statusline.ps1'];
+  const HOOK_FILES = ['package.json', 'chisle-config.js', 'chisle-activate.js',
+                      'chisle-mode-tracker.js', 'chisle-compress-output.js',
+                      'chisle-statusline.sh', 'chisle-statusline.ps1'];
 
   if (opts.dryRun) {
     note(`  would copy ${HOOK_FILES.length} hook files → ${hooksDst}`);
@@ -223,7 +223,7 @@ function installClaudeHooks(ctx) {
     const s = path.join(hooksSrc, f);
     if (fs.existsSync(s)) fs.copyFileSync(s, path.join(hooksDst, f));
   }
-  try { fs.chmodSync(path.join(hooksDst, 'rdx-statusline.sh'), 0o755); } catch (_) {}
+  try { fs.chmodSync(path.join(hooksDst, 'chisle-statusline.sh'), 0o755); } catch (_) {}
 
   const settings = SETTINGS.readSettings(settingsPath);
   if (settings === null) { warn('  settings.json unparseable; not touching it.'); return 'settings.json unparseable'; }
@@ -232,29 +232,29 @@ function installClaudeHooks(ctx) {
   if (fs.existsSync(settingsPath) && !fs.existsSync(bak)) { try { fs.copyFileSync(settingsPath, bak); } catch (_) {} }
 
   const node = process.execPath;
-  const activate = path.join(hooksDst, 'rdx-activate.js');
-  const tracker = path.join(hooksDst, 'rdx-mode-tracker.js');
-  const compress = path.join(hooksDst, 'rdx-compress-output.js');
+  const activate = path.join(hooksDst, 'chisle-activate.js');
+  const tracker = path.join(hooksDst, 'chisle-mode-tracker.js');
+  const compress = path.join(hooksDst, 'chisle-compress-output.js');
 
   SETTINGS.addCommandHook(settings, 'SessionStart',
-    { command: `"${node}" "${activate}"`, marker: 'rdx-activate', timeout: 5, statusMessage: 'Loading rdxmin mode...' });
+    { command: `"${node}" "${activate}"`, marker: 'chisle-activate', timeout: 5, statusMessage: 'Loading chisle mode...' });
   SETTINGS.addCommandHook(settings, 'UserPromptSubmit',
-    { command: `"${node}" "${tracker}"`, marker: 'rdx-mode-tracker', timeout: 5, statusMessage: 'Tracking rdx mode...' });
+    { command: `"${node}" "${tracker}"`, marker: 'chisle-mode-tracker', timeout: 5, statusMessage: 'Tracking chisle mode...' });
   SETTINGS.addCommandHook(settings, 'PostToolUse',
-    { command: `"${node}" "${compress}"`, marker: 'rdx-compress-output', timeout: 10,
+    { command: `"${node}" "${compress}"`, marker: 'chisle-compress-output', timeout: 10,
       matcher: 'Bash|Agent|WebFetch|WebSearch|Grep|Glob|mcp__.*', statusMessage: 'Compressing tool output...' });
 
   const psHost = IS_WIN && hasCmd('pwsh') ? 'pwsh' : (IS_WIN ? 'powershell' : null);
   const slCmd = IS_WIN
-    ? `${psHost} -NoProfile -ExecutionPolicy Bypass -File "${path.join(hooksDst, 'rdx-statusline.ps1')}"`
-    : `bash "${path.join(hooksDst, 'rdx-statusline.sh')}"`;
+    ? `${psHost} -NoProfile -ExecutionPolicy Bypass -File "${path.join(hooksDst, 'chisle-statusline.ps1')}"`
+    : `bash "${path.join(hooksDst, 'chisle-statusline.sh')}"`;
   if (!settings.statusLine) {
     settings.statusLine = { type: 'command', command: slCmd };
     process.stdout.write('  statusline badge configured.\n');
   } else {
     const existing = typeof settings.statusLine === 'string' ? settings.statusLine : (settings.statusLine.command || '');
-    if (existing.includes('rdx-statusline')) process.stdout.write('  statusline badge already configured.\n');
-    else process.stdout.write('  NOTE: existing statusline detected — RDX badge NOT added (see docs/install-windows.md).\n');
+    if (existing.includes('chisle-statusline')) process.stdout.write('  statusline badge already configured.\n');
+    else process.stdout.write('  NOTE: existing statusline detected — CHISLE badge NOT added (see docs/install-windows.md).\n');
   }
 
   SETTINGS.validateHookFields(settings);
@@ -270,8 +270,8 @@ function installGemini(ctx) {
   say('→ Gemini CLI detected');
   if (!opts.force) {
     const r = capture('gemini', ['extensions', 'list']);
-    if (r.status === 0 && /rdxmin/i.test(r.stdout || '')) {
-      note('  rdxmin extension already installed (use --force)');
+    if (r.status === 0 && /chisle/i.test(r.stdout || '')) {
+      note('  chisle extension already installed (use --force)');
       results.skipped.push(['gemini', 'already installed']); process.stdout.write('\n'); return;
     }
   }
@@ -282,8 +282,8 @@ function installGemini(ctx) {
 }
 
 // ── Codex (fenced ruleset in ~/.codex/AGENTS.md) ────────────────────────────
-const FENCE_BEGIN = '<!-- rdxmin-begin -->';
-const FENCE_END = '<!-- rdxmin-end -->';
+const FENCE_BEGIN = '<!-- chisle-begin -->';
+const FENCE_END = '<!-- chisle-end -->';
 
 function installCodex(ctx) {
   const { say, note, opts, results } = ctx;
@@ -293,7 +293,7 @@ function installCodex(ctx) {
   const body = fs.readFileSync(path.join(REPO_ROOT, 'AGENTS.md'), 'utf8').trimEnd() + '\n';
   const block = `${FENCE_BEGIN}\n${body}${FENCE_END}\n`;
 
-  if (opts.dryRun) { note(`  would write rdxmin ruleset → ${target}`); results.installed.push('codex'); process.stdout.write('\n'); return; }
+  if (opts.dryRun) { note(`  would write chisle ruleset → ${target}`); results.installed.push('codex'); process.stdout.write('\n'); return; }
 
   try {
     fs.mkdirSync(path.dirname(target), { recursive: true });
@@ -304,7 +304,7 @@ function installCodex(ctx) {
         const rewritten = existing.replace(new RegExp(`${FENCE_BEGIN}[\\s\\S]*?${FENCE_END}\\n?`), block);
         fs.writeFileSync(target, rewritten, { mode: 0o644 });
         process.stdout.write(`  refreshed ruleset in ${target}\n`);
-      } else { note(`  ${target} already contains rdxmin ruleset (--force to refresh)`); }
+      } else { note(`  ${target} already contains chisle ruleset (--force to refresh)`); }
       results.skipped.push(['codex', 'already present']);
     } else {
       const sep = existing && !existing.endsWith('\n\n') ? (existing.endsWith('\n') ? '\n' : '\n\n') : '';
@@ -344,14 +344,14 @@ function installProjectRule(ctx, prov) {
 // ── uninstall ───────────────────────────────────────────────────────────────
 function uninstall(ctx) {
   const { say, note, opts, c } = ctx;
-  say(c.orange('RDXmin uninstall'));
+  say(c.orange('Chisle uninstall'));
   let touched = 0;
 
   // Claude plugin
   if (hasCmd('claude') && !opts.dryRun) {
     const r = capture('claude', ['plugin', 'list']);
-    if (r.status === 0 && /rdxmin/i.test(r.stdout || '')) {
-      run('claude', ['plugin', 'uninstall', 'rdxmin@rdxmin'], opts.dryRun); touched++;
+    if (r.status === 0 && /chisle/i.test(r.stdout || '')) {
+      run('claude', ['plugin', 'uninstall', 'chisle@chisle'], opts.dryRun); touched++;
     }
   }
 
@@ -360,22 +360,22 @@ function uninstall(ctx) {
   const settingsPath = path.join(cfg, 'settings.json');
   const settings = SETTINGS.readSettings(settingsPath);
   if (settings) {
-    const removed = SETTINGS.removeHooks(settings, 'rdx-');
+    const removed = SETTINGS.removeHooks(settings, 'chisle-');
     let slRemoved = false;
     if (settings.statusLine && typeof settings.statusLine.command === 'string'
-        && settings.statusLine.command.includes('rdx-statusline')) { delete settings.statusLine; slRemoved = true; }
+        && settings.statusLine.command.includes('chisle-statusline')) { delete settings.statusLine; slRemoved = true; }
     if (removed > 0 || slRemoved) {
       if (!opts.dryRun) { SETTINGS.validateHookFields(settings); SETTINGS.writeSettings(settingsPath, settings); }
       note(`  removed ${removed} hook entr${removed === 1 ? 'y' : 'ies'}${slRemoved ? ' + statusline' : ''} from settings.json`);
       touched++;
     }
   }
-  const hooksDst = path.join(cfg, 'rdxmin-hooks');
+  const hooksDst = path.join(cfg, 'chisle-hooks');
   if (fs.existsSync(hooksDst)) { if (!opts.dryRun) fs.rmSync(hooksDst, { recursive: true, force: true }); note(`  removed ${hooksDst}`); touched++; }
 
   // Flag files
-  for (const f of ['.rdx-active', '.rdx-session-turns', '.rdx-statusline-suffix',
-                   '.rdx-compress-stats.json', '.rdx-compress-last.json', '.rdx-update-check.json']) {
+  for (const f of ['.chisle-active', '.chisle-session-turns', '.chisle-statusline-suffix',
+                   '.chisle-compress-stats.json', '.chisle-compress-last.json', '.chisle-update-check.json']) {
     const p = path.join(cfg, f);
     if (fs.existsSync(p)) { if (!opts.dryRun) { try { fs.unlinkSync(p); } catch (_) {} } note(`  removed ${p}`); touched++; }
   }
@@ -387,7 +387,7 @@ function uninstall(ctx) {
     if (txt.includes(FENCE_BEGIN)) {
       const stripped = txt.replace(new RegExp(`\\n?${FENCE_BEGIN}[\\s\\S]*?${FENCE_END}\\n?`), '\n').replace(/\n{3,}/g, '\n\n');
       if (!opts.dryRun) fs.writeFileSync(codexMd, stripped, { mode: 0o644 });
-      note(`  removed rdxmin block from ${codexMd}`); touched++;
+      note(`  removed chisle block from ${codexMd}`); touched++;
     }
   }
 
@@ -399,17 +399,17 @@ function uninstall(ctx) {
 
 // ── help / banner ───────────────────────────────────────────────────────────
 function printHelp(c) {
-  process.stdout.write(`${c.orange('rdxmin')} — maximum-efficiency dev mode installer
+  process.stdout.write(`${c.orange('chisle')} — maximum-efficiency dev mode installer
 
 Usage:
-  npx rdxmin [flags]
+  npx chisle [flags]
 
 Flags:
   --list           Detect agents and print them; install nothing
   --only <id>      Install only for one agent (repeatable)
   --dry-run        Print actions, change nothing
   --force          Reinstall / overwrite even if already present
-  --uninstall, -u  Remove what rdxmin installed
+  --uninstall, -u  Remove what chisle installed
   --config-dir <p> Override Claude config dir (default: $CLAUDE_CONFIG_DIR or ~/.claude)
   --no-color       Disable ANSI color
   --help, -h       This help
@@ -417,21 +417,21 @@ Flags:
 Agents: ${PROVIDERS.map(p => p.id).join(', ')}
 
 Examples:
-  npx rdxmin                  # auto-detect + install
-  npx rdxmin --only claude    # just Claude Code
-  npx rdxmin --dry-run        # preview
+  npx chisle                  # auto-detect + install
+  npx chisle --only claude    # just Claude Code
+  npx chisle --dry-run        # preview
 `);
 }
 
 function printList(c) {
-  process.stdout.write(c.orange('rdxmin') + ' — detected agents:\n\n');
+  process.stdout.write(c.orange('chisle') + ' — detected agents:\n\n');
   for (const p of PROVIDERS) {
     const found = detectMatch(p.detect);
     const mark = found ? c.green('✓') : c.dim('·');
     const scope = p.scope === 'project' ? c.dim(' (project-scoped)') : '';
     process.stdout.write(`  ${mark} ${p.label}${scope}\n`);
   }
-  process.stdout.write('\nRun ' + c.orange('npx rdxmin') + ' to install for the detected (✓) agents.\n');
+  process.stdout.write('\nRun ' + c.orange('npx chisle') + ' to install for the detected (✓) agents.\n');
 }
 
 // ── main ────────────────────────────────────────────────────────────────────
@@ -450,14 +450,14 @@ function main() {
 
   if (opts.uninstall) return uninstall(ctx);
 
-  say(c.orange('╭─ RDXmin installer ─╮'));
+  say(c.orange('╭─ Chisle installer ─╮'));
   say(c.dim(opts.dryRun ? '  (dry run — nothing will change)' : '  maximum signal, minimum noise'));
   say('');
 
   const targets = PROVIDERS.filter(p => opts.only.length ? opts.only.includes(p.id) : detectMatch(p.detect));
   if (targets.length === 0) {
     warn('No supported agents detected.');
-    note('Run `npx rdxmin --list` to see what we look for, or `--only <id>` to force one.');
+    note('Run `npx chisle --list` to see what we look for, or `--only <id>` to force one.');
     return;
   }
 
@@ -476,8 +476,8 @@ function main() {
   if (results.failed.length)    say(c.red(`  failed:    ${results.failed.map(s => s[0] + ' (' + s[1] + ')').join(', ')}`));
   say('');
   if (!opts.dryRun && results.installed.length) {
-    say(c.orange('Done.') + ' Restart your agent. Type ' + c.orange('/rdx') + ' (Claude Code) or just start coding.');
-    note('If RDXmin earns its keep, a star helps others find it: https://github.com/JayPokale/RDXmin');
+    say(c.orange('Done.') + ' Restart your agent. Type ' + c.orange('/chisle') + ' (Claude Code) or just start coding.');
+    note('If Chisle earns its keep, a star helps others find it: https://github.com/JayPokale/Chisle');
   }
   process.exit(results.failed.length ? 1 : 0);
 }

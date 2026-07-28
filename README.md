@@ -1,20 +1,20 @@
 <p align="center">
-  <img src="assets/logo.svg" width="120" alt="RDXmin">
+  <img src="assets/logo.svg" width="120" alt="Chisle">
 </p>
 
-<h1 align="center">🧨 RDXmin</h1>
+<h1 align="center">🧨 Chisle</h1>
 
 <p align="center">
   <em>Your AI talks less, builds less, reads less — and says more. Like a senior dev who bills by the syllable.</em>
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/rdxmin"><img src="https://img.shields.io/npm/v/rdxmin?style=flat-square&color=d78a3c" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/chisle"><img src="https://img.shields.io/npm/v/chisle?style=flat-square&color=d78a3c" alt="npm version"></a>
   <img src="https://img.shields.io/badge/works%20with-8%20agents-d78a3c?style=flat-square" alt="Works with 8 agents">
-  <a href="https://github.com/JayPokale/RDXmin/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/JayPokale/RDXmin/test.yml?style=flat-square&label=CI" alt="CI"></a>
+  <a href="https://github.com/JayPokale/Chisle/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/JayPokale/Chisle/test.yml?style=flat-square&label=CI" alt="CI"></a>
   <img src="https://img.shields.io/badge/deps-0-2da44e?style=flat-square" alt="Zero deps">
   <img src="https://img.shields.io/badge/license-MIT-d78a3c?style=flat-square" alt="MIT">
-  <a href="https://github.com/JayPokale/RDXmin/stargazers"><img src="https://img.shields.io/github/stars/JayPokale/RDXmin?style=social" alt="Star RDXmin on GitHub"></a>
+  <a href="https://github.com/JayPokale/Chisle/stargazers"><img src="https://img.shields.io/github/stars/JayPokale/Chisle?style=social" alt="Star Chisle on GitHub"></a>
 </p>
 
 <p align="center">
@@ -22,14 +22,14 @@
 </p>
 
 <p align="center">
-  <a href="https://rdx.jaypokale.me"><strong>rdx.jaypokale.me</strong></a> — the site version of this README, with fewer words
+  <a href="https://chisle.jaypokale.me"><strong>chisle.jaypokale.me</strong></a> — the site version of this README, with fewer words
 </p>
 
 ---
 
-You asked your AI agent to "add a cache." A bare agent answered with a **150-line** cache class — config object, TTL logic, stats counters, the works. RDXmin's answer to the same prompt: **7 lines.** Same model, same question, measured, receipts committed in [`benchmarks/`](benchmarks/results/).
+You asked your AI agent to "add a cache." A bare agent answered with a **150-line** cache class — config object, TTL logic, stats counters, the works. Chisle's answer to the same prompt: **7 lines.** Same model, same question, measured, receipts committed in [`benchmarks/`](benchmarks/results/).
 
-Most efficiency tools compress one thing. RDXmin compresses **three**:
+Most efficiency tools compress one thing. Chisle compresses **three**:
 
 | axis | what | how |
 |---|---|---|
@@ -37,7 +37,7 @@ Most efficiency tools compress one thing. RDXmin compresses **three**:
 | **Output: code** | speculative abstractions, unrequested boilerplate | YAGNI efficiency ladder |
 | **Input: context** | oversized tool output flooding the window | `PostToolUse` hook — scrub, elide, dedup — plus prevention rules |
 
-Every "be concise" tool has a worst day — the day it makes the model write *more* than no tool at all. Across 20 measured tasks over two suites, the specialists had that day **6** and **8** times, blowing up to **424%** of the baseline. RDXmin had it **once**, capped at 173% — and that one failure was root-caused, fixed in the ruleset, and re-validated live at 93%, with the whole investigation [committed to the repo](benchmarks/results/2026-07-07-verify-rerun.md). Think of it as downside insurance for your token bill: not always the single cheapest answer, always the smallest worst case — from the only tool in this class that publishes its own failures. [Why not caveman or ponytail? →](docs/comparison.md)
+Every "be concise" tool has a worst day — the day it makes the model write *more* than no tool at all. Across 20 measured tasks over two suites, the specialists had that day **6** and **8** times, blowing up to **424%** of the baseline. Chisle had it **once**, capped at 173% — and that one failure was root-caused, fixed in the ruleset, and re-validated live at 93%, with the whole investigation [committed to the repo](benchmarks/results/2026-07-07-verify-rerun.md). Think of it as downside insurance for your token bill: not always the single cheapest answer, always the smallest worst case — from the only tool in this class that publishes its own failures. [Why not caveman or ponytail? →](docs/comparison.md)
 
 ---
 
@@ -46,28 +46,28 @@ Every "be concise" tool has a worst day — the day it makes the model write *mo
 One command. Auto-detects your agents (Claude Code, Cursor, Windsurf, Cline, Kiro, Codex, Gemini, Copilot) and wires each one. `--uninstall` puts everything back.
 
 ```bash
-npx rdxmin
+npx chisle
 ```
 
 ```bash
 # or via curl
-curl -fsSL https://raw.githubusercontent.com/JayPokale/RDXmin/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/JayPokale/Chisle/main/install.sh | bash
 ```
 
 ```powershell
 # Windows
-irm https://raw.githubusercontent.com/JayPokale/RDXmin/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
 ```
 
-Preview first with `npx rdxmin --dry-run`, scope with `--only claude`, see everything with `npx rdxmin --help`. Remove with `npx rdxmin --uninstall`.
+Preview first with `npx chisle --dry-run`, scope with `--only claude`, see everything with `npx chisle --help`. Remove with `npx chisle --uninstall`.
 
-**Requirements:** Node ≥18 (installer / `npx`) · Claude Code for live `/rdx` switching, the statusline badge, and input-side compression — the always-on ruleset still ships to every other agent · bash for the statusline (macOS/Linux; a PowerShell version ships for Windows).
+**Requirements:** Node ≥18 (installer / `npx`) · Claude Code for live `/chisle` switching, the statusline badge, and input-side compression — the always-on ruleset still ships to every other agent · bash for the statusline (macOS/Linux; a PowerShell version ships for Windows).
 
 ### Claude Code plugin (marketplace)
 
 ```bash
-claude plugin marketplace add JayPokale/RDXmin   # register the marketplace
-claude plugin install rdxmin@rdxmin              # enable the plugin
+claude plugin marketplace add JayPokale/Chisle   # register the marketplace
+claude plugin install chisle@chisle              # enable the plugin
 ```
 
 <details>
@@ -79,7 +79,7 @@ Add to `~/.claude/settings.json`:
 {
   "statusLine": {
     "type": "command",
-    "command": "bash \"/path/to/rdxmin/hooks/rdx-statusline.sh\""
+    "command": "bash \"/path/to/chisle/hooks/chisle-statusline.sh\""
   }
 }
 ```
@@ -99,17 +99,17 @@ Nothing here is estimated. Every figure below is recomputed from committed raw d
 |---|--:|--:|--:|--:|
 | caveman | 80% | 98% | **424%** | 6 / 20 |
 | ponytail | 68% | 91% | 227% | 8 / 20 |
-| **RDXmin** | **52%** | **69%** | **173%** | **1 / 20** |
+| **Chisle** | **52%** | **69%** | **173%** | **1 / 20** |
 
-RDXmin wins all four columns: it cut the total 20-task bill **nearly in half** while the specialists managed 20–32%, and it did so with the smallest worst day and a twentieth the backfire rate.
+Chisle wins all four columns: it cut the total 20-task bill **nearly in half** while the specialists managed 20–32%, and it did so with the smallest worst day and a twentieth the backfire rate.
 
 <p align="center">
-  <img src="assets/benchmark.svg" width="820" alt="Total billed output across 20 tasks as percent of the no-tool baseline. caveman 80% (worst day 424%, backfired 6), ponytail 68% (worst day 227%, backfired 8), RDXmin 52% (worst day 173%, backfired 1 — root-caused and fixed).">
+  <img src="assets/benchmark.svg" width="820" alt="Total billed output across 20 tasks as percent of the no-tool baseline. caveman 80% (worst day 424%, backfired 6), ponytail 68% (worst day 227%, backfired 8), Chisle 52% (worst day 173%, backfired 1 — root-caused and fixed).">
 </p>
 
-The bar is the whole 20-task bill; the badge is each tool's worst single day. caveman's worst day cost **4.2×** a bare model; ponytail's — a tool whose entire job is writing less — **2.3×**. RDXmin's worst day was 1.7×, it happened once, and the fix is measured and merged.
+The bar is the whole 20-task bill; the badge is each tool's worst single day. caveman's worst day cost **4.2×** a bare model; ponytail's — a tool whose entire job is writing less — **2.3×**. Chisle's worst day was 1.7×, it happened once, and the fix is measured and merged.
 
-On coding tasks RDXmin is leanest (June: 22% of baseline vs caveman 46%, ponytail 29%; July: 64% vs 84% and 160%). On pure prose caveman is a hair leaner on a good day — credit where due. And in the July run all 24 answers, every arm, **graded correct**: nobody here buys token savings with wrong answers.
+On coding tasks Chisle is leanest (June: 22% of baseline vs caveman 46%, ponytail 29%; July: 64% vs 84% and 160%). On pure prose caveman is a hair leaner on a good day — credit where due. And in the July run all 24 answers, every arm, **graded correct**: nobody here buys token savings with wrong answers.
 
 ### Input axis — tool-output compression (Claude Code)
 
@@ -127,7 +127,7 @@ Replayed over the same 171 sessions: **~61k tokens** (full) / **~103k** (ultra) 
 node benchmarks/replay-compress.js        # what it would have saved you
 ```
 
-Thresholds track the `/rdx` level (lite 16k / full 8k / ultra 5k chars). `stop rdx`, `RDX_COMPRESS=0`, `RDX_COMPRESS_SCRUB=0`, `RDX_COMPRESS_DEDUP=0` — every tier has an off switch.
+Thresholds track the `/chisle` level (lite 16k / full 8k / ultra 5k chars). `stop chisle`, `CHISLE_COMPRESS=0`, `CHISLE_COMPRESS_SCRUB=0`, `CHISLE_COMPRESS_DEDUP=0` — every tier has an off switch.
 
 ### Prevention — the context diet
 
@@ -153,14 +153,14 @@ The biggest context whale (whole-file `Read`s — 5.6M chars in the measured cor
 | Command | Effect |
 |---------|--------|
 | *(nothing)* | On automatically at `full` every session after install |
-| `/rdx` | Re-activate at default level if you'd stopped it |
-| `/rdx lite` | Tighter prose, flags the minimal alternative |
-| `/rdx full` | Full compression + YAGNI ladder enforced |
-| `/rdx ultra` | Extremist — abbreviate prose, delete before add, challenge requirements |
-| `stop rdx` | Deactivate (ruleset *and* input-side compression) |
+| `/chisle` | Re-activate at default level if you'd stopped it |
+| `/chisle lite` | Tighter prose, flags the minimal alternative |
+| `/chisle full` | Full compression + YAGNI ladder enforced |
+| `/chisle ultra` | Extremist — abbreviate prose, delete before add, challenge requirements |
+| `stop chisle` | Deactivate (ruleset *and* input-side compression) |
 | `normal mode` | Deactivate |
 
-Natural language works too: "activate rdx", "rdx mode", "rdxify this". Across every level, code symbols, function/API names, and error strings stay verbatim — only the noise around them compresses.
+Natural language works too: "activate chisle", "chisle mode", "chislify this". Across every level, code symbols, function/API names, and error strings stay verbatim — only the noise around them compresses.
 
 ---
 
@@ -183,8 +183,8 @@ The ladder runs *after* reading the code — lazy about the solution, never abou
 Mark deliberate simplifications so "later" doesn't quietly become "never":
 
 ```js
-// rdx: global lock, per-account locks if throughput matters
-// rdx: O(n) scan, index this when table exceeds ~10k rows
+// chisle: global lock, per-account locks if throughput matters
+// chisle: O(n) scan, index this when table exceeds ~10k rows
 ```
 
 ---
@@ -194,29 +194,29 @@ Mark deliberate simplifications so "later" doesn't quietly become "never":
 Badge shows the active level plus measured input-side savings. Plan users see rate-limit usage + reset countdown:
 
 ```
-[RDX:ULTRA] Session: ███████░░░ 73% ⟳2h14m | Weekly: ████░░░░░░ 41% ⟳3d4h ⇣9k tok
+[CHISLE:ULTRA] Session: ███████░░░ 73% ⟳2h14m | Weekly: ████░░░░░░ 41% ⟳3d4h ⇣9k tok
 ```
 
 API-key users have no rate limits, so they see session cost instead:
 
 ```
-[RDX:ULTRA] Session: $0.42 ⇣9k tok
+[CHISLE:ULTRA] Session: $0.42 ⇣9k tok
 ```
 
-Orange. Rate limits pulled live from Claude's statusline JSON; the `⇣` figure is chars actually elided by the compressor (a real baseline — no fabricated counters). Renders nothing when rdx is off.
+Orange. Rate limits pulled live from Claude's statusline JSON; the `⇣` figure is chars actually elided by the compressor (a real baseline — no fabricated counters). Renders nothing when chisle is off.
 
 ---
 
 ## Config
 
-**On by default.** After install, RDX activates automatically at `full` every session — no `/rdx` needed. Change the default level, or set `off` to stay dormant until you type `/rdx`:
+**On by default.** After install, CHISLE activates automatically at `full` every session — no `/chisle` needed. Change the default level, or set `off` to stay dormant until you type `/chisle`:
 
 ```bash
 # env var (highest priority)
-export RDX_DEFAULT_MODE=ultra
+export CHISLE_DEFAULT_MODE=ultra
 
 # config file (persists across shells)
-~/.config/rdxmin/config.json → { "defaultMode": "ultra" }
+~/.config/chisle/config.json → { "defaultMode": "ultra" }
 ```
 
 Resolution: env var → config file → `full`. Valid: `off`, `lite`, `full`, `ultra`.
@@ -225,17 +225,17 @@ Resolution: env var → config file → `full`. Valid: `off`, `lite`, `full`, `u
 
 ## Prior art & what stacks with it
 
-RDXmin borrows the best published token-saving techniques and implements the ones that fit a zero-dep hook; the rest stack cleanly alongside it:
+Chisle borrows the best published token-saving techniques and implements the ones that fit a zero-dep hook; the rest stack cleanly alongside it:
 
-| technique | source | in RDXmin? |
+| technique | source | in Chisle? |
 |---|---|---|
 | Prose compression persona | [caveman](https://github.com/JuliusBrussee/caveman) | ✅ + code judgment it lacks |
 | YAGNI/lazy-code ruleset | [ponytail](https://github.com/dietrichgebert/ponytail) | ✅ + prose discipline it lacks |
 | Tool-output elision (head/tail) | [headroom](https://github.com/headroomlabs-ai/headroom)-style, proxy-free | ✅ hook, no proxy — works on subscription OAuth |
 | ANSI strip / log crush / dedup | headroom transforms | ✅ scrub + dedup tiers |
-| Command rewriting at the source | RTK-style `PreToolUse` ([writeup](https://andrewpatterson.dev/posts/token-savings-rtk-headroom/)) | ❌ stacks — RTK shrinks at source, RDXmin catches what it can't reach (subagents, MCP, web) |
+| Command rewriting at the source | RTK-style `PreToolUse` ([writeup](https://andrewpatterson.dev/posts/token-savings-rtk-headroom/)) | ❌ stacks — RTK shrinks at source, Chisle catches what it can't reach (subagents, MCP, web) |
 | MCP/codebase-graph indexing | context-mode, [token-optimizer-mcp](https://github.com/ooples/token-optimizer-mcp) | ❌ stacks — orthogonal layer |
-| CLAUDE.md dieting | [community guides](https://www.firecrawl.dev/blog/claude-code-token-efficiency) | ✅ `/rdx-audit` flags bloated docs/config prose |
+| CLAUDE.md dieting | [community guides](https://www.firecrawl.dev/blog/claude-code-token-efficiency) | ✅ `/chisle-audit` flags bloated docs/config prose |
 
 ## Multi-agent
 
@@ -256,7 +256,7 @@ Never. Input validation, data-loss handling, security, and accessibility are off
 Designed not to: allowlist keeps `Read`/`Edit` exact, error-looking lines are salvaged from any elided region, dedup only fires on byte-identical same-session repeats, and every tier has a kill switch. If it still bites you, file an issue — that's a bug, not the design.
 
 **Should the star count worry me?**
-Everyone starts at zero. Run `npx rdxmin --dry-run`, see what it'd do, decide. And if the receipts convinced you, [a star](https://github.com/JayPokale/RDXmin/stargazers) is how the next person finds them — it's also the only payment a zero-dep MIT tool will ever ask for.
+Everyone starts at zero. Run `npx chisle --dry-run`, see what it'd do, decide. And if the receipts convinced you, [a star](https://github.com/JayPokale/Chisle/stargazers) is how the next person finds them — it's also the only payment a zero-dep MIT tool will ever ask for.
 
 → [More FAQ and competitor comparison](docs/comparison.md)
 
@@ -264,7 +264,7 @@ Everyone starts at zero. Run `npx rdxmin --dry-run`, see what it'd do, decide. A
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Edit the skill (`skills/rdx/SKILL.md`) **and** the condensed rule body in `scripts/build-rules.js`, regenerate copies and chart, run the tests. CI enforces all three.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Edit the skill (`skills/chisle/SKILL.md`) **and** the condensed rule body in `scripts/build-rules.js`, regenerate copies and chart, run the tests. CI enforces all three.
 
 Built by [Jay Pokale](https://github.com/JayPokale) with [Claude](https://claude.com/claude-code), [Antigravity](https://antigravity.google), and [Codex](https://openai.com/blog/openai-codex/) as co-engineers — the input-compression hook, the benchmark verification, and several of the bug hunts documented in the changelog were pair-work.
 
@@ -278,8 +278,8 @@ npm test    # 56 tests: flag safety, tracker, settings merge, installer, compres
 
 ## Contributors
 
-<a href="https://github.com/JayPokale/RDXmin/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=JayPokale/RDXmin" alt="GitHub contributors">
+<a href="https://github.com/JayPokale/Chisle/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=JayPokale/Chisle" alt="GitHub contributors">
 </a>
 
 **AI co-engineers** (pair-work credited in commit trailers and the changelog):
@@ -293,5 +293,5 @@ npm test    # 56 tests: flag safety, tracker, settings merge, installer, compres
 ---
 
 <p align="center">
-  Saved you tokens? <a href="https://github.com/JayPokale/RDXmin">⭐ Star the repo</a> — it costs zero tokens and keeps the benchmarks running.
+  Saved you tokens? <a href="https://github.com/JayPokale/Chisle">⭐ Star the repo</a> — it costs zero tokens and keeps the benchmarks running.
 </p>

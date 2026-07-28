@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-// rdxmin — SessionStart hook
+// chisle — SessionStart hook
 //
-// 1. Writes flag at $CLAUDE_CONFIG_DIR/.rdx-active
+// 1. Writes flag at $CLAUDE_CONFIG_DIR/.chisle-active
 // 2. Resets session turn counter
-// 3. Emits rdxmin ruleset (filtered to active level) as system context
+// 3. Emits chisle ruleset (filtered to active level) as system context
 // 4. Nudges user to configure statusline if missing
 // 5. Major-version update notice (majors only, cached, fail-silent)
 
 const fs = require('fs');
 const path = require('path');
-const { getDefaultMode, getClaudeDir, safeWriteFlag } = require('./rdx-config');
+const { getDefaultMode, getClaudeDir, safeWriteFlag } = require('./chisle-config');
 
 // ── Update-notice helpers (pure — tested directly) ─────────────────────────
 // Minor/patch releases stay quiet: a nudge per major is signal, more is spam.
@@ -24,8 +24,8 @@ function majorOf(v) {
 function majorUpdateNotice(installed, latest) {
   const i = majorOf(installed), l = majorOf(latest);
   if (i == null || l == null || l <= i) return null;
-  return '\n\nRDXMIN UPDATE AVAILABLE: v' + latest + ' (major; you run v' + installed + '). ' +
-    'Mention this to the user once: update with `claude plugin update rdxmin@rdxmin` or `npx rdxmin`.';
+  return '\n\nCHISLE UPDATE AVAILABLE: v' + latest + ' (major; you run v' + installed + '). ' +
+    'Mention this to the user once: update with `claude plugin update chisle@chisle` or `npx chisle`.';
 }
 
 function installedVersion() {
@@ -44,7 +44,7 @@ async function latestVersion(cachePath) {
   try {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), 1500);
-    const res = await fetch('https://registry.npmjs.org/rdxmin/latest', { signal: ctrl.signal });
+    const res = await fetch('https://registry.npmjs.org/chisle/latest', { signal: ctrl.signal });
     clearTimeout(t);
     if (!res.ok) return null;
     const latest = (await res.json()).version;
@@ -58,7 +58,7 @@ async function latestVersion(cachePath) {
 // ── Hook body ───────────────────────────────────────────────────────────────
 function run() {
   const claudeDir = getClaudeDir();
-  const flagPath = path.join(claudeDir, '.rdx-active');
+  const flagPath = path.join(claudeDir, '.chisle-active');
   const settingsPath = path.join(claudeDir, 'settings.json');
 
   const mode = getDefaultMode();
@@ -77,7 +77,7 @@ function run() {
   let skillContent = '';
   try {
     skillContent = fs.readFileSync(
-      path.join(__dirname, '..', 'skills', 'rdx', 'SKILL.md'), 'utf8'
+      path.join(__dirname, '..', 'skills', 'chisle', 'SKILL.md'), 'utf8'
     );
   } catch (e) {}
 
@@ -101,14 +101,14 @@ function run() {
       return acc;
     }, []);
 
-    output = 'RDX MODE ACTIVE — level: ' + modeLabel + '\n\n' + filtered.join('\n');
+    output = 'CHISLE MODE ACTIVE — level: ' + modeLabel + '\n\n' + filtered.join('\n');
   } else {
     // Fallback ruleset when SKILL.md not found
     output =
-      'RDX MODE ACTIVE — level: ' + modeLabel + '\n\n' +
-      'RDXmin: maximum-efficiency dev mode. Zero-fluff prose. YAGNI-first code.\n\n' +
+      'CHISLE MODE ACTIVE — level: ' + modeLabel + '\n\n' +
+      'Chisle: maximum-efficiency dev mode. Zero-fluff prose. YAGNI-first code.\n\n' +
       '## Persistence\n\n' +
-      'ACTIVE EVERY RESPONSE. Off only: "stop rdx" / "normal mode". Switch: `/rdx lite|full|ultra`.\n\n' +
+      'ACTIVE EVERY RESPONSE. Off only: "stop chisle" / "normal mode". Switch: `/chisle lite|full|ultra`.\n\n' +
       '## Prose\n\n' +
       'Drop articles/filler/pleasantries/hedging. Fragments OK. Technical terms exact.\n\n' +
       '## Code\n\n' +
@@ -126,26 +126,26 @@ function run() {
     }
 
     if (!hasStatusline) {
-      const scriptPath = path.join(__dirname, 'rdx-statusline.sh');
+      const scriptPath = path.join(__dirname, 'chisle-statusline.sh');
       const command = `bash "${scriptPath}"`;
       const statusLineSnippet =
         '"statusLine": { "type": "command", "command": ' + JSON.stringify(command) + ' }';
       output += '\n\n' +
-        'STATUSLINE SETUP NEEDED: The rdxmin plugin includes a statusline badge showing active mode ' +
-        '(e.g. [RDX], [RDX:ULTRA]) with token savings. It is not configured yet. ' +
+        'STATUSLINE SETUP NEEDED: The chisle plugin includes a statusline badge showing active mode ' +
+        '(e.g. [CHISLE], [CHISLE:ULTRA]) with token savings. It is not configured yet. ' +
         'To enable, add this to ' + settingsPath + ': ' +
         statusLineSnippet + ' ' +
         'Proactively offer to set this up for the user on first interaction.';
     }
   } catch (e) {}
 
-  // 4. Update notice, then emit. RDX_UPDATE_CHECK=0 disables.
+  // 4. Update notice, then emit. CHISLE_UPDATE_CHECK=0 disables.
   (async () => {
     try {
-      if (process.env.RDX_UPDATE_CHECK !== '0') {
+      if (process.env.CHISLE_UPDATE_CHECK !== '0') {
         const installed = installedVersion();
         if (installed) {
-          const latest = await latestVersion(path.join(claudeDir, '.rdx-update-check.json'));
+          const latest = await latestVersion(path.join(claudeDir, '.chisle-update-check.json'));
           const notice = majorUpdateNotice(installed, latest);
           if (notice) output += notice;
         }

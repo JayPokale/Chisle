@@ -1,5 +1,5 @@
 {
-  "name": "rdxmin",
+  "name": "chisle",
   "version": "1.2.2",
   "description": "Maximum-efficiency dev mode. Zero-fluff prose combined with YAGNI/ladder-first code decisions. One persona: the senior dev who deletes code for fun and bills by the syllable.",
   "hooks": {
@@ -9,10 +9,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rdx-activate.js\"; exit 0",
-            "commandWindows": "if (Get-Command node -ErrorAction SilentlyContinue) { node \"$env:CLAUDE_PLUGIN_ROOT\\hooks\\rdx-activate.js\" }",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/chisle-activate.js\"; exit 0",
+            "commandWindows": "if (Get-Command node -ErrorAction SilentlyContinue) { node \"$env:CLAUDE_PLUGIN_ROOT\\hooks\\chisle-activate.js\" }",
             "timeout": 5,
-            "statusMessage": "Loading rdxmin mode..."
+            "statusMessage": "Loading chisle mode..."
           }
         ]
       }
@@ -22,10 +22,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rdx-mode-tracker.js\"; exit 0",
-            "commandWindows": "if (Get-Command node -ErrorAction SilentlyContinue) { node \"$env:CLAUDE_PLUGIN_ROOT\\hooks\\rdx-mode-tracker.js\" }",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/chisle-mode-tracker.js\"; exit 0",
+            "commandWindows": "if (Get-Command node -ErrorAction SilentlyContinue) { node \"$env:CLAUDE_PLUGIN_ROOT\\hooks\\chisle-mode-tracker.js\" }",
             "timeout": 5,
-            "statusMessage": "Tracking rdx mode..."
+            "statusMessage": "Tracking chisle mode..."
           }
         ]
       }
@@ -36,8 +36,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/rdx-compress-output.js\"; exit 0",
-            "commandWindows": "if (Get-Command node -ErrorAction SilentlyContinue) { node \"$env:CLAUDE_PLUGIN_ROOT\\hooks\\rdx-compress-output.js\" }",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/chisle-compress-output.js\"; exit 0",
+            "commandWindows": "if (Get-Command node -ErrorAction SilentlyContinue) { node \"$env:CLAUDE_PLUGIN_ROOT\\hooks\\chisle-compress-output.js\" }",
             "timeout": 10,
             "statusMessage": "Compressing tool output..."
           }

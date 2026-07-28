@@ -1,4 +1,4 @@
-# 🧨 RDXmin — TODO / Roadmap
+# 🧨 Chisle — TODO / Roadmap
 
 Ideas not yet shipped. Same rule as the code: nothing lands without receipts.
 
@@ -6,12 +6,12 @@ Ideas not yet shipped. Same rule as the code: nothing lands without receipts.
 
 ## Tool-output compression (a second axis)
 
-**Status:** ✅ shipped 2026-07-07 (`hooks/rdx-compress-output.js`, v0.2.0)
+**Status:** ✅ shipped 2026-07-07 (`hooks/chisle-compress-output.js`, v0.2.0)
 
 PostToolUse hook that mechanically shrinks oversized tool results before the
 model sees them — head + tail kept, middle elided, error-looking lines salvaged
 from the cut — swapped in via `updatedToolOutput`. Deterministic, zero LLM,
-zero network, zero deps. Thresholds track the `/rdx` level; savings accrue in a
+zero network, zero deps. Thresholds track the `/chisle` level; savings accrue in a
 ledger the statusline renders (`⇣9k tok`).
 
 Answers to the ship-gating questions (receipts:
@@ -25,10 +25,10 @@ Answers to the ship-gating questions (receipts:
       so compression is allowlist-only (Bash/Agent/WebFetch/WebSearch/Grep/Glob/
       `mcp__*`), never Read/Edit/Write; (2) the one error line in a 3000-line
       log can live in the middle — salvage regex rescues up to 12 error-like
-      lines from the cut. Kill switch: `RDX_COMPRESS=0`.
-- [x] **Track the `/rdx` mode?** Yes — lite 16k / full 8k / ultra 5k char
-      thresholds, env-overridable; `off` (and "stop rdx") disables entirely.
-- [x] **Savings ledger?** `<claudeDir>/.rdx-compress-stats.json`, measured chars
+      lines from the cut. Kill switch: `CHISLE_COMPRESS=0`.
+- [x] **Track the `/chisle` mode?** Yes — lite 16k / full 8k / ultra 5k char
+      thresholds, env-overridable; `off` (and "stop chisle") disables entirely.
+- [x] **Savings ledger?** `<claudeDir>/.chisle-compress-stats.json`, measured chars
       (real baseline exists, unlike output-side), rendered by both statuslines.
 
 Still open:
@@ -50,4 +50,4 @@ Still open:
   sessions before claiming the win.
 - **Session-history distillation.** On `compact`, old tool outputs are pure
   dead weight; a SessionStart(matcher=compact) hook could re-inject only the
-  rdx ruleset instead of letting compaction re-summarize it. Needs measurement.
+  chisle ruleset instead of letting compaction re-summarize it. Needs measurement.

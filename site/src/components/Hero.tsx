@@ -8,7 +8,7 @@ function CopyCmd() {
   return (
     <button
       onClick={() => {
-        navigator.clipboard.writeText("npx rdxmin");
+        navigator.clipboard.writeText("npx chisle");
         setCopied(true);
         setTimeout(() => setCopied(false), 1600);
       }}
@@ -17,7 +17,7 @@ function CopyCmd() {
       aria-label="Copy install command"
     >
       <span className="text-dim">$</span>
-      <span>npx rdxmin</span>
+      <span>npx chisle</span>
       <span className="text-xs text-dim transition-colors group-hover:text-amber">
         {copied ? "copied" : "copy"}
       </span>
@@ -74,7 +74,7 @@ export default function Hero() {
       >
         <CopyCmd />
         <a
-          href="https://github.com/JayPokale/RDXmin"
+          href="https://github.com/JayPokale/Chisle"
           target="_blank"
           rel="noopener noreferrer"
           className="rounded-lg px-5 py-3 text-sm text-dim transition-colors hover:text-ink"
@@ -85,7 +85,7 @@ export default function Hero() {
       <motion.p custom={4} initial="hidden" animate="show" variants={rise} className="mt-5 text-xs text-dim">
         or{" "}
         <code className="rounded bg-panel px-1.5 py-0.5" style={{ fontFamily: "var(--font-mono)" }}>
-          claude plugin marketplace add JayPokale/RDXmin
+          claude plugin marketplace add JayPokale/Chisle
         </code>
       </motion.p>
     </header>

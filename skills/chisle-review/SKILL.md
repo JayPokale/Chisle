@@ -1,13 +1,13 @@
 ---
-name: rdx-review
+name: chisle-review
 description: >
-  Review a diff or file through the RDXmin lens: flag over-engineering,
+  Review a diff or file through the Chisle lens: flag over-engineering,
   speculative abstractions, reinvented stdlib, and verbose code that a lazier
   approach would shrink. One finding per line, no praise. Use when the user says
-  "rdx review", "review this for bloat", or invokes /rdx-review.
+  "chisle review", "review this for bloat", or invokes /chisle-review.
 ---
 
-# RDXmin review
+# Chisle review
 
 Review the diff/file for **what could be deleted or simplified**, not for style nits.
 

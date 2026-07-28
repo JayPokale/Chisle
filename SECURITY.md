@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-RDXmin is pre-1.0. Only the latest published release on npm receives security fixes.
+Chisle is pre-1.0. Only the latest published release on npm receives security fixes.
 
 | Version | Supported |
 |---------|-----------|
@@ -24,7 +24,7 @@ next patch release, with credit unless you ask otherwise.
 
 ## Why this matters here
 
-RDXmin runs hooks in your agent session and writes a flag file. The config layer
-(`hooks/rdx-config.js`) is symlink-safe by design (`O_NOFOLLOW`, `0600`). If you find a
+Chisle runs hooks in your agent session and writes a flag file. The config layer
+(`hooks/chisle-config.js`) is symlink-safe by design (`O_NOFOLLOW`, `0600`). If you find a
 way to escape that — path traversal, symlink follow, privilege escalation through the
 installer — that's exactly the kind of report this policy is for.

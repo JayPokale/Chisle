@@ -6,7 +6,7 @@ import Reveal from "./Reveal";
 
 // Verified numbers — benchmarks/results/, 20 live tasks, billed output tokens.
 const ARMS = [
-  { name: "rdxmin", pct: 52, self: true, note: "1 backfire" },
+  { name: "chisle", pct: 52, self: true, note: "1 backfire" },
   { name: "ponytail", pct: 68, note: "6 backfires" },
   { name: "caveman", pct: 80, note: "8 backfires" },
   { name: "bare model", pct: 100, note: "baseline" },
@@ -27,7 +27,7 @@ export default function Benchmarks() {
             Four arms, same 20 live tasks, same model, isolated configs, billed tokens — shown as
             a share of the bare model. Raw transcripts and the runner{" "}
             <a
-              href="https://github.com/JayPokale/RDXmin/tree/main/benchmarks"
+              href="https://github.com/JayPokale/Chisle/tree/main/benchmarks"
               className="text-amber underline underline-offset-4"
               target="_blank"
               rel="noopener noreferrer"

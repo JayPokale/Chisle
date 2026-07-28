@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-// rdxmin — UserPromptSubmit hook
-// Handles /rdx commands, natural language activation/deactivation, and
+// chisle — UserPromptSubmit hook
+// Handles /chisle commands, natural language activation/deactivation, and
 // per-turn reinforcement.
 
 const fs = require('fs');
 const path = require('path');
-const { getDefaultMode, getClaudeDir, VALID_MODES, safeWriteFlag, readFlag } = require('./rdx-config');
+const { getDefaultMode, getClaudeDir, VALID_MODES, safeWriteFlag, readFlag } = require('./chisle-config');
 
 const claudeDir = getClaudeDir();
-const flagPath = path.join(claudeDir, '.rdx-active');
+const flagPath = path.join(claudeDir, '.chisle-active');
 
 let input = '';
 process.stdin.on('data', chunk => { input += chunk; });
@@ -19,24 +19,24 @@ process.stdin.on('end', () => {
     const promptLower = prompt.toLowerCase();
 
     // Natural language activation
-    if (/\b(activate|enable|turn on|start|use)\b.*\brdx\b/i.test(promptLower) ||
-        /\brdx\b.*\b(mode|activate|enable|on)\b/i.test(promptLower) ||
-        /\brdxif(y|ier)\b/i.test(promptLower)) {
+    if (/\b(activate|enable|turn on|start|use)\b.*\bchisle\b/i.test(promptLower) ||
+        /\bchisle\b.*\b(mode|activate|enable|on)\b/i.test(promptLower) ||
+        /\bchislif(y|ier)\b/i.test(promptLower)) {
       if (!/\b(stop|disable|turn off|deactivate|off)\b/i.test(promptLower)) {
         const mode = getDefaultMode();
         if (mode !== 'off') safeWriteFlag(flagPath, mode);
       }
     }
 
-    // /rdx slash commands
-    if (/^\/rdx(\b|:rdxmin\b)/.test(promptLower)) {
+    // /chisle slash commands
+    if (/^\/chisle(\b|:chisle\b)/.test(promptLower)) {
       const parts = promptLower.split(/\s+/);
       const cmd = parts[0];
       const arg = parts[1] || '';
 
       let mode = null;
 
-      if (cmd === '/rdx' || cmd === '/rdx:rdxmin') {
+      if (cmd === '/chisle' || cmd === '/chisle:chisle') {
         if (!arg) {
           mode = getDefaultMode();
         } else if (arg === 'off' || arg === 'stop' || arg === 'disable') {
@@ -54,11 +54,11 @@ process.stdin.on('end', () => {
     }
 
     // Natural language deactivation.
-    // Only fire when the off-verb actually targets rdx — NOT when rdx merely
+    // Only fire when the off-verb actually targets chisle — NOT when chisle merely
     // appears in a sentence that also mentions turning something else off.
-    // ("use rdx to turn off the logger" must NOT deactivate.)
-    if (/\b(turn off|disable|deactivate|stop|kill|exit)\s+rdx\b/i.test(promptLower) ||
-        /\brdx\s+(mode\s+)?(off|stop|disable|deactivate)\b/i.test(promptLower) ||
+    // ("use chisle to turn off the logger" must NOT deactivate.)
+    if (/\b(turn off|disable|deactivate|stop|kill|exit)\s+chisle\b/i.test(promptLower) ||
+        /\bchisle\s+(mode\s+)?(off|stop|disable|deactivate)\b/i.test(promptLower) ||
         /\bnormal mode\b/i.test(promptLower)) {
       try { fs.unlinkSync(flagPath); } catch (e) {}
     }
@@ -66,7 +66,7 @@ process.stdin.on('end', () => {
     // Per-turn reinforcement
     const activeMode = readFlag(flagPath);
     if (activeMode && activeMode !== 'off') {
-      // Inject compact reminder — keeps rdx visible across context compression
+      // Inject compact reminder — keeps chisle visible across context compression
       const ladderHint = activeMode === 'ultra'
         ? 'YAGNI extremist: delete before add, challenge req in same breath.'
         : 'Code: YAGNI ladder first (stdlib → native → dep → one line → min code).';
@@ -75,7 +75,7 @@ process.stdin.on('end', () => {
         hookSpecificOutput: {
           hookEventName: 'UserPromptSubmit',
           additionalContext:
-            'RDX MODE ACTIVE (' + activeMode + '). ' +
+            'CHISLE MODE ACTIVE (' + activeMode + '). ' +
             'Prose: drop articles/filler/pleasantries/hedging. Fragments OK. ' +
             ladderHint + ' ' +
             'Code/commits/security: write normal.'

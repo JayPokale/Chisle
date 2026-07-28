@@ -7,14 +7,14 @@ export default async function Nav() {
     <nav className="fixed top-0 z-40 w-full border-b border-line bg-paper/85 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3">
         <a href="#top" className="font-mono text-sm font-semibold" style={{ fontFamily: "var(--font-mono)" }}>
-          <span className="text-amber">[RDX]</span>min
+          <span className="text-amber">[CHISLE]</span>min
         </a>
         <div className="flex items-center gap-5 text-sm text-dim">
           <a href="#features" className="hidden transition-colors hover:text-ink sm:block">Features</a>
           <a href="#numbers" className="hidden transition-colors hover:text-ink sm:block">Benchmarks</a>
           <a href="#faq" className="hidden transition-colors hover:text-ink sm:block">FAQ</a>
           <a
-            href="https://github.com/JayPokale/RDXmin"
+            href="https://github.com/JayPokale/Chisle"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 transition-colors hover:text-ink"

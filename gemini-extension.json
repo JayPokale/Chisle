@@ -1,5 +1,5 @@
 {
-  "name": "rdxmin",
+  "name": "chisle",
   "version": "0.1.0",
   "description": "Maximum-efficiency dev mode for Gemini. Zero-fluff prose + YAGNI-first code.",
   "contextFileName": "GEMINI.md"

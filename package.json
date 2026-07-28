@@ -1,5 +1,5 @@
 {
-  "name": "rdxmin",
+  "name": "chisle",
   "version": "1.2.2",
   "description": "Maximum-efficiency dev mode for Claude Code. Zero-fluff prose + YAGNI-first code decisions. One plugin that does both.",
   "keywords": [
@@ -28,16 +28,16 @@
       "url": "https://openai.com/codex/"
     }
   ],
-  "homepage": "https://rdx.jaypokale.me",
+  "homepage": "https://chisle.jaypokale.me",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JayPokale/RDXmin.git"
+    "url": "git+https://github.com/JayPokale/Chisle.git"
   },
   "bugs": {
-    "url": "https://github.com/JayPokale/RDXmin/issues"
+    "url": "https://github.com/JayPokale/Chisle/issues"
   },
   "bin": {
-    "rdxmin": "bin/install.js"
+    "chisle": "bin/install.js"
   },
   "engines": {
     "node": ">=18"

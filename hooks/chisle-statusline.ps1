@@ -1,10 +1,10 @@
-# rdxmin — statusline badge for Claude Code (Windows / PowerShell)
-# Mirrors rdx-statusline.sh. Reads the mode flag and savings suffix, renders an orange badge.
+# chisle — statusline badge for Claude Code (Windows / PowerShell)
+# Mirrors chisle-statusline.sh. Reads the mode flag and savings suffix, renders an orange badge.
 
 $ErrorActionPreference = 'SilentlyContinue'
 
 $configDir = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { Join-Path $HOME '.claude' }
-$flag = Join-Path $configDir '.rdx-active'
+$flag = Join-Path $configDir '.chisle-active'
 
 if (-not (Test-Path -LiteralPath $flag -PathType Leaf)) { exit 0 }
 
@@ -34,7 +34,7 @@ $reset = "$esc[0m"
 
 # Input-side savings from the tool-output compressor ledger (mirrors the sh version).
 $suffix = ''
-$stats = Join-Path $configDir '.rdx-compress-stats.json'
+$stats = Join-Path $configDir '.chisle-compress-stats.json'
 $sitem = if (Test-Path -LiteralPath $stats -PathType Leaf) { Get-Item -LiteralPath $stats -Force } else { $null }
 if ($sitem -and -not ($sitem.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
   $raw = Get-Content -LiteralPath $stats -Raw
@@ -48,7 +48,7 @@ if ($sitem -and -not ($sitem.Attributes -band [IO.FileAttributes]::ReparsePoint)
 }
 
 if ([string]::IsNullOrEmpty($mode) -or $mode -eq 'full') {
-  Write-Host -NoNewline "$orange[RDX]$reset$suffix"
+  Write-Host -NoNewline "$orange[CHISLE]$reset$suffix"
 } else {
-  Write-Host -NoNewline ("{0}[RDX:{1}]{2}{3}" -f $orange, $mode.ToUpper(), $reset, $suffix)
+  Write-Host -NoNewline ("{0}[CHISLE:{1}]{2}{3}" -f $orange, $mode.ToUpper(), $reset, $suffix)
 }

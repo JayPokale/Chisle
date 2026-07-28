@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// rdxmin — shared configuration resolver
+// chisle — shared configuration resolver
 //
 // Resolution order for default mode:
-//   1. RDX_DEFAULT_MODE environment variable
-//   2. User config: $XDG_CONFIG_HOME/rdxmin/config.json, ~/.config/rdxmin/config.json
+//   1. CHISLE_DEFAULT_MODE environment variable
+//   2. User config: $XDG_CONFIG_HOME/chisle/config.json, ~/.config/chisle/config.json
 //   3. 'full'
 
 const fs = require('fs');
@@ -18,15 +18,15 @@ function getClaudeDir() {
 
 function getConfigDir() {
   if (process.env.XDG_CONFIG_HOME) {
-    return path.join(process.env.XDG_CONFIG_HOME, 'rdxmin');
+    return path.join(process.env.XDG_CONFIG_HOME, 'chisle');
   }
   if (process.platform === 'win32') {
     return path.join(
       process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'),
-      'rdxmin'
+      'chisle'
     );
   }
-  return path.join(os.homedir(), '.config', 'rdxmin');
+  return path.join(os.homedir(), '.config', 'chisle');
 }
 
 function readModeFromConfigFile(configPath) {
@@ -42,7 +42,7 @@ function readModeFromConfigFile(configPath) {
 }
 
 function getDefaultMode() {
-  const envMode = process.env.RDX_DEFAULT_MODE;
+  const envMode = process.env.CHISLE_DEFAULT_MODE;
   if (envMode && VALID_MODES.includes(envMode.toLowerCase())) {
     return envMode.toLowerCase();
   }
@@ -54,7 +54,7 @@ function getDefaultMode() {
 // Symlink-safe, atomic flag write with 0600 perms.
 // Defends against local attacker replacing predictable path with symlink to clobber other files.
 function safeWriteFlag(flagPath, content) {
-  const debug = process.env.RDX_DEBUG === '1';
+  const debug = process.env.CHISLE_DEBUG === '1';
   try {
     const flagDir = path.dirname(flagPath);
     fs.mkdirSync(flagDir, { recursive: true });
@@ -66,12 +66,12 @@ function safeWriteFlag(flagPath, content) {
         realFlagDir = fs.realpathSync(flagDir);
         const realStat = fs.statSync(realFlagDir);
         if (!realStat.isDirectory()) {
-          if (debug) process.stderr.write(`[rdx] safeWriteFlag: symlink target not a directory\n`);
+          if (debug) process.stderr.write(`[chisle] safeWriteFlag: symlink target not a directory\n`);
           return;
         }
         if (typeof process.getuid === 'function') {
           if (realStat.uid !== process.getuid()) {
-            if (debug) process.stderr.write(`[rdx] safeWriteFlag: symlink target owned by different uid\n`);
+            if (debug) process.stderr.write(`[chisle] safeWriteFlag: symlink target owned by different uid\n`);
             return;
           }
         } else {
@@ -80,7 +80,7 @@ function safeWriteFlag(flagPath, content) {
           const normalizedHome = path.resolve(home).toLowerCase();
           if (!normalizedReal.startsWith(normalizedHome + path.sep) &&
               normalizedReal !== normalizedHome) {
-            if (debug) process.stderr.write(`[rdx] safeWriteFlag: symlink target outside home dir\n`);
+            if (debug) process.stderr.write(`[chisle] safeWriteFlag: symlink target outside home dir\n`);
             return;
           }
         }
@@ -98,7 +98,7 @@ function safeWriteFlag(flagPath, content) {
       if (e.code !== 'ENOENT') return;
     }
 
-    const tempPath = path.join(realFlagDir, `.rdx-active.${process.pid}.${Date.now()}`);
+    const tempPath = path.join(realFlagDir, `.chisle-active.${process.pid}.${Date.now()}`);
     const O_NOFOLLOW = typeof fs.constants.O_NOFOLLOW === 'number' ? fs.constants.O_NOFOLLOW : 0;
     const flags = fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | O_NOFOLLOW;
     let fd;

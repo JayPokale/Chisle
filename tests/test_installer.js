@@ -48,11 +48,11 @@ test('--only with bad agent exits 2', () => {
 });
 
 test('project rule install writes into CWD, is idempotent, --force overwrites', () => {
-  const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'rdx-proj-'));
+  const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-proj-'));
 
   // First install
   let r = runCLI(['--only', 'cursor'], { cwd: proj });
-  const ruleFile = path.join(proj, '.cursor', 'rules', 'rdxmin.mdc');
+  const ruleFile = path.join(proj, '.cursor', 'rules', 'chisle.mdc');
   assert.ok(fs.existsSync(ruleFile), 'rule file created in project');
   assert.match(r.out, /installed:/);
 
@@ -69,7 +69,7 @@ test('project rule install writes into CWD, is idempotent, --force overwrites', 
 });
 
 test('dry-run changes nothing on disk', () => {
-  const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'rdx-dry-'));
+  const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-dry-'));
   runCLI(['--only', 'cline', '--dry-run'], { cwd: proj });
   assert.ok(!fs.existsSync(path.join(proj, '.clinerules')), 'dry-run wrote nothing');
   fs.rmSync(proj, { recursive: true, force: true });
@@ -79,7 +79,7 @@ test('standalone Claude hook wiring merges + uninstalls cleanly', () => {
   // Drive the standalone path by pointing --config-dir at a temp dir and using
   // --only claude. The claude CLI is likely present, so the plugin path may run;
   // either way the settings.json must remain valid JSON and uninstall must clean.
-  const cfg = fs.mkdtempSync(path.join(os.tmpdir(), 'rdx-cfg-'));
+  const cfg = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-cfg-'));
   // Pre-seed a user settings.json with foreign content to protect.
   fs.writeFileSync(path.join(cfg, 'settings.json'), JSON.stringify({ model: 'opus' }, null, 2));
 

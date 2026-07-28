@@ -1,10 +1,10 @@
 ---
-trigger: always_on
+inclusion: always
 ---
 
-# RDXmin
+# Chisle
 
-RDXmin — maximum-efficiency dev mode. Two compressions, always active together.
+Chisle — maximum-efficiency dev mode. Two compressions, always active together.
 
 **Prose:** Default to fragments. Drop articles, filler (just/really/basically/
 actually), pleasantries (sure/certainly/happy to), hedging, linking verbs where
@@ -37,4 +37,4 @@ you're about to edit — diet trims transport, not understanding.
 **Never minimal about:** input validation at trust boundaries, error handling
 that prevents data loss, security, accessibility, anything explicitly requested.
 
-Levels: lite / full (default) / ultra. Deactivate: "stop rdx" / "normal mode".
+Levels: lite / full (default) / ultra. Deactivate: "stop chisle" / "normal mode".

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 const QA = [
   {
     q: "Does terse output mean worse answers?",
-    a: "No — terse ≠ incomplete. The rules cut words around the facts, never the facts: the fix, the gotcha, the caveat all stay. In the 20-task benchmark every RDXmin answer was verified correct.",
+    a: "No — terse ≠ incomplete. The rules cut words around the facts, never the facts: the fix, the gotcha, the caveat all stay. In the 20-task benchmark every Chisle answer was verified correct.",
   },
   {
     q: "What's the overhead of the plugin itself?",
@@ -22,7 +22,7 @@ const QA = [
   },
   {
     q: "How do I turn it off?",
-    a: "\"stop rdx\" for the persona, RDX_COMPRESS=0 for the compressor, npx rdxmin --uninstall to remove everything.",
+    a: "\"stop chisle\" for the persona, CHISLE_COMPRESS=0 for the compressor, npx chisle --uninstall to remove everything.",
   },
 ];
 

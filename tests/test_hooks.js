@@ -8,7 +8,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const { VALID_MODES, safeWriteFlag, readFlag, getDefaultMode } = require('../hooks/rdx-config');
+const { VALID_MODES, safeWriteFlag, readFlag, getDefaultMode } = require('../hooks/chisle-config');
 
 // ── VALID_MODES ──────────────────────────────────────────────────────────────
 
@@ -23,24 +23,24 @@ test('VALID_MODES contains expected levels', () => {
 // ── safeWriteFlag / readFlag ─────────────────────────────────────────────────
 
 function tmpDir() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'rdx-test-'));
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-test-'));
 }
 
 test('safeWriteFlag writes and readFlag reads back', () => {
   const dir = tmpDir();
-  const flagPath = path.join(dir, '.rdx-active');
+  const flagPath = path.join(dir, '.chisle-active');
   safeWriteFlag(flagPath, 'full');
   assert.equal(readFlag(flagPath), 'full');
   fs.rmSync(dir, { recursive: true });
 });
 
 test('readFlag returns null for missing file', () => {
-  assert.equal(readFlag('/tmp/rdx-does-not-exist-xyz'), null);
+  assert.equal(readFlag('/tmp/chisle-does-not-exist-xyz'), null);
 });
 
 test('readFlag returns null for unknown mode', () => {
   const dir = tmpDir();
-  const flagPath = path.join(dir, '.rdx-active');
+  const flagPath = path.join(dir, '.chisle-active');
   fs.writeFileSync(flagPath, 'wenyan-ultra', { mode: 0o600 });
   assert.equal(readFlag(flagPath), null);
   fs.rmSync(dir, { recursive: true });
@@ -48,7 +48,7 @@ test('readFlag returns null for unknown mode', () => {
 
 test('readFlag returns null for symlink', () => {
   const dir = tmpDir();
-  const flagPath = path.join(dir, '.rdx-active');
+  const flagPath = path.join(dir, '.chisle-active');
   const target = path.join(dir, 'target');
   fs.writeFileSync(target, 'full', { mode: 0o600 });
   fs.symlinkSync(target, flagPath);
@@ -58,7 +58,7 @@ test('readFlag returns null for symlink', () => {
 
 test('readFlag returns null for oversized file', () => {
   const dir = tmpDir();
-  const flagPath = path.join(dir, '.rdx-active');
+  const flagPath = path.join(dir, '.chisle-active');
   fs.writeFileSync(flagPath, 'full' + 'x'.repeat(100), { mode: 0o600 });
   assert.equal(readFlag(flagPath), null);
   fs.rmSync(dir, { recursive: true });
@@ -66,7 +66,7 @@ test('readFlag returns null for oversized file', () => {
 
 test('safeWriteFlag refuses to overwrite a symlink', () => {
   const dir = tmpDir();
-  const flagPath = path.join(dir, '.rdx-active');
+  const flagPath = path.join(dir, '.chisle-active');
   const target = path.join(dir, 'target');
   fs.writeFileSync(target, '', { mode: 0o600 });
   fs.symlinkSync(target, flagPath);
@@ -78,32 +78,32 @@ test('safeWriteFlag refuses to overwrite a symlink', () => {
 // ── getDefaultMode ───────────────────────────────────────────────────────────
 
 test('getDefaultMode returns full by default', () => {
-  const saved = process.env.RDX_DEFAULT_MODE;
-  delete process.env.RDX_DEFAULT_MODE;
+  const saved = process.env.CHISLE_DEFAULT_MODE;
+  delete process.env.CHISLE_DEFAULT_MODE;
   // Only validates when no user config file exists (CI / clean env)
   const mode = getDefaultMode();
   assert.ok(VALID_MODES.includes(mode));
-  if (saved !== undefined) process.env.RDX_DEFAULT_MODE = saved;
+  if (saved !== undefined) process.env.CHISLE_DEFAULT_MODE = saved;
 });
 
-test('getDefaultMode respects RDX_DEFAULT_MODE env var', () => {
-  process.env.RDX_DEFAULT_MODE = 'lite';
+test('getDefaultMode respects CHISLE_DEFAULT_MODE env var', () => {
+  process.env.CHISLE_DEFAULT_MODE = 'lite';
   assert.equal(getDefaultMode(), 'lite');
-  process.env.RDX_DEFAULT_MODE = 'ultra';
+  process.env.CHISLE_DEFAULT_MODE = 'ultra';
   assert.equal(getDefaultMode(), 'ultra');
-  delete process.env.RDX_DEFAULT_MODE;
+  delete process.env.CHISLE_DEFAULT_MODE;
 });
 
-test('getDefaultMode ignores invalid RDX_DEFAULT_MODE', () => {
-  process.env.RDX_DEFAULT_MODE = 'wenyan-ultra';
+test('getDefaultMode ignores invalid CHISLE_DEFAULT_MODE', () => {
+  process.env.CHISLE_DEFAULT_MODE = 'wenyan-ultra';
   const mode = getDefaultMode();
   assert.ok(VALID_MODES.includes(mode));
-  delete process.env.RDX_DEFAULT_MODE;
+  delete process.env.CHISLE_DEFAULT_MODE;
 });
 
 // ── major-version update notice ──────────────────────────────────────────────
 
-const { majorOf, majorUpdateNotice } = require('../hooks/rdx-activate');
+const { majorOf, majorUpdateNotice } = require('../hooks/chisle-activate');
 
 test('majorOf parses majors, rejects garbage', () => {
   assert.equal(majorOf('1.1.2'), 1);
@@ -122,7 +122,7 @@ test('notice fires only on a major jump', () => {
   assert.equal(majorUpdateNotice('1.0.0', null), null);     // no registry data: silent
 });
 
-test('requiring rdx-activate has no side effects', () => {
+test('requiring chisle-activate has no side effects', () => {
   // If the require.main guard is broken this test file would have already
   // emitted the ruleset or called process.exit before reaching here.
   assert.ok(true);

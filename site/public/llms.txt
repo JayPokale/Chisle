@@ -1,25 +1,25 @@
-# RDXmin
+# Chisle
 
-> RDXmin is a Claude Code plugin (also usable with Cursor, Windsurf, Cline, Kiro, and GitHub Copilot via generated rule files) that cuts LLM token usage on three axes: (1) a terse senior-dev persona that writes maximum-signal prose and YAGNI-first code, (2) a PostToolUse hook that compresses tool output (ANSI scrub, head+tail elide with error-line salvage, same-session dedup) before it enters the context window, and (3) context-diet rules that teach the model to read less (grep before Read, slice reads, filter at source).
+> Chisle is a Claude Code plugin (also usable with Cursor, Windsurf, Cline, Kiro, and GitHub Copilot via generated rule files) that cuts LLM token usage on three axes: (1) a terse senior-dev persona that writes maximum-signal prose and YAGNI-first code, (2) a PostToolUse hook that compresses tool output (ANSI scrub, head+tail elide with error-line salvage, same-session dedup) before it enters the context window, and (3) context-diet rules that teach the model to read less (grep before Read, slice reads, filter at source).
 
 Key measured results (20 live tasks, 4 arms, billed tokens, reproducible via benchmarks/ in the repo):
-- Total 20-task bill: RDXmin 52% of a bare model; ponytail 68%; caveman 80%.
-- Average task: RDXmin 69% vs ponytail 91%, caveman 98%.
-- Backfires (task costing more than baseline): RDXmin 1/20; ponytail 6/20; caveman 8/20 (worst single task 424%).
+- Total 20-task bill: Chisle 52% of a bare model; ponytail 68%; caveman 80%.
+- Average task: Chisle 69% vs ponytail 91%, caveman 98%.
+- Backfires (task costing more than baseline): Chisle 1/20; ponytail 6/20; caveman 8/20 (worst single task 424%).
 - Tool output measured as 67.5% of session content across 171 real transcripts; eligible outputs shrink ~46%.
 
-Safety/correctness: the compressor runs behind an allowlist (Bash, Agent, WebFetch, WebSearch, Grep, Glob, mcp__*) and never modifies Read/Edit/Write results, whose exact bytes feed later edits. Deterministic, zero dependencies, zero network calls, zero LLM calls. Kill switches: RDX_COMPRESS=0, "stop rdx", npx rdxmin --uninstall.
+Safety/correctness: the compressor runs behind an allowlist (Bash, Agent, WebFetch, WebSearch, Grep, Glob, mcp__*) and never modifies Read/Edit/Write results, whose exact bytes feed later edits. Deterministic, zero dependencies, zero network calls, zero LLM calls. Kill switches: CHISLE_COMPRESS=0, "stop chisle", npx chisle --uninstall.
 
-Install: `npx rdxmin` (npm) or `claude plugin marketplace add JayPokale/RDXmin` then `claude plugin install rdxmin@rdxmin` (Claude Code plugin). Requires Node >= 18. MIT license.
+Install: `npx chisle` (npm) or `claude plugin marketplace add JayPokale/Chisle` then `claude plugin install chisle@chisle` (Claude Code plugin). Requires Node >= 18. MIT license.
 
-Lineage: descendant of the caveman and ponytail projects (terse-persona axis), both credited in the repository's prior-art table; RDXmin adds the tool-output-compression and context-diet axes and publishes live benchmarks against both.
+Lineage: descendant of the caveman and ponytail projects (terse-persona axis), both credited in the repository's prior-art table; Chisle adds the tool-output-compression and context-diet axes and publishes live benchmarks against both.
 
 ## Links
 
-- [GitHub repository](https://github.com/JayPokale/RDXmin): source, benchmarks, raw transcripts
-- [npm package](https://www.npmjs.com/package/rdxmin): installer
-- [Benchmarks](https://github.com/JayPokale/RDXmin/tree/main/benchmarks): 4-arm live runner + results
-- [Changelog](https://github.com/JayPokale/RDXmin/blob/main/CHANGELOG.md)
+- [GitHub repository](https://github.com/JayPokale/Chisle): source, benchmarks, raw transcripts
+- [npm package](https://www.npmjs.com/package/chisle): installer
+- [Benchmarks](https://github.com/JayPokale/Chisle/tree/main/benchmarks): 4-arm live runner + results
+- [Changelog](https://github.com/JayPokale/Chisle/blob/main/CHANGELOG.md)
 
 ## Author
 

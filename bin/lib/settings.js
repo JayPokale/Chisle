@@ -1,4 +1,4 @@
-// rdxmin — JSONC-tolerant settings.json read/write + defensive hook validation.
+// chisle — JSONC-tolerant settings.json read/write + defensive hook validation.
 //
 // Claude Code applies strict Zod to settings.json: one malformed hook silently
 // discards the WHOLE file. So every mutation validates before write, and reads
@@ -56,12 +56,12 @@ function readSettings(p) {
   if (!fs.existsSync(p)) return {};
   let raw;
   try { raw = fs.readFileSync(p, 'utf8'); }
-  catch (e) { process.stderr.write(`rdxmin: cannot read ${p}: ${e.message}\n`); return null; }
+  catch (e) { process.stderr.write(`chisle: cannot read ${p}: ${e.message}\n`); return null; }
   if (!raw.trim()) return {};
   try { return JSON.parse(raw.replace(/^﻿/, '')); } catch (_) {}
   try { return JSON.parse(stripJsonComments(raw.replace(/^﻿/, ''))); }
   catch (e) {
-    process.stderr.write(`rdxmin: warning — ${p} is not valid JSON/JSONC: ${e.message}\n`);
+    process.stderr.write(`chisle: warning — ${p} is not valid JSON/JSONC: ${e.message}\n`);
     return null;
   }
 }

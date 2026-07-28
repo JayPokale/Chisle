@@ -2,4 +2,4 @@
 * @JayPokale
 
 # Security-sensitive paths — review with extra care.
-/hooks/rdx-config.js @JayPokale
+/hooks/chisle-config.js @JayPokale

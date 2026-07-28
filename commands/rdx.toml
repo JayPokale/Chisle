@@ -1,8 +1,0 @@
-# rdxmin slash command
-# Maximum-efficiency dev mode
-# Usage: /rdx [lite|full|ultra]
-
-[command]
-name = "rdx"
-description = "Activate rdxmin mode: zero-fluff prose + YAGNI ladder code decisions. Levels: lite, full (default), ultra."
-argument-hint = "[lite|full|ultra]"

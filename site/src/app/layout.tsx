@@ -12,16 +12,16 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rdx.jaypokale.me";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://chisle.jaypokale.me";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "RDXmin — cut Claude Code's token bill on three axes",
-    template: "%s · RDXmin",
+    default: "Chisle — cut Claude Code's token bill on three axes",
+    template: "%s · Chisle",
   },
   description:
-    "RDXmin is a Claude Code plugin that cuts token usage three ways: a terse dev persona, a tool-output compression hook, and context-diet rules. Measured against caveman and ponytail: 52% of a bare model's 20-task bill, 1 backfire in 20.",
+    "Chisle is a Claude Code plugin that cuts token usage three ways: a terse dev persona, a tool-output compression hook, and context-diet rules. Measured against caveman and ponytail: 52% of a bare model's 20-task bill, 1 backfire in 20.",
   keywords: [
     "claude code plugin",
     "token optimization",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "context compression",
     "tool output compression",
     "YAGNI",
-    "rdxmin",
+    "chisle",
     "caveman claude",
     "ponytail claude",
   ],
@@ -39,14 +39,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: SITE_URL,
-    siteName: "RDXmin",
-    title: "RDXmin — write less. ship less. mean more.",
+    siteName: "Chisle",
+    title: "Chisle — write less. ship less. mean more.",
     description:
       "The Claude Code plugin that bills 52% of a bare model across 20 live tasks. Terse persona + tool-output compressor + context diet.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "RDXmin — cut Claude Code's token bill on three axes",
+    title: "Chisle — cut Claude Code's token bill on three axes",
     description:
       "Terse persona + tool-output compressor + context diet. Measured, not vibes: 52% of a bare model's bill.",
   },
@@ -60,13 +60,13 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "RDXmin",
+  name: "Chisle",
   applicationCategory: "DeveloperApplication",
   operatingSystem: "macOS, Linux, Windows",
   description:
     "Claude Code plugin that cuts token usage on three axes: terse dev persona, tool-output compression hook, and context-diet rules.",
   url: SITE_URL,
-  downloadUrl: "https://www.npmjs.com/package/rdxmin",
+  downloadUrl: "https://www.npmjs.com/package/chisle",
   softwareVersion: "1.2.1",
   license: "https://opensource.org/licenses/MIT",
   author: { "@type": "Person", name: "Jay Pokale", url: "https://github.com/JayPokale" },
@@ -80,7 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* set theme before paint — no flash; default light, honors saved choice or OS dark */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("rdx-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}`,
+            __html: `try{var t=localStorage.getItem("chisle-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}`,
           }}
         />
         <script

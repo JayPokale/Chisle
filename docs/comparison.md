@@ -1,8 +1,8 @@
-# RDXmin vs caveman vs ponytail
+# Chisle vs caveman vs ponytail
 
 ## Why not just use caveman or ponytail?
 
-Use them — they're great, and we tested against them honestly. But each has a failure mode, and RDXmin doesn't.
+Use them — they're great, and we tested against them honestly. But each has a failure mode, and Chisle doesn't.
 
 Across **20 tasks** in two suites (June 14-task matrix + July re-verification run; code, prose, and vague "judgment" requests; Haiku + Sonnet), billed output tokens as % of the no-tool baseline:
 
@@ -10,25 +10,25 @@ Across **20 tasks** in two suites (June 14-task matrix + July re-verification ru
 |---|--:|--:|--:|--:|:--:|
 | caveman | 80% | 98% | **424%** | 6 / 20 | ❌ no ladder |
 | ponytail | 68% | 91% | 227% | **8 / 20** | ✅ |
-| **RDXmin** | **52%** | **69%** | **173%** | **1 / 20** | ✅ |
+| **Chisle** | **52%** | **69%** | **173%** | **1 / 20** | ✅ |
 
-RDXmin's single backfire (a comparison prompt answered with headed bullet walls) was root-caused, fixed in the ruleset, and re-validated live at 93% of baseline — receipts in the [verification writeup](../benchmarks/results/2026-07-07-verify-rerun.md).
+Chisle's single backfire (a comparison prompt answered with headed bullet walls) was root-caused, fixed in the ruleset, and re-validated live at 93% of baseline — receipts in the [verification writeup](../benchmarks/results/2026-07-07-verify-rerun.md).
 
-**caveman** is a superb prose compressor — a hair leaner than RDXmin on pure-prose prompts — but has no engineering judgment. Asked to *"add caching,"* it dumped three implementations (330 tokens) where RDXmin gave one `@cache` + an upgrade line (151).
+**caveman** is a superb prose compressor — a hair leaner than Chisle on pure-prose prompts — but has no engineering judgment. Asked to *"add caching,"* it dumped three implementations (330 tokens) where Chisle gave one `@cache` + an upgrade line (151).
 
 **ponytail** has the engineering judgment but pads prose so hard it backfires. On a "retry logic" prompt it ran **227%** of the no-tool baseline. Yes — a "write less" tool, writing more than twice as much. Receipts: [`reliability writeup`](../benchmarks/results/2026-06-29-reliability.md).
 
-**RDXmin backfired once in 20 tasks** — and that once got root-caused and fixed. It's not always the single tersest answer; it's the one with the smallest, rarest downside.
+**Chisle backfired once in 20 tasks** — and that once got root-caused and fixed. It's not always the single tersest answer; it's the one with the smallest, rarest downside.
 
-Installing *both* specialists to cover both axes gets you two plugins that fight over prose style and double per-session overhead — and on one task they did *worse* stacked (605t) than RDXmin alone (595t). Full data: [reliability](../benchmarks/results/2026-06-29-reliability.md) · [Sonnet cross-check](../benchmarks/results/2026-06-29-sonnet-cross-check.md).
+Installing *both* specialists to cover both axes gets you two plugins that fight over prose style and double per-session overhead — and on one task they did *worse* stacked (605t) than Chisle alone (595t). Full data: [reliability](../benchmarks/results/2026-06-29-reliability.md) · [Sonnet cross-check](../benchmarks/results/2026-06-29-sonnet-cross-check.md).
 
 ## The input axis — a thing neither specialist touches
 
-caveman and ponytail both compress one direction: what the model *writes*. Neither does anything about what it *reads* — tool output, which is **67.5% of session context** on a real corpus ([measured](../benchmarks/results/2026-07-07-input-axis.md)). RDXmin 0.2.0 ships a `PostToolUse` compressor for that axis (Claude Code only): oversized Bash/Agent/web output gets its middle elided, error lines salvaged, ~46% smaller per eligible output — and every saved byte stops being re-billed on each later request in the session.
+caveman and ponytail both compress one direction: what the model *writes*. Neither does anything about what it *reads* — tool output, which is **67.5% of session context** on a real corpus ([measured](../benchmarks/results/2026-07-07-input-axis.md)). Chisle 0.2.0 ships a `PostToolUse` compressor for that axis (Claude Code only): oversized Bash/Agent/web output gets its middle elided, error lines salvaged, ~46% smaller per eligible output — and every saved byte stops being re-billed on each later request in the session.
 
-## `/rdx-audit` — a thing neither specialist has
+## `/chisle-audit` — a thing neither specialist has
 
-One pass over a diff, file, or repo that flags **both** over-engineered code *and* bloated prose/docs/comments, ranked biggest-cut-first. ponytail-audit is code-only; caveman has no audit mode. `/rdx-audit` is the union — what a PR reviewer actually wants in one report.
+One pass over a diff, file, or repo that flags **both** over-engineered code *and* bloated prose/docs/comments, ranked biggest-cut-first. ponytail-audit is code-only; caveman has no audit mode. `/chisle-audit` is the union — what a PR reviewer actually wants in one report.
 
 ## Detailed benchmark tables
 
@@ -36,14 +36,14 @@ One pass over a diff, file, or repo that flags **both** over-engineered code *an
 
 Visible answer size as % of the no-tool baseline, lower = leaner:
 
-| | vanilla | caveman | ponytail | **RDXmin** |
+| | vanilla | caveman | ponytail | **Chisle** |
 |---|--:|--:|--:|--:|
 | **coding** (tokens) | 100% | 46% | 29% | **22%** |
 | **coding** (lines) | 100% | 40% | 19% | **14%** |
 | **non-coding** (tokens) | 100% | 79% | 121% | **71%** |
 | **all 6 tasks** | 100% | 57% | 61% | **39%** |
 
-On coding, RDXmin is leanest (the "add a cache" prompt where vanilla wrote a **150-line** class became **7 lines**). On pure prose, caveman is a hair leaner on a good day — it's a dedicated prose compressor, credit where due.
+On coding, Chisle is leanest (the "add a cache" prompt where vanilla wrote a **150-line** class became **7 lines**). On pure prose, caveman is a hair leaner on a good day — it's a dedicated prose compressor, credit where due.
 
 Full results: [live 4-arm](../benchmarks/results/2026-06-29-live-4arm.md) · [reliability](../benchmarks/results/2026-06-29-reliability.md) · [Sonnet cross-check](../benchmarks/results/2026-06-29-sonnet-cross-check.md).
 
@@ -59,7 +59,7 @@ Never. Input validation, error handling that prevents data loss, security, and a
 File an issue — that's a bug, not the design. Terse ≠ incomplete: keep the fix, cut the fluff. If it dropped the fix, it failed its own rules and we want to know.
 
 **Does it work outside Claude Code?**
-Yes — ships to Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot. Live mode-switching UI (`/rdx`, statusline badge) is Claude-Code-specific; everywhere else the always-on ruleset still applies. See [agent portability](agent-portability.md).
+Yes — ships to Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot. Live mode-switching UI (`/chisle`, statusline badge) is Claude-Code-specific; everywhere else the always-on ruleset still applies. See [agent portability](agent-portability.md).
 
-**Why "RDXmin"?**
-RDX is a demolition charge. Your token bill is the building. The only thing it detonates is verbosity.
+**Why "Chisle"?**
+CHISLE is a demolition charge. Your token bill is the building. The only thing it detonates is verbosity.

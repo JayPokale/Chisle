@@ -1,6 +1,6 @@
 # Installing on Windows
 
-RDXmin works on Windows via Claude Code's `commandWindows` hook variant and a
+Chisle works on Windows via Claude Code's `commandWindows` hook variant and a
 PowerShell statusline script. No WSL required.
 
 ## Plugin
@@ -9,7 +9,7 @@ Add to `%USERPROFILE%\.claude\settings.json`:
 
 ```json
 {
-  "plugins": ["C:\\path\\to\\rdxmin"]
+  "plugins": ["C:\\path\\to\\chisle"]
 }
 ```
 
@@ -22,7 +22,7 @@ Code runs the PowerShell-safe form automatically. Node.js must be on `PATH`.
 {
   "statusLine": {
     "type": "command",
-    "command": "powershell -ExecutionPolicy Bypass -File \"C:\\path\\to\\rdxmin\\hooks\\rdx-statusline.ps1\""
+    "command": "powershell -ExecutionPolicy Bypass -File \"C:\\path\\to\\chisle\\hooks\\chisle-statusline.ps1\""
   }
 }
 ```
@@ -32,15 +32,15 @@ Code runs the PowerShell-safe form automatically. Node.js must be on `PATH`.
 On Windows the flag lives at:
 
 ```
-%CLAUDE_CONFIG_DIR%\.rdx-active        (defaults to %USERPROFILE%\.claude)
-%CLAUDE_CONFIG_DIR%\.rdx-statusline-suffix
+%CLAUDE_CONFIG_DIR%\.chisle-active        (defaults to %USERPROFILE%\.claude)
+%CLAUDE_CONFIG_DIR%\.chisle-statusline-suffix
 ```
 
-The symlink-safety checks in `rdx-config.js` fall back to a home-directory
+The symlink-safety checks in `chisle-config.js` fall back to a home-directory
 containment check on Windows (where `process.getuid` is unavailable).
 
 ## Troubleshooting
 
-- **Badge not showing** → confirm `rdx-statusline.ps1` runs: `powershell -File hooks\rdx-statusline.ps1`
+- **Badge not showing** → confirm `chisle-statusline.ps1` runs: `powershell -File hooks\chisle-statusline.ps1`
 - **Hook not firing** → confirm `node --version` works in a fresh terminal
 - **Garbled colors** → your terminal may not support ANSI; Windows Terminal does

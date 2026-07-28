@@ -1,4 +1,4 @@
-# RDXmin site
+# Chisle site
 
 Marketing site — Next.js 16 + Tailwind 4 + motion. Lives in the repo but ships
 nowhere else: `site/` is not in `package.json` `files` (npm never packs it) and
@@ -14,7 +14,7 @@ npm run dev
 
 ## Deploy (Vercel)
 
-1. vercel.com → New Project → import `JayPokale/RDXmin`.
+1. vercel.com → New Project → import `JayPokale/Chisle`.
 2. **Root Directory: `site`** (the one setting that matters).
 3. Framework auto-detects as Next.js. Deploy.
 4. Custom domain: Project → Settings → Domains → add yours, point DNS

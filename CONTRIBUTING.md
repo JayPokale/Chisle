@@ -1,29 +1,29 @@
 # Contributing
 
-Small focused PRs beat big rewrites. RDXmin is a small package — keep it that way.
+Small focused PRs beat big rewrites. Chisle is a small package — keep it that way.
 
 ## What lives where
 
 | File | Purpose |
 |------|---------|
-| `skills/rdx/SKILL.md` | **Behavior source.** All rules, intensity levels, examples. The activate hook reads it at runtime. |
+| `skills/chisle/SKILL.md` | **Behavior source.** All rules, intensity levels, examples. The activate hook reads it at runtime. |
 | `scripts/build-rules.js` | Condensed mirror of the skill for the 7 non-Claude agents. **Editing SKILL.md alone does not propagate here** — update the `BODY` too, then regenerate. |
-| `hooks/rdx-activate.js` | SessionStart: reads SKILL.md, writes flag, emits rules |
-| `hooks/rdx-mode-tracker.js` | UserPromptSubmit: `/rdx` commands, NL detection, per-turn reinforcement |
-| `hooks/rdx-compress-output.js` | PostToolUse: input-side compression (scrub / elide / dedup tiers, savings ledger) |
-| `hooks/rdx-config.js` | Shared flag read/write, mode resolution. Security-sensitive — test changes carefully. |
-| `hooks/rdx-statusline.sh` / `.ps1` | Statusline badge: mode + measured input-side savings |
+| `hooks/chisle-activate.js` | SessionStart: reads SKILL.md, writes flag, emits rules |
+| `hooks/chisle-mode-tracker.js` | UserPromptSubmit: `/chisle` commands, NL detection, per-turn reinforcement |
+| `hooks/chisle-compress-output.js` | PostToolUse: input-side compression (scrub / elide / dedup tiers, savings ledger) |
+| `hooks/chisle-config.js` | Shared flag read/write, mode resolution. Security-sensitive — test changes carefully. |
+| `hooks/chisle-statusline.sh` / `.ps1` | Statusline badge: mode + measured input-side savings |
 | `bin/install.js` + `bin/lib/settings.js` | Multi-agent installer, JSONC-safe settings merge |
 
 ## What to edit
 
-**Changing behavior or intensity levels** → `skills/rdx/SKILL.md`, **and** the condensed `BODY` in `scripts/build-rules.js`, then `npm run build:rules`. CI checks the copies are in sync with the generator (not with SKILL.md — the mirror is manual, by design).
+**Changing behavior or intensity levels** → `skills/chisle/SKILL.md`, **and** the condensed `BODY` in `scripts/build-rules.js`, then `npm run build:rules`. CI checks the copies are in sync with the generator (not with SKILL.md — the mirror is manual, by design).
 
-**Input-side compression** → `hooks/rdx-compress-output.js`. Correctness invariants that must survive any change: allowlist only (never `Read`/`Edit`), error-line salvage on any elision, dedup only within one session, every tier kill-switchable, hook never throws.
+**Input-side compression** → `hooks/chisle-compress-output.js`. Correctness invariants that must survive any change: allowlist only (never `Read`/`Edit`), error-line salvage on any elision, dedup only within one session, every tier kill-switchable, hook never throws.
 
-**Natural language triggers** → regex patterns in `hooks/rdx-mode-tracker.js`.
+**Natural language triggers** → regex patterns in `hooks/chisle-mode-tracker.js`.
 
-**Security-sensitive paths** → `hooks/rdx-config.js` (`safeWriteFlag`, `readFlag`). Symlink-safe, `O_NOFOLLOW`, size-capped. Don't simplify them.
+**Security-sensitive paths** → `hooks/chisle-config.js` (`safeWriteFlag`, `readFlag`). Symlink-safe, `O_NOFOLLOW`, size-capped. Don't simplify them.
 
 ## Tests
 
@@ -52,4 +52,4 @@ node benchmarks/replay-compress.js [mode]             # input-axis replay
 
 ## Reporting bugs
 
-Open an issue. Include: what you typed, what rdxmin did, what you expected.
+Open an issue. Include: what you typed, what chisle did, what you expected.

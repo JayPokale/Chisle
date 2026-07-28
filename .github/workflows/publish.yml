@@ -53,8 +53,8 @@ jobs:
       - name: Publish (skip if version already on npm)
         run: |
           PKG="$(node -p "require('./package.json').version")"
-          if [ "$(npm view rdxmin@"$PKG" version 2>/dev/null)" = "$PKG" ]; then
-            echo "rdxmin@$PKG already published — skipping"
+          if [ "$(npm view chisle@"$PKG" version 2>/dev/null)" = "$PKG" ]; then
+            echo "chisle@$PKG already published — skipping"
           else
             npm publish
           fi

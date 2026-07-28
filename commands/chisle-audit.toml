@@ -1,5 +1,5 @@
-# rdx-audit — one-shot efficiency audit across both axes
+# chisle-audit — one-shot efficiency audit across both axes
 [command]
-name = "rdx-audit"
+name = "chisle-audit"
 description = "Audit a diff, file, or repo for BOTH over-engineered code and bloated prose/docs. Ranked report, biggest cut first. Changes nothing."
 argument-hint = "[path | repo | empty for current diff]"

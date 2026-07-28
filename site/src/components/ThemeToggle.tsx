@@ -12,7 +12,7 @@ export default function ThemeToggle() {
   const flip = () => {
     const next = theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = next;
-    localStorage.setItem("rdx-theme", next);
+    localStorage.setItem("chisle-theme", next);
     setTheme(next);
   };
 

@@ -43,7 +43,7 @@ export default async function Community() {
       <Reveal delay={0.15}>
         <div className="mt-10 flex items-center justify-center gap-3">
           <a
-            href="https://github.com/JayPokale/RDXmin"
+            href="https://github.com/JayPokale/Chisle"
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-lg bg-ink px-5 py-3 text-sm font-medium text-paper transition-opacity hover:opacity-85"
@@ -51,7 +51,7 @@ export default async function Community() {
             Star on GitHub{stats.stars > 0 ? ` — ${stats.stars.toLocaleString()}★` : ""}
           </a>
           <a
-            href="https://www.npmjs.com/package/rdxmin"
+            href="https://www.npmjs.com/package/chisle"
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-lg border border-line px-5 py-3 text-sm text-dim transition-colors hover:text-ink"

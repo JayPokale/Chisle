@@ -12,7 +12,7 @@ const path = require('path');
 
 const S = require('../bin/lib/settings.js');
 
-function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'rdx-set-')); }
+function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-set-')); }
 
 // ── stripJsonComments ────────────────────────────────────────────────────────
 
@@ -33,7 +33,7 @@ test('readSettings parses JSONC with trailing commas', () => {
 });
 
 test('readSettings returns {} for missing, null for garbage', () => {
-  assert.deepEqual(S.readSettings('/tmp/rdx-nope-xyz.json'), {});
+  assert.deepEqual(S.readSettings('/tmp/chisle-nope-xyz.json'), {});
   const dir = tmp();
   const p = path.join(dir, 's.json');
   fs.writeFileSync(p, '{ this is not json at all ::: }');
@@ -45,8 +45,8 @@ test('readSettings returns {} for missing, null for garbage', () => {
 
 test('addCommandHook adds once, second call is a no-op', () => {
   const s = {};
-  const a = S.addCommandHook(s, 'SessionStart', { command: 'node /x/rdx-activate.js', marker: 'rdx-activate' });
-  const b = S.addCommandHook(s, 'SessionStart', { command: 'node /x/rdx-activate.js', marker: 'rdx-activate' });
+  const a = S.addCommandHook(s, 'SessionStart', { command: 'node /x/chisle-activate.js', marker: 'chisle-activate' });
+  const b = S.addCommandHook(s, 'SessionStart', { command: 'node /x/chisle-activate.js', marker: 'chisle-activate' });
   assert.equal(a, true);
   assert.equal(b, false);
   assert.equal(s.hooks.SessionStart.length, 1);
@@ -54,18 +54,18 @@ test('addCommandHook adds once, second call is a no-op', () => {
 
 test('addCommandHook preserves a foreign hook already present', () => {
   const s = { hooks: { SessionStart: [{ hooks: [{ type: 'command', command: 'node /other/thing.js' }] }] } };
-  S.addCommandHook(s, 'SessionStart', { command: 'node /x/rdx-activate.js', marker: 'rdx-activate' });
+  S.addCommandHook(s, 'SessionStart', { command: 'node /x/chisle-activate.js', marker: 'chisle-activate' });
   assert.equal(s.hooks.SessionStart.length, 2); // foreign one untouched
 });
 
 // ── removeHooks (uninstall) ──────────────────────────────────────────────────
 
-test('removeHooks strips only rdx entries, leaves foreign ones', () => {
+test('removeHooks strips only chisle entries, leaves foreign ones', () => {
   const s = { hooks: { SessionStart: [
-    { hooks: [{ type: 'command', command: 'node /x/rdx-activate.js' }] },
+    { hooks: [{ type: 'command', command: 'node /x/chisle-activate.js' }] },
     { hooks: [{ type: 'command', command: 'node /other/keep.js' }] },
   ] } };
-  const removed = S.removeHooks(s, 'rdx-');
+  const removed = S.removeHooks(s, 'chisle-');
   assert.equal(removed, 1);
   assert.equal(s.hooks.SessionStart.length, 1);
   assert.match(s.hooks.SessionStart[0].hooks[0].command, /keep\.js/);
@@ -74,9 +74,9 @@ test('removeHooks strips only rdx entries, leaves foreign ones', () => {
 test('install then uninstall round-trips to original', () => {
   const original = { model: 'opus', hooks: { SessionStart: [{ hooks: [{ type: 'command', command: 'node /foo/bar.js' }] }] } };
   const s = JSON.parse(JSON.stringify(original));
-  S.addCommandHook(s, 'SessionStart', { command: 'node /x/rdx-activate.js', marker: 'rdx-activate' });
-  S.addCommandHook(s, 'UserPromptSubmit', { command: 'node /x/rdx-mode-tracker.js', marker: 'rdx-mode-tracker' });
-  S.removeHooks(s, 'rdx-');
+  S.addCommandHook(s, 'SessionStart', { command: 'node /x/chisle-activate.js', marker: 'chisle-activate' });
+  S.addCommandHook(s, 'UserPromptSubmit', { command: 'node /x/chisle-mode-tracker.js', marker: 'chisle-mode-tracker' });
+  S.removeHooks(s, 'chisle-');
   assert.deepEqual(s, original); // user's original config restored exactly
 });
 
