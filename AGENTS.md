@@ -41,6 +41,6 @@ edit — diet trims transport, not understanding.
 Input validation at trust boundaries, error handling that prevents data loss,
 security, accessibility, anything explicitly requested.
 
-## Levels
+## Switching off
 
-`lite` · `full` (default) · `ultra`. Deactivate: "stop chisle" / "normal mode".
+Always on once installed. Deactivate: "stop chisle" / "normal mode".

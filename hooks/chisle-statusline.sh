@@ -21,7 +21,7 @@ MODE=$(printf '%s' "$MODE" | tr -cd 'a-z0-9-')
 
 # Whitelist — render nothing for unknown values rather than echo attacker bytes.
 case "$MODE" in
-  off|lite|full|ultra) ;;
+  off|on) ;;
   *) exit 0 ;;
 esac
 
@@ -85,10 +85,5 @@ if [ -f "$STATS" ] && [ ! -L "$STATS" ]; then
   fi
 fi
 
-# Orange badge + loading bars trailing outside the bracket
-if [ -z "$MODE" ] || [ "$MODE" = "full" ]; then
-  printf '\033[38;5;172m[CHISLE]\033[0m%s' "$LIMITS"
-else
-  SUFFIX=$(printf '%s' "$MODE" | tr '[:lower:]' '[:upper:]')
-  printf '\033[38;5;172m[CHISLE:%s]\033[0m%s' "$SUFFIX" "$LIMITS"
-fi
+# Orange badge + loading bars trailing outside the bracket. One mode, one badge.
+printf '\033[38;5;172m[CHISLE]\033[0m%s' "$LIMITS"

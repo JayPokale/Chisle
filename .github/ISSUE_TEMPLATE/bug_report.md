@@ -18,7 +18,6 @@ Expected behavior.
 **Environment**
 - Agent: Claude Code / Cursor / Codex / other
 - OS: macOS / Linux / Windows
-- Level: lite / full / ultra
 
 **Flag state** (if relevant)
 Output of: `cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.chisle-active"`

@@ -9,7 +9,7 @@ const {
   extractText, rebuildResponse, scrub, compress, transform, limitsFor, toolAllowed, processPayload, THRESHOLDS,
 } = require('../hooks/chisle-compress-output');
 
-const FULL = THRESHOLDS.full;
+const FULL = THRESHOLDS;
 
 function bigOutput(lines, prefix) {
   return Array.from({ length: lines }, (_, i) => `${prefix || 'line'} ${i} ${'x'.repeat(80)}`).join('\n');
@@ -78,19 +78,19 @@ test('scrub keeps short repeats and blank structure', () => {
 
 test('transform scrubs medium outputs below the elision threshold', () => {
   const noisy = Array(50).fill('\x1b[32m✓\x1b[0m ok').join('\n') + '\n' + 'tail '.repeat(300);
-  assert.ok(noisy.length < THRESHOLDS.full.maxChars);
-  const out = transform(noisy, THRESHOLDS.full);
+  assert.ok(noisy.length < THRESHOLDS.maxChars);
+  const out = transform(noisy, THRESHOLDS);
   assert.ok(out && out.length < noisy.length);
   assert.ok(!out.includes('\x1b['));
 });
 
 test('transform returns null when the win is trivial', () => {
   const clean = 'z'.repeat(2000);            // nothing to scrub, under maxChars
-  assert.equal(transform(clean, THRESHOLDS.full), null);
+  assert.equal(transform(clean, THRESHOLDS), null);
 });
 
 test('transform still elides oversized outputs after scrubbing', () => {
-  const out = transform(bigOutput(500), THRESHOLDS.full);
+  const out = transform(bigOutput(500), THRESHOLDS);
   assert.ok(out.includes('[chisle: elided'));
 });
 
@@ -102,19 +102,19 @@ test('identical consecutive tool output becomes a marker (isolated config dir)',
   process.env.CLAUDE_CONFIG_DIR = dir;
   try {
     const payload = { tool_name: 'Bash', session_id: 'sess-1', tool_response: 'FAIL test_x\n' + 'ctx '.repeat(1000) };
-    const first = processPayload(payload, 'full');
-    const second = processPayload(payload, 'full');
+    const first = processPayload(payload, 'on');
+    const second = processPayload(payload, 'on');
     assert.ok(second && second.includes('byte-identical to the previous Bash result'));
     assert.ok(second.includes('FAIL test_x'));          // first lines kept
     assert.notDeepEqual(first, second);                  // only the repeat is deduped
-    const third = processPayload({ tool_name: 'Bash', session_id: 'sess-1', tool_response: 'different '.repeat(300) }, 'full');
+    const third = processPayload({ tool_name: 'Bash', session_id: 'sess-1', tool_response: 'different '.repeat(300) }, 'on');
     assert.ok(third == null || !third.includes('byte-identical'));
     // New session must NOT dedup against the old one — the earlier copy is
     // not in the new session's context.
-    const newSession = processPayload({ ...payload, session_id: 'sess-2' }, 'full');
+    const newSession = processPayload({ ...payload, session_id: 'sess-2' }, 'on');
     assert.ok(newSession == null || !newSession.includes('byte-identical'));
     // No session_id (portability unknowns) → dedup skipped entirely.
-    const noSess = processPayload({ tool_name: 'Bash', tool_response: payload.tool_response }, 'full');
+    const noSess = processPayload({ tool_name: 'Bash', tool_response: payload.tool_response }, 'on');
     assert.ok(noSess == null || !noSess.includes('byte-identical'));
   } finally {
     if (saved !== undefined) process.env.CLAUDE_CONFIG_DIR = saved;
@@ -123,17 +123,17 @@ test('identical consecutive tool output becomes a marker (isolated config dir)',
   }
 });
 
-// ── limitsFor / modes ────────────────────────────────────────────────────────
+// ── limitsFor ────────────────────────────────────────────────────────────────
 
-test('tighter mode, tighter thresholds', () => {
-  assert.ok(THRESHOLDS.ultra.maxChars < THRESHOLDS.full.maxChars);
-  assert.ok(THRESHOLDS.full.maxChars < THRESHOLDS.lite.maxChars);
-  assert.equal(limitsFor('unknown-mode').maxChars, THRESHOLDS.full.maxChars);
+test('one threshold set, no levels', () => {
+  assert.equal(limitsFor().maxChars, THRESHOLDS.maxChars);
+  assert.equal(limitsFor().headLines, THRESHOLDS.headLines);
+  assert.equal(limitsFor().tailLines, THRESHOLDS.tailLines);
 });
 
 test('env vars override thresholds', () => {
   process.env.CHISLE_COMPRESS_MAX_CHARS = '1234';
-  assert.equal(limitsFor('full').maxChars, 1234);
+  assert.equal(limitsFor().maxChars, 1234);
   delete process.env.CHISLE_COMPRESS_MAX_CHARS;
 });
 
@@ -163,12 +163,12 @@ test('CHISLE_COMPRESS_TOOLS overrides the allowlist', () => {
 // ── processPayload — full pipeline ───────────────────────────────────────────
 
 test('processPayload compresses a big Bash output', () => {
-  const out = processPayload({ tool_name: 'Bash', tool_response: { stdout: bigOutput(500) } }, 'full');
+  const out = processPayload({ tool_name: 'Bash', tool_response: { stdout: bigOutput(500) } }, 'on');
   assert.ok(out && out.includes('[chisle: elided'));
 });
 
 test('processPayload passes small outputs through (null)', () => {
-  assert.equal(processPayload({ tool_name: 'Bash', tool_response: 'tiny' }, 'full'), null);
+  assert.equal(processPayload({ tool_name: 'Bash', tool_response: 'tiny' }, 'on'), null);
 });
 
 test('processPayload does nothing when mode is off or missing', () => {
@@ -179,15 +179,15 @@ test('processPayload does nothing when mode is off or missing', () => {
 
 test('CHISLE_COMPRESS=0 is a kill switch', () => {
   process.env.CHISLE_COMPRESS = '0';
-  assert.equal(processPayload({ tool_name: 'Bash', tool_response: bigOutput(500) }, 'full'), null);
+  assert.equal(processPayload({ tool_name: 'Bash', tool_response: bigOutput(500) }, 'on'), null);
   delete process.env.CHISLE_COMPRESS;
 });
 
 test('processPayload never throws on garbage', () => {
-  assert.equal(processPayload(null, 'full'), null);
-  assert.equal(processPayload({}, 'full'), null);
-  assert.equal(processPayload({ tool_name: 'Bash' }, 'full'), null);
-  assert.equal(processPayload({ tool_name: 'Bash', tool_response: 12345 }, 'full'), null);
+  assert.equal(processPayload(null, 'on'), null);
+  assert.equal(processPayload({}, 'on'), null);
+  assert.equal(processPayload({ tool_name: 'Bash' }, 'on'), null);
+  assert.equal(processPayload({ tool_name: 'Bash', tool_response: 12345 }, 'on'), null);
 });
 
 // ── rebuildResponse: the replacement must match the tool's output shape ──────

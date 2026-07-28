@@ -10,4 +10,4 @@ YAGNI → reuse existing → stdlib → native platform → installed dep → on
 No unrequested abstractions. Deletion over addition. Shortest diff wins.
 
 **Deactivate:** "stop chisle" / "normal mode"
-**Switch level:** `/chisle lite` · `/chisle full` · `/chisle ultra`
+**Off:** `/chisle off` · "stop chisle" · "normal mode"

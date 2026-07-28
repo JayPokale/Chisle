@@ -5,7 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getDefaultMode, getClaudeDir, VALID_MODES, safeWriteFlag, readFlag } = require('./chisle-config');
+const { getDefaultMode, getClaudeDir, safeWriteFlag, readFlag } = require('./chisle-config');
 
 const claudeDir = getClaudeDir();
 const flagPath = path.join(claudeDir, '.chisle-active');
@@ -28,28 +28,16 @@ process.stdin.on('end', () => {
       }
     }
 
-    // /chisle slash commands
+    // /chisle slash commands. No level argument any more: /chisle on,
+    // /chisle off, nothing else.
     if (/^\/chisle(\b|:chisle\b)/.test(promptLower)) {
       const parts = promptLower.split(/\s+/);
-      const cmd = parts[0];
       const arg = parts[1] || '';
-
-      let mode = null;
-
-      if (cmd === '/chisle' || cmd === '/chisle:chisle') {
-        if (!arg) {
-          mode = getDefaultMode();
-        } else if (arg === 'off' || arg === 'stop' || arg === 'disable') {
-          mode = 'off';
-        } else if (VALID_MODES.includes(arg)) {
-          mode = arg;
-        }
-      }
-
-      if (mode && mode !== 'off') {
-        safeWriteFlag(flagPath, mode);
-      } else if (mode === 'off') {
+      if (arg === 'off' || arg === 'stop' || arg === 'disable') {
         try { fs.unlinkSync(flagPath); } catch (e) {}
+      } else {
+        const mode = getDefaultMode();
+        if (mode !== 'off') safeWriteFlag(flagPath, mode);
       }
     }
 
@@ -67,17 +55,13 @@ process.stdin.on('end', () => {
     const activeMode = readFlag(flagPath);
     if (activeMode && activeMode !== 'off') {
       // Inject compact reminder — keeps chisle visible across context compression
-      const ladderHint = activeMode === 'ultra'
-        ? 'YAGNI extremist: delete before add, challenge req in same breath.'
-        : 'Code: YAGNI ladder first (stdlib → native → dep → one line → min code).';
-
       process.stdout.write(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: 'UserPromptSubmit',
           additionalContext:
-            'CHISLE MODE ACTIVE (' + activeMode + '). ' +
+            'CHISLE ACTIVE. ' +
             'Prose: drop articles/filler/pleasantries/hedging. Fragments OK. ' +
-            ladderHint + ' ' +
+            'Code: YAGNI ladder first (reuse → stdlib → native → dep → one line → min code). ' +
             'Code/commits/security: write normal.'
         }
       }));

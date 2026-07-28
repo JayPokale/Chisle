@@ -7,7 +7,7 @@
 // reads ~/.claude/projects/**/*.jsonl and prints a table.
 //
 // Usage:
-//   node benchmarks/replay-compress.js            # mode=full
+//   node benchmarks/replay-compress.js
 //   node benchmarks/replay-compress.js ultra      # any of: lite full ultra
 
 const fs = require('fs');
@@ -15,8 +15,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { extractText, transform, limitsFor, toolAllowed } = require('../hooks/chisle-compress-output');
 
-const mode = process.argv[2] || 'full';
-const limits = limitsFor(mode);
+const limits = limitsFor();
 const root = process.env.CLAUDE_CONFIG_DIR
   ? path.join(process.env.CLAUDE_CONFIG_DIR, 'projects')
   : path.join(require('os').homedir(), '.claude', 'projects');
@@ -79,7 +78,7 @@ walk(root);
 
 const saved = t.before - t.after + t.dedupChars;
 const pct = (a, b) => b ? (100 * a / b).toFixed(1) + '%' : 'n/a';
-console.log(`chisle-compress replay — mode=${mode} (maxChars=${limits.maxChars}, head=${limits.headLines}, tail=${limits.tailLines})`);
+console.log(`chisle-compress replay — maxChars=${limits.maxChars}, head=${limits.headLines}, tail=${limits.tailLines}`);
 console.log(`transcript root: ${root}\n`);
 console.log(`tool_results scanned:        ${t.results.toLocaleString('en-US')}  (${t.chars.toLocaleString('en-US')} chars)`);
 console.log(`scrubbed/elided outputs:     ${t.eligible.toLocaleString('en-US')}  (${t.before.toLocaleString('en-US')} → ${t.after.toLocaleString('en-US')} chars)`);

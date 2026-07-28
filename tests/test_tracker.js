@@ -22,7 +22,7 @@ function runTracker(prompt, { preActive } = {}) {
   try {
     execFileSync(process.execPath, [TRACKER], {
       input: JSON.stringify({ prompt }),
-      env: { ...process.env, CLAUDE_CONFIG_DIR: dir, CHISLE_DEFAULT_MODE: 'full' },
+      env: { ...process.env, CLAUDE_CONFIG_DIR: dir, CHISLE_DEFAULT_MODE: 'on' },
       encoding: 'utf8',
       timeout: 5000,
     });
@@ -37,37 +37,40 @@ function runTracker(prompt, { preActive } = {}) {
 // ── Activation ───────────────────────────────────────────────────────────────
 
 test('/chisle activates at default level', () => {
-  assert.equal(runTracker('/chisle'), 'full');
+  assert.equal(runTracker('/chisle'), 'on');
 });
 
-test('/chisle ultra activates ultra', () => {
-  assert.equal(runTracker('/chisle ultra'), 'ultra');
+test('a leftover level argument still just activates', () => {
+  // /chisle lite|full|ultra used to select an intensity. One mode now, so any
+  // stray argument is ignored rather than rejected — old muscle memory works.
+  assert.equal(runTracker('/chisle full'), 'on');
+  assert.equal(runTracker('/chisle ultra'), 'on');
 });
 
 test('natural language "activate chisle" activates', () => {
-  assert.equal(runTracker('please activate chisle'), 'full');
+  assert.equal(runTracker('please activate chisle'), 'on');
 });
 
 // ── Deactivation ─────────────────────────────────────────────────────────────
 
 test('"stop chisle" deactivates', () => {
-  assert.equal(runTracker('stop chisle', { preActive: 'full' }), null);
+  assert.equal(runTracker('stop chisle', { preActive: 'on' }), null);
 });
 
 test('"/chisle off" deactivates', () => {
-  assert.equal(runTracker('/chisle off', { preActive: 'full' }), null);
+  assert.equal(runTracker('/chisle off', { preActive: 'on' }), null);
 });
 
 test('"normal mode" deactivates', () => {
-  assert.equal(runTracker('normal mode', { preActive: 'full' }), null);
+  assert.equal(runTracker('normal mode', { preActive: 'on' }), null);
 });
 
 // ── Regression: must NOT deactivate on unrelated "off"/"stop" ─────────────────
 
 test('REGRESSION: "use chisle to turn off the logger" stays active', () => {
-  assert.equal(runTracker('use chisle to turn off the logger', { preActive: 'full' }), 'full');
+  assert.equal(runTracker('use chisle to turn off the logger', { preActive: 'on' }), 'on');
 });
 
 test('REGRESSION: "chisle please stop the server" stays active', () => {
-  assert.equal(runTracker('chisle please stop the server', { preActive: 'full' }), 'full');
+  assert.equal(runTracker('chisle please stop the server', { preActive: 'on' }), 'on');
 });

@@ -4,13 +4,16 @@
 // Resolution order for default mode:
 //   1. CHISLE_DEFAULT_MODE environment variable
 //   2. User config: $XDG_CONFIG_HOME/chisle/config.json, ~/.config/chisle/config.json
-//   3. 'full'
+//   3. 'on'
 
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const VALID_MODES = ['off', 'lite', 'full', 'ultra'];
+// One mode. The intensity levels are gone: three dials on a tool whose whole
+// argument is "fewer knobs" was the joke writing itself, and the middle setting
+// was the only one ever benchmarked. 'on' or 'off'.
+const VALID_MODES = ['off', 'on'];
 
 function getClaudeDir() {
   return process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
@@ -48,7 +51,7 @@ function getDefaultMode() {
   }
   const userMode = readModeFromConfigFile(path.join(getConfigDir(), 'config.json'));
   if (userMode) return userMode;
-  return 'full';
+  return 'on';
 }
 
 // Symlink-safe, atomic flag write with 0600 perms.

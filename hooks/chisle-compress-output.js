@@ -19,11 +19,11 @@
 //   scrub  (output > 1k)  — lossless: strip ANSI escapes, collapse blank-line
 //                           runs, collapse ≥4 identical consecutive lines to
 //                           one + "[repeated N×]". No information lost.
-//   elide  (output > mode threshold) — head + tail + error salvage, as above.
+//   elide  (output > threshold) — head + tail + error salvage, as above.
 // Plus dedup: a tool output byte-identical to that tool's immediately previous
 // output is replaced by a short marker — the content is already in context.
 //
-// Compression tracks the /chisle mode flag (off → untouched). Tunables via env:
+// Compression follows the /chisle flag (off → untouched). Tunables via env:
 //   CHISLE_COMPRESS=0                 — kill switch
 //   CHISLE_COMPRESS_SCRUB=0           — disable the lossless scrub tier
 //   CHISLE_COMPRESS_DEDUP=0           — disable duplicate-output markers
@@ -39,12 +39,10 @@ const path = require('path');
 const crypto = require('crypto');
 const { getClaudeDir, readFlag } = require('./chisle-config');
 
-// Mode → thresholds. Tighter mode, tighter budget. Env overrides all.
-const THRESHOLDS = {
-  lite:  { maxChars: 16000, headLines: 100, tailLines: 80 },
-  full:  { maxChars: 8000,  headLines: 60,  tailLines: 40 },
-  ultra: { maxChars: 5000,  headLines: 40,  tailLines: 30 },
-};
+// One threshold. Env overrides all.
+// These are the values the old 'full' level used — the default,
+// and the only one the published benchmarks ever ran at.
+const THRESHOLDS = { maxChars: 8000, headLines: 60, tailLines: 40 };
 
 // Tools whose output is safe to elide. Read/Edit/Write are absent on purpose:
 // their output feeds exact-match edits. mcp__* are read-only info tools.
@@ -66,8 +64,8 @@ function envInt(name, fallback) {
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
-function limitsFor(mode) {
-  const base = THRESHOLDS[mode] || THRESHOLDS.full;
+function limitsFor() {
+  const base = THRESHOLDS;
   return {
     maxChars: envInt('CHISLE_COMPRESS_MAX_CHARS', base.maxChars),
     headLines: envInt('CHISLE_COMPRESS_HEAD_LINES', base.headLines),
@@ -263,7 +261,7 @@ function processPayload(payload, mode) {
   if (!text) return null;
   const dup = dedupCheck(payload.tool_name, text, payload.session_id);
   if (dup != null && dup.length < text.length) return dup;
-  return transform(text, limitsFor(mode));
+  return transform(text, limitsFor());
 }
 
 function main() {

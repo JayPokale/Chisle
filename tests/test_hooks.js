@@ -14,10 +14,8 @@ const { VALID_MODES, safeWriteFlag, readFlag, getDefaultMode } = require('../hoo
 
 test('VALID_MODES contains expected levels', () => {
   assert.ok(VALID_MODES.includes('off'));
-  assert.ok(VALID_MODES.includes('lite'));
-  assert.ok(VALID_MODES.includes('full'));
-  assert.ok(VALID_MODES.includes('ultra'));
-  assert.equal(VALID_MODES.length, 4);
+  assert.ok(VALID_MODES.includes('on'));
+  assert.equal(VALID_MODES.length, 2);
 });
 
 // ── safeWriteFlag / readFlag ─────────────────────────────────────────────────
@@ -29,8 +27,8 @@ function tmpDir() {
 test('safeWriteFlag writes and readFlag reads back', () => {
   const dir = tmpDir();
   const flagPath = path.join(dir, '.chisle-active');
-  safeWriteFlag(flagPath, 'full');
-  assert.equal(readFlag(flagPath), 'full');
+  safeWriteFlag(flagPath, 'on');
+  assert.equal(readFlag(flagPath), 'on');
   fs.rmSync(dir, { recursive: true });
 });
 
@@ -50,7 +48,7 @@ test('readFlag returns null for symlink', () => {
   const dir = tmpDir();
   const flagPath = path.join(dir, '.chisle-active');
   const target = path.join(dir, 'target');
-  fs.writeFileSync(target, 'full', { mode: 0o600 });
+  fs.writeFileSync(target, 'on', { mode: 0o600 });
   fs.symlinkSync(target, flagPath);
   assert.equal(readFlag(flagPath), null);
   fs.rmSync(dir, { recursive: true });
@@ -59,7 +57,7 @@ test('readFlag returns null for symlink', () => {
 test('readFlag returns null for oversized file', () => {
   const dir = tmpDir();
   const flagPath = path.join(dir, '.chisle-active');
-  fs.writeFileSync(flagPath, 'full' + 'x'.repeat(100), { mode: 0o600 });
+  fs.writeFileSync(flagPath, 'on' + 'x'.repeat(100), { mode: 0o600 });
   assert.equal(readFlag(flagPath), null);
   fs.rmSync(dir, { recursive: true });
 });
@@ -70,7 +68,7 @@ test('safeWriteFlag refuses to overwrite a symlink', () => {
   const target = path.join(dir, 'target');
   fs.writeFileSync(target, '', { mode: 0o600 });
   fs.symlinkSync(target, flagPath);
-  safeWriteFlag(flagPath, 'ultra'); // must not throw, must not overwrite
+  safeWriteFlag(flagPath, 'on'); // must not throw, must not overwrite
   assert.equal(fs.readFileSync(target, 'utf8'), ''); // target untouched
   fs.rmSync(dir, { recursive: true });
 });
@@ -87,10 +85,10 @@ test('getDefaultMode returns full by default', () => {
 });
 
 test('getDefaultMode respects CHISLE_DEFAULT_MODE env var', () => {
-  process.env.CHISLE_DEFAULT_MODE = 'lite';
-  assert.equal(getDefaultMode(), 'lite');
-  process.env.CHISLE_DEFAULT_MODE = 'ultra';
-  assert.equal(getDefaultMode(), 'ultra');
+  process.env.CHISLE_DEFAULT_MODE = 'off';
+  assert.equal(getDefaultMode(), 'off');
+  process.env.CHISLE_DEFAULT_MODE = 'on';
+  assert.equal(getDefaultMode(), 'on');
   delete process.env.CHISLE_DEFAULT_MODE;
 });
 
@@ -141,7 +139,7 @@ function activate(stdin) {
   try {
     return execFileSync(process.execPath, [ACTIVATE], {
       input: stdin,
-      env: { ...process.env, CLAUDE_CONFIG_DIR: dir, CHISLE_DEFAULT_MODE: 'full', CHISLE_UPDATE_CHECK: '0' },
+      env: { ...process.env, CLAUDE_CONFIG_DIR: dir, CHISLE_DEFAULT_MODE: 'on', CHISLE_UPDATE_CHECK: '0' },
       encoding: 'utf8',
       timeout: 5000,
     });
@@ -153,7 +151,7 @@ function activate(stdin) {
 test('REGRESSION #2: startup gets the full ruleset', () => {
   const out = activate(JSON.stringify({ source: 'startup' }));
   assert.ok(out.length > 2000, `expected full ruleset, got ${out.length} chars`);
-  assert.match(out, /CHISLE MODE ACTIVE/);
+  assert.match(out, /CHISLE ACTIVE/);
 });
 
 test('REGRESSION #2: resume/clear/compact do not re-inject the ruleset', () => {
@@ -161,7 +159,7 @@ test('REGRESSION #2: resume/clear/compact do not re-inject the ruleset', () => {
     const out = activate(JSON.stringify({ source }));
     assert.ok(out.length < 400, `${source} re-injected ${out.length} chars`);
     // still has to announce the mode, or the session silently loses it
-    assert.match(out, /CHISLE MODE ACTIVE/);
+    assert.match(out, /CHISLE ACTIVE/);
   }
 });
 

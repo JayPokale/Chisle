@@ -1,8 +1,7 @@
 # chisle slash command
 # Maximum-efficiency dev mode
-# Usage: /chisle [lite|full|ultra]
+# Usage: /chisle  ·  /chisle off
 
 [command]
 name = "chisle"
-description = "Activate chisle mode: zero-fluff prose + YAGNI ladder code decisions. Levels: lite, full (default), ultra."
-argument-hint = "[lite|full|ultra]"
+description = "Activate chisle: zero-fluff prose + YAGNI ladder code decisions. /chisle off to stop."

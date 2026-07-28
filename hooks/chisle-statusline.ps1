@@ -21,10 +21,8 @@ $mode = $raw.Substring(0, [Math]::Min(64, $raw.Length)).ToLower()
 $mode = ($mode -replace '[^a-z0-9-]', '')
 
 switch ($mode) {
-  'off'   { }
-  'lite'  { }
-  'full'  { }
-  'ultra' { }
+  'off' { }
+  'on'  { }
   default { exit 0 }
 }
 
@@ -47,8 +45,5 @@ if ($sitem -and -not ($sitem.Attributes -band [IO.FileAttributes]::ReparsePoint)
   }
 }
 
-if ([string]::IsNullOrEmpty($mode) -or $mode -eq 'full') {
-  Write-Host -NoNewline "$orange[CHISLE]$reset$suffix"
-} else {
-  Write-Host -NoNewline ("{0}[CHISLE:{1}]{2}{3}" -f $orange, $mode.ToUpper(), $reset, $suffix)
-}
+# One mode, one badge.
+Write-Host -NoNewline "$orange[CHISLE]$reset$suffix"

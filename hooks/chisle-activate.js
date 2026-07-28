@@ -3,7 +3,7 @@
 //
 // 1. Writes flag at $CLAUDE_CONFIG_DIR/.chisle-active
 // 2. Resets session turn counter
-// 3. Emits chisle ruleset (filtered to active level) as system context
+// 3. Emits the chisle ruleset as system context
 // 4. Nudges user to configure statusline if missing
 // 5. Major-version update notice (majors only, cached, fail-silent)
 
@@ -83,14 +83,14 @@ function run(source) {
   // 2. Resumed/cleared/compacted session: reactivate, don't re-teach.
   if (!FULL_INJECT_SOURCES.has(source)) {
     process.stdout.write(
-      'CHISLE MODE ACTIVE — level: ' + mode + ' (resumed). ' +
+      'CHISLE ACTIVE (resumed). ' +
       'Ruleset already in context; see the chisle skill if it is not.'
     );
     return;
   }
 
-  // 3. Read SKILL.md — single source of truth for behavior
-  const modeLabel = mode;
+  // 3. Read SKILL.md — single source of truth for behaviour. No level
+  // filtering any more: there is one mode, so the whole body ships.
   let skillContent = '';
   try {
     skillContent = fs.readFileSync(
@@ -101,31 +101,14 @@ function run(source) {
   let output;
 
   if (skillContent) {
-    const body = skillContent.replace(/^---[\s\S]*?---\s*/, '');
-
-    const filtered = body.split('\n').reduce((acc, line) => {
-      const tableRowMatch = line.match(/^\|\s*\*\*(\S+?)\*\*\s*\|/);
-      if (tableRowMatch) {
-        if (tableRowMatch[1] === modeLabel) acc.push(line);
-        return acc;
-      }
-      const exampleMatch = line.match(/^- (\S+?):\s/);
-      if (exampleMatch) {
-        if (exampleMatch[1] === modeLabel) acc.push(line);
-        return acc;
-      }
-      acc.push(line);
-      return acc;
-    }, []);
-
-    output = 'CHISLE MODE ACTIVE — level: ' + modeLabel + '\n\n' + filtered.join('\n');
+    output = 'CHISLE ACTIVE\n\n' + skillContent.replace(/^---[\s\S]*?---\s*/, '');
   } else {
     // Fallback ruleset when SKILL.md not found
     output =
-      'CHISLE MODE ACTIVE — level: ' + modeLabel + '\n\n' +
+      'CHISLE ACTIVE\n\n' +
       'Chisle: maximum-efficiency dev mode. Zero-fluff prose. YAGNI-first code.\n\n' +
       '## Persistence\n\n' +
-      'ACTIVE EVERY RESPONSE. Off only: "stop chisle" / "normal mode". Switch: `/chisle lite|full|ultra`.\n\n' +
+      'ACTIVE EVERY RESPONSE. Off only: "stop chisle" / "normal mode".\n\n' +
       '## Prose\n\n' +
       'Drop articles/filler/pleasantries/hedging. Fragments OK. Technical terms exact.\n\n' +
       '## Code\n\n' +
@@ -148,8 +131,8 @@ function run(source) {
       const statusLineSnippet =
         '"statusLine": { "type": "command", "command": ' + JSON.stringify(command) + ' }';
       output += '\n\n' +
-        'STATUSLINE SETUP NEEDED: The chisle plugin includes a statusline badge showing active mode ' +
-        '(e.g. [CHISLE], [CHISLE:ULTRA]) with token savings. It is not configured yet. ' +
+        'STATUSLINE SETUP NEEDED: The chisle plugin includes a statusline badge ' +
+        '([CHISLE]) with token savings. It is not configured yet. ' +
         'To enable, add this to ' + settingsPath + ': ' +
         statusLineSnippet + ' ' +
         'Proactively offer to set this up for the user on first interaction.';
