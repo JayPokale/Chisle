@@ -48,7 +48,9 @@
     "check:rules": "node scripts/build-rules.js --check",
     "build:chart": "node scripts/build-chart.js",
     "check:chart": "node scripts/build-chart.js --check",
-    "bench": "bash benchmarks/run-live.sh"
+    "bench": "bash benchmarks/run-live.sh",
+    "build:samples": "node scripts/build-samples.js",
+    "check:samples": "node scripts/build-samples.js --check"
   },
   "files": [
     "bin/",

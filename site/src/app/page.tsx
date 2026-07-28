@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
 import Axes from "@/components/Axes";
 import Pipeline from "@/components/Pipeline";
+import Compare from "@/components/Compare";
 import Ladder from "@/components/Ladder";
 import Terminal from "@/components/Terminal";
 import Benchmarks from "@/components/Benchmarks";
@@ -19,6 +20,7 @@ export default function Page() {
       <Axes />
       <Pipeline />
       <Terminal />
+      <Compare />
       <Ladder />
       <Benchmarks />
       <Community />
