@@ -82,7 +82,7 @@ export default function Benchmarks() {
             Same 20 cells, split two ways. Lower is cheaper; above 100% means the tool made the
             model write <em>more</em> than using nothing at all.
           </p>
-          <div className="pane-scroll mt-6 overflow-x-auto">
+          <div className="mt-6 overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="text-xs uppercase tracking-wide text-dim">
                 <tr>

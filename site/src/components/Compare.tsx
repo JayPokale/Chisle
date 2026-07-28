@@ -80,7 +80,7 @@ export default function Compare() {
                   {base.tokens.toLocaleString()} tok · {base.lines} lines
                 </span>
               </header>
-              <pre className="pane-scroll max-h-96 flex-1 overflow-auto px-4 py-3 font-mono text-[11.5px] leading-relaxed text-dim">
+              <pre className="max-h-96 flex-1 overflow-auto px-4 py-3 font-mono text-[11.5px] leading-relaxed text-dim">
                 {base.text}
                 {base.truncated && "\n\n… truncated for the page; token count is the full response"}
               </pre>
@@ -113,7 +113,7 @@ export default function Compare() {
                   </span>
                 </span>
               </header>
-              <pre className="pane-scroll max-h-96 flex-1 overflow-auto px-4 py-3 font-mono text-[11.5px] leading-relaxed">
+              <pre className="max-h-96 flex-1 overflow-auto px-4 py-3 font-mono text-[11.5px] leading-relaxed">
                 {cur.text}
                 {cur.truncated && "\n\n… truncated for the page; token count is the full response"}
               </pre>

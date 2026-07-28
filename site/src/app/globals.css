@@ -58,12 +58,14 @@ body {
    scrollbar-gutter keeps the page from shifting when content grows past the
    fold. */
 
+/* Transparent track, fully rounded thumb, thumb in the theme accent.
+   Applies to the page and every scrollable panel alike. */
 html {
-  /* reserve the gutter so the page doesn't jump when content grows past the fold */
+  /* reserve the gutter so the page doesn't jump when content crosses the fold */
   scrollbar-gutter: stable;
   /* Firefox */
   scrollbar-width: thin;
-  scrollbar-color: var(--color-line) var(--color-panel);
+  scrollbar-color: var(--color-amber) transparent;
 }
 
 ::-webkit-scrollbar {
@@ -71,78 +73,16 @@ html {
   height: 10px;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--color-panel);
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-line);
-  border-radius: 5px;
-  transition: background-color 0.2s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
   background: var(--color-amber);
+  border-radius: 999px;
 }
 
-::-webkit-scrollbar-corner {
-  background: var(--color-panel);
-}
-
-/* Scrollable panels: transcript panes, wide tables, the pipeline SVG. Narrower,
-   and quiet until the panel itself is hovered. */
-.pane-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-line) transparent;
-}
-
-.pane-scroll::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.pane-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.pane-scroll::-webkit-scrollbar-thumb {
-  background: var(--color-line);
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.pane-scroll:hover::-webkit-scrollbar-thumb {
-  background: var(--color-dim);
-}
-
-.pane-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--color-amber);
-}
-
-/* The terminal stays dark in both themes, so the page tokens would wash out
-   against it — it gets the terminal palette instead. */
-.pane-scroll-term {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-term-line) transparent;
-}
-
-.pane-scroll-term::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.pane-scroll-term::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.pane-scroll-term::-webkit-scrollbar-thumb {
-  background: var(--color-term-line);
-  border-radius: 4px;
-}
-
-.pane-scroll-term::-webkit-scrollbar-thumb:hover {
-  background: var(--color-term-amber);
-}
 
 .caret::after {
   content: "▌";
