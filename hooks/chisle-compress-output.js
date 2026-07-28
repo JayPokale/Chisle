@@ -225,6 +225,32 @@ function transform(text, limits) {
   return text.length - t.length >= MIN_WIN ? t : null;
 }
 
+// Put the compressed text back into the ORIGINAL response shape.
+//
+// Claude Code validates updatedToolOutput against the tool's own output schema
+// before applying it. Bash results are objects ({stdout, stderr, ...}), so
+// handing back a bare string is rejected on every call — the hook appears to
+// work, logs savings, and the model still receives the full output. Returning
+// null (skip) is always safer than emitting a shape the harness will refuse.
+// Reported with the transcript evidence by @sovdchains (#3).
+function rebuildResponse(response, updated) {
+  if (response == null || typeof response === 'string') return updated;
+  if (typeof response === 'object' && !Array.isArray(response)) {
+    for (const key of ['stdout', 'output', 'content', 'text', 'result']) {
+      if (typeof response[key] === 'string') {
+        const out = { ...response, [key]: updated };
+        // extractText already folded stderr into the compressed text; leaving
+        // the original stderr in place would duplicate it.
+        if (key === 'stdout' && typeof response.stderr === 'string') out.stderr = '';
+        return out;
+      }
+    }
+  }
+  // Unrecognized shape (e.g. MCP content-block arrays). Skip rather than guess:
+  // a wrong shape is silently rejected, which is the bug this function fixes.
+  return null;
+}
+
 // Full pipeline on one hook payload → updated output string, or null to keep
 // the original. Pure given (payload, mode, env) except dedup state.
 function processPayload(payload, mode) {
@@ -249,12 +275,18 @@ function main() {
       const mode = readFlag(path.join(getClaudeDir(), '.chisle-active'));
       const updated = processPayload(payload, mode);
       if (updated == null) return;
-      const original = extractText(payload.tool_response != null ? payload.tool_response : payload.tool_output);
+      const response = payload.tool_response != null ? payload.tool_response : payload.tool_output;
+      const rebuilt = rebuildResponse(response, updated);
+      // Shape we can't safely rebuild — emit nothing and count nothing.
+      if (rebuilt == null) return;
+      const original = extractText(response);
+      // Only after we know a replacement is actually going out, so the stats
+      // file stops crediting savings the harness never applied.
       recordSavings(original.length - updated.length);
       process.stdout.write(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: 'PostToolUse',
-          updatedToolOutput: updated,
+          updatedToolOutput: rebuilt,
         },
       }));
     } catch (e) {} // silent — never break the tool pipeline
@@ -263,4 +295,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { extractText, scrub, compress, transform, limitsFor, toolAllowed, processPayload, THRESHOLDS, SAFE_TOOLS };
+module.exports = { extractText, rebuildResponse, scrub, compress, transform, limitsFor, toolAllowed, processPayload, THRESHOLDS, SAFE_TOOLS };
