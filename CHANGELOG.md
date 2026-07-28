@@ -5,6 +5,32 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+- **Tool-output compression never actually applied.** The `PostToolUse` hook
+  returned the compressed text as a bare string, but Claude Code validates
+  `updatedToolOutput` against the tool's own output schema — and object-shaped
+  results (`Bash` → `{stdout, stderr, …}`) rejected it every time with
+  `expected object, received string`. The hook ran, reported savings, and the
+  model still received the full output. `rebuildResponse()` now puts the
+  compressed text back into the original shape and skips shapes it cannot
+  rebuild rather than emitting a replacement the harness will refuse.
+  Found and diagnosed with transcript evidence, plus the fix, by
+  [@sovdchains](https://github.com/sovdchains) (#3).
+- **The stats file counted savings that never happened.** `recordSavings()`
+  ran before the replacement was emitted, so `.chisle-compress-stats.json` and
+  the statusline `⇣` badge credited every compression the harness went on to
+  reject. It now records only when a replacement is actually sent. Same report
+  (#3).
+- **The full ruleset was re-injected on every resume, clear and compact.**
+  `SessionStart` matches `startup|resume|clear|compact`, and the hook never
+  read `source`, so all four re-sent the whole ~1.6k-token ruleset. Only
+  `startup` now sends it; the rest get a 27-token reactivation line, since the
+  per-turn `UserPromptSubmit` reminder already restates the active behaviour.
+  Measured across 173 real sessions — including the observation that the
+  overhead was cancelling most of the compressor's savings, and that the
+  standing instruction load was competing with the user's actual requests — by
+  [@enc0ded](https://github.com/enc0ded) (#2).
+
 ### Changed
 - **Renamed project: RDXmin → Chisle.** Package, plugin, skills
   (`chisle`, `chisle-audit`, `chisle-review`, `chisle-help`), commands
