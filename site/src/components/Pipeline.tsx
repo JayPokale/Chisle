@@ -23,7 +23,7 @@ export default function Pipeline() {
         </Reveal>
 
         <Reveal delay={0.08}>
-          <div className="mt-10 overflow-x-auto">
+          <div className="pane-scroll mt-10 overflow-x-auto">
             <svg
               viewBox="0 0 860 330"
               className="min-w-[680px] w-full"
