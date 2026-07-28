@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Reveal from "./Reveal";
 
 const AXES = [
@@ -5,27 +8,43 @@ const AXES = [
     name: "Terse persona",
     what: "How the model writes",
     body: "Senior-dev voice: fragments over sentences, YAGNI-first code, reuse before new code. Three levels — /chisle lite, full, ultra. Commits and security warnings stay verbose on purpose.",
+    demo: [
+      ["lite", "Component re-renders because you create a new object reference each render. Wrap it in `useMemo`."],
+      ["full", "New object ref each render. Inline object prop = new ref = re-render. `useMemo`."],
+      ["ultra", "Inline obj prop → new ref → re-render. `useMemo`. Why inline object at all?"],
+    ],
   },
   {
     name: "Output compressor",
     what: "What survives into context",
     body: "A PostToolUse hook shrinks tool results before the model reads them: ANSI scrub, head + tail elide with error-line salvage, same-session dedup. Never touches Read, Edit, or Write.",
+    demo: [
+      ["scrub", "strips ANSI escapes, collapses blank runs and `line repeated N×` — lossless"],
+      ["elide", "oversized output → head + tail, error-like lines salvaged from the cut"],
+      ["dedup", "byte-identical repeat of a tool's previous output → one-line marker"],
+    ],
   },
   {
     name: "Context diet",
     what: "What gets read at all",
     body: "Rules that teach the model to fetch the slice, not the file: grep first, sliced reads, filter at the source, never re-read what's already in context.",
+    demo: [
+      ["before", "ls -R  ·  git log  ·  Read(whole file)"],
+      ["after", "ls dir  ·  git log --oneline -10  ·  Read(offset, limit)"],
+      ["why", "whole-file reads were 5.6M chars in the measured corpus, and cannot be compressed without breaking later edits"],
+    ],
   },
 ];
 
 const EXTRAS = [
-  { name: "Live savings statusline", body: "A ⇣9k tok badge showing measured chars elided — real baseline, not an estimate." },
+  { name: "Live savings statusline", body: "A ⇣9k tok badge showing chars actually elided. Before v2.0.0 it counted compressions the harness went on to reject — that is fixed, and it now records only what is really applied." },
   { name: "Works beyond Claude Code", body: "Generated rulesets for Cursor, Windsurf, Cline, Kiro, and Copilot ship in the same install." },
   { name: "Tested where it matters", body: "The compressor is where a bug corrupts files — it's covered by the test suite, with a hard allowlist." },
   { name: "Easy off-switch", body: "\"stop chisle\" for the persona, CHISLE_COMPRESS=0 for the hook, npx chisle --uninstall for everything." },
 ];
 
 export default function Axes() {
+  const [open, setOpen] = useState<number | null>(null);
   return (
     <section id="features" className="mx-auto max-w-5xl px-5 py-24">
       <Reveal>
@@ -40,11 +59,28 @@ export default function Axes() {
       <div className="mt-12 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-3">
         {AXES.map((a, i) => (
           <Reveal key={a.name} delay={i * 0.08}>
-            <div className="h-full bg-paper p-6">
+            <button
+              onClick={() => setOpen(open === i ? null : i)}
+              aria-expanded={open === i}
+              className="h-full w-full bg-paper p-6 text-left transition-colors hover:bg-panel/50"
+            >
               <p className="text-xs text-amber">{a.what}</p>
               <h3 className="mt-2 text-lg font-semibold">{a.name}</h3>
               <p className="mt-2.5 text-sm leading-relaxed text-dim">{a.body}</p>
-            </div>
+              <p className="mt-3 font-mono text-[10.5px] text-amber">
+                {open === i ? "− hide" : "+ show it"}
+              </p>
+              {open === i && (
+                <dl className="mt-3 space-y-2 border-t border-line pt-3">
+                  {a.demo.map(([k, v]) => (
+                    <div key={k}>
+                      <dt className="font-mono text-[10px] uppercase tracking-wide text-dim">{k}</dt>
+                      <dd className="mt-0.5 font-mono text-[11px] leading-relaxed">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+            </button>
           </Reveal>
         ))}
       </div>
