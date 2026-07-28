@@ -55,8 +55,16 @@ async function latestVersion(cachePath) {
   } catch (e) { return null; }
 }
 
+// SessionStart fires on startup, resume, clear and compact. Only a genuinely
+// new session needs the whole ruleset: on the other three the conversation
+// already carries it, and the UserPromptSubmit reminder re-states the active
+// behaviour every turn anyway. Re-sending ~1.6k tokens each time was the bulk
+// of the plugin's own overhead and piled standing instructions on top of what
+// the user actually asked for. Measured and reported by @enc0ded (#2).
+const FULL_INJECT_SOURCES = new Set(['startup']);
+
 // ── Hook body ───────────────────────────────────────────────────────────────
-function run() {
+function run(source) {
   const claudeDir = getClaudeDir();
   const flagPath = path.join(claudeDir, '.chisle-active');
   const settingsPath = path.join(claudeDir, 'settings.json');
@@ -72,7 +80,16 @@ function run() {
   // 1. Write flag
   safeWriteFlag(flagPath, mode);
 
-  // 2. Read SKILL.md — single source of truth for behavior
+  // 2. Resumed/cleared/compacted session: reactivate, don't re-teach.
+  if (!FULL_INJECT_SOURCES.has(source)) {
+    process.stdout.write(
+      'CHISLE MODE ACTIVE — level: ' + mode + ' (resumed). ' +
+      'Ruleset already in context; see the chisle skill if it is not.'
+    );
+    return;
+  }
+
+  // 3. Read SKILL.md — single source of truth for behavior
   const modeLabel = mode;
   let skillContent = '';
   try {
@@ -155,6 +172,24 @@ function run() {
   })();
 }
 
-if (require.main === module) run();
+// Claude Code pipes the hook payload (including `source`) on stdin. If it is
+// absent or unparseable, fall back to a full inject — over-teaching once is a
+// far cheaper failure than a session that never receives the ruleset at all.
+function main() {
+  let input = '';
+  process.stdin.on('data', chunk => { input += chunk; });
+  process.stdin.on('end', () => {
+    let source = 'startup';
+    try {
+      const parsed = JSON.parse(input.replace(/^﻿/, ''));
+      if (parsed && typeof parsed.source === 'string') source = parsed.source;
+    } catch (e) {}
+    run(source);
+  });
+  // stdin never opened (manual run): behave like a fresh session.
+  if (process.stdin.isTTY) run('startup');
+}
+
+if (require.main === module) main();
 
 module.exports = { majorOf, majorUpdateNotice };
