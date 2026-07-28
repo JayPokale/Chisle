@@ -5,8 +5,12 @@
 Key measured results (20 live tasks, 4 arms, billed tokens, reproducible via benchmarks/ in the repo):
 - Total 20-task bill: Chisle 52% of a bare model; ponytail 68%; caveman 80%.
 - Average task: Chisle 69% vs ponytail 91%, caveman 98%.
-- Backfires (task costing more than baseline): Chisle 1/20; ponytail 6/20; caveman 8/20 (worst single task 424%).
-- Tool output measured as 67.5% of session content across 171 real transcripts; eligible outputs shrink ~46%.
+- Backfires (task costing more than baseline): Chisle 1/20; caveman 6/20 (worst single task 424%); ponytail 8/20 (worst 227%).
+- By prompt kind: on coding prompts (n=12) Chisle bills 44% vs ponytail 59%, caveman 74%. On explanation-only prompts (n=8) Chisle 87%, while BOTH rivals exceed 100% (caveman 103%, ponytail 104%) — writing more than using no tool at all.
+- By answer size (split at the median baseline): short answers Chisle 84% and caveman 84%, i.e. level; long answers Chisle 45% vs caveman 79%, ponytail 59%. The 52% headline is the blend of the two.
+- Where Chisle loses: short coding prompts, caveman 62% vs Chisle 70%. Kind and size are correlated (coding prompts average ~3x the baseline of explanation ones) and the crossed cells are small (n=3-7), so these splits are directional, not a leaderboard.
+- Tool output measured as 67.5% of session content across 171 real transcripts; eligible outputs shrink ~46%. Note: until v2.0.0 this compression was silently rejected by Claude Code for object-shaped tool results, so the replay figures were a projection rather than realized savings; fixed in 2.0.0.
+- Plugin overhead: ~1.6k tokens of rules at session start plus a ~50-token per-turn reminder. Before 2.0.0 the ruleset was also re-injected on resume/clear/compact.
 
 Safety/correctness: the compressor runs behind an allowlist (Bash, Agent, WebFetch, WebSearch, Grep, Glob, mcp__*) and never modifies Read/Edit/Write results, whose exact bytes feed later edits. Deterministic, zero dependencies, zero network calls, zero LLM calls. Kill switches: CHISLE_COMPRESS=0, "stop chisle", npx chisle --uninstall.
 
