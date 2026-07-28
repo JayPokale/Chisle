@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/thumbnail.png" width="820" alt="Chisle — less tokens, same results. Output compressor, context diet, terse persona, YAGNI ladder.">
+  <img src="assets/logo.png" width="120" alt="Chisle">
 </p>
 
 <h1 align="center">Chisle</h1>
@@ -111,6 +111,10 @@ flowchart LR
 ```
 
 The loop on the right is the input axis: tool output is billed again on *every* later request in the session, so shrinking it once pays repeatedly. `Read` and `Edit` are deliberately outside it.
+
+<p align="center">
+  <img src="assets/thumbnail.png" width="820" alt="Chisle — less tokens, same results. Four parts: output compressor (compress noisy tool outputs), context diet (read only what's actually relevant), terse persona (short, focused, YAGNI-first), YAGNI ladder (do less, reuse more, build only when needed).">
+</p>
 
 Every "be concise" tool has a worst day — the day it makes the model write *more* than no tool at all. Across 20 measured tasks over two suites, the specialists had that day **6** and **8** times, blowing up to **424%** of the baseline. Chisle had it **once**, capped at 173% — and that one failure was root-caused, fixed in the ruleset, and re-validated live at 93%, with the whole investigation [committed to the repo](benchmarks/results/2026-07-07-verify-rerun.md). Think of it as downside insurance for your token bill: not always the single cheapest answer, always the smallest worst case — from the only tool in this class that publishes its own failures. [Why not caveman or ponytail? →](docs/comparison.md)
 
