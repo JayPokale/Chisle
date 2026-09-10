@@ -3,6 +3,27 @@
 All notable changes to Chisle are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Fixed
+- **Duplicate hook registration made dedup destroy first-seen tool output.**
+  When `chisle-compress-output.js` was registered twice (plugin manifest plus a
+  leftover standalone entry in `settings.json`), both copies ran on the same
+  tool call and shared one state file: copy A stored the output hash, copy B
+  matched it and replaced content the model had never seen with a
+  `[chisle: output byte-identical to the previous <tool> result …]` marker.
+  `dedupCheck` now records the payload's `tool_use_id` alongside the hash and
+  skips the marker when the match comes from the same tool call. Old
+  string-valued state entries still load, and a payload without a
+  `tool_use_id` keeps the previous behaviour. A genuine re-run is a different
+  tool call, so real dedup still fires.
+  ([#4](https://github.com/JayPokale/Chisle/issues/4), reported by
+  [@aermak](https://github.com/aermak))
+- **The installer left both registrations live.** `installClaude()` picked one
+  wiring path per run and never removed the other's, so a machine that once
+  fell back to standalone hooks kept them after the plugin installed. The
+  plugin branch now strips `chisle-` entries from `settings.json`.
+
 ## [3.0.0] — 2026-07-28
 
 ### Changed

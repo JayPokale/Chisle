@@ -12,10 +12,11 @@ const { execFileSync } = require('child_process');
 
 const CLI = path.join(__dirname, '..', 'bin', 'install.js');
 
-function runCLI(args, { cwd } = {}) {
+function runCLI(args, { cwd, env } = {}) {
   try {
     const out = execFileSync(process.execPath, [CLI, ...args, '--no-color'], {
       cwd: cwd || process.cwd(), encoding: 'utf8', timeout: 10000,
+      env: env ? { ...process.env, ...env } : process.env,
     });
     return { status: 0, out };
   } catch (e) {
@@ -93,4 +94,41 @@ test('standalone Claude hook wiring merges + uninstalls cleanly', () => {
   assert.equal(after.model, 'opus', 'foreign settings preserved through uninstall');
 
   fs.rmSync(cfg, { recursive: true, force: true });
+});
+
+// Regression for #4: the plugin path and the standalone path both registering
+// the hooks made two copies run per tool call, and the shared dedup state file
+// then reported first-seen output as a duplicate of itself.
+test('REGRESSION: plugin path removes leftover standalone hook entries', { skip: process.platform === 'win32' }, () => {
+  const cfg = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-conv-'));
+  const binDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-fakebin-'));
+  // A `claude` that reports the plugin as installed, so installClaude() takes
+  // the plugin branch without shelling out to a real marketplace.
+  const fake = path.join(binDir, 'claude');
+  fs.writeFileSync(fake, '#!/bin/sh\necho chisle\nexit 0\n', { mode: 0o755 });
+
+  // Seed the state an affected machine is in: standalone wiring plus a foreign
+  // hook that must survive.
+  fs.writeFileSync(path.join(cfg, 'settings.json'), JSON.stringify({
+    model: 'opus',
+    hooks: {
+      PostToolUse: [
+        { hooks: [{ type: 'command', command: 'node ~/.claude/chisle-hooks/chisle-compress-output.js' }] },
+        { hooks: [{ type: 'command', command: 'node ~/.claude/other/keep-me.js' }] },
+      ],
+    },
+  }, null, 2));
+
+  const env = { PATH: binDir + path.delimiter + process.env.PATH };
+  runCLI(['--only', 'claude', '--config-dir', cfg], { env });
+
+  const after = JSON.parse(fs.readFileSync(path.join(cfg, 'settings.json'), 'utf8'));
+  const cmds = ((after.hooks && after.hooks.PostToolUse) || [])
+    .flatMap(e => (e.hooks || []).map(h => h.command));
+  assert.ok(!cmds.some(c => c.includes('chisle-')), 'standalone chisle hook still registered');
+  assert.ok(cmds.some(c => c.includes('keep-me.js')), 'foreign hook removed');
+  assert.equal(after.model, 'opus');
+
+  fs.rmSync(cfg, { recursive: true, force: true });
+  fs.rmSync(binDir, { recursive: true, force: true });
 });

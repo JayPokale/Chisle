@@ -196,6 +196,18 @@ function installClaude(ctx) {
     else results.failed.push(['claude-hooks', r]);
   } else {
     note('  hooks: plugin manifest handles SessionStart + UserPromptSubmit + PostToolUse');
+    // Plugin path won — drop any standalone wiring left by an earlier run, or
+    // both copies of every hook run on each event and the PostToolUse pair
+    // dedups first-seen output against itself.
+    const settingsPath = path.join(claudeDir(opts), 'settings.json');
+    const settings = SETTINGS.readSettings(settingsPath);
+    if (settings && SETTINGS.removeHooks(settings, 'chisle-') > 0) {
+      if (!opts.dryRun) {
+        SETTINGS.validateHookFields(settings);
+        SETTINGS.writeSettings(settingsPath, settings);
+      }
+      note('  removed superseded standalone hook entries from settings.json');
+    }
   }
   process.stdout.write('\n');
 }

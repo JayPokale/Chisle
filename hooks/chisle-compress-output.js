@@ -130,7 +130,7 @@ function scrub(text) {
 // skipped when the payload carries none.
 const DEDUP_MIN = 2048;
 
-function dedupCheck(toolName, text, sessionId) {
+function dedupCheck(toolName, text, sessionId, toolUseId) {
   if (process.env.CHISLE_COMPRESS_DEDUP === '0') return null;
   if (!sessionId || typeof sessionId !== 'string') return null;
   if (text.length < DEDUP_MIN) return null;
@@ -142,8 +142,18 @@ function dedupCheck(toolName, text, sessionId) {
     if (state.session !== sessionId) state = { session: sessionId, tools: {} };
     if (!state.tools || typeof state.tools !== 'object') state.tools = {};
     const hash = crypto.createHash('sha256').update(text).digest('hex');
-    const dup = state.tools[toolName] === hash;
-    state.tools[toolName] = hash;
+    // A second hook invocation for the SAME tool call is not the model seeing
+    // the output twice. That happens whenever this hook is registered more than
+    // once (plugin manifest + a leftover settings.json entry), because both
+    // copies share this state file: copy A stores the hash, copy B matches it
+    // and reports first-seen output as a duplicate of itself. Old string-valued
+    // entries read through `rec`, so an existing state file needs no migration,
+    // and a payload with no tool_use_id keeps today's exact behaviour.
+    const prev = state.tools[toolName];
+    const rec = (prev && typeof prev === 'object') ? prev : { hash: prev, id: null };
+    const sameCall = !!(toolUseId && rec.id && rec.id === toolUseId);
+    const dup = rec.hash === hash && !sameCall;
+    state.tools[toolName] = { hash, id: toolUseId || rec.id || null };
     const tmp = p + '.' + process.pid + '.tmp';
     fs.writeFileSync(tmp, JSON.stringify(state), { mode: 0o600 });
     fs.renameSync(tmp, p);
@@ -259,7 +269,7 @@ function processPayload(payload, mode) {
 
   const text = extractText(payload.tool_response != null ? payload.tool_response : payload.tool_output);
   if (!text) return null;
-  const dup = dedupCheck(payload.tool_name, text, payload.session_id);
+  const dup = dedupCheck(payload.tool_name, text, payload.session_id, payload.tool_use_id);
   if (dup != null && dup.length < text.length) return dup;
   return transform(text, limitsFor());
 }

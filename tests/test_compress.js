@@ -123,6 +123,32 @@ test('identical consecutive tool output becomes a marker (isolated config dir)',
   }
 });
 
+test('REGRESSION: two hook copies on ONE tool call must not dedup each other', () => {
+  const dir = require('fs').mkdtempSync(require('path').join(require('os').tmpdir(), 'chisle-dupreg-'));
+  const saved = process.env.CLAUDE_CONFIG_DIR;
+  process.env.CLAUDE_CONFIG_DIR = dir;
+  try {
+    const call = {
+      tool_name: 'Bash', session_id: 'sess-1', tool_use_id: 'toolu_01AAA',
+      tool_response: 'line one never seen before\n' + 'payload '.repeat(400),
+    };
+    const copyA = processPayload(call, 'on');   // plugin-manifest registration
+    const copyB = processPayload(call, 'on');   // settings.json registration
+    assert.ok(copyA == null || !copyA.includes('byte-identical'));
+    assert.ok(copyB == null || !copyB.includes('byte-identical'),
+      'second registration falsely deduped a first-seen output');
+
+    // A genuine re-run of the same command is a different tool call, so the
+    // real dedup must still fire.
+    const rerun = processPayload({ ...call, tool_use_id: 'toolu_02BBB' }, 'on');
+    assert.ok(rerun && rerun.includes('byte-identical to the previous Bash result'));
+  } finally {
+    if (saved !== undefined) process.env.CLAUDE_CONFIG_DIR = saved;
+    else delete process.env.CLAUDE_CONFIG_DIR;
+    require('fs').rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 // ── limitsFor ────────────────────────────────────────────────────────────────
 
 test('one threshold set, no levels', () => {
