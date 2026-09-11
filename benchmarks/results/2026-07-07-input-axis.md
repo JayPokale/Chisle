@@ -12,10 +12,10 @@ transcript (`~/.claude/projects/**/*.jsonl`, 171 session files, one developer,
 1. **Share scan** — sum chars of `tool_result` content vs. assistant/user text.
 2. **Replay** (`benchmarks/replay-compress.js`, committed) — feed every
    `tool_result` through the exact code the shipped hook runs
-   (`hooks/rdx-compress-output.js`) and count what it would have elided.
+   (`hooks/chisle-compress-output.js`) and count what it would have elided.
 
 Chars ≈ tokens/4 throughout. Reproduce on your own transcripts:
-`node benchmarks/replay-compress.js [lite|full|ultra]`.
+`node benchmarks/replay-compress.js`.
 
 ## Finding 1 — tool output dominates the context window
 

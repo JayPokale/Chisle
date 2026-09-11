@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "```jsx\nimport { useEffect, useState } from \"react\";\n\nfunction SearchBox() {\n  const [query, setQuery] = useState(\"\");\n  const [debouncedQuery, setDebouncedQuery] = useState(\"\");\n  const [results, setResults] = useState([]);\n\n  // Debounce input\n  useEffect(() => {\n    const timer = setTimeout(() => {\n      setDebouncedQuery(query);\n    }, 400);\n\n    return () => clearTimeout(timer);\n  }, [query]);\n\n  // API call only after debounce\n  useEffect(() => {\n    if (!debouncedQuery.trim()) {\n      setResults([]);\n      return;\n    }\n\n    const controller = new AbortController();\n\n    async function search() {\n      const res = await fetch(\n        `/api/search?q=${encodeURIComponent(debouncedQuery)}`,\n        { signal: controller.signal }\n      );\n\n      const data = await res.json();\n      setResults(data);\n    }\n\n    search().catch((err) => {\n      if (err.name !== \"AbortError\") {\n        console.error(err);\n      }\n    });\n\n    return () => controller.abort();\n  }, [debouncedQuery]);\n\n  return (\n    <div>\n      <input\n        value={query}\n        onChange={(e) => setQuery(e.target.value)}\n        placeholder=\"Search...\"\n      />\n\n      <ul>\n        {results.map((item) => (\n          <li key={item.id}>{item.name}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n\nexport default SearchBox;\n```",
+  "usage": {
+    "output_tokens": 343
+  }
+}

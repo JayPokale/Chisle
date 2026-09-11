@@ -1,10 +1,12 @@
 {
   "name": "chisle",
   "version": "3.0.0",
-  "description": "Maximum-efficiency dev mode for Claude Code. Zero-fluff prose + YAGNI-first code decisions. One plugin that does both.",
+  "description": "Maximum-efficiency dev mode for AI coding agents. Zero-fluff prose, YAGNI-first code, and safe tool-output compression.",
   "keywords": [
     "claude-code",
     "claude-code-plugin",
+    "pi-package",
+    "pi-coding-agent",
     "productivity",
     "yagni",
     "minimal"
@@ -38,6 +40,14 @@
   "engines": {
     "node": ">=18"
   },
+  "pi": {
+    "extensions": [
+      "./pi-extension/index.js"
+    ],
+    "skills": [
+      "./skills"
+    ]
+  },
   "scripts": {
     "test": "node --test tests/*.js",
     "build:rules": "node scripts/build-rules.js",
@@ -51,6 +61,7 @@
   "files": [
     "bin/",
     "hooks/",
+    "pi-extension/",
     "skills/",
     "commands/",
     "rules/",

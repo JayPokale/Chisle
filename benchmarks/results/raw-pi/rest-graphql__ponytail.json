@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "REST: simpler, cache-friendly, widely understood. Great when resources map cleanly and clients need similar data.\n\nGraphQL: flexible client-shaped queries, fewer round trips, strong schema. Great when clients need varied nested data.\n\nTradeoffs:\n- **Simplicity:** REST wins. GraphQL adds schema/resolver/query complexity.\n- **Client flexibility:** GraphQL wins. REST may need many endpoints or over/under-fetch.\n- **Caching:** REST wins with HTTP/CDN caching. GraphQL caching is more custom.\n- **Performance control:** REST is easier to bound. GraphQL needs depth/complexity limits to avoid expensive queries.\n- **Versioning:** GraphQL often evolves via schema deprecation. REST commonly uses versioned endpoints.\n- **Tooling:** both are mature; REST is universal, GraphQL has strong typed schema/codegen.\n\nDefault: choose **REST** unless you have multiple clients with different data needs or complex nested reads.",
+  "usage": {
+    "output_tokens": 196
+  }
+}

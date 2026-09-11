@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "REST: simple, cache-friendly, observable, broad tooling. Downsides: over/under-fetching, versioning friction, more endpoints/round trips.\n\nGraphQL: client-shaped responses, fewer round trips, good for many clients with different data needs. Downsides: harder caching, auth, rate limits, N+1/perf traps, more server complexity.\n\nDefault: REST. Pick GraphQL when clients genuinely need flexible field selection across connected data.",
+  "usage": {
+    "output_tokens": 95
+  }
+}

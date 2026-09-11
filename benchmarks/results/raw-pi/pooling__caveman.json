@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "DB pool = reusable set of open DB connections.\n\nWithout pool:\n- App opens DB conn per req\n- Auth/handshake/TLS/setup cost each time\n- Many reqs -> many conns -> DB overloaded\n\nWith pool:\n- App starts N conns\n- Req borrows conn\n- Runs query\n- Returns conn to pool\n- Next req reuses same conn\n\nWhy helps:\n- Faster: skip conn setup\n- Safer: caps max DB conns\n- Better load handling: reqs wait instead of crashing DB\n- Less CPU/network overhead\n- More predictable latency\n\nKey tuning:\n- Pool too small -> queue slow\n- Pool too big -> DB saturation\n- Set timeouts, max lifetime, idle limit",
+  "usage": {
+    "output_tokens": 156
+  }
+}

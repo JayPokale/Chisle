@@ -26,7 +26,7 @@ function runCLI(args, { cwd, env } = {}) {
 
 test('--help lists all agents', () => {
   const { out } = runCLI(['--help']);
-  for (const id of ['claude', 'gemini', 'codex', 'cursor', 'windsurf', 'cline', 'kiro', 'copilot']) {
+  for (const id of ['claude', 'pi', 'gemini', 'codex', 'cursor', 'windsurf', 'cline', 'kiro', 'copilot']) {
     assert.match(out, new RegExp(id));
   }
 });
@@ -69,11 +69,66 @@ test('project rule install writes into CWD, is idempotent, --force overwrites', 
   fs.rmSync(proj, { recursive: true, force: true });
 });
 
+test('Pi package manifest ships extension and skill', () => {
+  const pkg = require('../package.json');
+  assert.deepEqual(pkg.pi.extensions, ['./pi-extension/index.js']);
+  assert.deepEqual(pkg.pi.skills, ['./skills']);
+  assert.ok(pkg.files.includes('pi-extension/'));
+  assert.ok(fs.existsSync(path.join(__dirname, '..', 'pi-extension', 'index.js')));
+});
+
 test('dry-run changes nothing on disk', () => {
   const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-dry-'));
   runCLI(['--only', 'cline', '--dry-run'], { cwd: proj });
   assert.ok(!fs.existsSync(path.join(proj, '.clinerules')), 'dry-run wrote nothing');
   fs.rmSync(proj, { recursive: true, force: true });
+});
+
+test('Pi install, dry-run, and uninstall delegate settings changes to Pi', { skip: process.platform === 'win32' }, () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-pi-home-'));
+  const binDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-pi-bin-'));
+  const log = path.join(home, 'pi.log');
+  const list = path.join(home, 'pi-list.txt');
+  const settings = path.join(home, '.pi', 'agent', 'settings.json');
+  fs.mkdirSync(path.dirname(settings), { recursive: true });
+  fs.writeFileSync(settings, JSON.stringify({ theme: 'dark', packages: ['npm:foreign'] }));
+  const fake = path.join(binDir, 'pi');
+  fs.writeFileSync(fake, '#!/bin/sh\necho "$@" >> "$PI_LOG"\n[ "$1" = list ] && cat "$PI_LIST"\nexit 0\n', { mode: 0o755 });
+  const env = {
+    HOME: home,
+    PATH: binDir + path.delimiter + process.env.PATH,
+    PI_LOG: log,
+    PI_LIST: list,
+  };
+
+  let result = runCLI(['--only', 'pi'], { env });
+  assert.match(result.out, /Pi detected/);
+  assert.match(fs.readFileSync(log, 'utf8'), /^list\ninstall npm:chisle\n$/);
+  assert.deepEqual(JSON.parse(fs.readFileSync(settings, 'utf8')), { theme: 'dark', packages: ['npm:foreign'] },
+    'installer edited Pi settings instead of delegating to Pi');
+
+  fs.writeFileSync(list, 'User packages:\n  npm:chisle@3.0.0\n');
+  fs.writeFileSync(log, '');
+  result = runCLI(['--only', 'pi'], { env });
+  assert.match(result.out, /already installed/);
+  assert.equal(fs.readFileSync(log, 'utf8'), 'list\n');
+
+  fs.writeFileSync(list, '');
+  fs.writeFileSync(log, '');
+  result = runCLI(['--only', 'pi', '--dry-run'], { env });
+  assert.match(result.out, /would run: pi install npm:chisle/);
+  assert.equal(fs.readFileSync(log, 'utf8'), 'list\n', 'dry-run invoked mutating Pi command');
+
+  fs.writeFileSync(log, '');
+  fs.writeFileSync(list, 'User packages:\n  npm:chisle@3.0.0\n');
+  result = runCLI(['--uninstall', '--only', 'pi'], { env });
+  assert.match(result.out, /Uninstalled/);
+  assert.match(fs.readFileSync(log, 'utf8'), /^list\nremove npm:chisle\n$/);
+  assert.deepEqual(JSON.parse(fs.readFileSync(settings, 'utf8')), { theme: 'dark', packages: ['npm:foreign'] },
+    'uninstaller edited unrelated Pi settings');
+
+  fs.rmSync(home, { recursive: true, force: true });
+  fs.rmSync(binDir, { recursive: true, force: true });
 });
 
 test('standalone Claude hook wiring merges + uninstalls cleanly', () => {

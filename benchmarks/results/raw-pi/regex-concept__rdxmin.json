@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "Backreference: regex token that matches same text captured earlier by a group.\n\nExample: `\\b(\\w+)\\s+\\1\\b` matches repeated words like `the the`.\n\n`(\\w+)` captures `the`; `\\1` means “same text as group 1”.",
+  "usage": {
+    "output_tokens": 63
+  }
+}

@@ -4,6 +4,7 @@
 // Detects the AI coding agents on this machine and installs Chisle for each:
 //   - Claude Code  → plugin (marketplace add + install), fallback to standalone
 //                    hooks + settings.json merge + statusline badge
+//   - Pi           → Pi package (extension + skill)
 //   - Gemini CLI   → gemini extensions install
 //   - Codex        → fenced ruleset appended to ~/.codex/AGENTS.md
 //   - Cursor/Windsurf/Cline/Kiro/Copilot → project rule file dropped into CWD
@@ -39,6 +40,7 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 //        (that's how Cursor/Cline/Copilot rules actually work).
 const PROVIDERS = [
   { id: 'claude',   label: 'Claude Code',   scope: 'global',  detect: 'cmd:claude' },
+  { id: 'pi',       label: 'Pi',            scope: 'global',  detect: 'cmd:pi' },
   { id: 'gemini',   label: 'Gemini CLI',    scope: 'global',  detect: 'cmd:gemini' },
   { id: 'codex',    label: 'Codex CLI',     scope: 'global',  detect: 'cmd:codex||dir:~/.codex' },
   { id: 'cursor',   label: 'Cursor',        scope: 'project', detect: 'cmd:cursor||dir:~/.cursor',
@@ -221,7 +223,7 @@ function installClaudeHooks(ctx) {
   const hooksDst = path.join(cfg, 'chisle-hooks');
   const settingsPath = path.join(cfg, 'settings.json');
   const HOOK_FILES = ['package.json', 'chisle-config.js', 'chisle-activate.js',
-                      'chisle-mode-tracker.js', 'chisle-compress-output.js',
+                      'chisle-mode.js', 'chisle-mode-tracker.js', 'chisle-compress-output.js',
                       'chisle-statusline.sh', 'chisle-statusline.ps1'];
 
   if (opts.dryRun) {
@@ -273,6 +275,30 @@ function installClaudeHooks(ctx) {
   SETTINGS.writeSettings(settingsPath, settings);
   process.stdout.write(`  hooks wired in ${settingsPath}\n`);
   return 'ok';
+}
+
+// ── Pi ──────────────────────────────────────────────────────────────────────
+function piSources(output) {
+  return String(output || '').split('\n').map(line => line.trim())
+    .filter(line => /^npm:chisle(?:@|$)/i.test(line) || /^git:.*github\.com\/JayPokale\/Chisle(?:@|$)/i.test(line))
+    .map(source => source.replace(/@[^/@]+$/, ''));
+}
+
+function installPi(ctx) {
+  const { say, note, opts, results } = ctx;
+  results.detected++;
+  say('→ Pi detected');
+  if (!opts.force) {
+    const installed = piSources(capture('pi', ['list']).stdout);
+    if (installed.length) {
+      note('  chisle package already installed (use --force)');
+      results.skipped.push(['pi', 'already installed']); process.stdout.write('\n'); return;
+    }
+  }
+  const r = run('pi', ['install', 'npm:chisle'], opts.dryRun);
+  if ((r.status || 0) === 0) results.installed.push('pi');
+  else results.failed.push(['pi', 'pi package install failed']);
+  process.stdout.write('\n');
 }
 
 // ── Gemini ──────────────────────────────────────────────────────────────────
@@ -359,53 +385,66 @@ function uninstall(ctx) {
   say(c.orange('Chisle uninstall'));
   let touched = 0;
 
-  // Claude plugin
-  if (hasCmd('claude') && !opts.dryRun) {
-    const r = capture('claude', ['plugin', 'list']);
-    if (r.status === 0 && /chisle/i.test(r.stdout || '')) {
-      run('claude', ['plugin', 'uninstall', 'chisle@chisle'], opts.dryRun); touched++;
+  const wants = id => !opts.only.length || opts.only.includes(id);
+
+  if (wants('claude')) {
+    // Claude plugin
+    if (hasCmd('claude') && !opts.dryRun) {
+      const r = capture('claude', ['plugin', 'list']);
+      if (r.status === 0 && /chisle/i.test(r.stdout || '')) {
+        run('claude', ['plugin', 'uninstall', 'chisle@chisle'], opts.dryRun); touched++;
+      }
+    }
+
+    // Claude standalone hooks + statusline
+    const cfg = claudeDir(opts);
+    const settingsPath = path.join(cfg, 'settings.json');
+    const settings = SETTINGS.readSettings(settingsPath);
+    if (settings) {
+      const removed = SETTINGS.removeHooks(settings, 'chisle-');
+      let slRemoved = false;
+      if (settings.statusLine && typeof settings.statusLine.command === 'string'
+          && settings.statusLine.command.includes('chisle-statusline')) { delete settings.statusLine; slRemoved = true; }
+      if (removed > 0 || slRemoved) {
+        if (!opts.dryRun) { SETTINGS.validateHookFields(settings); SETTINGS.writeSettings(settingsPath, settings); }
+        note(`  removed ${removed} hook entr${removed === 1 ? 'y' : 'ies'}${slRemoved ? ' + statusline' : ''} from settings.json`);
+        touched++;
+      }
+    }
+    const hooksDst = path.join(cfg, 'chisle-hooks');
+    if (fs.existsSync(hooksDst)) { if (!opts.dryRun) fs.rmSync(hooksDst, { recursive: true, force: true }); note(`  removed ${hooksDst}`); touched++; }
+
+    for (const f of ['.chisle-active', '.chisle-session-turns', '.chisle-statusline-suffix',
+                     '.chisle-compress-stats.json', '.chisle-compress-last.json', '.chisle-update-check.json']) {
+      const p = path.join(cfg, f);
+      if (fs.existsSync(p)) { if (!opts.dryRun) { try { fs.unlinkSync(p); } catch (_) {} } note(`  removed ${p}`); touched++; }
     }
   }
 
-  // Claude standalone hooks + statusline
-  const cfg = claudeDir(opts);
-  const settingsPath = path.join(cfg, 'settings.json');
-  const settings = SETTINGS.readSettings(settingsPath);
-  if (settings) {
-    const removed = SETTINGS.removeHooks(settings, 'chisle-');
-    let slRemoved = false;
-    if (settings.statusLine && typeof settings.statusLine.command === 'string'
-        && settings.statusLine.command.includes('chisle-statusline')) { delete settings.statusLine; slRemoved = true; }
-    if (removed > 0 || slRemoved) {
-      if (!opts.dryRun) { SETTINGS.validateHookFields(settings); SETTINGS.writeSettings(settingsPath, settings); }
-      note(`  removed ${removed} hook entr${removed === 1 ? 'y' : 'ies'}${slRemoved ? ' + statusline' : ''} from settings.json`);
-      touched++;
-    }
-  }
-  const hooksDst = path.join(cfg, 'chisle-hooks');
-  if (fs.existsSync(hooksDst)) { if (!opts.dryRun) fs.rmSync(hooksDst, { recursive: true, force: true }); note(`  removed ${hooksDst}`); touched++; }
-
-  // Flag files
-  for (const f of ['.chisle-active', '.chisle-session-turns', '.chisle-statusline-suffix',
-                   '.chisle-compress-stats.json', '.chisle-compress-last.json', '.chisle-update-check.json']) {
-    const p = path.join(cfg, f);
-    if (fs.existsSync(p)) { if (!opts.dryRun) { try { fs.unlinkSync(p); } catch (_) {} } note(`  removed ${p}`); touched++; }
-  }
-
-  // Codex fenced block
-  const codexMd = path.join(os.homedir(), '.codex', 'AGENTS.md');
-  if (fs.existsSync(codexMd)) {
-    const txt = fs.readFileSync(codexMd, 'utf8');
-    if (txt.includes(FENCE_BEGIN)) {
-      const stripped = txt.replace(new RegExp(`\\n?${FENCE_BEGIN}[\\s\\S]*?${FENCE_END}\\n?`), '\n').replace(/\n{3,}/g, '\n\n');
-      if (!opts.dryRun) fs.writeFileSync(codexMd, stripped, { mode: 0o644 });
-      note(`  removed chisle block from ${codexMd}`); touched++;
+  if (wants('pi') && hasCmd('pi')) {
+    const sources = piSources(capture('pi', ['list']).stdout);
+    for (const source of sources) {
+      if ((run('pi', ['remove', source], opts.dryRun).status || 0) === 0) touched++;
     }
   }
 
-  note('');
-  note('Project-scoped rule files (.cursor/, .windsurf/, .clinerules/, .kiro/, .github/copilot-instructions.md)');
-  note('live in your project repos — remove them per-project with git if you added them there.');
+  if (wants('codex')) {
+    const codexMd = path.join(os.homedir(), '.codex', 'AGENTS.md');
+    if (fs.existsSync(codexMd)) {
+      const txt = fs.readFileSync(codexMd, 'utf8');
+      if (txt.includes(FENCE_BEGIN)) {
+        const stripped = txt.replace(new RegExp(`\\n?${FENCE_BEGIN}[\\s\\S]*?${FENCE_END}\\n?`), '\n').replace(/\n{3,}/g, '\n\n');
+        if (!opts.dryRun) fs.writeFileSync(codexMd, stripped, { mode: 0o644 });
+        note(`  removed chisle block from ${codexMd}`); touched++;
+      }
+    }
+  }
+
+  if (!opts.only.length || opts.only.some(id => PROVIDERS.find(p => p.id === id).scope === 'project')) {
+    note('');
+    note('Project-scoped rule files (.cursor/, .windsurf/, .clinerules/, .kiro/, .github/copilot-instructions.md)');
+    note('live in your project repos — remove them per-project with git if you added them there.');
+  }
   say(touched ? c.green(`\nUninstalled. ${touched} item(s) cleaned.`) : c.yellow('\nNothing to uninstall.'));
 }
 
@@ -418,7 +457,7 @@ Usage:
 
 Flags:
   --list           Detect agents and print them; install nothing
-  --only <id>      Install only for one agent (repeatable)
+  --only <id>      Limit install/uninstall to one agent (repeatable)
   --dry-run        Print actions, change nothing
   --force          Reinstall / overwrite even if already present
   --uninstall, -u  Remove what chisle installed
@@ -475,6 +514,7 @@ function main() {
 
   for (const p of targets) {
     if (p.id === 'claude') installClaude(ctx);
+    else if (p.id === 'pi') installPi(ctx);
     else if (p.id === 'gemini') installGemini(ctx);
     else if (p.id === 'codex') installCodex(ctx);
     else installProjectRule(ctx, p);
@@ -488,7 +528,7 @@ function main() {
   if (results.failed.length)    say(c.red(`  failed:    ${results.failed.map(s => s[0] + ' (' + s[1] + ')').join(', ')}`));
   say('');
   if (!opts.dryRun && results.installed.length) {
-    say(c.orange('Done.') + ' Restart your agent. Type ' + c.orange('/chisle') + ' (Claude Code) or just start coding.');
+    say(c.orange('Done.') + ' Restart your agent. Type ' + c.orange('/chisle') + ' in Claude Code or Pi, or just start coding.');
     note('If Chisle earns its keep, a star helps others find it: https://github.com/JayPokale/Chisle');
   }
   process.exit(results.failed.length ? 1 : 0);

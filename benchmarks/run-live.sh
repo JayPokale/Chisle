@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Live 4-arm benchmark: vanilla vs caveman vs ponytail vs chisle (arm key stays "rdxmin" — matches historical raw filenames).
 #
-# Drives the authenticated `claude` CLI headlessly. Each arm differs ONLY in the
+# Drives authenticated Claude Code or Pi headlessly. Each arm differs ONLY in the
 # system prompt appended (the respective SKILL.md body); vanilla appends nothing.
 # Plugins/CLAUDE.md/tone hooks are neutralized via an isolated HOME + config dir
 # holding only credentials, so the only variable is the arm.
@@ -10,7 +10,8 @@
 # Resumable: skips a cell whose raw JSON already exists.
 #
 # Usage: bash benchmarks/run-live.sh [model] [raw-dir]
-#   raw-dir defaults to results/raw; pass a fresh dir to re-measure from scratch
+#        HARNESS=pi bash benchmarks/run-live.sh [model] [raw-dir]
+#   raw-dir defaults to results/raw (Claude) or results/raw-pi; pass a fresh dir to re-measure from scratch
 #   instead of reusing cached cells.
 #
 #   SUITE=large selects prompts that genuinely want a long answer. The default
@@ -22,22 +23,35 @@
 #   Example: SUITE=large bash benchmarks/run-live.sh <model> results/raw-large
 set -uo pipefail
 
+HARNESS="${HARNESS:-claude}"
+[ "$HARNESS" = claude ] || [ "$HARNESS" = pi ] || { echo "HARNESS must be claude or pi"; exit 2; }
 MODEL="${1:-claude-haiku-4-5-20251001}"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RAW="${2:-$HERE/results/raw}"
+if [ -n "${2:-}" ]; then RAW="$2"; elif [ "$HARNESS" = pi ]; then RAW="$HERE/results/raw-pi"; else RAW="$HERE/results/raw"; fi
 mkdir -p "$RAW"
 
-# Isolated config: credentials only, no settings/CLAUDE.md/plugins.
+# Isolated config: credentials only, no settings/context/plugins.
 ISO="$(mktemp -d)"
-cp "$HOME/.claude/.credentials.json" "$ISO/" 2>/dev/null || { echo "no credentials found"; exit 1; }
+if [ "$HARNESS" = pi ]; then
+  cp "${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}/auth.json" "$ISO/" 2>/dev/null || { echo "no Pi credentials found"; exit 1; }
+  cp "${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}/models-store.json" "$ISO/" 2>/dev/null || true
+else
+  cp "$HOME/.claude/.credentials.json" "$ISO/" 2>/dev/null || { echo "no Claude credentials found"; exit 1; }
+fi
 trap 'rm -rf "$ISO"' EXIT
+
+run_timed() {
+  if command -v timeout >/dev/null 2>&1; then timeout 120 "$@"; else "$@"; fi
+}
 
 # Arm system prompts (frontmatter stripped). vanilla = none.
 # Competitor skills: local clone if present, else the installed plugin cache
 # (any version dir) — `claude plugin install caveman@caveman ponytail@ponytail`.
 find_skill() {  # $1 = tool name → path to its SKILL.md, or empty
   local clone="/home/jay/Desktop/$1/skills/$1/SKILL.md"
-  [ -f "$clone" ] && { echo "$clone"; return; }
+  local standard="$HOME/.agents/skills/$1/SKILL.md"
+  local pi_git="$HOME/.pi/agent/git/github.com/DietrichGebert/$1/skills/$1/SKILL.md"
+  for file in "$clone" "$standard" "$pi_git"; do [ -f "$file" ] && { echo "$file"; return; }; done
   ls "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/cache/$1/$1"/*/skills/"$1"/SKILL.md 2>/dev/null | head -1
 }
 CAVEMAN_SKILL="$(find_skill caveman)"
@@ -84,17 +98,28 @@ run_cell() {
   local arm="$1" task_id="$2" prompt="$3"
   local out="$RAW/${task_id}__${arm}.json"
   [ -f "$out" ] && { echo "  skip $task_id/$arm (cached)"; return; }
-  local args=(-p "$prompt" --model "$MODEL" --output-format json)
-  [ "$arm" != "vanilla" ] && args+=(--append-system-prompt-file "$ISO/${arm}.txt")
   echo "  run  $task_id/$arm"
-  # </dev/null is critical: without it `claude -p` consumes the while-read
-  # loop's stdin (the task heredoc) and the loop exits after one iteration.
-  ( cd /tmp && timeout 120 env HOME=/tmp CLAUDE_CONFIG_DIR="$ISO" claude "${args[@]}" </dev/null ) > "$out" 2>/dev/null \
-    || echo "    (call failed for $task_id/$arm)"
+
+  if [ "$HARNESS" = pi ]; then
+    local events="$RAW/${task_id}__${arm}.jsonl"
+    local args=(-p --mode json --model "$MODEL" --no-session --no-tools --no-extensions --no-skills --no-prompt-templates --no-themes --no-context-files)
+    [ "$arm" != "vanilla" ] && args+=(--append-system-prompt "$ISO/${arm}.txt")
+    args+=(-- "$prompt")
+    ( cd /tmp && run_timed env HOME=/tmp PI_CODING_AGENT_DIR="$ISO" PI_OFFLINE=1 pi "${args[@]}" </dev/null ) > "$events" 2>/dev/null \
+      && node "$HERE/normalize-pi.js" "$events" > "$out" \
+      || echo "    (call failed for $task_id/$arm)"
+  else
+    local args=(-p "$prompt" --model "$MODEL" --output-format json)
+    [ "$arm" != "vanilla" ] && args+=(--append-system-prompt-file "$ISO/${arm}.txt")
+    # </dev/null is critical: otherwise the CLI consumes the task heredoc.
+    ( cd /tmp && run_timed env HOME=/tmp CLAUDE_CONFIG_DIR="$ISO" claude "${args[@]}" </dev/null ) > "$out" 2>/dev/null \
+      || echo "    (call failed for $task_id/$arm)"
+  fi
 }
 
-echo "model: $MODEL"
-echo "raw:   $RAW"
+echo "harness: $HARNESS"
+echo "model:   $MODEL"
+echo "raw:     $RAW"
 while IFS=$'\t' read -r id kind prompt; do
   [ -z "$id" ] && continue
   echo "task: $id ($kind)"

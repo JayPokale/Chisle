@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "No repo tools exposed here, so I can’t inspect/edit files.\n\nLikely root cause: unit mismatch, not `>`.\n\nJWT `exp` is seconds. `Date.now()` is milliseconds. Fix:\n\n```js\nconst currentTime = Math.floor(Date.now() / 1000);\n\nif (currentTime > expiry) {\n  reject();\n}\n```\n\nIf your product defines expiry boundary as valid, keep `>`. If using JWT spec, boundary is expired → use `>=`.",
+  "usage": {
+    "output_tokens": 525
+  }
+}

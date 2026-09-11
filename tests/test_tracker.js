@@ -11,10 +11,11 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const TRACKER = path.join(__dirname, '..', 'hooks', 'chisle-mode-tracker.js');
+const { requestedMode } = require('../hooks/chisle-mode');
 
 // Run the tracker with a given prompt against a fresh temp config dir.
 // Returns the flag contents after the run (or null if the flag was removed).
-function runTracker(prompt, { preActive } = {}) {
+function runTracker(prompt, { preActive, defaultMode = 'on' } = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-trk-'));
   const flagPath = path.join(dir, '.chisle-active');
   if (preActive) fs.writeFileSync(flagPath, preActive, { mode: 0o600 });
@@ -22,7 +23,7 @@ function runTracker(prompt, { preActive } = {}) {
   try {
     execFileSync(process.execPath, [TRACKER], {
       input: JSON.stringify({ prompt }),
-      env: { ...process.env, CLAUDE_CONFIG_DIR: dir, CHISLE_DEFAULT_MODE: 'on' },
+      env: { ...process.env, CLAUDE_CONFIG_DIR: dir, CHISLE_DEFAULT_MODE: defaultMode },
       encoding: 'utf8',
       timeout: 5000,
     });
@@ -33,6 +34,13 @@ function runTracker(prompt, { preActive } = {}) {
   fs.rmSync(dir, { recursive: true, force: true });
   return flag;
 }
+
+test('shared parser only deactivates when off-verb targets Chisle', () => {
+  assert.equal(requestedMode('stop chisle'), 'off');
+  assert.equal(requestedMode('normal mode'), 'off');
+  assert.equal(requestedMode('use chisle to turn off the logger'), 'on');
+  assert.equal(requestedMode('chisle please stop the server'), null);
+});
 
 // ── Activation ───────────────────────────────────────────────────────────────
 
@@ -49,6 +57,10 @@ test('a leftover level argument still just activates', () => {
 
 test('natural language "activate chisle" activates', () => {
   assert.equal(runTracker('please activate chisle'), 'on');
+});
+
+test('/chisle explicitly activates when default mode is off', () => {
+  assert.equal(runTracker('/chisle', { defaultMode: 'off' }), 'on');
 });
 
 // ── Deactivation ─────────────────────────────────────────────────────────────

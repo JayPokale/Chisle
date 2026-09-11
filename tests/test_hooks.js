@@ -12,7 +12,7 @@ const { VALID_MODES, safeWriteFlag, readFlag, getDefaultMode } = require('../hoo
 
 // ── VALID_MODES ──────────────────────────────────────────────────────────────
 
-test('VALID_MODES contains expected levels', () => {
+test('VALID_MODES contains on and off', () => {
   assert.ok(VALID_MODES.includes('off'));
   assert.ok(VALID_MODES.includes('on'));
   assert.equal(VALID_MODES.length, 2);
@@ -75,7 +75,7 @@ test('safeWriteFlag refuses to overwrite a symlink', () => {
 
 // ── getDefaultMode ───────────────────────────────────────────────────────────
 
-test('getDefaultMode returns full by default', () => {
+test('getDefaultMode returns on by default', () => {
   const saved = process.env.CHISLE_DEFAULT_MODE;
   delete process.env.CHISLE_DEFAULT_MODE;
   // Only validates when no user config file exists (CI / clean env)
