@@ -1,6 +1,6 @@
 name: publish
 
-# Publishes to npm on a v* tag using npm Trusted Publishing (OIDC) — no
+# Publishes to npm on a v* tag using npm Trusted Publishing (OIDC), with no
 # NPM_TOKEN secret to leak. Also cuts a GitHub Release with the changelog.
 #
 # Release flow:
@@ -54,7 +54,7 @@ jobs:
         run: |
           PKG="$(node -p "require('./package.json').version")"
           if [ "$(npm view chisle@"$PKG" version 2>/dev/null)" = "$PKG" ]; then
-            echo "chisle@$PKG already published — skipping"
+            echo "chisle@$PKG already published, skipping"
           else
             npm publish
           fi

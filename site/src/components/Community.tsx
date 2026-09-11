@@ -9,8 +9,8 @@ export default async function Community() {
       <Reveal>
         <h2 className="text-2xl font-semibold tracking-tight sm:text-4xl">Built in the open</h2>
         <p className="mx-auto mt-3 max-w-md text-sm text-dim">
-          MIT licensed, zero dependencies. Land a PR — or file an issue good enough to fix
-          itself — and you appear here automatically.
+          MIT licensed, zero dependencies. Land a PR, or file an issue good enough to fix
+          itself, and you appear here automatically.
         </p>
       </Reveal>
 
@@ -48,7 +48,7 @@ export default async function Community() {
             rel="noopener noreferrer"
             className="rounded-lg bg-ink px-5 py-3 text-sm font-medium text-paper transition-opacity hover:opacity-85"
           >
-            Star on GitHub{stats.stars > 0 ? ` — ${stats.stars.toLocaleString()}★` : ""}
+            Star on GitHub{stats.stars > 0 ? ` · ${stats.stars.toLocaleString()}★` : ""}
           </a>
           <a
             href="https://www.npmjs.com/package/chisle"

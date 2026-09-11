@@ -14,4 +14,4 @@ Open an issue. Include: what you typed, what Chisle did, what you expected, your
 
 Don't open a public issue. See [SECURITY.md](SECURITY.md).
 
-This is a small project maintained in spare time — best-effort response, no SLA.
+This is a small project maintained in spare time, so expect best-effort response and no SLA.

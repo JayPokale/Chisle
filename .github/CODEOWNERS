@@ -1,5 +1,5 @@
 # Default owner for everything in this repo.
 * @JayPokale
 
-# Security-sensitive paths — review with extra care.
+# Security-sensitive paths: review with extra care.
 /hooks/chisle-config.js @JayPokale

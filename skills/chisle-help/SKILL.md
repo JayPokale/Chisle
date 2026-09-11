@@ -6,7 +6,7 @@ description: >
   use chisle", "what chisle commands", or invokes /chisle-help.
 ---
 
-# Chisle — quick reference
+# Chisle quick reference
 
 **What it is:** maximum-efficiency dev mode. Zero-fluff prose + YAGNI-first code, always on together.
 
@@ -27,7 +27,7 @@ YAGNI → reuse → stdlib → native → installed dep → one line → minimum
 
 ## Statusline
 
-`[CHISLE]` — shown while active. Configure via
+`[CHISLE]` is shown while active. Configure via
 `hooks/chisle-statusline.sh` (or `.ps1` on Windows).
 
 ## Never minimal about

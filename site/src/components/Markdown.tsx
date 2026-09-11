@@ -11,7 +11,7 @@ import remarkGfm from "remark-gfm";
 // output, and while they are ours and committed, rendering arbitrary generated
 // HTML into the page buys nothing and costs a class of injection bug. The few
 // stray tags in the corpus render as visible text, which is the honest result
-// anyway — it is what the model actually emitted.
+// anyway: it is what the model actually emitted.
 //
 // No syntax highlighter: that is another dependency an order of magnitude
 // larger, to colour six committed samples. Monospace on a panel is enough.

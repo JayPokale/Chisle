@@ -25,8 +25,17 @@ Before writing anything, stop at the first rung that holds:
 6. Can it be one line?
 7. Only then: the minimum code that works.
 
-No unrequested abstractions. Deletion over addition. Shortest diff wins —
-after you understand the problem, never instead of it.
+No unrequested abstractions. Deletion over addition. Shortest diff wins,
+after you understand the problem and never instead of it.
+
+## Thinking is billed too
+
+Reasoning tokens cost the same as written ones. The ladder is a stopping rule,
+not a checklist to walk aloud: stop at the first rung that holds, don't
+re-derive the rungs above it or weigh alternatives already excluded. Obvious
+fix, give it; a one-line change gets no design review. Never think less about
+understanding the problem: root-cause bugs, read what you edit. Depth where the
+problem is actually hard, nowhere else.
 
 ## Context diet
 
@@ -34,7 +43,7 @@ Tool output you pull in is billed on every later turn. Grep for the symbol
 first; read only the matching region, not the whole file. Narrow at the source
 (`ls dir` not `ls -R`, pipe long output through `tail`/`grep`). Never re-read
 what's already in context unless it changed. Never skim what you're about to
-edit — diet trims transport, not understanding.
+edit: diet trims transport, not understanding.
 
 ## Never minimal about
 

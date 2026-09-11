@@ -17,9 +17,9 @@ const AXES = [
   {
     name: "Output compressor",
     what: "What survives into context",
-    body: "A PostToolUse hook shrinks tool results before the model reads them: ANSI scrub, head + tail elide with error-line salvage, same-session dedup. Never touches Read, Edit, or Write.",
+    body: "A post-tool hook shrinks tool results before the model reads them: ANSI scrub, head + tail elide with error-line salvage, same-session dedup. Never touches Read, Edit, or Write. Runs on Claude Code and Pi.",
     demo: [
-      ["scrub", "strips ANSI escapes, collapses blank runs and `line repeated N×` — lossless"],
+      ["scrub", "strips ANSI escapes, collapses blank runs and `line repeated N×`, losslessly"],
       ["elide", "oversized output → head + tail, error-like lines salvaged from the cut"],
       ["dedup", "byte-identical repeat of a tool's previous output → one-line marker"],
     ],
@@ -37,9 +37,9 @@ const AXES = [
 ];
 
 const EXTRAS = [
-  { name: "Live savings statusline", body: "A ⇣9k tok badge showing chars actually elided. Before v2.0.0 it counted compressions the harness went on to reject — that is fixed, and it now records only what is really applied." },
-  { name: "Works beyond Claude Code", body: "Generated rulesets for Cursor, Windsurf, Cline, Kiro, and Copilot ship in the same install." },
-  { name: "Tested where it matters", body: "The compressor is where a bug corrupts files — it's covered by the test suite, with a hard allowlist." },
+  { name: "Live savings statusline", body: "A ⇣9k tok badge showing chars actually elided. Before v2.0.0 it counted compressions the harness went on to reject. That is fixed, and it now records only what is really applied." },
+  { name: "Works beyond Claude Code", body: "Pi gets both axes plus live toggling. Generated rulesets for Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot ship in the same install." },
+  { name: "Tested where it matters", body: "The compressor is where a bug corrupts files, so it's covered by the test suite, with a hard allowlist." },
   { name: "Easy off-switch", body: "\"stop chisle\" for the persona, CHISLE_COMPRESS=0 for the hook, npx chisle --uninstall for everything." },
 ];
 
@@ -52,8 +52,8 @@ export default function Axes() {
           One plugin, three levers
         </h2>
         <p className="mt-3 max-w-xl text-sm text-dim">
-          Other token savers only make the model write less. Tool output is the bigger bill —
-          67.5% of a session — and it re-bills every turn.
+          Other token savers only make the model write less. Tool output is the bigger bill,
+          67.5% of a session, and it re-bills every turn.
         </p>
       </Reveal>
       <div className="mt-12 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-3">

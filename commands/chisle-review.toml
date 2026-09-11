@@ -1,4 +1,4 @@
-# chisle-review — review a diff/file for over-engineering
+# chisle-review: review a diff/file for over-engineering
 [command]
 name = "chisle-review"
 description = "Review the current diff or a file for bloat, speculative abstractions, and reinvented stdlib."

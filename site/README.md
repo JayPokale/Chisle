@@ -1,6 +1,6 @@
 # Chisle site
 
-Marketing site — Next.js 16 + Tailwind 4 + motion. Lives in the repo but ships
+Marketing site: Next.js 16 + Tailwind 4 + motion. Lives in the repo but ships
 nowhere else: `site/` is not in `package.json` `files` (npm never packs it) and
 not in the plugin manifest (plugin installs never copy it).
 
@@ -20,10 +20,10 @@ npm run dev
 4. Custom domain: Project → Settings → Domains → add yours, point DNS
    (A `76.76.21.21` or CNAME `cname.vercel-dns.com`).
 5. After the domain is live, set env `NEXT_PUBLIC_SITE_URL=https://yourdomain`
-   (Project → Settings → Environment Variables) and redeploy — canonical URL,
+   (Project → Settings → Environment Variables) and redeploy. Canonical URL,
    sitemap, robots, and OG tags all read it.
 
-GitHub stars/contributors are fetched server-side with 1-hour ISR — live
+GitHub stars/contributors are fetched server-side with 1-hour ISR, so live
 numbers, no client rate limits, visible to crawlers.
 
 SEO/LLM: `robots.ts` explicitly allows GPTBot, ClaudeBot, PerplexityBot & co;

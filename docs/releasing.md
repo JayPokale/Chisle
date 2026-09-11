@@ -1,6 +1,6 @@
 # Releasing
 
-Chisle publishes to npm via **trusted publishing (OIDC)** — no `NPM_TOKEN`
+Chisle publishes to npm via **trusted publishing (OIDC)**, so there is no `NPM_TOKEN`
 secret stored anywhere. A `v*` tag triggers `.github/workflows/publish.yml`,
 which tests, publishes with provenance, and cuts a GitHub Release.
 
@@ -17,7 +17,7 @@ which tests, publishes with provenance, and cuts a GitHub Release.
 
 ```bash
 # 1. bump the version (keep tag == package.json version)
-npm version patch   # or minor / major — updates package.json + makes a commit
+npm version patch   # or minor / major; updates package.json + makes a commit
 
 # 2. update CHANGELOG.md under the new version heading
 
@@ -27,9 +27,9 @@ git push && git push --tags
 
 The tag push fires `publish.yml`:
 
-- `test` job — runs the suite, rule-sync check, chart-sync check
-- `publish` job — verifies `tag == package.json version`, then `npm publish` (OIDC + provenance)
-- `release` job — creates the GitHub Release with generated notes
+- `test` job: runs the suite, rule-sync check, chart-sync check
+- `publish` job: verifies `tag == package.json version`, then `npm publish` (OIDC + provenance)
+- `release` job: creates the GitHub Release with generated notes
 
 ## Verifying
 
@@ -40,9 +40,9 @@ npx chisle@latest --help         # the bin resolves
 
 ## If publish fails
 
-- **Version mismatch** — the tag (`v1.2.3`) must equal `package.json` `version`
+- **Version mismatch**: the tag (`v1.2.3`) must equal `package.json` `version`
   (`1.2.3`). Fix and re-tag.
-- **OIDC auth denied** — the Trusted Publisher entry on npm doesn't match the repo
+- **OIDC auth denied**: the Trusted Publisher entry on npm doesn't match the repo
   + workflow filename. Re-check step 2 above.
-- **Name taken** — pick a scoped name (`@jaypokale/chisle`) in `package.json` and
+- **Name taken**: pick a scoped name (`@jaypokale/chisle`) in `package.json` and
   update the install one-liners.

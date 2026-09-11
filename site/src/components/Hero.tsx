@@ -4,9 +4,9 @@ import { useState } from "react";
 import { motion } from "motion/react";
 
 // Every install path the project actually documents. Kept in sync with the
-// README's Install section — if a command changes there, it changes here.
+// README's Install section. If a command changes there, it changes here.
 const INSTALLS = [
-  { id: "npx", label: "npx", cmd: "npx chisle", note: "auto-detects all 8 agents" },
+  { id: "npx", label: "npx", cmd: "npx chisle", note: "auto-detects all 9 agents" },
   {
     id: "plugin",
     label: "Claude Code",
@@ -123,7 +123,7 @@ export default function Hero() {
       >
         On coding work it bills <strong className="text-ink">44%</strong> of a bare model, and{" "}
         <strong className="text-ink">41%</strong> on the long coding tasks where the bill actually
-        hurts. Every figure on this page is recomputed from transcripts committed to the repo —
+        hurts. Every figure on this page is recomputed from transcripts committed to the repo,
         including the task it loses.
       </motion.p>
       <motion.div

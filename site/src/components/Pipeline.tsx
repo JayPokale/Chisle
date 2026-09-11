@@ -3,11 +3,11 @@
 import { useState } from "react";
 import Reveal from "./Reveal";
 
-// Where each axis attaches to a session — the SVG twin of the README mermaid
+// Where each axis attaches to a session: the SVG twin of the README mermaid
 // diagram. Inline SVG rather than a diagram library: see the note in Ladder.tsx.
 //
 // The point of the picture is the loop. Tool output is re-billed on every later
-// request in the session, so compressing it once pays repeatedly — and Read/Edit
+// request in the session, so compressing it once pays repeatedly, and Read/Edit
 // sit deliberately outside it, because their exact bytes feed later edits.
 //
 // viewBox is cropped to the drawn content (x 8→708, y 34→280). The earlier
@@ -18,7 +18,7 @@ const HOOKS = [
   {
     id: "session",
     label: "SessionStart",
-    body: "Injects the ruleset once, on a genuinely new session. Resume, clear and compact get a 27-token reactivation line instead — re-sending the full ~1.6k every time was most of the plugin's own overhead.",
+    body: "Injects the ruleset once, on a genuinely new session. Resume, clear and compact get a 27-token reactivation line instead; re-sending the full ~1.6k every time was most of the plugin's own overhead.",
   },
   {
     id: "prompt",
@@ -28,7 +28,7 @@ const HOOKS = [
   {
     id: "post",
     label: "PostToolUse",
-    body: "Scrub, elide, dedup — deterministic, no LLM, no network. Rebuilds the result into the tool's own response shape, because a bare string gets rejected by the harness. Read and Edit are never touched.",
+    body: "Scrub, elide, dedup. Deterministic, no LLM, no network. Rebuilds the result into the tool's own response shape, because a bare string gets rejected by the harness. Read and Edit are never touched.",
   },
 ] as const;
 
@@ -54,7 +54,7 @@ export default function Pipeline() {
             Three hooks, one session
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-center text-sm text-dim">
-            Two hooks shape what the model writes. The third shrinks what it reads — and that one
+            Two hooks shape what the model writes. The third shrinks what it reads, and that one
             is a loop.
           </p>
         </Reveal>
@@ -148,7 +148,7 @@ export default function Pipeline() {
               </g>
               <path d="M 608 196 L 608 218" stroke="var(--color-dim)" fill="none" markerEnd="url(#ar)" />
 
-              {/* the loop back — the whole point of the picture */}
+              {/* the loop back, the whole point of the picture */}
               <path
                 d="M 508 251 L 352 251 L 352 138"
                 stroke="var(--color-amber)" fill="none"
@@ -192,14 +192,14 @@ export default function Pipeline() {
         </div>
 
         <p className="mx-auto mt-3 min-h-[3.5rem] max-w-2xl text-center text-xs leading-relaxed text-dim">
-          {hook ? HOOKS.find((h) => h.id === hook)!.body : "Hover a hook — in the diagram or below it."}
+          {hook ? HOOKS.find((h) => h.id === hook)!.body : "Hover a hook, in the diagram or below it."}
         </p>
 
         <Reveal delay={0.12}>
           <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-dim">
             Tool output is billed again on <em>every</em> later request in the session, so shrinking
             it once pays repeatedly. The compressor rebuilds its result into the tool&apos;s own
-            response shape — returning a bare string gets the replacement rejected, which is exactly
+            response shape; returning a bare string gets the replacement rejected, which is exactly
             the bug that made this axis a no-op before v2.0.0.
           </p>
         </Reveal>

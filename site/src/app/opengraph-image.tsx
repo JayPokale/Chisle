@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "Chisle — cut Claude Code's token bill on three axes";
+export const alt = "Chisle: cut your agent's token bill on three axes";
 
 export default function OG() {
   return new ImageResponse(

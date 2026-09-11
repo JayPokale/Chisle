@@ -7,7 +7,7 @@ to every agent that supports a rules/context file. One source, many targets.
 
 `skills/chisle/SKILL.md` defines behavior. The short always-on rule lives in
 `rules/chisle-activate.md`. Per-agent copies are **generated** from a shared body in
-`scripts/build-rules.js` — never hand-edit the generated files.
+`scripts/build-rules.js`. Never hand-edit the generated files.
 
 ## Distribution map
 
@@ -36,7 +36,7 @@ Verified against Pi 0.85.1:
 
 ```bash
 node scripts/build-rules.js          # regenerate all copies
-node scripts/build-rules.js --check  # CI gate — fails if any drifted
+node scripts/build-rules.js --check  # CI gate, fails if any drifted
 ```
 
 CI runs `--check` on every push. Edit the body in `build-rules.js`, regenerate,

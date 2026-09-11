@@ -3,6 +3,29 @@
 All notable changes to Chisle are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+- **Deliberation budget rule ("Thinking is billed too").** The Pi benchmark exposed a
+  gap the ruleset never addressed: every rule trimmed what the model *writes*, nothing
+  trimmed what it spends getting there. On the six-task Pi run Chisle produced the
+  smallest visible answers of any arm (814 tokens vs ponytail's 1,027) and still billed
+  more (1,328 vs 1,265), because 39% of its output was reasoning against ponytail's 19%.
+  The new rule makes the ladder an explicit stopping rule rather than a checklist to walk
+  aloud, and it keeps the existing carve-out intact: never think less about understanding
+  the problem. Added to `skills/chisle/SKILL.md`, the `build-rules.js` body, and
+  `AGENTS.md`/`GEMINI.md`.
+  **Unvalidated:** the mechanism is measured, the fix is not. Re-running the Pi arm is
+  the only thing that settles whether it works.
+
+### Changed
+- **Em dashes removed from the README, docs, website, and rulesets.** Prose only; raw
+  benchmark transcripts, `samples.json`, and the compressor's own elision marker are left
+  byte-exact, since editing those would falsify committed receipts.
+- **Website updated for the Pi release.** Agent count, install commands, the Pi package
+  path, the corrected input-axis claim, and a new benchmark section publishing the Pi arm,
+  including the billed-output row Chisle lost and the reasoning-overhead breakdown behind it.
+
 ## [3.1.0] — 2026-09-11
 
 ### Added

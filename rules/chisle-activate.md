@@ -1,4 +1,4 @@
-# Chisle — Always-On Rules
+# Chisle: Always-On Rules
 
 When chisle mode is active, apply both dimensions simultaneously:
 

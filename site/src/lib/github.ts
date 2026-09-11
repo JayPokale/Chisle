@@ -1,4 +1,4 @@
-// Live GitHub data, ISR-cached 1 hour — server-side so the numbers are in the
+// Live GitHub data, ISR-cached 1 hour, server-side so the numbers are in the
 // HTML (SEO/LLM crawlers see them) and unauthenticated rate limits never bite.
 const REPO = "JayPokale/Chisle";
 

@@ -5,7 +5,7 @@ description: >
   once: over-engineered code (reinvented stdlib, needless abstractions,
   speculative config) AND bloated prose (verbose comments, padded docstrings,
   redundant doc sections). Neither a pure code-minimizer nor a pure prose
-  compressor does both in one pass — that's the point. Ranked report, biggest
+  compressor does both in one pass. That's the point. Ranked report, biggest
   saving first; changes nothing. Use when the user says "chisle audit", "/chisle-audit",
   "audit this for bloat", "what can I cut", "review this PR for over-engineering
   and verbosity".
@@ -14,7 +14,7 @@ description: >
 # Chisle Audit
 
 Scan the target (a diff, a file, or the repo tree) and report what to cut, on
-both axes. One-shot. Read-only — never edit, never write a flag, never apply fixes.
+both axes. One-shot. Read-only: never edit, never write a flag, never apply fixes.
 
 ## Scope
 
@@ -32,7 +32,7 @@ both axes. One-shot. Read-only — never edit, never write a flag, never apply f
 - Speculative "for later" scaffolding with no current caller
 - Verbose code where a native platform feature (CSS, DB constraint, `<input type>`) does it
 
-**Prose (the compression axis) — the half a code-only auditor misses:**
+**Prose (the compression axis), the half a code-only auditor misses:**
 - Comments that restate the code (`i += 1  // increment i`)
 - Docstrings/READMEs padded with filler, hedging, ceremony, or duplicated content
 - Multi-paragraph explanations where one tight sentence carries the meaning
@@ -60,6 +60,6 @@ N findings: X code, Y prose. Est. removable: ~A lines code, ~B lines prose.
 Biggest win: <the single highest-impact cut>.
 ```
 
-Be honest about uncertainty — mark a finding `(check)` if cutting it might lose
+Be honest about uncertainty: mark a finding `(check)` if cutting it might lose
 behavior you can't verify from the snippet. Lean toward fewer, high-confidence
 findings over a long speculative list.

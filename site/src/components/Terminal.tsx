@@ -13,7 +13,7 @@ const HEAD = [
 const NOISE_COUNT = 412;
 const SALVAGED = [
   "FAIL  src/billing/invoice.test.ts",
-  "  ● rounds line items — expected 1042, received 1041",
+  "  ● rounds line items: expected 1042, received 1041",
 ];
 const TAIL = ["Tests: 1 failed, 96 passed, 97 total"];
 
@@ -48,7 +48,7 @@ export default function Terminal() {
         </h2>
         <p className="mt-3 max-w-xl text-sm text-dim">
           Tool results re-bill on every later turn. The compressor keeps the head, the tail, and
-          the error lines — the rest never reaches the model.
+          the error lines. The rest never reaches the model.
         </p>
       </Reveal>
 
@@ -97,8 +97,8 @@ export default function Terminal() {
 
       <Reveal delay={0.15}>
         <p className="mt-4 text-xs text-dim">
-          Deterministic — no LLM calls, no network, no dependencies. Allowlist: Bash, Agent,
-          WebFetch, WebSearch, Grep, Glob, mcp__* — never Read/Edit/Write.
+          Deterministic: no LLM calls, no network, no dependencies. Allowlist: Bash, Agent,
+          WebFetch, WebSearch, Grep, Glob, mcp__*. Never Read/Edit/Write.
         </p>
       </Reveal>
     </section>

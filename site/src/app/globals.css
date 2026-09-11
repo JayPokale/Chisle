@@ -19,7 +19,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* dark theme — same tokens, swapped values; utilities re-resolve automatically */
+/* dark theme: same tokens, swapped values; utilities re-resolve automatically */
 [data-theme="dark"] {
   --color-ink: #ece5d8;
   --color-paper: #0b0a08;
@@ -83,7 +83,7 @@ html {
   border-radius: 999px;
 }
 
-/* Panels that scroll inside the page — transcripts, wide tables, the pipeline
+/* Panels that scroll inside the page: transcripts, wide tables, the pipeline
    SVG. Narrower and neutral: amber is right for the page rail, but two of these
    sit side by side, and accent-coloured bars inside a panel compete with the
    content they're framing. */

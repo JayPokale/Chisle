@@ -49,7 +49,7 @@ const RUNGS = [
   {
     tag: "dep",
     q: "Already-installed dependency?",
-    a: "Use it — never add one for a few lines.",
+    a: "Use it. Never add one for a few lines.",
     before: "npm i lodash.debounce  # for one call site",
     after: "// lodash is already a dependency\nimport debounce from 'lodash/debounce';",
     why: "Using what is installed is free. Adding a dependency for a few lines is a permanent cost for a temporary convenience.",
@@ -68,7 +68,7 @@ const RUNGS = [
     a: "The minimum code that works.",
     before: "// interface + factory + registry, one implementation",
     after: "// the one function, plus a note:\n// chisle: single impl; add the interface at the second one",
-    why: "You still write it — just the smallest version that holds, with the shortcut marked so it can be found later.",
+    why: "You still write it, just the smallest version that holds, with the shortcut marked so it can be found later.",
   },
 ];
 
@@ -83,7 +83,7 @@ export default function Ladder() {
             The ladder, before a line gets written
           </h2>
           <p className="mt-3 max-w-xl text-sm text-dim">
-            The agent stops at the <strong className="text-ink">first</strong> rung that holds — and
+            The agent stops at the <strong className="text-ink">first</strong> rung that holds, and
             the ladder runs after reading the problem, never instead of it.{" "}
             <span className="text-amber">Open a rung</span> to see it applied.
           </p>
@@ -157,7 +157,7 @@ export default function Ladder() {
 
         <Reveal delay={0.1}>
           <p className="mt-8 max-w-xl text-xs text-dim">
-            Every rung exits the same way: ship it, then say what was skipped and when to add it —
+            Every rung exits the same way: ship it, then say what was skipped and when to add it,
             so &ldquo;later&rdquo; doesn&apos;t quietly become &ldquo;never&rdquo;. Lazy about the
             solution, never about the reading. Trust-boundary validation, data-loss handling,
             security and accessibility are never on the chopping block.

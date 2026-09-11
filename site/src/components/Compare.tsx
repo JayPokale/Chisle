@@ -6,7 +6,7 @@ import Markdown from "./Markdown";
 import samples from "@/data/samples.json";
 
 // Live before/after built from benchmarks/results/raw/ via scripts/build-samples.js.
-// Every word and number below is the committed transcript — no mock-ups, no
+// Every word and number below is the committed transcript. No mock-ups, no
 // hand-written "illustrative" rewrites. That is the whole differentiator, so the
 // basis label stays visible at all times.
 
@@ -42,7 +42,7 @@ export default function Compare() {
           </h2>
           <p className="mt-3 max-w-2xl text-sm text-dim">
             Pick a task and an arm. Both panels are the{" "}
-            <strong className="text-ink">verbatim committed output</strong> from the benchmark run —
+            <strong className="text-ink">verbatim committed output</strong> from the benchmark run,
             not a mock-up written for this page. The arms differ only in the injected system prompt.
           </p>
         </Reveal>
@@ -85,7 +85,7 @@ export default function Compare() {
                 <Markdown>{base.text}</Markdown>
                 {base.truncated && (
                   <p className="mt-3 border-t border-line pt-2 font-mono text-[10.5px] text-dim">
-                    … truncated for the page — the token count is the full response
+                    … truncated for the page; the token count is the full response
                   </p>
                 )}
               </div>
@@ -122,7 +122,7 @@ export default function Compare() {
                 <Markdown>{cur.text}</Markdown>
                 {cur.truncated && (
                   <p className="mt-3 border-t border-line pt-2 font-mono text-[10.5px] text-dim">
-                    … truncated for the page — the token count is the full response
+                    … truncated for the page; the token count is the full response
                   </p>
                 )}
               </div>

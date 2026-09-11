@@ -5,7 +5,7 @@ import { motion, useInView } from "motion/react";
 import Reveal from "./Reveal";
 import samples from "@/data/samples.json";
 
-// Verified numbers — benchmarks/results/, 20 live tasks, billed output tokens.
+// Verified numbers from benchmarks/results/, 20 live tasks, billed output tokens.
 const ARMS = [
   { name: "chisle", pct: 52, self: true, note: "1 backfire" },
   { name: "ponytail", pct: 68, note: "8 backfires" },
@@ -13,7 +13,7 @@ const ARMS = [
   { name: "bare model", pct: 100, note: "baseline" },
 ];
 
-// Generated from every committed cell by scripts/build-samples.js — two
+// Generated from every committed cell by scripts/build-samples.js. Two
 // metrics, because they answer different questions: tokens is the bill, lines
 // is how much the reader actually wades through.
 const AGG = samples.aggregates;
@@ -21,6 +21,27 @@ const METRICS = [
   { key: "tokens", label: "billed tokens", hint: "what the model charged you" },
   { key: "lines", label: "answer lines", hint: "what you actually read" },
 ] as const;
+// The Pi arm, 6 tasks on Pi 0.85.1 + openai-codex/gpt-5.5, as % of the vanilla
+// baseline. Published because Chisle lost billed output here: the honest number
+// is the one that makes the reasoning-overhead finding legible.
+const PI_ROWS = [
+  { label: "coding billed", vanilla: 100, caveman: 87, ponytail: 49, chisle: 73 },
+  { label: "non-coding billed", vanilla: 100, caveman: 43, ponytail: 76, chisle: 39 },
+  { label: "all billed", vanilla: 100, caveman: 72, ponytail: 59, chisle: 61 },
+  { label: "visible answer", vanilla: 100, caveman: 56, ponytail: 49, chisle: 37 },
+  { label: "answer lines", vanilla: 100, caveman: 75, ponytail: 38, chisle: 37 },
+];
+
+// Billed output splits into text the reader sees and reasoning they never do.
+// Chisle writes the least and thinks the most, which is the whole story of the
+// row it lost.
+const PI_REASONING = [
+  { arm: "bare model", billed: 2162, visible: 2154, share: 0 },
+  { arm: "caveman", billed: 1551, visible: 1254, share: 19 },
+  { arm: "ponytail", billed: 1265, visible: 1027, share: 19 },
+  { arm: "chisle", billed: 1328, visible: 814, share: 39, self: true },
+];
+
 export default function Benchmarks() {
   const [metric, setMetric] = useState<"tokens" | "lines">("tokens");
   const ref = useRef<HTMLDivElement>(null);
@@ -34,7 +55,7 @@ export default function Benchmarks() {
             The 20-task bill
           </h2>
           <p className="mt-3 max-w-xl text-sm text-dim">
-            Four arms, same 20 live tasks, same model, isolated configs, billed tokens — shown as
+            Four arms, same 20 live tasks, same model, isolated configs, billed tokens, shown as
             a share of the bare model. Raw transcripts and the runner{" "}
             <a
               href="https://github.com/JayPokale/Chisle/tree/main/benchmarks"
@@ -72,7 +93,7 @@ export default function Benchmarks() {
         <Reveal delay={0.1}>
           <p className="mt-8 text-xs text-dim">
             Average task: 69% vs 91% / 98%. Worst single task: 173% vs 227% / 424%. Both rivals
-            are credited in the repo&apos;s prior-art table — right above these numbers.
+            are credited in the repo&apos;s prior-art table, right above these numbers.
           </p>
         </Reveal>
 
@@ -138,10 +159,98 @@ export default function Benchmarks() {
           </div>
           <p className="mt-4 max-w-xl text-xs text-dim">
             Honest reading: on <strong className="text-ink">short coding</strong> prompts caveman
-            wins outright (62% to our 70%) — little to skip, and the ruleset costs more than the
+            wins outright (62% to our 70%): little to skip, and the ruleset costs more than the
             ladder saves. Kind and size are correlated too, since coding prompts run ~3&times; the
             baseline of explanation ones. Cells are small; directional, not a leaderboard.
           </p>
+        </Reveal>
+        <Reveal>
+          <div className="mt-20 border-t border-line pt-12">
+            <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">
+              The Pi arm, including the row we lost
+            </h3>
+            <p className="mt-3 max-w-2xl text-sm text-dim">
+              Six tasks on Pi 0.85.1 with openai-codex/gpt-5.5, as a share of the bare model.
+              ponytail took total billed output 59% to 61%. Chisle still wrote the smallest
+              answers of any arm, and the reason those two facts coexist is worth more than
+              the win would have been.
+            </p>
+
+            <div className="mt-6 overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="text-xs uppercase tracking-wide text-dim">
+                  <tr>
+                    <th className="py-2 pr-4 font-medium">metric</th>
+                    <th className="py-2 pr-4 text-right font-medium">bare</th>
+                    <th className="py-2 pr-4 text-right font-medium">caveman</th>
+                    <th className="py-2 pr-4 text-right font-medium">ponytail</th>
+                    <th className="py-2 text-right font-medium text-amber">chisle</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line">
+                  {PI_ROWS.map((r) => {
+                    const best = Math.min(r.caveman, r.ponytail, r.chisle);
+                    const cell = (v: number) =>
+                      `py-2 pr-4 text-right tabular-nums ${v === best ? "font-semibold" : ""}`;
+                    return (
+                      <tr key={r.label} className="transition-colors hover:bg-amber-soft/25">
+                        <td className="py-2 pr-4">{r.label}</td>
+                        <td className="py-2 pr-4 text-right text-dim tabular-nums">{r.vanilla}%</td>
+                        <td className={cell(r.caveman)}>{r.caveman}%</td>
+                        <td className={cell(r.ponytail)}>{r.ponytail}%</td>
+                        <td className={`py-2 text-right tabular-nums font-semibold text-amber`}>
+                          {r.chisle}%
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <p className="mt-8 max-w-2xl text-sm text-dim">
+              Billed output is text plus reasoning. Split them and the loss inverts:
+            </p>
+
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="text-xs uppercase tracking-wide text-dim">
+                  <tr>
+                    <th className="py-2 pr-4 font-medium">arm</th>
+                    <th className="py-2 pr-4 text-right font-medium">billed</th>
+                    <th className="py-2 pr-4 text-right font-medium">visible</th>
+                    <th className="py-2 text-right font-medium">reasoning</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line">
+                  {PI_REASONING.map((r) => (
+                    <tr
+                      key={r.arm}
+                      className={`transition-colors hover:bg-amber-soft/25 ${r.self ? "text-amber" : ""}`}
+                    >
+                      <td className={`py-2 pr-4 ${r.self ? "font-semibold" : ""}`}>{r.arm}</td>
+                      <td className="py-2 pr-4 text-right tabular-nums">{r.billed.toLocaleString()}</td>
+                      <td className="py-2 pr-4 text-right tabular-nums">{r.visible.toLocaleString()}</td>
+                      <td className="py-2 text-right tabular-nums">
+                        {(r.billed - r.visible).toLocaleString()} ({r.share}%)
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <p className="mt-4 max-w-2xl text-xs text-dim">
+              Chisle wrote the least visible text of any arm and still billed more than ponytail,
+              because it triggered 2.2&times; the reasoning. A ruleset that says &ldquo;root-cause it,
+              climb the ladder, say what you skipped&rdquo; buys deliberation, and this model bills
+              deliberation as output. The entire coding gap is one task: on{" "}
+              <code className="font-mono text-[11px]">auth-bug</code> Chisle gave the shortest answer
+              of any arm and the largest bill, and was the only one to find the real defect, a
+              seconds-versus-milliseconds unit mismatch, where ponytail flipped an operator. Six
+              tasks, one model, one run: a real mechanism at an unconfirmed magnitude.
+            </p>
+          </div>
         </Reveal>
       </div>
     </section>

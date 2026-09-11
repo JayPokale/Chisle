@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 const QA = [
   {
     q: "Does terse output mean worse answers?",
-    a: "No — terse ≠ incomplete. The rules cut words around the facts, never the facts: the fix, the gotcha, the caveat all stay. In the 20-task benchmark every Chisle answer was verified correct.",
+    a: "No. Terse ≠ incomplete. The rules cut words around the facts, never the facts: the fix, the gotcha, the caveat all stay. In the 20-task benchmark every Chisle answer was verified correct.",
   },
   {
     q: "What's the overhead of the plugin itself?",
@@ -18,7 +18,7 @@ const QA = [
   },
   {
     q: "Does it work outside Claude Code?",
-    a: "The ruleset ships to Cursor, Windsurf, Cline, Kiro, and Copilot via generated rule files. Live level switching, the statusline, and the compressor are Claude Code features.",
+    a: "Pi runs both axes, with live toggling and a savings badge, the same as Claude Code. The ruleset ships to Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot via generated rule files; there the persona is always on and the compressor does not apply.",
   },
   {
     q: "How do I turn it off?",
