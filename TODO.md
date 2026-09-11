@@ -11,7 +11,7 @@ Ideas not yet shipped. Same rule as the code: nothing lands without receipts.
 PostToolUse hook that mechanically shrinks oversized tool results before the
 model sees them — head + tail kept, middle elided, error-looking lines salvaged
 from the cut — swapped in via `updatedToolOutput`. Deterministic, zero LLM,
-zero network, zero deps. Thresholds track the `/chisle` level; savings accrue in a
+zero network, zero deps. One env-overridable 8k threshold; savings accrue in a
 ledger the statusline renders (`⇣9k tok`).
 
 Answers to the ship-gating questions (receipts:
@@ -26,18 +26,18 @@ Answers to the ship-gating questions (receipts:
       `mcp__*`), never Read/Edit/Write; (2) the one error line in a 3000-line
       log can live in the middle — salvage regex rescues up to 12 error-like
       lines from the cut. Kill switch: `CHISLE_COMPRESS=0`.
-- [x] **Track the `/chisle` mode?** Yes — lite 16k / full 8k / ultra 5k char
-      thresholds, env-overridable; `off` (and "stop chisle") disables entirely.
+- [x] **Track the `/chisle` mode?** Yes — one 8k threshold, env-overridable;
+      `off` (and "stop chisle") disables entirely.
 - [x] **Savings ledger?** `<claudeDir>/.chisle-compress-stats.json`, measured chars
       (real baseline exists, unlike output-side), rendered by both statuslines.
 
 Still open:
 
-- [ ] Portability: `updatedToolOutput` is Claude Code-specific. Cursor /
-      Windsurf / Cline / Codex have no post-tool output rewrite hook today —
-      Claude-only feature in the multi-agent lineup for now. Partial mitigation
-      shipped everywhere: the ruleset's "Context Diet" section (prevention
-      beats surgery — Grep before Read, offset/limit, filter at the source).
+- [x] **Pi portability.** Pi's `tool_result` rewrite event now carries both axes,
+      `/chisle`, and the status badge. Marginal replay after Pi's native
+      truncation saved 27.4% of persisted tool-output chars. Cursor / Windsurf /
+      Cline / Codex still lack a post-tool rewrite hook; Context Diet remains
+      their prevention layer.
 - [ ] Adversarial correctness benchmark for eliding, same bar as the output
       axis's 0/14 — N real debugging tasks where the needed line was in an
       elided region, did the agent recover?

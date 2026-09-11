@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "I don’t have file/command tools in this session, so I can’t inspect or patch the repo directly.\n\nRoot-cause fix is likely in the shared token validation function:\n\n```diff\n- if (currentTime > expiry) reject()\n+ if (currentTime >= expiry) reject()\n```\n\nA token is valid **before** expiry, not **at** expiry. If `currentTime === expiry`, it’s expired.\n\nAlso add the smallest boundary check near existing auth tests:\n\n```js\nassert.equal(isTokenValid({ exp: 1000 }, 999), true)\nassert.equal(isTokenValid({ exp: 1000 }, 1000), false)\n```\n\nSkipped caller-level guards; fix belongs in shared validation so every auth path behaves the same.",
+  "usage": {
+    "output_tokens": 242
+  }
+}

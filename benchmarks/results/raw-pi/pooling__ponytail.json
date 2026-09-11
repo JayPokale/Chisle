@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "Database connection pooling means keeping a small set of already-open database connections around and reusing them, instead of opening a new connection for every query/request.\n\nHow it works:\n1. App starts or first needs DB access.\n2. Pool opens N connections to the database.\n3. A request needs the DB → it borrows a free connection.\n4. It runs queries.\n5. It returns the connection to the pool.\n6. If all connections are busy, new requests wait or fail after a timeout.\n\nWhy it helps:\n- **Opening DB connections is expensive**: authentication, network setup, TLS, session init.\n- **Reusing connections is faster**: queries can start immediately.\n- **Limits DB overload**: the pool caps how many simultaneous connections your app can create.\n- **Smooths traffic spikes**: requests wait in the app instead of stampeding the DB.\n- **Better resource use**: fewer sockets, threads/processes, memory, and DB backend workers.\n\nSimple analogy: a taxi stand. You don’t build a new taxi for every passenger; passengers use available taxis, and if none are free, they wait.\n\nKey settings:\n- **max pool size**: maximum open connections.\n- **min/idle connections**: connections kept ready.\n- **connection timeout**: how long to wait for one.\n- **idle lifetime/max lifetime**: when old connections are closed/replaced.",
+  "usage": {
+    "output_tokens": 290
+  }
+}

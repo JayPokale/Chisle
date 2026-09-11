@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "Connection pool = reusable set of open DB connections.\n\nWithout pool: each request opens TCP/TLS/auth/session, runs query, closes. Slow + DB gets hammered by connection churn.\n\nWith pool: app borrows idle connection, runs query, returns it. If none idle, waits or opens up to max size. Pool also evicts dead/old connections.\n\nHelps by:\n- cutting connect/auth overhead\n- limiting concurrent DB load\n- smoothing spikes via queueing\n- reusing prepared/session state sometimes\n\nMain risk: pool too large → DB overload. Usually size from DB capacity, app instances, query latency, not “more = faster.”",
+  "usage": {
+    "output_tokens": 135
+  }
+}

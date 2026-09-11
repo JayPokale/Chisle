@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "Here’s a React example adding debounce so the API call only fires after the user stops typing:\n\n```jsx\nimport { useEffect, useState } from \"react\";\n\nfunction SearchInput() {\n  const [query, setQuery] = useState(\"\");\n  const [results, setResults] = useState([]);\n\n  useEffect(() => {\n    if (!query.trim()) {\n      setResults([]);\n      return;\n    }\n\n    const timeoutId = setTimeout(async () => {\n      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);\n      const data = await response.json();\n      setResults(data);\n    }, 300);\n\n    return () => clearTimeout(timeoutId);\n  }, [query]);\n\n  return (\n    <div>\n      <input\n        type=\"text\"\n        value={query}\n        placeholder=\"Search...\"\n        onChange={(e) => setQuery(e.target.value)}\n      />\n\n      <ul>\n        {results.map((item) => (\n          <li key={item.id}>{item.name}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n\nexport default SearchInput;\n```\n\nThe key part is:\n\n```js\nconst timeoutId = setTimeout(() => {\n  // API call\n}, 300);\n\nreturn () => clearTimeout(timeoutId);\n```\n\nThis cancels the previous pending request timer whenever the user types again.",
+  "usage": {
+    "output_tokens": 313
+  }
+}

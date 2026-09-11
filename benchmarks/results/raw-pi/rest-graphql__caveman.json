@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "REST: simpler, cache-friendly, mature tooling. Good for standard CRUD, stable resources. Downside: over/under-fetching, many endpoints, versioning pain.\n\nGraphQL: flexible queries, single endpoint, strong schema, great for complex clients/mobile. Downside: harder caching, query complexity/security risks, more server work, steeper ops/debugging.\n\nRule:  \n- Simple/public/resource API -> REST.  \n- Many clients needing different data shapes -> GraphQL.",
+  "usage": {
+    "output_tokens": 100
+  }
+}

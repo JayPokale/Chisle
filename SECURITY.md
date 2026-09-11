@@ -24,7 +24,4 @@ next patch release, with credit unless you ask otherwise.
 
 ## Why this matters here
 
-Chisle runs hooks in your agent session and writes a flag file. The config layer
-(`hooks/chisle-config.js`) is symlink-safe by design (`O_NOFOLLOW`, `0600`). If you find a
-way to escape that — path traversal, symlink follow, privilege escalation through the
-installer — that's exactly the kind of report this policy is for.
+Chisle runs hooks or a Pi extension inside your agent process. Pi extensions have full user permissions; review source before installing, and trust project-local `.pi` resources only from repositories you trust. The config layer (`hooks/chisle-config.js`) is symlink-safe by design (`O_NOFOLLOW`, `0600`). If you find path traversal, symlink following, unsafe tool-result mutation, or installer privilege escalation, report it here.

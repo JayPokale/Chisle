@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "```python\nfrom functools import lru_cache\n\n@lru_cache(maxsize=10_000)\ndef get_user_profile(user_id: str) -> dict:\n    return fetch_user_profile_from_api(user_id)\n\n\ndef invalidate_user_profile(user_id: str) -> None:\n    # stdlib lru_cache only supports clearing all entries\n    get_user_profile.cache_clear()\n```\n\nSkipped custom TTL/cache class. Add it only if stale profiles become a real problem.",
+  "usage": {
+    "output_tokens": 277
+  }
+}

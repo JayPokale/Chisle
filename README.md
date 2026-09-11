@@ -14,7 +14,7 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/chisle"><img src="https://img.shields.io/npm/v/chisle?style=flat-square&color=d78a3c" alt="npm version"></a>
-  <img src="https://img.shields.io/badge/works%20with-8%20agents-d78a3c?style=flat-square" alt="Works with 8 agents">
+  <img src="https://img.shields.io/badge/works%20with-9%20agents-d78a3c?style=flat-square" alt="Works with 9 agents">
   <a href="https://github.com/JayPokale/Chisle/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/JayPokale/Chisle/test.yml?style=flat-square&label=CI" alt="CI"></a>
   <img src="https://img.shields.io/badge/deps-0-2da44e?style=flat-square" alt="Zero deps">
   <img src="https://img.shields.io/badge/license-MIT-d78a3c?style=flat-square" alt="MIT">
@@ -79,30 +79,30 @@ Most efficiency tools compress one thing. Chisle compresses **three**:
 |---|---|---|
 | **Output: prose** | filler, hedging, manufactured structure | zero-fluff ruleset, injected per session |
 | **Output: code** | speculative abstractions, unrequested boilerplate | YAGNI efficiency ladder |
-| **Input: context** | oversized tool output flooding the window | `PostToolUse` hook — scrub, elide, dedup — plus prevention rules |
+| **Input: context** | oversized tool output flooding the window | Claude `PostToolUse` / Pi `tool_result` — scrub, elide, dedup — plus prevention rules |
 
 Where each one attaches to a session:
 
 ```mermaid
 flowchart LR
     subgraph S["Session start"]
-        H1["SessionStart hook<br/>~1.6k tokens, new sessions only"]
+        H1["Ruleset injection<br/>once per active session"]
     end
     subgraph T["Every turn"]
-        H2["UserPromptSubmit hook<br/>~50-token reminder"]
+        H2["Mode tracking<br/>Claude + Pi"]
     end
     subgraph L["Every tool call"]
-        H3["PostToolUse hook<br/>scrub → elide → dedup"]
+        H3["PostToolUse / tool_result<br/>scrub → elide → dedup"]
     end
 
     H1 --> M(["Model"])
     H2 --> M
     M -->|writes| O["Output:<br/>terser prose,<br/>YAGNI-first code"]
-    M -->|calls a tool| TOOL[["Bash / Grep / WebFetch / mcp__*"]]
+    M -->|calls a tool| TOOL[["Bash / grep / web / extension tools"]]
     TOOL -->|raw output| H3
     H3 -->|"compressed, rebuilt into<br/>the tool's own shape"| M
 
-    RE["Read / Edit"] -.->|"never touched —<br/>exact bytes feed later edits"| M
+    RE["Read / Edit / Write"] -.->|"never touched —<br/>exact bytes feed later edits"| M
 
     style M fill:#1f2937,stroke:#d78a3c,color:#e6edf3
     style O fill:#14532d,stroke:#2da44e,color:#e6edf3
@@ -110,7 +110,7 @@ flowchart LR
     style RE fill:#3f1d1d,stroke:#cf3b3b,color:#e6edf3
 ```
 
-The loop on the right is the input axis: tool output is billed again on *every* later request in the session, so shrinking it once pays repeatedly. `Read` and `Edit` are deliberately outside it.
+The loop on the right is the input axis: tool output is billed again on *every* later request in the session, so shrinking it once pays repeatedly. `Read`, `Edit`, and `Write` are deliberately outside it.
 
 <p align="center">
   <img src="assets/thumbnail.png" width="820" alt="Chisle — less tokens, same results. Four parts: output compressor (compress noisy tool outputs), context diet (read only what's actually relevant), terse persona (short, focused, YAGNI-first), YAGNI ladder (do less, reuse more, build only when needed).">
@@ -122,7 +122,7 @@ Every "be concise" tool has a worst day — the day it makes the model write *mo
 
 ## Install
 
-One command. Auto-detects your agents (Claude Code, Cursor, Windsurf, Cline, Kiro, Codex, Gemini, Copilot) and wires each one. `--uninstall` puts everything back.
+One command. Auto-detects your agents (Claude Code, Pi, Cursor, Windsurf, Cline, Kiro, Codex, Gemini, Copilot) and wires each one. `--uninstall` puts everything back.
 
 ```bash
 npx chisle
@@ -138,9 +138,9 @@ curl -fsSL https://raw.githubusercontent.com/JayPokale/Chisle/main/install.sh | 
 irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
 ```
 
-Preview first with `npx chisle --dry-run`, scope with `--only claude`, see everything with `npx chisle --help`. Remove with `npx chisle --uninstall`.
+Preview first with `npx chisle --dry-run`, scope with `--only claude` or `--only pi`, see everything with `npx chisle --help`. Remove with `npx chisle --uninstall`.
 
-**Requirements:** Node ≥18 (installer / `npx`) · Claude Code for `/chisle` toggling and input-side compression — the always-on ruleset still ships to every other agent.
+**Requirements:** Node ≥18 (installer / `npx`) · Claude Code or Pi for `/chisle` toggling and input-side compression — the always-on ruleset still ships to every other agent.
 
 ### Upgrading
 
@@ -167,17 +167,26 @@ claude plugin marketplace add JayPokale/Chisle   # register the marketplace
 claude plugin install chisle@chisle              # enable the plugin
 ```
 
+### Pi package
+
+```bash
+pi install npm:chisle
+```
+
+The package loads the zero-dependency extension and `chisle` skill globally. Pi extensions run with your user permissions; review the source before installation. Project-local installs (`pi install -l npm:chisle`) load only after you trust that project.
+
 ### See what it would do, before it does it
 
 ```bash
 npx chisle --dry-run    # prints every file it would touch, changes nothing
 ```
 
-Want the savings measured on your own work rather than ours? Clone the repo and replay the compressor over your existing Claude Code transcripts — it reads them locally, writes nothing, and reports the tokens the input-side hook would have stripped:
+Want the savings measured on your own work rather than ours? Clone the repo and replay the compressor over local transcripts — it reads them locally, writes nothing, and reports the input the hook would have stripped:
 
 ```bash
 git clone https://github.com/JayPokale/Chisle && cd Chisle
-node benchmarks/replay-compress.js
+node benchmarks/replay-compress.js       # Claude Code
+node benchmarks/replay-compress.js pi    # Pi; marginal over Pi's native truncation
 ```
 
 ---
@@ -283,7 +292,7 @@ SUITE=large bash benchmarks/run-live.sh <model> benchmarks/results/raw-large
 
 The row that matters is the last one. Every tool here looks good on its best day; the numbers above are the only ones in this class published alongside the run that went wrong. [Full comparison →](docs/comparison.md)
 
-### Input axis — tool-output compression (Claude Code)
+### Input axis — tool-output compression (Claude Code + Pi)
 
 Measured over 171 real sessions ([receipts](benchmarks/results/2026-07-07-input-axis.md)): tool output is **67.5%** of context content, and every byte of it is re-billed on *every subsequent request* in the session (median: 171 requests). A `PostToolUse` hook shrinks it before the model reads it — deterministic, zero LLM, zero network:
 
@@ -293,10 +302,13 @@ Measured over 171 real sessions ([receipts](benchmarks/results/2026-07-07-input-
 | **elide** | oversized output → head + tail, error-like lines salvaged from the cut | bounded, guarded |
 | **dedup** | byte-identical repeat of a tool's previous output (same session) → one-line marker | none — the copy is already in context |
 
-Replayed over the same 171 sessions: **~61k tokens** saved one-shot, ~46% off every eligible output — floor, not estimate, since each saved byte also stops being re-sent on every later request. Correctness rules: allowlist only (`Bash`, `Agent`, `WebFetch`, `WebSearch`, `Grep`, `Glob`, `mcp__*`) — never `Read`/`Edit`, whose exact bytes feed later edits. Honest ledger: dedup scored **0 hits** on this corpus (rtk-filtered at source); it's kept for the test-rerun case, kill-switchable, and labeled speculative until it earns a number. Replay it on your own transcripts:
+Replayed over the same 171 Claude Code sessions: **~61k tokens** saved one-shot, ~46% off every eligible output — floor, not estimate, since each saved byte also stops being re-sent on every later request. Correctness rules: allowlist only (`Bash`, `Agent`, `WebFetch`, `WebSearch`, `Grep`, `Glob`, `mcp__*`) — never `Read`/`Edit`, whose exact bytes feed later edits. Honest ledger: dedup scored **0 hits** on this corpus (rtk-filtered at source); it's kept for the test-rerun case, kill-switchable, and labeled speculative until it earns a number.
+
+Pi already truncates built-in output at 50KB/2,000 lines. Replay over 8,044 persisted Pi results measured the compressor's **marginal** saving after that truncation: **27.4% of tool-output chars** ([receipt + raw live Pi arm](benchmarks/results/2026-09-11-pi.md)). Pi compresses `bash`, `powershell`, `grep`, `find`, `ls`, MCP, and explicitly allowlisted extension-tool results; `read`/`edit`/`write` remain untouched. `CHISLE_COMPRESS_TOOLS` supplies the same explicit override for runtime and replay. Runtime dedup only compares earlier turns, so concurrently completed sibling calls cannot dedup one another.
 
 ```bash
-node benchmarks/replay-compress.js        # what it would have saved you
+node benchmarks/replay-compress.js       # Claude Code
+node benchmarks/replay-compress.js pi    # Pi
 ```
 
 Outputs over 8k chars are elided. `stop chisle`, `CHISLE_COMPRESS=0`, `CHISLE_COMPRESS_SCRUB=0`, `CHISLE_COMPRESS_DEDUP=0` — every tier has an off switch.
@@ -404,12 +416,12 @@ Chisle borrows the best published token-saving techniques and implements the one
 
 ## Multi-agent
 
-Primarily a Claude Code plugin, but ships to every agent with a rules/context file — Cursor, Windsurf, Cline, Kiro, Codex, Gemini, Copilot. Per-agent copies generated by `scripts/build-rules.js` (a condensed mirror of the skill — edit both, CI checks sync). See [`docs/agent-portability.md`](./docs/agent-portability.md). Input-side compression is Claude Code-only for now: no other agent exposes a post-tool output rewrite hook.
+Ships to nine agents: Claude Code and Pi get both axes, live `/chisle` toggling, and a status badge; Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot get the always-on ruleset. Per-agent static copies come from `scripts/build-rules.js`; Pi uses its package extension plus the Agent Skills standard. See [`docs/agent-portability.md`](./docs/agent-portability.md).
 
 ## FAQ
 
 **Doesn't injecting a persona every turn cost tokens?**
-Yes — a ruleset at session start (~1.6k tokens) plus a ~50-token reminder per turn. Output is where it pays back: coding answers shrink 40–60% (benchmarks), and output bills several × higher than input.
+Claude Code uses a ruleset at session start (~1.6k tokens) plus a ~50-token reminder per turn. Pi injects one persistent rules message only when project `AGENTS.md` does not already provide it; resume/reload does not duplicate it, and compaction restores it only if removed.
 
 Worth reading the dissent before you take that on faith: [@enc0ded](https://github.com/enc0ded) measured 173 of their own sessions ([#2](https://github.com/JayPokale/Chisle/issues/2)) and found the injection overhead roughly cancelling the compressor's savings — because the ruleset was being re-sent on every resume and clear, not just at startup. That re-injection is fixed, which removes most of the overhead they measured, but their wider point stands: prose is only ~25% of what the model emits, so the ceiling on the output axis is lower than the headline suggests, and on a one-line throwaway prompt the overhead still exceeds the saving.
 

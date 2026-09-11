@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "```ts\nconst profileCache = new Map<string, { expiresAt: number; data: UserProfile }>();\nconst PROFILE_TTL_MS = 5 * 60 * 1000;\n\nexport async function getUserProfile(userId: string): Promise<UserProfile> {\n  const cached = profileCache.get(userId);\n  if (cached && cached.expiresAt > Date.now()) return cached.data;\n\n  const data = await fetchUserProfileFromApi(userId);\n\n  profileCache.set(userId, {\n    data,\n    expiresAt: Date.now() + PROFILE_TTL_MS,\n  });\n\n  return data;\n}\n\nexport function invalidateUserProfile(userId: string) {\n  profileCache.delete(userId);\n}\n```\n\nSkipped Redis/distributed cache. Add when multiple app instances need shared cache or profiles update often.",
+  "usage": {
+    "output_tokens": 231
+  }
+}

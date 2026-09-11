@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "A regular expression **backreference** reuses text that was already matched by a capturing group.\n\nExample:\n\n```regex\n\\b(\\w+)\\s+\\1\\b\n```\n\nThis matches repeated words like:\n\n```text\nhello hello\n```\n\nHere `(\\w+)` captures `hello`, and `\\1` means “match the same text captured by group 1.”",
+  "usage": {
+    "output_tokens": 81
+  }
+}

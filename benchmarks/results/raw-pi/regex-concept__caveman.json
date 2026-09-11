@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "Backreference = regex token that matches same text captured earlier by group.\n\nExample: find repeated word:\n\n```regex\n\\b(\\w+)\\s+\\1\\b\n```\n\nMatches:\n\n```text\nhello hello\n```\n\n`(\\w+)` captures `hello`; `\\1` must match same `hello`.",
+  "usage": {
+    "output_tokens": 68
+  }
+}

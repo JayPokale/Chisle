@@ -24,7 +24,7 @@ Installing *both* specialists to cover both axes gets you two plugins that fight
 
 ## The input axis — a thing neither specialist touches
 
-caveman and ponytail both compress one direction: what the model *writes*. Neither does anything about what it *reads* — tool output, which is **67.5% of session context** on a real corpus ([measured](../benchmarks/results/2026-07-07-input-axis.md)). Chisle 0.2.0 ships a `PostToolUse` compressor for that axis (Claude Code only): oversized Bash/Agent/web output gets its middle elided, error lines salvaged, ~46% smaller per eligible output — and every saved byte stops being re-billed on each later request in the session.
+caveman and ponytail both compress one direction: what the model *writes*. Neither does anything about what it *reads* — tool output, which is **67.5% of session context** on a Claude Code corpus ([measured](../benchmarks/results/2026-07-07-input-axis.md)). Chisle compresses that axis on Claude Code and Pi: oversized safe tool output gets its middle elided, error lines salvaged, and every saved byte stops being re-billed on later requests. Claude replay cut ~46% per eligible output. Pi replay measured the honest marginal result after Pi's native 50KB/2,000-line truncation: **27.4% of persisted tool-output chars** ([Pi receipt](../benchmarks/results/2026-09-11-pi.md)).
 
 ## `/chisle-audit` — a thing neither specialist has
 
@@ -63,7 +63,7 @@ Never. Input validation, error handling that prevents data loss, security, and a
 File an issue — that's a bug, not the design. Terse ≠ incomplete: keep the fix, cut the fluff. If it dropped the fix, it failed its own rules and we want to know.
 
 **Does it work outside Claude Code?**
-Yes — ships to Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot. Live mode-switching UI (`/chisle`, statusline badge) is Claude-Code-specific; everywhere else the always-on ruleset still applies. See [agent portability](agent-portability.md).
+Yes — ships to Pi, Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot. Pi and Claude Code get live mode switching, status badge, and input compression; the static-rule agents get the always-on ruleset. See [agent portability](agent-portability.md).
 
 **Why "Chisle"?**
 CHISLE is a demolition charge. Your token bill is the building. The only thing it detonates is verbosity.

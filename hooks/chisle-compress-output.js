@@ -130,6 +130,16 @@ function scrub(text) {
 // skipped when the payload carries none.
 const DEDUP_MIN = 2048;
 
+function duplicateMarker(toolName, text, reference = 'previous') {
+  const lines = text.split('\n');
+  const prior = reference === 'previous' ? 'the previous' : 'an earlier';
+  const preview = lines.slice(0, 5)
+    .map(l => l.length > MAX_SALVAGE_LINE ? l.slice(0, MAX_SALVAGE_LINE) + '…' : l);
+  return '[chisle: output byte-identical to ' + prior + ' ' + toolName + ' result — ' +
+    text.length.toLocaleString('en-US') + ' chars / ' + lines.length +
+    ' lines, unchanged. First lines:]\n' + preview.join('\n');
+}
+
 function dedupCheck(toolName, text, sessionId, toolUseId) {
   if (process.env.CHISLE_COMPRESS_DEDUP === '0') return null;
   if (!sessionId || typeof sessionId !== 'string') return null;
@@ -157,13 +167,7 @@ function dedupCheck(toolName, text, sessionId, toolUseId) {
     const tmp = p + '.' + process.pid + '.tmp';
     fs.writeFileSync(tmp, JSON.stringify(state), { mode: 0o600 });
     fs.renameSync(tmp, p);
-    if (!dup) return null;
-    const lines = text.split('\n');
-    const preview = lines.slice(0, 5)
-      .map(l => l.length > MAX_SALVAGE_LINE ? l.slice(0, MAX_SALVAGE_LINE) + '…' : l);
-    return '[chisle: output byte-identical to the previous ' + toolName + ' result — ' +
-      text.length.toLocaleString('en-US') + ' chars / ' + lines.length +
-      ' lines, unchanged. First lines:]\n' + preview.join('\n');
+    return dup ? duplicateMarker(toolName, text) : null;
   } catch (e) { return null; }
 }
 
@@ -303,4 +307,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { extractText, rebuildResponse, scrub, compress, transform, limitsFor, toolAllowed, processPayload, THRESHOLDS, SAFE_TOOLS };
+module.exports = { extractText, rebuildResponse, scrub, compress, transform, limitsFor, toolAllowed, processPayload, duplicateMarker, THRESHOLDS, SAFE_TOOLS };

@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "```tsx\nimport { useEffect, useState } from \"react\";\n\nexport function SearchBox() {\n  const [query, setQuery] = useState(\"\");\n  const [results, setResults] = useState([]);\n\n  useEffect(() => {\n    if (!query.trim()) {\n      setResults([]);\n      return;\n    }\n\n    const controller = new AbortController();\n\n    const timeout = setTimeout(async () => {\n      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {\n        signal: controller.signal,\n      });\n\n      setResults(await res.json());\n    }, 300);\n\n    return () => {\n      clearTimeout(timeout);\n      controller.abort();\n    };\n  }, [query]);\n\n  return (\n    <>\n      <input\n        value={query}\n        onChange={(e) => setQuery(e.target.value)}\n        placeholder=\"Search...\"\n      />\n\n      <ul>\n        {results.map((item: any) => (\n          <li key={item.id}>{item.name}</li>\n        ))}\n      </ul>\n    </>\n  );\n}\n```\n\n300ms debounce. `AbortController` cancels stale requests.",
+  "usage": {
+    "output_tokens": 279
+  }
+}

@@ -5,7 +5,13 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+- **Pi harness integration.** New zero-dependency Pi package extension supplies the always-on ruleset, `/chisle` and natural-language toggles, footer savings badge, and `tool_result` compression while preserving `details`, `isError`, and `usage`. Parallel sibling results cannot dedup one another; `read`, `edit`, and `write` are always untouched.
+- **Pi install and replay support.** `npx chisle` detects Pi and delegates package settings to `pi install` / `pi remove`; `--only pi`, `--dry-run`, and scoped uninstall are covered. `package.json` exposes the extension and Agent Skills resources. Transcript replay reads Pi session JSONL and reports marginal savings after Pi's native 50KB/2,000-line truncation.
+- **Pi receipts.** Committed 24 raw live event streams plus normalized cells. Chisle used 61% of vanilla billed output versus ponytail's 59%, while producing the smallest visible answers (37%) and fewest lines (37%). Local Pi replay measured 27.4% marginal tool-output reduction after native truncation. ([#6](https://github.com/JayPokale/Chisle/issues/6))
+
 ### Fixed
+- **`CHISLE_DEFAULT_MODE=off` blocked explicit activation.** It now controls session startup only; `/chisle` or an activation phrase enables the current Claude Code or Pi session as documented.
 - **Duplicate hook registration made dedup destroy first-seen tool output.**
   When `chisle-compress-output.js` was registered twice (plugin manifest plus a
   leftover standalone entry in `settings.json`), both copies ran on the same

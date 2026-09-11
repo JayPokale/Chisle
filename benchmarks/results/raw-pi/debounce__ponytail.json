@@ -1,0 +1,8 @@
+{
+  "harness": "pi",
+  "is_error": false,
+  "result": "```jsx\nimport { useEffect, useState } from \"react\";\n\nfunction SearchBox() {\n  const [query, setQuery] = useState(\"\");\n\n  useEffect(() => {\n    if (!query.trim()) return;\n\n    const id = setTimeout(() => {\n      fetch(`/api/search?q=${encodeURIComponent(query)}`);\n    }, 300);\n\n    return () => clearTimeout(id);\n  }, [query]);\n\n  return (\n    <input\n      type=\"search\"\n      value={query}\n      onChange={(e) => setQuery(e.target.value)}\n      placeholder=\"Search...\"\n    />\n  );\n}\n```\n\nSkipped debounce library/custom hook; add one when multiple inputs need it.",
+  "usage": {
+    "output_tokens": 179
+  }
+}

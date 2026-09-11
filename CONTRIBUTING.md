@@ -7,11 +7,13 @@ Small focused PRs beat big rewrites. Chisle is a small package — keep it that 
 | File | Purpose |
 |------|---------|
 | `skills/chisle/SKILL.md` | **Behaviour source.** All rules and examples. The activate hook reads it at runtime. |
-| `scripts/build-rules.js` | Condensed mirror of the skill for the 7 non-Claude agents. **Editing SKILL.md alone does not propagate here** — update the `BODY` too, then regenerate. |
+| `scripts/build-rules.js` | Condensed mirror of the skill for the 7 static-rule agents. **Editing SKILL.md alone does not propagate here** — update the `BODY` too, then regenerate. |
 | `hooks/chisle-activate.js` | SessionStart: reads SKILL.md, writes flag, emits rules |
 | `hooks/chisle-mode-tracker.js` | UserPromptSubmit: `/chisle` commands, NL detection, per-turn reinforcement |
 | `hooks/chisle-compress-output.js` | PostToolUse: input-side compression (scrub / elide / dedup tiers, savings ledger) |
 | `hooks/chisle-config.js` | Shared flag read/write, mode resolution. Security-sensitive — test changes carefully. |
+| `hooks/chisle-mode.js` | Shared natural-language mode-directive parser. |
+| `pi-extension/index.js` | Pi lifecycle, command, status, and `tool_result` adapter; reuses hook core. |
 | `hooks/chisle-statusline.sh` / `.ps1` | Statusline badge: mode + measured input-side savings |
 | `bin/install.js` + `bin/lib/settings.js` | Multi-agent installer, JSONC-safe settings merge |
 
@@ -19,9 +21,9 @@ Small focused PRs beat big rewrites. Chisle is a small package — keep it that 
 
 **Changing behaviour** → `skills/chisle/SKILL.md`, **and** the condensed `BODY` in `scripts/build-rules.js`, then `npm run build:rules`. CI checks the copies are in sync with the generator (not with SKILL.md — the mirror is manual, by design).
 
-**Input-side compression** → `hooks/chisle-compress-output.js`. Correctness invariants that must survive any change: allowlist only (never `Read`/`Edit`), error-line salvage on any elision, dedup only within one session, every tier kill-switchable, hook never throws.
+**Input-side compression** → shared transforms in `hooks/chisle-compress-output.js`, harness shape/lifecycle in `pi-extension/index.js`. Correctness invariants: allowlist only (never Read/Edit/Write), preserve Pi result metadata, salvage error lines, skip same-turn Pi dedup, keep every tier kill-switchable, never break the tool pipeline.
 
-**Natural language triggers** → regex patterns in `hooks/chisle-mode-tracker.js`.
+**Natural language triggers** → `hooks/chisle-mode.js`; both harnesses consume it.
 
 **Security-sensitive paths** → `hooks/chisle-config.js` (`safeWriteFlag`, `readFlag`). Symlink-safe, `O_NOFOLLOW`, size-capped. Don't simplify them.
 
@@ -38,9 +40,10 @@ Add a test for any hook logic change. Compressor changes go in `tests/test_compr
 Numbers in README/docs come from committed raw data — nothing lands without receipts:
 
 ```bash
-bash benchmarks/run-live.sh [model] [fresh-raw-dir]   # live 4-arm run
-RAW_DIR=<dir> node benchmarks/aggregate.js            # tables
-node benchmarks/replay-compress.js [mode]             # input-axis replay
+bash benchmarks/run-live.sh [model] [fresh-raw-dir]             # Claude live run
+HARNESS=pi bash benchmarks/run-live.sh [model] [fresh-raw-dir]  # Pi live run
+RAW_DIR=<dir> node benchmarks/aggregate.js                       # tables
+node benchmarks/replay-compress.js [claude|pi] [session-dir]     # input replay
 ```
 
 ## PR checklist
