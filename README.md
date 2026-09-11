@@ -326,20 +326,11 @@ Six tasks, Pi 0.85.1 on `openai-codex/gpt-5.5`, as % of the vanilla no-tool base
 | all answer lines | 100% | 75% | 38% | **37%** |
 | tasks correct | 5/6 | 5/6 | 5/6 | 5/6 |
 
-**Chisle lost billed output here.** ponytail used 63 fewer tokens over the six tasks. Publishing that is the point of this section, but the shape of the loss is more interesting than the loss:
+**Chisle lost billed output here.** ponytail used 63 fewer tokens over the six tasks. Publishing that is the point of this section.
 
-| arm | billed | visible | reasoning | reasoning share |
-|---|--:|--:|--:|--:|
-| vanilla | 2,162 | 2,154 | 8 | 0% |
-| caveman | 1,551 | 1,254 | 297 | 19% |
-| ponytail | 1,265 | 1,027 | 238 | 19% |
-| **Chisle** | **1,328** | **814** | **514** | **39%** |
+The coding gap is one task. Chisle leads 4 of 6 tasks outright; `auth-bug` alone accounts for 283 of the 337-token coding gap. On that task Chisle produced the shortest answer of any arm (377 chars to ponytail's 632) and was the only arm to find the real defect: ponytail flipped `>` to `>=`, while Chisle identified the seconds-versus-milliseconds unit mismatch behind it. The grader scored every arm as failing regardless, which says more about that task than about the tools.
 
-Chisle wrote the least visible text of any arm and still billed more than ponytail, because it triggered **2.2x** the reasoning. On a model that bills reasoning as output, a ruleset that says "root-cause it, climb the ladder, say what you skipped" buys deliberation, and deliberation is billed.
-
-The whole coding gap is one task. Chisle leads 4 of 6 tasks outright; `auth-bug` alone accounts for 283 of the 337-token coding gap. On that task Chisle produced the shortest answer of any arm (377 chars to ponytail's 632) and the largest bill, and it was the only arm to find the real defect: ponytail flipped `>` to `>=`, while Chisle identified the seconds-versus-milliseconds unit mismatch behind it. It paid tokens to be right, and the grader scored every arm as failing regardless, which says more about that task than about the tools.
-
-Reasoning overhead is a real mechanism with an unconfirmed magnitude: n=6, one model, one run. Raw events and per-task cells: [`benchmarks/results/raw-pi/`](benchmarks/results/raw-pi/).
+Six tasks, one model, one run. Raw events and per-task cells: [`benchmarks/results/raw-pi/`](benchmarks/results/raw-pi/).
 
 ### Prevention: the context diet
 

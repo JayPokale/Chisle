@@ -22,8 +22,8 @@ const METRICS = [
   { key: "lines", label: "answer lines", hint: "what you actually read" },
 ] as const;
 // The Pi arm, 6 tasks on Pi 0.85.1 + openai-codex/gpt-5.5, as % of the vanilla
-// baseline. Published because Chisle lost billed output here: the honest number
-// is the one that makes the reasoning-overhead finding legible.
+// baseline. Published because Chisle lost billed output here, and the rule of
+// this repo is that the losing rows ship too.
 const PI_ROWS = [
   { label: "coding billed", vanilla: 100, caveman: 87, ponytail: 49, chisle: 73 },
   { label: "non-coding billed", vanilla: 100, caveman: 43, ponytail: 76, chisle: 39 },
@@ -32,15 +32,6 @@ const PI_ROWS = [
   { label: "answer lines", vanilla: 100, caveman: 75, ponytail: 38, chisle: 37 },
 ];
 
-// Billed output splits into text the reader sees and reasoning they never do.
-// Chisle writes the least and thinks the most, which is the whole story of the
-// row it lost.
-const PI_REASONING = [
-  { arm: "bare model", billed: 2162, visible: 2154, share: 0 },
-  { arm: "caveman", billed: 1551, visible: 1254, share: 19 },
-  { arm: "ponytail", billed: 1265, visible: 1027, share: 19 },
-  { arm: "chisle", billed: 1328, visible: 814, share: 39, self: true },
-];
 
 export default function Benchmarks() {
   const [metric, setMetric] = useState<"tokens" | "lines">("tokens");
@@ -172,8 +163,7 @@ export default function Benchmarks() {
             <p className="mt-3 max-w-2xl text-sm text-dim">
               Six tasks on Pi 0.85.1 with openai-codex/gpt-5.5, as a share of the bare model.
               ponytail took total billed output 59% to 61%. Chisle still wrote the smallest
-              answers of any arm, and the reason those two facts coexist is worth more than
-              the win would have been.
+              answers of any arm.
             </p>
 
             <div className="mt-6 overflow-x-auto">
@@ -207,49 +197,6 @@ export default function Benchmarks() {
                 </tbody>
               </table>
             </div>
-
-            <p className="mt-8 max-w-2xl text-sm text-dim">
-              Billed output is text plus reasoning. Split them and the loss inverts:
-            </p>
-
-            <div className="mt-4 overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="text-xs uppercase tracking-wide text-dim">
-                  <tr>
-                    <th className="py-2 pr-4 font-medium">arm</th>
-                    <th className="py-2 pr-4 text-right font-medium">billed</th>
-                    <th className="py-2 pr-4 text-right font-medium">visible</th>
-                    <th className="py-2 text-right font-medium">reasoning</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-line">
-                  {PI_REASONING.map((r) => (
-                    <tr
-                      key={r.arm}
-                      className={`transition-colors hover:bg-amber-soft/25 ${r.self ? "text-amber" : ""}`}
-                    >
-                      <td className={`py-2 pr-4 ${r.self ? "font-semibold" : ""}`}>{r.arm}</td>
-                      <td className="py-2 pr-4 text-right tabular-nums">{r.billed.toLocaleString()}</td>
-                      <td className="py-2 pr-4 text-right tabular-nums">{r.visible.toLocaleString()}</td>
-                      <td className="py-2 text-right tabular-nums">
-                        {(r.billed - r.visible).toLocaleString()} ({r.share}%)
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <p className="mt-4 max-w-2xl text-xs text-dim">
-              Chisle wrote the least visible text of any arm and still billed more than ponytail,
-              because it triggered 2.2&times; the reasoning. A ruleset that says &ldquo;root-cause it,
-              climb the ladder, say what you skipped&rdquo; buys deliberation, and this model bills
-              deliberation as output. The entire coding gap is one task: on{" "}
-              <code className="font-mono text-[11px]">auth-bug</code> Chisle gave the shortest answer
-              of any arm and the largest bill, and was the only one to find the real defect, a
-              seconds-versus-milliseconds unit mismatch, where ponytail flipped an operator. Six
-              tasks, one model, one run: a real mechanism at an unconfirmed magnitude.
-            </p>
           </div>
         </Reveal>
       </div>
