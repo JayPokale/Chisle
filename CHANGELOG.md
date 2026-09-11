@@ -3,7 +3,7 @@
 All notable changes to Chisle are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [3.1.0] — 2026-09-11
 
 ### Added
 - **Pi harness integration.** New zero-dependency Pi package extension supplies the always-on ruleset, `/chisle` and natural-language toggles, footer savings badge, and `tool_result` compression while preserving `details`, `isError`, and `usage`. Parallel sibling results cannot dedup one another; `read`, `edit`, and `write` are always untouched.
