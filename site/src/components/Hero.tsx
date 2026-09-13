@@ -31,6 +31,12 @@ const INSTALLS = [
     cmd: "npx chisle --dry-run",
     note: "prints every file it would touch, changes nothing",
   },
+  {
+    id: "update",
+    label: "update",
+    cmd: "npx chisle@latest --update",
+    note: "refreshes what is installed; plain npx chisle skips it",
+  },
 ];
 
 function CopyCmd() {

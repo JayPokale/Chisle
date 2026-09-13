@@ -58,7 +58,7 @@ const PROVIDERS = [
 // ── argv ────────────────────────────────────────────────────────────────────
 function parseArgs(argv) {
   const opts = { dryRun: false, force: false, list: false, uninstall: false,
-                 noColor: false, help: false, stats: false, only: [], configDir: null };
+                 noColor: false, help: false, stats: false, update: false, only: [], configDir: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     switch (a) {
@@ -66,6 +66,9 @@ function parseArgs(argv) {
       case '--force': opts.force = true; break;
       case '--list': opts.list = true; break;
       case '--stats': opts.stats = true; break;
+      // --update is --force narrowed to what is already there: refresh every
+      // agent that has Chisle, add it to none that don't.
+      case '--update': opts.update = true; opts.force = true; break;
       case '--uninstall': case '-u': opts.uninstall = true; break;
       case '--no-color': opts.noColor = true; break;
       case '-h': case '--help': opts.help = true; break;
@@ -163,6 +166,49 @@ function claudeDir(opts) {
   if (opts.configDir) return opts.configDir;
   if (process.env.CLAUDE_CONFIG_DIR) return process.env.CLAUDE_CONFIG_DIR;
   return path.join(os.homedir(), '.claude');
+}
+
+// ── what is already installed ───────────────────────────────────────────────
+// Every install path skips when Chisle is already present, which is right for
+// `npx chisle` and useless for an upgrade: the run reports success and changes
+// nothing. --update pairs this check with --force so a refresh touches exactly
+// the agents that already have it.
+function installedFor(id, opts) {
+  try {
+    switch (id) {
+      case 'claude': {
+        if (hasCmd('claude')) {
+          const r = capture('claude', ['plugin', 'list']);
+          if (r.status === 0 && /chisle/i.test(r.stdout || '')) return true;
+        }
+        const settings = SETTINGS.readSettings(path.join(claudeDir(opts), 'settings.json'));
+        const hooks = (settings && settings.hooks) || {};
+        for (const event of Object.keys(hooks)) {
+          for (const entry of hooks[event] || []) {
+            for (const h of (entry && entry.hooks) || []) {
+              if (typeof h.command === 'string' && h.command.includes('chisle-')) return true;
+            }
+          }
+        }
+        return false;
+      }
+      case 'pi':
+        return hasCmd('pi') && piSources(capture('pi', ['list']).stdout).length > 0;
+      case 'gemini': {
+        if (!hasCmd('gemini')) return false;
+        const r = capture('gemini', ['extensions', 'list']);
+        return r.status === 0 && /chisle/i.test(r.stdout || '');
+      }
+      case 'codex': {
+        const md = path.join(os.homedir(), '.codex', 'AGENTS.md');
+        return fs.existsSync(md) && fs.readFileSync(md, 'utf8').includes(FENCE_BEGIN);
+      }
+      default: {
+        const prov = PROVIDERS.find(x => x.id === id);
+        return !!(prov && prov.rule && fs.existsSync(path.join(process.cwd(), prov.rule)));
+      }
+    }
+  } catch (e) { return false; }
 }
 
 // ── Claude Code ─────────────────────────────────────────────────────────────
@@ -459,6 +505,7 @@ Usage:
 Flags:
   --list           Detect agents and print them; install nothing
   --stats          Print tool-output savings recorded so far; change nothing
+  --update         Refresh every agent that already has Chisle; install none
   --only <id>      Limit install/uninstall to one agent (repeatable)
   --dry-run        Print actions, change nothing
   --force          Reinstall / overwrite even if already present
@@ -474,6 +521,7 @@ Examples:
   npx chisle --only claude    # just Claude Code
   npx chisle --dry-run        # preview
   npx chisle --stats          # what the compressor has saved
+  npx chisle@latest --update  # upgrade what is already installed
 `);
 }
 
@@ -544,12 +592,20 @@ function main() {
 
   if (opts.uninstall) return uninstall(ctx);
 
-  say(c.orange('╭─ Chisle installer ─╮'));
+  say(c.orange(opts.update ? '╭─ Chisle updater ─╮' : '╭─ Chisle installer ─╮'));
   say(c.dim(opts.dryRun ? '  (dry run, nothing will change)' : '  maximum signal, minimum noise'));
   say('');
 
-  const targets = PROVIDERS.filter(p => opts.only.length ? opts.only.includes(p.id) : detectMatch(p.detect));
+  let targets = PROVIDERS.filter(p => opts.only.length ? opts.only.includes(p.id) : detectMatch(p.detect));
+  if (opts.update) targets = targets.filter(p => installedFor(p.id, opts));
   if (targets.length === 0) {
+    if (opts.update) {
+      warn('Nothing to update: Chisle is not installed for any detected agent.');
+      note('Run `npx chisle` to install it, or `npx chisle --list` to see what we look for.');
+      note('Project-scoped agents (Cursor, Windsurf, Cline, Kiro, Copilot) are per-repo:');
+      note('run this from the project that has the rule file.');
+      return;
+    }
     warn('No supported agents detected.');
     note('Run `npx chisle --list` to see what we look for, or `--only <id>` to force one.');
     return;

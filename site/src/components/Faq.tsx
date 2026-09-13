@@ -24,6 +24,10 @@ const QA = [
     q: "How do I turn it off?",
     a: "\"stop chisle\" for the persona, CHISLE_COMPRESS=0 for the compressor, npx chisle --uninstall to remove everything.",
   },
+  {
+    q: "How do I update it?",
+    a: "npx chisle@latest --update. Plain npx chisle will not upgrade you: every install path skips what is already present, so the run reports success and changes nothing. The @latest pin matters too, since npx can serve a cached copy of the package. Native equivalents work as well: claude plugin update chisle@chisle, or pi install npm:chisle. Cursor, Windsurf, Cline, Kiro, and Copilot keep their rule file in the repo, so update once per project.",
+  },
 ];
 
 export default function Faq() {

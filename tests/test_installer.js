@@ -244,3 +244,87 @@ test('--stats refuses to follow a symlinked ledger', { skip: process.platform ==
 test('--help and --list advertise --stats', () => {
   assert.match(runCLI(['--help']).out, /--stats/);
 });
+
+// ── --update ────────────────────────────────────────────────────────────────
+// The bug this flag exists for: `npx chisle` skips whatever is already there,
+// so the documented upgrade command reported success and changed nothing.
+
+test('--update refreshes an installed Pi package instead of skipping it', { skip: process.platform === 'win32' }, () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-upd-home-'));
+  const binDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-upd-bin-'));
+  const log = path.join(home, 'pi.log');
+  const list = path.join(home, 'pi-list.txt');
+  fs.writeFileSync(list, 'User packages:\n  npm:chisle@3.0.0\n');
+  fs.writeFileSync(path.join(binDir, 'pi'),
+    '#!/bin/sh\necho "$@" >> "$PI_LOG"\n[ "$1" = list ] && cat "$PI_LIST"\nexit 0\n', { mode: 0o755 });
+  const env = { HOME: home, PATH: binDir + path.delimiter + process.env.PATH, PI_LOG: log, PI_LIST: list };
+
+  // plain install: sees it, leaves it alone
+  const plain = runCLI(['--only', 'pi'], { env });
+  assert.match(plain.out, /already installed/);
+
+  // update: reinstalls the same agent
+  fs.writeFileSync(log, '');
+  const upd = runCLI(['--only', 'pi', '--update'], { env });
+  assert.match(upd.out, /Chisle updater/);
+  assert.doesNotMatch(upd.out, /already installed/);
+  assert.match(fs.readFileSync(log, 'utf8'), /install npm:chisle/, '--update did not reinstall');
+
+  fs.rmSync(home, { recursive: true, force: true });
+  fs.rmSync(binDir, { recursive: true, force: true });
+});
+
+test('--update installs nothing new and says why', { skip: process.platform === 'win32' }, () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-upd-none-'));
+  const binDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-upd-none-bin-'));
+  const log = path.join(home, 'pi.log');
+  const list = path.join(home, 'pi-list.txt');
+  fs.writeFileSync(list, 'User packages:\n  npm:something-else@1.0.0\n');
+  fs.writeFileSync(path.join(binDir, 'pi'),
+    '#!/bin/sh\necho "$@" >> "$PI_LOG"\n[ "$1" = list ] && cat "$PI_LIST"\nexit 0\n', { mode: 0o755 });
+  const env = { HOME: home, PATH: binDir + path.delimiter + process.env.PATH, PI_LOG: log, PI_LIST: list };
+
+  const r = runCLI(['--only', 'pi', '--update'], { env });
+  assert.match(r.out, /Nothing to update/);
+  assert.doesNotMatch(fs.readFileSync(log, 'utf8'), /install/, '--update installed an absent agent');
+
+  fs.rmSync(home, { recursive: true, force: true });
+  fs.rmSync(binDir, { recursive: true, force: true });
+});
+
+test('--update refreshes a project rule file in place', () => {
+  const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-upd-proj-'));
+  const rule = path.join(proj, '.clinerules', 'chisle.md');
+
+  runCLI(['--only', 'cline'], { cwd: proj });
+  assert.ok(fs.existsSync(rule));
+  fs.writeFileSync(rule, 'stale copy from an older release\n');
+
+  const r = runCLI(['--only', 'cline', '--update'], { cwd: proj });
+  assert.match(r.out, /Chisle updater/);
+  assert.doesNotMatch(fs.readFileSync(rule, 'utf8'), /stale copy/, '--update left a stale rule file');
+
+  fs.rmSync(proj, { recursive: true, force: true });
+});
+
+test('--update is read-only under --dry-run', { skip: process.platform === 'win32' }, () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-upd-dry-'));
+  const binDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-upd-dry-bin-'));
+  const log = path.join(home, 'pi.log');
+  const list = path.join(home, 'pi-list.txt');
+  fs.writeFileSync(list, 'User packages:\n  npm:chisle@3.0.0\n');
+  fs.writeFileSync(path.join(binDir, 'pi'),
+    '#!/bin/sh\necho "$@" >> "$PI_LOG"\n[ "$1" = list ] && cat "$PI_LIST"\nexit 0\n', { mode: 0o755 });
+  const env = { HOME: home, PATH: binDir + path.delimiter + process.env.PATH, PI_LOG: log, PI_LIST: list };
+
+  const r = runCLI(['--only', 'pi', '--update', '--dry-run'], { env });
+  assert.match(r.out, /would run: pi install npm:chisle/);
+  assert.doesNotMatch(fs.readFileSync(log, 'utf8'), /install/, 'dry-run mutated');
+
+  fs.rmSync(home, { recursive: true, force: true });
+  fs.rmSync(binDir, { recursive: true, force: true });
+});
+
+test('--help advertises --update', () => {
+  assert.match(runCLI(['--help']).out, /--update/);
+});

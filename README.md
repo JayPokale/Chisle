@@ -144,21 +144,30 @@ Preview first with `npx chisle --dry-run`, scope with `--only claude` or `--only
 
 ### Upgrading
 
-Same command as installing. It is idempotent and overwrites the previous copy:
-
 ```bash
-npx chisle              # npm / standalone install
-claude plugin update chisle@chisle   # Claude Code plugin install
+npx chisle@latest --update
 ```
 
-Chisle checks npm on session start and mentions it once when a **major** version
-is out (cached 3 days, `CHISLE_UPDATE_CHECK=0` to silence). Minor and patch
-releases stay quiet on purpose.
+That refreshes every agent that already has Chisle and installs it into none that don't. Two details it exists to handle:
 
-Upgrading to 3.0.0 from 2.x needs nothing: a `lite`/`full`/`ultra` value in
-`CHISLE_DEFAULT_MODE` or `config.json` is no longer meaningful, falls through to
-the default, and Chisle stays active. It says so once so the setting is not
-ignored silently. Replace it with `on`/`off` or delete it.
+- **Plain `npx chisle` does not upgrade.** Every install path skips what is already present, so an upgrade run reports success and changes nothing. `--update` pairs the refresh with that check.
+- **`@latest` matters.** `npx chisle` can serve a cached copy of the package from a previous run, so the pin is what guarantees you get the new one.
+
+Per-agent equivalents, if you prefer the native tool:
+
+```bash
+claude plugin update chisle@chisle    # Claude Code plugin install
+pi install npm:chisle                 # Pi package
+gemini extensions install https://github.com/JayPokale/Chisle
+```
+
+Project-scoped agents (Cursor, Windsurf, Cline, Kiro, Copilot) keep their rule file inside the repo, so run the update once per project that has one.
+
+Not sure what you are running? `npx chisle --list` prints the agents it detects, and `claude plugin list` shows the installed plugin and its version.
+
+Chisle checks npm on session start and mentions it once when a **major** version is out (cached 3 days, `CHISLE_UPDATE_CHECK=0` to silence). Minor and patch releases stay quiet on purpose.
+
+Upgrading to 3.0.0 from 2.x needs nothing: a `lite`/`full`/`ultra` value in `CHISLE_DEFAULT_MODE` or `config.json` is no longer meaningful, falls through to the default, and Chisle stays active. It says so once so the setting is not ignored silently. Replace it with `on`/`off` or delete it.
 
 ### Claude Code plugin (marketplace)
 

@@ -3,6 +3,21 @@
 All notable changes to Chisle are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+- **`npx chisle --update`.** Refreshes every agent that already has Chisle and installs it
+  into none that don't.
+
+### Fixed
+- **The documented upgrade command did nothing.** The README said re-running the installer
+  "is idempotent and overwrites the previous copy". It is not: every install path (Claude
+  plugin, Claude standalone hooks, Pi, Gemini, Codex, and all five project-rule agents)
+  skips when Chisle is already present, so an upgrade run printed a success summary and
+  changed no files. `--update` pairs the existing force paths with an installed-or-not
+  check, and the README and website now document it, including the `npx chisle@latest` pin
+  that stops npx serving a cached copy of the package.
+
 ## [3.2.0] - 2026-09-13
 
 ### Added
