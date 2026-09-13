@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <strong>44% of a bare model on coding work &middot; 41% on the long ones &middot; one command</strong>
+  <strong>44% of a bare model's output tokens on coding prompts &middot; 9 agents &middot; zero dependencies &middot; one command</strong>
 </p>
 
 <p align="center">
@@ -225,6 +225,8 @@ node benchmarks/replay-compress.js pi    # Pi; marginal over Pi's native truncat
 Nothing here is estimated. Every figure below is recomputed from committed raw data; the 2026-07-07 [verification writeup](benchmarks/results/2026-07-07-verify-rerun.md) re-derived the old claims from scratch, re-ran the whole suite against the competitors' **installed plugins**, and retired the one claim that didn't survive.
 
 ### Output axis: vs caveman & ponytail, 20 live tasks
+
+**What this suite measures, and what it does not.** Every figure below is *billed output tokens on single-turn prompts with no tools available*. That isolates the ruleset's effect on how the model writes, which is what it was built to measure. It is not whole-session cost: a real agentic session is dominated by tool output and cached input, so a tool can win here and still fail to pay for itself end to end. The input axis below is measured separately, and against its own baseline.
 
 **59+ live model runs** across two suites (June 4-arm matrix on Haiku + Sonnet sweep; July re-verification run). Arms differ only in the injected system prompt. Billed output tokens vs the no-tool baseline:
 
