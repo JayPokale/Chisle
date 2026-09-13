@@ -3,7 +3,7 @@
 All notable changes to Chisle are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [3.2.0] - 2026-09-13
 
 ### Added
 - **Deliberation budget rule ("Thinking is billed too").** The Pi benchmark exposed a
@@ -34,9 +34,11 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
   byte-exact, since editing those would falsify committed receipts.
 - **Website updated for the Pi release.** Agent count, install commands, the Pi package
   path, the corrected input-axis claim, and a new benchmark section publishing the Pi arm,
-  including the billed-output row Chisle lost and the reasoning-overhead breakdown behind it.
+  including the billed-output row Chisle lost to ponytail.
+- **Contributor avatars removed from the site.** The "Built in the open" section keeps its
+  copy and links; `getContributors()` had no other caller and went with them.
 
-## [3.1.0] — 2026-09-11
+## [3.1.0] - 2026-09-11
 
 ### Added
 - **Pi harness integration.** New zero-dependency Pi package extension supplies the always-on ruleset, `/chisle` and natural-language toggles, footer savings badge, and `tool_result` compression while preserving `details`, `isError`, and `usage`. Parallel sibling results cannot dedup one another; `read`, `edit`, and `write` are always untouched.
@@ -63,7 +65,7 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
   fell back to standalone hooks kept them after the plugin installed. The
   plugin branch now strips `chisle-` entries from `settings.json`.
 
-## [3.0.0] — 2026-07-28
+## [3.0.0] - 2026-07-28
 
 ### Changed
 - **BREAKING: one mode. `lite`, `full` and `ultra` are gone.** Three dials on a
@@ -109,7 +111,7 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
   standing instruction load was competing with the user's actual requests — by
   [@enc0ded](https://github.com/enc0ded) (#2).
 
-## [2.0.0] — 2026-07-28
+## [2.0.0] - 2026-07-28
 
 ### Changed
 - **Renamed project: RDXmin → Chisle.** Package, plugin, skills
@@ -121,14 +123,14 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 Published to npm as `chisle`; `rdxmin` deprecated with a pointer.
 
-## [1.2.2] — 2026-07-11
+## [1.2.2] - 2026-07-11
 
 ### Added
 - Website: [rdx.jaypokale.me](https://rdx.jaypokale.me) — npm/README homepage
   now points there. Site lives in `site/`, ships in neither the npm package
   nor the plugin install.
 
-## [1.2.1] — 2026-07-11
+## [1.2.1] - 2026-07-11
 
 ### Fixed
 - **Windows statusline never rendered** — `rdx-statusline.ps1` combined
@@ -140,7 +142,7 @@ Published to npm as `chisle`; `rdxmin` deprecated with a pointer.
 - `rdx-statusline.ps1` now refuses symlinked/reparse-point flag and stats
   files, matching the `.sh` guard.
 
-## [1.2.0] — 2026-07-09
+## [1.2.0] - 2026-07-09
 
 ### Added
 - Major-version update notice on session start (registry check cached 3 days,
@@ -152,7 +154,7 @@ Published to npm as `chisle`; `rdxmin` deprecated with a pointer.
 - CI: actions bumped to v5; publish step idempotent (skips versions already
   on npm).
 
-## [1.1.0] — 2026-07-07
+## [1.1.0] - 2026-07-07
 
 Same content as 0.2.0 plus the total-bill chart redesign. The version jumps
 past 1.0.0 because the repo's very first commit shipped `"version": "1.0.0"`
@@ -160,7 +162,7 @@ before being re-numbered to 0.1.0 — plugin resolvers with that payload cached
 treat every 0.x release as a downgrade and silently keep serving the ancient
 code. 1.0.0 is skipped forever; nothing may ever claim it again.
 
-## [0.2.0] — 2026-07-07
+## [0.2.0] - 2026-07-07
 
 ### Added
 - **Tool-output compression (input axis)** — `PostToolUse` hook
@@ -222,7 +224,7 @@ code. 1.0.0 is skipped forever; nothing may ever claim it again.
   arms run in parallel per task, fresh-run dir override (`run-live.sh [model]
   [raw-dir]`, `RAW_DIR=` for `aggregate.js`).
 
-## [0.1.0] — 2026-06-29
+## [0.1.0] - 2026-06-29
 
 ### Added
 - Unified efficiency mode: zero-fluff prose + YAGNI-first code, always active together.
