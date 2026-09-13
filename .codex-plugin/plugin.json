@@ -1,6 +1,6 @@
 {
   "name": "chisle",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "Maximum-efficiency dev mode for Codex. Zero-fluff prose + YAGNI-first code.",
   "instructions": "../AGENTS.md"
 }

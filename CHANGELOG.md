@@ -3,7 +3,7 @@
 All notable changes to Chisle are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [3.2.1] - 2026-09-13
 
 ### Added
 - **`npx chisle --update`.** Refreshes every agent that already has Chisle and installs it
