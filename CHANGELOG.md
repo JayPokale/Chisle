@@ -3,7 +3,7 @@
 All notable changes to Chisle are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [3.3.0] - 2026-09-13
 
 ### Added
 - **Elision is recoverable.** The compressor used to delete the middle of an oversized
