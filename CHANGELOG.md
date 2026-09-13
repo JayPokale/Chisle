@@ -3,6 +3,22 @@
 All notable changes to Chisle are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+- **Elision is recoverable.** The compressor used to delete the middle of an oversized
+  output outright. If the agent then needed a line from it, the only way back was
+  re-running the command: more expensive than the elision saved, and simply wrong when
+  the command is not idempotent (a test run, a build, a `git log` at a moment in time).
+  The full output now spills to `<config>/chisle-spill/` first and the marker carries the
+  path, so recovery is a targeted grep. Newest 40 kept, mode 0600, `CHISLE_COMPRESS_SPILL=0`
+  to disable, removed by `--uninstall`. Best-effort: a failed spill still elides, just
+  without the escape hatch.
+  Credit where due: this is the failure mode the
+  [THOL benchmark](https://github.com/pi-infected/token-harness-optimizer-leaderboard)
+  names as reason #2 that compressors fail to pay for themselves. No code was taken from
+  any other project.
+
 ## [3.2.1] - 2026-09-13
 
 ### Added

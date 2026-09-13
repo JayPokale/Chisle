@@ -340,7 +340,7 @@ node benchmarks/replay-compress.js       # Claude Code
 node benchmarks/replay-compress.js pi    # Pi
 ```
 
-Outputs over 8k chars are elided. `stop chisle`, `CHISLE_COMPRESS=0`, `CHISLE_COMPRESS_SCRUB=0`, `CHISLE_COMPRESS_DEDUP=0`. Every tier has an off switch.
+Outputs over 8k chars are elided, and the elided original spills to `<config>/chisle-spill/` so the dropped middle stays reachable. The marker carries the path, so recovering one line is a targeted grep rather than a re-run of the command, which matters most when the command is not idempotent: a test run, a build, a `git log` at a moment in time. The newest 40 spills are kept, owner-readable only. `stop chisle`, `CHISLE_COMPRESS=0`, `CHISLE_COMPRESS_SCRUB=0`, `CHISLE_COMPRESS_DEDUP=0`, `CHISLE_COMPRESS_SPILL=0`. Every tier has an off switch.
 
 ### Pi arm: where the output axis lost
 

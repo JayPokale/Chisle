@@ -31,8 +31,11 @@
 //   CHISLE_COMPRESS_HEAD_LINES        — lines kept from the top
 //   CHISLE_COMPRESS_TAIL_LINES        — lines kept from the bottom
 //   CHISLE_COMPRESS_TOOLS=Bash,Grep   — override the tool allowlist
+//   CHISLE_COMPRESS_SPILL=0           — elide without writing the recovery copy
 //
 // Savings accrue in <claudeDir>/.chisle-compress-stats.json for the statusline.
+// Elided originals spill to <claudeDir>/chisle-spill/ so the dropped middle can
+// be grepped back instead of re-running the command; the newest 40 are kept.
 
 const fs = require('fs');
 const path = require('path');
@@ -174,17 +177,59 @@ function dedupCheck(toolName, text, sessionId, toolUseId) {
 // ── Tier 2: elision ──────────────────────────────────────────────────────────
 // Keep head + tail; salvage error-looking lines from the elided middle so the
 // one line that mattered in a 3000-line build log survives the cut.
-function compress(text, limits) {
+// ── recoverable elision ─────────────────────────────────────────────────────
+// Elision used to destroy the middle. If the agent then needed a line from it,
+// its only recourse was re-running the command: more expensive than the elision
+// saved, and wrong outright when the command is not idempotent (a test run, a
+// build, `git log` at a moment in time). So the full text spills to disk first
+// and the marker carries the path. Recovery becomes a targeted grep instead of
+// a re-run. Best-effort throughout: if the spill fails, the elision still
+// happens, it just loses the escape hatch.
+const SPILL_DIR = 'chisle-spill';
+const SPILL_KEEP = 40;
+
+function spillDir() {
+  return path.join(getClaudeDir(), SPILL_DIR);
+}
+
+// Keep the directory bounded. Oldest-first by mtime; cheap enough at this size
+// and it runs at most once per elided output.
+function pruneSpill(dir) {
+  try {
+    const files = fs.readdirSync(dir)
+      .filter(f => f.endsWith('.txt'))
+      .map(f => { const p = path.join(dir, f); return { p, t: fs.statSync(p).mtimeMs }; })
+      .sort((a, b) => b.t - a.t);
+    for (const f of files.slice(SPILL_KEEP)) { try { fs.unlinkSync(f.p); } catch (e) {} }
+  } catch (e) {}
+}
+
+function spill(text, toolName) {
+  if (process.env.CHISLE_COMPRESS_SPILL === '0') return null;
+  try {
+    const dir = spillDir();
+    fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
+    const hash = crypto.createHash('sha256').update(text).digest('hex').slice(0, 12);
+    const safeTool = String(toolName || 'tool').replace(/[^A-Za-z0-9_-]/g, '') || 'tool';
+    const file = path.join(dir, `${safeTool}-${hash}.txt`);
+    if (!fs.existsSync(file)) fs.writeFileSync(file, text, { mode: 0o600 });
+    pruneSpill(dir);
+    return file;
+  } catch (e) { return null; }
+}
+
+function compress(text, limits, spillPath) {
   const { maxChars, headLines, tailLines } = limits;
   const lines = text.split('\n');
+  const recover = spillPath ? ' Full output: ' + spillPath + ' (grep it, do not re-run)' : '';
 
   if (lines.length <= headLines + tailLines) {
-    // Big in bytes, few lines (one giant line) — hard char cut.
+    // Big in bytes, few lines (one giant line): hard char cut.
     const keep = Math.floor(maxChars / 2);
     const elided = text.length - 2 * keep;
     if (elided <= 0) return null;
     return text.slice(0, keep) +
-      '\n... [chisle: elided ' + elided.toLocaleString('en-US') + ' chars from the middle] ...\n' +
+      '\n... [chisle: elided ' + elided.toLocaleString('en-US') + ' chars from the middle.' + recover + '] ...\n' +
       text.slice(-keep);
   }
 
@@ -199,8 +244,9 @@ function compress(text, limits) {
   }
 
   const marker = '... [chisle: elided ' + middle.length.toLocaleString('en-US') +
-    ' lines — kept first ' + headLines + ', last ' + tailLines +
-    (salvaged.length ? ', and ' + salvaged.length + ' error-like line(s) below' : '') + '] ...';
+    ' lines, kept first ' + headLines + ', last ' + tailLines +
+    (salvaged.length ? ', and ' + salvaged.length + ' error-like line(s) below' : '') +
+    '.' + recover + '] ...';
 
   const out = head.concat([marker], salvaged, tail).join('\n');
   return out.length < text.length ? out : null;
@@ -227,11 +273,11 @@ function recordSavings(saved) {
 
 // Scrub + elide on plain text → transformed text, or null if no meaningful
 // win. Stateless — this is what the replay benchmark measures.
-function transform(text, limits) {
+function transform(text, limits, toolName) {
   if (!text || text.length <= SCRUB_MIN) return null;
   let t = process.env.CHISLE_COMPRESS_SCRUB === '0' ? text : scrub(text);
   if (t.length > limits.maxChars) {
-    const elided = compress(t, limits);
+    const elided = compress(t, limits, toolName ? spill(t, toolName) : null);
     if (elided != null) t = elided;
   }
   return text.length - t.length >= MIN_WIN ? t : null;
@@ -275,7 +321,7 @@ function processPayload(payload, mode) {
   if (!text) return null;
   const dup = dedupCheck(payload.tool_name, text, payload.session_id, payload.tool_use_id);
   if (dup != null && dup.length < text.length) return dup;
-  return transform(text, limitsFor());
+  return transform(text, limitsFor(), payload.tool_name);
 }
 
 function main() {

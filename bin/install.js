@@ -458,8 +458,10 @@ function uninstall(ctx) {
         touched++;
       }
     }
-    const hooksDst = path.join(cfg, 'chisle-hooks');
-    if (fs.existsSync(hooksDst)) { if (!opts.dryRun) fs.rmSync(hooksDst, { recursive: true, force: true }); note(`  removed ${hooksDst}`); touched++; }
+    for (const d of ['chisle-hooks', 'chisle-spill']) {
+      const dst = path.join(cfg, d);
+      if (fs.existsSync(dst)) { if (!opts.dryRun) fs.rmSync(dst, { recursive: true, force: true }); note(`  removed ${dst}`); touched++; }
+    }
 
     for (const f of ['.chisle-active', '.chisle-session-turns', '.chisle-statusline-suffix',
                      '.chisle-compress-stats.json', '.chisle-compress-last.json', '.chisle-update-check.json']) {

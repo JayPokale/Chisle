@@ -166,7 +166,7 @@ function chisleExtension(pi) {
           lastByToolBlock.set(key, hash);
           if (previous === hash) updated = duplicateMarker(event.toolName, text, 'earlier');
         }
-        if (updated == null) updated = transform(text, limitsFor());
+        if (updated == null) updated = transform(text, limitsFor(), event.toolName);
         if (updated == null || updated.length >= text.length) return block;
         changed = true;
         savedChars += text.length - updated.length;
