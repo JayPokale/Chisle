@@ -175,10 +175,30 @@ pi install npm:chisle
 
 The package loads the zero-dependency extension and `chisle` skill globally. Pi extensions run with your user permissions; review the source before installation. Project-local installs (`pi install -l npm:chisle`) load only after you trust that project.
 
+### Where the savings show up
+
+Two places, both measured rather than estimated:
+
+```bash
+npx chisle --stats      # what the compressor has saved, cumulative
+```
+
+```text
+chisle: tool-output savings
+
+  saved:      88,967 chars  (~22,241 tokens)
+  outputs:    18 compressed, 4,943 chars each on average
+```
+
+In Claude Code the statusline badge carries the same number live: `[CHISLE] ⇣22k tok`. Pi shows it in the footer for the current session.
+
+This is the **input axis only**, and deliberately so. Chars elided have a real baseline, since the hook knows exactly what it cut. The output axis has none: there is no way to know what the model would have written without the ruleset, which is why that half is measured with A/B benchmark arms instead of a counter. A number that blended the two would be inventing the interesting half.
+
 ### See what it would do, before it does it
 
 ```bash
 npx chisle --dry-run    # prints every file it would touch, changes nothing
+npx chisle --stats      # prints what it has saved, changes nothing
 ```
 
 Want the savings measured on your own work rather than ours? Clone the repo and replay the compressor over local transcripts. It reads them locally, writes nothing, and reports the input the hook would have stripped:

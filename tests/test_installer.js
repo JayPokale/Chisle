@@ -187,3 +187,60 @@ test('REGRESSION: plugin path removes leftover standalone hook entries', { skip:
   fs.rmSync(cfg, { recursive: true, force: true });
   fs.rmSync(binDir, { recursive: true, force: true });
 });
+
+// ── --stats ─────────────────────────────────────────────────────────────────
+// The ledger is written by the compressor hook, so these tests seed it directly
+// and assert the CLI reports what is actually there, never an estimate.
+
+test('--stats reports the ledger and changes nothing', () => {
+  const cfg = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-stats-'));
+  const ledger = path.join(cfg, '.chisle-compress-stats.json');
+  fs.writeFileSync(ledger, JSON.stringify({ savedChars: 88967, events: 18 }));
+  const before = fs.readFileSync(ledger, 'utf8');
+
+  const r = runCLI(['--stats', '--config-dir', cfg]);
+  assert.equal(r.status, 0);
+  assert.match(r.out, /88,967 chars/);
+  assert.match(r.out, /22,241 tokens/);   // chars / 4, floored
+  assert.match(r.out, /18 compressed/);
+  assert.equal(fs.readFileSync(ledger, 'utf8'), before, '--stats must be read-only');
+  assert.equal(fs.readdirSync(cfg).length, 1, '--stats must not create files');
+
+  fs.rmSync(cfg, { recursive: true, force: true });
+});
+
+test('--stats says so plainly when nothing has been recorded', () => {
+  const cfg = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-stats-empty-'));
+  const r = runCLI(['--stats', '--config-dir', cfg]);
+  assert.equal(r.status, 0);
+  assert.match(r.out, /no compression recorded yet/);
+  assert.doesNotMatch(r.out, /NaN|undefined/);
+  fs.rmSync(cfg, { recursive: true, force: true });
+});
+
+test('--stats survives a corrupt or hostile ledger', () => {
+  const cfg = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-stats-bad-'));
+  for (const junk of ['{', 'null', '{"savedChars":"lots","events":3}', '[]']) {
+    fs.writeFileSync(path.join(cfg, '.chisle-compress-stats.json'), junk);
+    const r = runCLI(['--stats', '--config-dir', cfg]);
+    assert.equal(r.status, 0, `crashed on ${junk}`);
+    assert.match(r.out, /no compression recorded yet/, `trusted ${junk}`);
+  }
+  fs.rmSync(cfg, { recursive: true, force: true });
+});
+
+test('--stats refuses to follow a symlinked ledger', { skip: process.platform === 'win32' }, () => {
+  const cfg = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-stats-link-'));
+  const real = path.join(cfg, 'elsewhere.json');
+  fs.writeFileSync(real, JSON.stringify({ savedChars: 99999, events: 7 }));
+  fs.symlinkSync(real, path.join(cfg, '.chisle-compress-stats.json'));
+
+  const r = runCLI(['--stats', '--config-dir', cfg]);
+  assert.equal(r.status, 0);
+  assert.doesNotMatch(r.out, /99,999/, 'followed a symlink');
+  fs.rmSync(cfg, { recursive: true, force: true });
+});
+
+test('--help and --list advertise --stats', () => {
+  assert.match(runCLI(['--help']).out, /--stats/);
+});

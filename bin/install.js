@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// chisle — cross-platform installer.
+// chisle: cross-platform installer.
 //
 // Detects the AI coding agents on this machine and installs Chisle for each:
 //   - Claude Code  → plugin (marketplace add + install), fallback to standalone
@@ -58,13 +58,14 @@ const PROVIDERS = [
 // ── argv ────────────────────────────────────────────────────────────────────
 function parseArgs(argv) {
   const opts = { dryRun: false, force: false, list: false, uninstall: false,
-                 noColor: false, help: false, only: [], configDir: null };
+                 noColor: false, help: false, stats: false, only: [], configDir: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     switch (a) {
       case '--dry-run': opts.dryRun = true; break;
       case '--force': opts.force = true; break;
       case '--list': opts.list = true; break;
+      case '--stats': opts.stats = true; break;
       case '--uninstall': case '-u': opts.uninstall = true; break;
       case '--no-color': opts.noColor = true; break;
       case '-h': case '--help': opts.help = true; break;
@@ -185,10 +186,10 @@ function installClaude(ctx) {
       const r1 = run('claude', ['plugin', 'marketplace', 'add', REPO], opts.dryRun);
       const r2 = run('claude', ['plugin', 'install', 'chisle@chisle'], opts.dryRun);
       if ((r1.status || 0) === 0 && (r2.status || 0) === 0) { results.installed.push('claude'); pluginOK = true; }
-      else warn('  claude plugin install failed — falling back to standalone hooks');
+      else warn('  claude plugin install failed, falling back to standalone hooks');
     }
   } else {
-    note('  claude CLI not on PATH — wiring standalone hooks in settings.json');
+    note('  claude CLI not on PATH, wiring standalone hooks in settings.json');
   }
 
   if (!pluginOK) {
@@ -198,7 +199,7 @@ function installClaude(ctx) {
     else results.failed.push(['claude-hooks', r]);
   } else {
     note('  hooks: plugin manifest handles SessionStart + UserPromptSubmit + PostToolUse');
-    // Plugin path won — drop any standalone wiring left by an earlier run, or
+    // Plugin path won, so drop any standalone wiring left by an earlier run, or
     // both copies of every hook run on each event and the PostToolUse pair
     // dedups first-seen output against itself.
     const settingsPath = path.join(claudeDir(opts), 'settings.json');
@@ -214,7 +215,7 @@ function installClaude(ctx) {
   process.stdout.write('\n');
 }
 
-// Standalone wiring — copy hooks into <configDir>/chisle-hooks/ and merge
+// Standalone wiring: copy hooks into <configDir>/chisle-hooks/ and merge
 // settings.json. Used when the plugin path is unavailable.
 function installClaudeHooks(ctx) {
   const { opts, warn, note } = ctx;
@@ -268,7 +269,7 @@ function installClaudeHooks(ctx) {
   } else {
     const existing = typeof settings.statusLine === 'string' ? settings.statusLine : (settings.statusLine.command || '');
     if (existing.includes('chisle-statusline')) process.stdout.write('  statusline badge already configured.\n');
-    else process.stdout.write('  NOTE: existing statusline detected — CHISLE badge NOT added (see docs/install-windows.md).\n');
+    else process.stdout.write('  NOTE: existing statusline detected, CHISLE badge NOT added (see docs/install-windows.md).\n');
   }
 
   SETTINGS.validateHookFields(settings);
@@ -443,20 +444,21 @@ function uninstall(ctx) {
   if (!opts.only.length || opts.only.some(id => PROVIDERS.find(p => p.id === id).scope === 'project')) {
     note('');
     note('Project-scoped rule files (.cursor/, .windsurf/, .clinerules/, .kiro/, .github/copilot-instructions.md)');
-    note('live in your project repos — remove them per-project with git if you added them there.');
+    note('live in your project repos, so remove them per-project with git if you added them there.');
   }
   say(touched ? c.green(`\nUninstalled. ${touched} item(s) cleaned.`) : c.yellow('\nNothing to uninstall.'));
 }
 
 // ── help / banner ───────────────────────────────────────────────────────────
 function printHelp(c) {
-  process.stdout.write(`${c.orange('chisle')} — maximum-efficiency dev mode installer
+  process.stdout.write(`${c.orange('chisle')}: maximum-efficiency dev mode installer
 
 Usage:
   npx chisle [flags]
 
 Flags:
   --list           Detect agents and print them; install nothing
+  --stats          Print tool-output savings recorded so far; change nothing
   --only <id>      Limit install/uninstall to one agent (repeatable)
   --dry-run        Print actions, change nothing
   --force          Reinstall / overwrite even if already present
@@ -471,11 +473,51 @@ Examples:
   npx chisle                  # auto-detect + install
   npx chisle --only claude    # just Claude Code
   npx chisle --dry-run        # preview
+  npx chisle --stats          # what the compressor has saved
 `);
 }
 
+// ── stats ───────────────────────────────────────────────────────────────────
+// Reads the compressor's ledger. Input axis only, and deliberately so: chars
+// elided have a real baseline (we know exactly what was cut), while the output
+// axis has none, since there is no way to know what the model would have written
+// without the ruleset, which is what the benchmark arms are for. A counter that
+// blended the two would be inventing the interesting half.
+function printStats(c, opts) {
+  const dir = claudeDir(opts);
+  const p = path.join(dir, '.chisle-compress-stats.json');
+  process.stdout.write(c.orange('chisle') + ': tool-output savings\n\n');
+
+  let stats = null;
+  try {
+    if (!fs.lstatSync(p).isSymbolicLink()) {
+      const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+      if (parsed && Number.isFinite(parsed.savedChars) && Number.isFinite(parsed.events)) stats = parsed;
+    }
+  } catch (e) {}
+
+  if (!stats || stats.events === 0) {
+    process.stdout.write('  no compression recorded yet\n\n');
+    process.stdout.write(c.dim(`  ledger: ${p}\n`));
+    process.stdout.write(c.dim('  it fills as the compressor elides oversized tool output.\n'));
+    process.stdout.write(c.dim("  nothing there after real use? check `npx chisle --list` and that Chisle is active.\n"));
+    return;
+  }
+
+  const chars = stats.savedChars;
+  const tokens = Math.floor(chars / 4);
+  const per = Math.round(chars / stats.events);
+  const fmt = (n) => n.toLocaleString('en-US');
+  process.stdout.write(`  saved:      ${c.green(fmt(chars) + ' chars')}  (~${fmt(tokens)} tokens)\n`);
+  process.stdout.write(`  outputs:    ${fmt(stats.events)} compressed, ${fmt(per)} chars each on average\n\n`);
+  process.stdout.write(c.dim('  A floor, not an estimate: every saved byte also stops being re-sent\n'));
+  process.stdout.write(c.dim('  on every later request in that session.\n\n'));
+  process.stdout.write(c.dim(`  ledger: ${p}\n`));
+  process.stdout.write(c.dim('  per-transcript detail: node benchmarks/replay-compress.js (in a repo clone)\n'));
+}
+
 function printList(c) {
-  process.stdout.write(c.orange('chisle') + ' — detected agents:\n\n');
+  process.stdout.write(c.orange('chisle') + ': detected agents:\n\n');
   for (const p of PROVIDERS) {
     const found = detectMatch(p.detect);
     const mark = found ? c.green('✓') : c.dim('·');
@@ -492,6 +534,7 @@ function main() {
 
   if (opts.help) return printHelp(c);
   if (opts.list) return printList(c);
+  if (opts.stats) return printStats(c, opts);
 
   const results = { detected: 0, installed: [], skipped: [], failed: [] };
   const say = (s) => process.stdout.write(s + '\n');
@@ -502,7 +545,7 @@ function main() {
   if (opts.uninstall) return uninstall(ctx);
 
   say(c.orange('╭─ Chisle installer ─╮'));
-  say(c.dim(opts.dryRun ? '  (dry run — nothing will change)' : '  maximum signal, minimum noise'));
+  say(c.dim(opts.dryRun ? '  (dry run, nothing will change)' : '  maximum signal, minimum noise'));
   say('');
 
   const targets = PROVIDERS.filter(p => opts.only.length ? opts.only.includes(p.id) : detectMatch(p.detect));

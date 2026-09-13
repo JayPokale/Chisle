@@ -18,6 +18,16 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
   **Unvalidated:** the mechanism is measured, the fix is not. Re-running the Pi arm is
   the only thing that settles whether it works.
 
+- **`npx chisle --stats`.** The compressor has always kept a savings ledger at
+  `<config>/.chisle-compress-stats.json`, but nothing could read it except the statusline
+  badge, so the answer to "how much did this save me" was a repo clone away
+  ([#8](https://github.com/JayPokale/Chisle/issues/8), asked by
+  [@cosjef](https://github.com/cosjef)). The flag prints saved chars, estimated tokens, and
+  the compressed-output count. Read-only, creates nothing, refuses a symlinked ledger, and
+  treats a corrupt one as empty rather than trusting it.
+  It reports the **input axis only**. Elided chars have a real baseline; the output axis has
+  none, and is measured with benchmark arms instead. Blending them would invent the number.
+
 ### Changed
 - **Em dashes removed from the README, docs, website, and rulesets.** Prose only; raw
   benchmark transcripts, `samples.json`, and the compressor's own elision marker are left

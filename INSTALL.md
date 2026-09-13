@@ -20,6 +20,7 @@ Detects supported agents and installs Chisle for each:
 npx chisle --list          # detect only
 npx chisle --only pi       # one agent; repeatable
 npx chisle --dry-run       # preview without mutation
+npx chisle --stats         # tool-output savings so far; read-only
 npx chisle --force         # reinstall / overwrite
 npx chisle --uninstall     # remove everything installed
 npx chisle -u --only pi    # remove only Pi package
