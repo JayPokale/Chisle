@@ -1,0 +1,20 @@
+{
+ "fixture": "stdlib",
+ "arm": "chisle",
+ "seed": 12,
+ "out_tokens": 665,
+ "input_tokens": 37880,
+ "cost_usd": 0.021399700000000004,
+ "turns": 3,
+ "answer": "Done. `uniqueIds(ids)` uses a Set to track seen values and filters, preserving insertion order. Exported alongside `parseIds`.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/importer.js"
+ ],
+ "loc_before": 5,
+ "loc_after": 13,
+ "loc_delta": 8,
+ "deps_added": []
+}

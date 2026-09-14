@@ -1,0 +1,1107 @@
+[
+ {
+  "id": "rotate",
+  "fn": "rotate",
+  "prompt": "Write a JavaScript function rotate(arr, k) that returns a new array with the elements of arr rotated right by k positions. k is a non-negative integer and may be larger than arr.length. An empty array returns an empty array.",
+  "cases": [
+   [
+    [
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     2
+    ],
+    [
+     4,
+     5,
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    [
+     [
+      1,
+      2,
+      3
+     ],
+     0
+    ],
+    [
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    [
+     [
+      1,
+      2,
+      3
+     ],
+     7
+    ],
+    [
+     3,
+     1,
+     2
+    ]
+   ],
+   [
+    [
+     [],
+     3
+    ],
+    []
+   ],
+   [
+    [
+     [
+      9
+     ],
+     4
+    ],
+    [
+     9
+    ]
+   ]
+  ],
+  "tier": "base"
+ },
+ {
+  "id": "balanced",
+  "fn": "isBalanced",
+  "prompt": "Write a JavaScript function isBalanced(s) that returns true if the brackets in the string s are correctly balanced and nested, false otherwise. It must handle (), [] and {}. Characters other than brackets are ignored. An empty string is balanced.",
+  "cases": [
+   [
+    [
+     "(a[b]{c})"
+    ],
+    true
+   ],
+   [
+    [
+     "([)]"
+    ],
+    false
+   ],
+   [
+    [
+     "("
+    ],
+    false
+   ],
+   [
+    [
+     ")("
+    ],
+    false
+   ],
+   [
+    [
+     ""
+    ],
+    true
+   ],
+   [
+    [
+     "{[()]}"
+    ],
+    true
+   ]
+  ],
+  "tier": "base"
+ },
+ {
+  "id": "roman",
+  "fn": "romanToInt",
+  "prompt": "Write a JavaScript function romanToInt(s) that converts an uppercase Roman numeral string (values 1 to 3999) into its integer value, handling subtractive pairs such as IV, IX, XL, XC, CD and CM.",
+  "cases": [
+   [
+    [
+     "III"
+    ],
+    3
+   ],
+   [
+    [
+     "IV"
+    ],
+    4
+   ],
+   [
+    [
+     "MCMXCIV"
+    ],
+    1994
+   ],
+   [
+    [
+     "LVIII"
+    ],
+    58
+   ],
+   [
+    [
+     "MMMCMXCIX"
+    ],
+    3999
+   ]
+  ],
+  "tier": "base"
+ },
+ {
+  "id": "lcp",
+  "fn": "longestCommonPrefix",
+  "prompt": "Write a JavaScript function longestCommonPrefix(strs) that returns the longest common prefix string of an array of strings, or an empty string if there is none. An empty array returns an empty string.",
+  "cases": [
+   [
+    [
+     [
+      "flower",
+      "flow",
+      "flight"
+     ]
+    ],
+    "fl"
+   ],
+   [
+    [
+     [
+      "dog",
+      "racecar",
+      "car"
+     ]
+    ],
+    ""
+   ],
+   [
+    [
+     []
+    ],
+    ""
+   ],
+   [
+    [
+     [
+      "a"
+     ]
+    ],
+    "a"
+   ],
+   [
+    [
+     [
+      "abc",
+      "abc"
+     ]
+    ],
+    "abc"
+   ]
+  ],
+  "tier": "base"
+ },
+ {
+  "id": "merge",
+  "fn": "mergeIntervals",
+  "prompt": "Write a JavaScript function mergeIntervals(intervals) that takes an array of [start, end] pairs, merges every overlapping or touching pair, and returns the merged intervals sorted by start. The input is not necessarily sorted. An empty array returns an empty array.",
+  "cases": [
+   [
+    [
+     [
+      [
+       1,
+       3
+      ],
+      [
+       2,
+       6
+      ],
+      [
+       8,
+       10
+      ],
+      [
+       15,
+       18
+      ]
+     ]
+    ],
+    [
+     [
+      1,
+      6
+     ],
+     [
+      8,
+      10
+     ],
+     [
+      15,
+      18
+     ]
+    ]
+   ],
+   [
+    [
+     [
+      [
+       1,
+       4
+      ],
+      [
+       4,
+       5
+      ]
+     ]
+    ],
+    [
+     [
+      1,
+      5
+     ]
+    ]
+   ],
+   [
+    [
+     []
+    ],
+    []
+   ],
+   [
+    [
+     [
+      [
+       5,
+       6
+      ],
+      [
+       1,
+       2
+      ]
+     ]
+    ],
+    [
+     [
+      1,
+      2
+     ],
+     [
+      5,
+      6
+     ]
+    ]
+   ],
+   [
+    [
+     [
+      [
+       1,
+       10
+      ],
+      [
+       2,
+       3
+      ]
+     ]
+    ],
+    [
+     [
+      1,
+      10
+     ]
+    ]
+   ]
+  ],
+  "tier": "base"
+ },
+ {
+  "id": "flatten",
+  "fn": "flattenDeep",
+  "prompt": "Write a JavaScript function flattenDeep(arr) that fully flattens an arbitrarily nested array into a single-level array, preserving order.",
+  "cases": [
+   [
+    [
+     [
+      1,
+      [
+       2,
+       [
+        3,
+        [
+         4
+        ]
+       ]
+      ],
+      5
+     ]
+    ],
+    [
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   ],
+   [
+    [
+     []
+    ],
+    []
+   ],
+   [
+    [
+     [
+      [],
+      [
+       []
+      ]
+     ]
+    ],
+    []
+   ],
+   [
+    [
+     [
+      1,
+      2,
+      3
+     ]
+    ],
+    [
+     1,
+     2,
+     3
+    ]
+   ]
+  ],
+  "tier": "base"
+ },
+ {
+  "id": "chunk",
+  "fn": "chunk",
+  "prompt": "Write a JavaScript function chunk(arr, size) that splits arr into consecutive sub-arrays of length size, with the final chunk holding the remainder. size is a positive integer. An empty array returns an empty array.",
+  "cases": [
+   [
+    [
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     2
+    ],
+    [
+     [
+      1,
+      2
+     ],
+     [
+      3,
+      4
+     ],
+     [
+      5
+     ]
+    ]
+   ],
+   [
+    [
+     [
+      1,
+      2,
+      3
+     ],
+     5
+    ],
+    [
+     [
+      1,
+      2,
+      3
+     ]
+    ]
+   ],
+   [
+    [
+     [],
+     2
+    ],
+    []
+   ],
+   [
+    [
+     [
+      1,
+      2,
+      3,
+      4
+     ],
+     4
+    ],
+    [
+     [
+      1,
+      2,
+      3,
+      4
+     ]
+    ]
+   ]
+  ],
+  "tier": "base"
+ },
+ {
+  "id": "bsearch",
+  "fn": "binarySearch",
+  "prompt": "Write a JavaScript function binarySearch(sorted, target) that returns the index of target in the ascending-sorted array sorted using binary search, or -1 if it is absent.",
+  "cases": [
+   [
+    [
+     [
+      1,
+      3,
+      5,
+      7,
+      9
+     ],
+     7
+    ],
+    3
+   ],
+   [
+    [
+     [
+      1,
+      3,
+      5,
+      7,
+      9
+     ],
+     1
+    ],
+    0
+   ],
+   [
+    [
+     [
+      1,
+      3,
+      5,
+      7,
+      9
+     ],
+     10
+    ],
+    -1
+   ],
+   [
+    [
+     [],
+     1
+    ],
+    -1
+   ],
+   [
+    [
+     [
+      2
+     ],
+     2
+    ],
+    0
+   ]
+  ],
+  "tier": "base"
+ },
+ {
+  "id": "wordfreq",
+  "fn": "wordFrequencies",
+  "prompt": "Write a JavaScript function wordFrequencies(text) that returns a plain object mapping each lowercased word in text to how many times it occurs. Words are runs of letters and digits; punctuation separates words. Empty text returns an empty object.",
+  "cases": [
+   [
+    [
+     "The cat the CAT."
+    ],
+    {
+     "the": 2,
+     "cat": 2
+    }
+   ],
+   [
+    [
+     ""
+    ],
+    {}
+   ],
+   [
+    [
+     "a-b a"
+    ],
+    {
+     "a": 2,
+     "b": 1
+    }
+   ]
+  ],
+  "tier": "base"
+ },
+ {
+  "id": "deepequal",
+  "fn": "deepEqual",
+  "prompt": "Write a JavaScript function deepEqual(a, b) that returns true when a and b are structurally equal, recursing through plain objects and arrays and comparing other values with ===. Key order must not matter.",
+  "cases": [
+   [
+    [
+     {
+      "x": 1,
+      "y": [
+       1,
+       2
+      ]
+     },
+     {
+      "y": [
+       1,
+       2
+      ],
+      "x": 1
+     }
+    ],
+    true
+   ],
+   [
+    [
+     {
+      "x": 1
+     },
+     {
+      "x": 2
+     }
+    ],
+    false
+   ],
+   [
+    [
+     [
+      1,
+      [
+       2
+      ]
+     ],
+     [
+      1,
+      [
+       2
+      ]
+     ]
+    ],
+    true
+   ],
+   [
+    [
+     [
+      1,
+      2
+     ],
+     [
+      1,
+      2,
+      3
+     ]
+    ],
+    false
+   ],
+   [
+    [
+     1,
+     1
+    ],
+    true
+   ],
+   [
+    [
+     {},
+     []
+    ],
+    false
+   ]
+  ],
+  "tier": "base"
+ },
+ {
+  "id": "camel",
+  "fn": "camelCase",
+  "prompt": "Write a JavaScript function camelCase(str) that converts a string written with spaces, hyphens or underscores into camelCase: first word lowercase, each later word capitalised, separators removed. An empty string returns an empty string.",
+  "cases": [
+   [
+    [
+     "hello world"
+    ],
+    "helloWorld"
+   ],
+   [
+    [
+     "foo-bar_baz qux"
+    ],
+    "fooBarBazQux"
+   ],
+   [
+    [
+     ""
+    ],
+    ""
+   ],
+   [
+    [
+     "single"
+    ],
+    "single"
+   ]
+  ],
+  "tier": "base"
+ },
+ {
+  "id": "spiral",
+  "fn": "spiralOrder",
+  "prompt": "Write a JavaScript function spiralOrder(matrix) that returns the elements of a rectangular 2D array in clockwise spiral order starting at the top-left. An empty matrix returns an empty array.",
+  "cases": [
+   [
+    [
+     [
+      [
+       1,
+       2,
+       3
+      ],
+      [
+       4,
+       5,
+       6
+      ],
+      [
+       7,
+       8,
+       9
+      ]
+     ]
+    ],
+    [
+     1,
+     2,
+     3,
+     6,
+     9,
+     8,
+     7,
+     4,
+     5
+    ]
+   ],
+   [
+    [
+     [
+      [
+       1,
+       2
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       5,
+       6
+      ]
+     ]
+    ],
+    [
+     1,
+     2,
+     4,
+     6,
+     5,
+     3
+    ]
+   ],
+   [
+    [
+     []
+    ],
+    []
+   ],
+   [
+    [
+     [
+      [
+       1
+      ]
+     ]
+    ],
+    [
+     1
+    ]
+   ]
+  ],
+  "tier": "base"
+ },
+ {
+  "id": "longestsub",
+  "fn": "lengthOfLongestSubstring",
+  "prompt": "Write a JavaScript function lengthOfLongestSubstring(s) that returns the length of the longest substring of s containing no repeated character. An empty string returns 0.",
+  "cases": [
+   [
+    [
+     "abcabcbb"
+    ],
+    3
+   ],
+   [
+    [
+     "bbbbb"
+    ],
+    1
+   ],
+   [
+    [
+     "pwwkew"
+    ],
+    3
+   ],
+   [
+    [
+     ""
+    ],
+    0
+   ],
+   [
+    [
+     "dvdf"
+    ],
+    3
+   ]
+  ],
+  "tier": "hard"
+ },
+ {
+  "id": "maxsub",
+  "fn": "maxSubArray",
+  "prompt": "Write a JavaScript function maxSubArray(nums) that returns the largest sum obtainable from a contiguous non-empty subarray of nums. nums may be entirely negative.",
+  "cases": [
+   [
+    [
+     [
+      -2,
+      1,
+      -3,
+      4,
+      -1,
+      2,
+      1,
+      -5,
+      4
+     ]
+    ],
+    6
+   ],
+   [
+    [
+     [
+      -3,
+      -1,
+      -2
+     ]
+    ],
+    -1
+   ],
+   [
+    [
+     [
+      1
+     ]
+    ],
+    1
+   ],
+   [
+    [
+     [
+      5,
+      4,
+      -1,
+      7,
+      8
+     ]
+    ],
+    23
+   ]
+  ],
+  "tier": "hard"
+ },
+ {
+  "id": "coinchange",
+  "fn": "coinChange",
+  "prompt": "Write a JavaScript function coinChange(coins, amount) that returns the fewest coins needed to make amount from unlimited coins of the given denominations, or -1 if it cannot be made. amount 0 needs 0 coins.",
+  "cases": [
+   [
+    [
+     [
+      1,
+      2,
+      5
+     ],
+     11
+    ],
+    3
+   ],
+   [
+    [
+     [
+      2
+     ],
+     3
+    ],
+    -1
+   ],
+   [
+    [
+     [
+      1
+     ],
+     0
+    ],
+    0
+   ],
+   [
+    [
+     [
+      1,
+      3,
+      4
+     ],
+     6
+    ],
+    2
+   ]
+  ],
+  "tier": "hard"
+ },
+ {
+  "id": "introman",
+  "fn": "intToRoman",
+  "prompt": "Write a JavaScript function intToRoman(num) that converts an integer from 1 to 3999 into its Roman numeral string, using the subtractive forms IV, IX, XL, XC, CD and CM.",
+  "cases": [
+   [
+    [
+     3
+    ],
+    "III"
+   ],
+   [
+    [
+     58
+    ],
+    "LVIII"
+   ],
+   [
+    [
+     1994
+    ],
+    "MCMXCIV"
+   ],
+   [
+    [
+     3999
+    ],
+    "MMMCMXCIX"
+   ],
+   [
+    [
+     4
+    ],
+    "IV"
+   ]
+  ],
+  "tier": "hard"
+ },
+ {
+  "id": "rle",
+  "fn": "rleCompress",
+  "prompt": "Write a JavaScript function rleCompress(s) that run-length encodes s, so each run of a character becomes the character followed by its count. Return the encoded string only when it is strictly shorter than the input; otherwise return the input unchanged.",
+  "cases": [
+   [
+    [
+     "aabcccccaaa"
+    ],
+    "a2b1c5a3"
+   ],
+   [
+    [
+     "abc"
+    ],
+    "abc"
+   ],
+   [
+    [
+     "aa"
+    ],
+    "aa"
+   ],
+   [
+    [
+     ""
+    ],
+    ""
+   ],
+   [
+    [
+     "aaa"
+    ],
+    "a3"
+   ]
+  ],
+  "tier": "hard"
+ },
+ {
+  "id": "rpn",
+  "fn": "evalRPN",
+  "prompt": "Write a JavaScript function evalRPN(tokens) that evaluates an array of reverse Polish notation tokens using +, -, * and /, where division truncates toward zero. Returns an integer.",
+  "cases": [
+   [
+    [
+     [
+      "2",
+      "1",
+      "+",
+      "3",
+      "*"
+     ]
+    ],
+    9
+   ],
+   [
+    [
+     [
+      "4",
+      "13",
+      "5",
+      "/",
+      "+"
+     ]
+    ],
+    6
+   ],
+   [
+    [
+     [
+      "10",
+      "6",
+      "9",
+      "3",
+      "+",
+      "-11",
+      "*",
+      "/",
+      "*",
+      "17",
+      "+",
+      "5",
+      "+"
+     ]
+    ],
+    22
+   ]
+  ],
+  "tier": "hard"
+ },
+ {
+  "id": "decodings",
+  "fn": "numDecodings",
+  "prompt": "Write a JavaScript function numDecodings(s) that counts how many ways the digit string s decodes to letters, where 1 maps to A through 26 maps to Z. A leading zero in any group makes that grouping invalid, so a string that cannot be decoded returns 0.",
+  "cases": [
+   [
+    [
+     "12"
+    ],
+    2
+   ],
+   [
+    [
+     "226"
+    ],
+    3
+   ],
+   [
+    [
+     "0"
+    ],
+    0
+   ],
+   [
+    [
+     "06"
+    ],
+    0
+   ],
+   [
+    [
+     "11106"
+    ],
+    2
+   ],
+   [
+    [
+     "1"
+    ],
+    1
+   ]
+  ],
+  "tier": "hard"
+ },
+ {
+  "id": "longpal",
+  "fn": "longestPalindrome",
+  "prompt": "Write a JavaScript function longestPalindrome(s) that returns the longest palindromic substring of s. If several tie for longest, return the one that starts earliest. An empty string returns an empty string.",
+  "cases": [
+   [
+    [
+     "babad"
+    ],
+    "bab"
+   ],
+   [
+    [
+     "cbbd"
+    ],
+    "bb"
+   ],
+   [
+    [
+     "a"
+    ],
+    "a"
+   ],
+   [
+    [
+     ""
+    ],
+    ""
+   ],
+   [
+    [
+     "forgeeksskeegfor"
+    ],
+    "geeksskeeg"
+   ]
+  ],
+  "tier": "hard"
+ }
+]

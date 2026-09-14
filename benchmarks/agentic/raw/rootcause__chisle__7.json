@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 7,
+ "out_tokens": 1062,
+ "input_tokens": 65540,
+ "cost_usd": 0.0277594,
+ "turns": 5,
+ "answer": "**Fixed.** Change: `now > expiresAt` → `now >= expiresAt` in `src/auth/session.js:3`.\n\nThe bug: expiry check used strict greater-than, allowing the session to be valid when `now === expiresAt`. Code comment (\"At the expiry instant it is over\") confirms sessions should expire immediately, not remain valid through that millisecond.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

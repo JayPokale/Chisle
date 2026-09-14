@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 8,
+ "out_tokens": 1044,
+ "input_tokens": 51910,
+ "cost_usd": 0.026012300000000002,
+ "turns": 5,
+ "answer": "✓ Fixed. Changed operator from `>` to `>=` so sessions expire *at* `expiresAt`, not after it. Now a request arriving at the exact millisecond of expiry (when `now == expiresAt`) will be rejected.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

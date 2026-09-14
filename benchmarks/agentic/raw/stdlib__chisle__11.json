@@ -1,0 +1,20 @@
+{
+ "fixture": "stdlib",
+ "arm": "chisle",
+ "seed": 11,
+ "out_tokens": 873,
+ "input_tokens": 38055,
+ "cost_usd": 0.0227324,
+ "turns": 3,
+ "answer": "Done. Added `uniqueIds(ids)` to src/importer.js — uses a Set for O(n) deduplication while preserving first-seen order, then spreads back to array. Exported alongside `parseIds`.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/importer.js"
+ ],
+ "loc_before": 5,
+ "loc_after": 8,
+ "loc_delta": 3,
+ "deps_added": []
+}

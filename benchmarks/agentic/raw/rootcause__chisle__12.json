@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 12,
+ "out_tokens": 967,
+ "input_tokens": 65009,
+ "cost_usd": 0.026978600000000005,
+ "turns": 5,
+ "answer": "Fixed. Session expiration check now rejects at the exact millisecond expiry is reached (`now >= expiresAt` instead of `now > expiresAt`), aligning with the code's own comment and all callers (middleware auth check, cleanup filter, refresh validation).",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

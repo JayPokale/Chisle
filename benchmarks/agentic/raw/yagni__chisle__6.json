@@ -1,0 +1,20 @@
+{
+ "fixture": "yagni",
+ "arm": "chisle",
+ "seed": 6,
+ "out_tokens": 1060,
+ "input_tokens": 64819,
+ "cost_usd": 0.027295100000000003,
+ "turns": 5,
+ "answer": "Done. `retries()` now reads from `RETRY_COUNT` environment variable with fallback to 3:\n\n```javascript\nfunction retries() {\n  return parseInt(process.env.RETRY_COUNT, 10) || 3;\n}\n```\n\nRemoved hardcoded constant; rest of the code uses `retries()` unchanged.",
+ "pass": false,
+ "test_output": "FAIL zero -> 3 want 0",
+ "files_created": [],
+ "files_touched": [
+  "src/client.js"
+ ],
+ "loc_before": 13,
+ "loc_after": 12,
+ "loc_delta": -1,
+ "deps_added": []
+}

@@ -1,0 +1,20 @@
+{
+ "fixture": "reuse",
+ "arm": "chisle",
+ "seed": 1,
+ "out_tokens": 835,
+ "input_tokens": 51022,
+ "cost_usd": 0.024210500000000003,
+ "turns": 5,
+ "answer": "Done. `postPath()` uses the shared `slugify` utility (accent folding, \"&\" → \"and\", non-alphanumeric → \"-\") — same pattern as `userPath()` in the codebase.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [
+  "src/routes/posts.js"
+ ],
+ "files_touched": [],
+ "loc_before": 18,
+ "loc_after": 23,
+ "loc_delta": 5,
+ "deps_added": []
+}

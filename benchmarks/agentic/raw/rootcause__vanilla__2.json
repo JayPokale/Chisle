@@ -1,0 +1,18 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 2,
+ "out_tokens": 1071,
+ "input_tokens": 80658,
+ "cost_usd": 0.031014000000000003,
+ "turns": 5,
+ "answer": "Fixed. Changed the comparison from `now > expiresAt` to `now >= expiresAt` so that a session is immediately invalid when it reaches its expiration time, not after it.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

@@ -1,0 +1,18 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 6,
+ "out_tokens": 996,
+ "input_tokens": 79929,
+ "cost_usd": 0.030164499999999997,
+ "turns": 4,
+ "answer": "Done. Changed the comparison from `>` to `>=` so sessions are rejected at the exact moment they expire, not just after. Now when `now` reaches `expiresAt`, the session will be invalid.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

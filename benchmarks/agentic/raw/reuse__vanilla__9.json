@@ -1,0 +1,20 @@
+{
+ "fixture": "reuse",
+ "arm": "vanilla",
+ "seed": 9,
+ "out_tokens": 1003,
+ "input_tokens": 44830,
+ "cost_usd": 0.0215913,
+ "turns": 5,
+ "answer": "Done! I've created `src/routes/posts.js` with the `postPath(title)` function. \n\n**What it does:**\n- Imports the `slugify` utility from the existing `src/utils/slugify.js` (the app's canonical URL slug rules)\n- Exports `postPath(title)` which returns `/posts/` followed by the URL-safe slugified form of the title\n- Matches the exact pattern used by `src/routes/users.js` for consistency\n\n**Example usage:**\n```javascript\npostPath('My First Blog Post')  // → \"/posts/my-first-blog-post\"\npostPath('Café & Restaurant')   // → \"/posts/cafe-and-restaurant\"\n```",
+ "pass": true,
+ "test_output": "",
+ "files_created": [
+  "src/routes/posts.js"
+ ],
+ "files_touched": [],
+ "loc_before": 18,
+ "loc_after": 23,
+ "loc_delta": 5,
+ "deps_added": []
+}

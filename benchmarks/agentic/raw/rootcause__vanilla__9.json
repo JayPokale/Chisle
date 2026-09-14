@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 9,
+ "out_tokens": 1310,
+ "input_tokens": 56173,
+ "cost_usd": 0.024575000000000003,
+ "turns": 5,
+ "answer": "✅ **Fixed!** The session expiration logic now correctly invalidates sessions at the exact moment of expiration.\n\n**What was wrong:**\n- The condition `now > expiresAt` allowed sessions to remain valid at the boundary moment when `now === expiresAt`\n- This violated the documented behavior: \"At the expiry instant it is over\"\n\n**What's fixed:**\n- Changed to `now >= expiresAt`, so the session is immediately invalid once the expiration time is reached\n- Now aligns the implementation with the documented specification\n\nThe fix ensures strict boundary compliance for session expiration timing.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

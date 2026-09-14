@@ -1,0 +1,1 @@
+Bug report: a session is still being accepted at the exact millisecond it expires. A session must be invalid once now has reached expiresAt. Fix it.

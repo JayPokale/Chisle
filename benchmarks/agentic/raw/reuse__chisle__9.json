@@ -1,0 +1,20 @@
+{
+ "fixture": "reuse",
+ "arm": "chisle",
+ "seed": 9,
+ "out_tokens": 941,
+ "input_tokens": 51852,
+ "cost_usd": 0.0253332,
+ "turns": 5,
+ "answer": "Done. `postPath(title)` returns `/posts/` + URL-safe title using the app's canonical `slugify` utility. Matches the pattern in `src/routes/users.js`.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [
+  "src/routes/posts.js"
+ ],
+ "files_touched": [],
+ "loc_before": 18,
+ "loc_after": 23,
+ "loc_delta": 5,
+ "deps_added": []
+}

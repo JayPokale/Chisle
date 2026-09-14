@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 8,
+ "out_tokens": 951,
+ "input_tokens": 79913,
+ "cost_usd": 0.029804399999999998,
+ "turns": 4,
+ "answer": "Fixed. Changed the comparison from `>` to `>=` on line 3. Now the session correctly becomes invalid at the exact moment it expires, not just after.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

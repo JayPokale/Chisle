@@ -1,0 +1,18 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 1,
+ "out_tokens": 1051,
+ "input_tokens": 51396,
+ "cost_usd": 0.0257743,
+ "turns": 5,
+ "answer": "Done. Changed `now > expiresAt` → `now >= expiresAt`. Now the session is correctly rejected at the exact expiry millisecond, matching the documented behavior.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

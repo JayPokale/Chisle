@@ -1,0 +1,20 @@
+{
+ "fixture": "stdlib",
+ "arm": "chisle",
+ "seed": 7,
+ "out_tokens": 843,
+ "input_tokens": 38064,
+ "cost_usd": 0.022626600000000004,
+ "turns": 3,
+ "answer": "Done. `uniqueIds(ids)` removes duplicates while preserving first-seen order using a Set for O(n) lookup and filter to keep only new items. Exported alongside `parseIds`.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/importer.js"
+ ],
+ "loc_before": 5,
+ "loc_after": 9,
+ "loc_delta": 4,
+ "deps_added": []
+}

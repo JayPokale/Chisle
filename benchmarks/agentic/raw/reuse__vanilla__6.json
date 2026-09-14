@@ -1,0 +1,20 @@
+{
+ "fixture": "reuse",
+ "arm": "vanilla",
+ "seed": 6,
+ "out_tokens": 922,
+ "input_tokens": 80141,
+ "cost_usd": 0.0298816,
+ "turns": 5,
+ "answer": "Done. Created `/tmp/wk-reuse-Rbvl5M/repo/src/routes/posts.js` with `postPath(title)` that returns `/posts/` followed by the URL-safe slug of the title, matching the pattern from the existing `userPath` function.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [
+  "src/routes/posts.js"
+ ],
+ "files_touched": [],
+ "loc_before": 18,
+ "loc_after": 23,
+ "loc_delta": 5,
+ "deps_added": []
+}

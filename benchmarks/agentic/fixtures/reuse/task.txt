@@ -1,0 +1,1 @@
+Add src/routes/posts.js to this repo. It must export postPath(title), which returns the public URL path for a post: "/posts/" followed by the URL-safe form of the title. Match how the rest of the app builds public URLs.

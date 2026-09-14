@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 10,
+ "out_tokens": 1131,
+ "input_tokens": 65804,
+ "cost_usd": 0.0282467,
+ "turns": 6,
+ "answer": "Fixed: `now >= expiresAt` invalidates session at the exact expiration instant, not after. Aligns with the comment intent.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

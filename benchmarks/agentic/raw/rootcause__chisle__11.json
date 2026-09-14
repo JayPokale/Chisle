@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 11,
+ "out_tokens": 2014,
+ "input_tokens": 95787,
+ "cost_usd": 0.0369234,
+ "turns": 7,
+ "answer": "Fixed. Off-by-one in comparison operator: changed `now > expiresAt` to `now >= expiresAt`. \n\nWhen `now === expiresAt` (the exact expiry moment), the session is now correctly rejected. The middleware (line 5) calls `isExpired` to determine whether to return 401; with `>=`, it now properly rejects at and after the expiry instant.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

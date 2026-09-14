@@ -1,0 +1,20 @@
+{
+ "fixture": "yagni",
+ "arm": "chisle",
+ "seed": 8,
+ "out_tokens": 1053,
+ "input_tokens": 79094,
+ "cost_usd": 0.0292762,
+ "turns": 6,
+ "answer": "Done. `retries()` now reads from `RETRY_COUNT` environment variable, defaulting to 3. The function stays the public interface—rest of code unchanged.\n\n```javascript\nfunction retries() {\n  return parseInt(process.env.RETRY_COUNT || '3', 10);\n}\n```\n\nUsage:\n- `RETRY_COUNT=5 node app.js` → 5 retries\n- `node app.js` → 3 retries (default)",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/client.js"
+ ],
+ "loc_before": 13,
+ "loc_after": 12,
+ "loc_delta": -1,
+ "deps_added": []
+}

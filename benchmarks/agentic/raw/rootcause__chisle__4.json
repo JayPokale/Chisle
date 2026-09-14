@@ -1,0 +1,18 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 4,
+ "out_tokens": 1072,
+ "input_tokens": 64871,
+ "cost_usd": 0.027472700000000003,
+ "turns": 5,
+ "answer": "Changed `now > expiresAt` to `now >= expiresAt` in `/tmp/wk-rootcause-lDwDKR/repo/src/auth/session.js:3`. \n\nSession is now invalid when `now` reaches `expiresAt`, not after. Comment already stated the intent (\"At the expiry instant it is over\") — code now matches it.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

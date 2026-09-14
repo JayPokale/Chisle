@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 10,
+ "out_tokens": 1886,
+ "input_tokens": 83113,
+ "cost_usd": 0.0322629,
+ "turns": 8,
+ "answer": "## ✓ Bug Fixed\n\n**Issue:** Session expiration boundary condition — sessions were still valid at the exact millisecond they expired.\n\n**Root Cause:** In `/src/auth/session.js:3`, the `isExpired()` function used `now > expiresAt` instead of `now >= expiresAt`. This allowed sessions to remain valid when `now === expiresAt`.\n\n**Fix Applied:** Changed the comparison operator from `>` to `>=`\n\n```javascript\n// Before\nreturn now > expiresAt;\n\n// After\nreturn now >= expiresAt;\n```\n\nNow sessions are correctly invalid the instant they reach their expiration time, matching the documented behavior: \"At the expiry instant it is over.\" This fix applies throughout the codebase since all expiration checks (middleware, refresh API, cleanup jobs) use this single `isExpired()` function.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

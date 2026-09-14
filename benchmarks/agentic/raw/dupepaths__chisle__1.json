@@ -1,0 +1,22 @@
+{
+ "fixture": "dupepaths",
+ "arm": "chisle",
+ "seed": 1,
+ "out_tokens": 2739,
+ "input_tokens": 159036,
+ "cost_usd": 0.050716300000000006,
+ "turns": 11,
+ "answer": "Fixed. All three formatters now place the minus sign before the dollar sign:\n\n- `formatMoney(-450)` → `-$4.50` ✓\n- `receiptTotal(-1000)` → `TOTAL -$10.00` ✓  \n- `statementRow(\"Balance\", -5000)` → `Balance\t-$50.00` ✓\n\nChanges applied to `money.js`, `receipt.js`, `statement.js` — each extracts the sign, uses absolute value, and places minus before `$`.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/money.js",
+  "src/receipt.js",
+  "src/statement.js"
+ ],
+ "loc_before": 20,
+ "loc_after": 26,
+ "loc_delta": 6,
+ "deps_added": []
+}

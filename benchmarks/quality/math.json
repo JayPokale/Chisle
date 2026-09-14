@@ -1,0 +1,194 @@
+[
+ {
+  "id": "train",
+  "prompt": "A train travels 240 km at 80 km/h, then 150 km at 50 km/h. What is the total travel time in hours?",
+  "answer": "6",
+  "tier": "base"
+ },
+ {
+  "id": "shirts",
+  "prompt": "A shop buys 60 shirts at $12 each. It sells 45 of them at $20 each and the remaining 15 at $8 each. What is the total profit in dollars?",
+  "answer": "300",
+  "tier": "base"
+ },
+ {
+  "id": "painters",
+  "prompt": "3 painters paint 2 rooms in 4 hours. Working at the same rate, how many hours do 5 painters need to paint 10 rooms?",
+  "answer": "12",
+  "tier": "base"
+ },
+ {
+  "id": "pctswing",
+  "prompt": "A number is increased by 20%, then the result is decreased by 20%, giving 96. What was the original number?",
+  "answer": "100",
+  "tier": "base"
+ },
+ {
+  "id": "sumrange",
+  "prompt": "What is the sum of all integers from 17 to 63 inclusive?",
+  "answer": "1880",
+  "tier": "base"
+ },
+ {
+  "id": "depreciation",
+  "prompt": "A car worth $24,000 depreciates 15% per year. What is its value after 3 years, in dollars?",
+  "answer": "14739",
+  "tier": "base"
+ },
+ {
+  "id": "pipes",
+  "prompt": "Two pipes fill a tank in 6 hours and 9 hours respectively. Working together, how many hours do they take? Give a decimal.",
+  "answer": "3.6",
+  "tier": "base"
+ },
+ {
+  "id": "acidmix",
+  "prompt": "30 litres of 20% acid solution is mixed with 20 litres of 45% acid solution. What is the acid percentage of the mixture? Give just the number.",
+  "answer": "30",
+  "tier": "base"
+ },
+ {
+  "id": "dice",
+  "prompt": "Two fair dice are rolled. What is the probability that at least one shows a 6? Give the answer as a fraction in lowest terms.",
+  "answer": "11/36",
+  "tier": "base"
+ },
+ {
+  "id": "machines",
+  "prompt": "If 5 machines make 5 widgets in 5 minutes, how many minutes do 100 machines need to make 100 widgets?",
+  "answer": "5",
+  "tier": "base"
+ },
+ {
+  "id": "compound",
+  "prompt": "$2000 is invested at 6% annual interest compounded annually. What is the value after 4 years, in dollars to the nearest cent?",
+  "answer": "2524.95",
+  "tier": "base"
+ },
+ {
+  "id": "rect",
+  "prompt": "A rectangle's length is 3 more than twice its width. Its perimeter is 66. What is its area?",
+  "answer": "230",
+  "tier": "base"
+ },
+ {
+  "id": "average",
+  "prompt": "The average of 8 numbers is 15. After one number is removed, the average of the remaining 7 is 14. What was the removed number?",
+  "answer": "22",
+  "tier": "base"
+ },
+ {
+  "id": "clock",
+  "prompt": "What is the angle in degrees between the hour and minute hands of a clock at 3:40?",
+  "answer": "130",
+  "tier": "base"
+ },
+ {
+  "id": "factzero",
+  "prompt": "How many trailing zeros does 17! have?",
+  "answer": "3",
+  "tier": "base"
+ },
+ {
+  "id": "exponent",
+  "prompt": "Solve for x: 2^x = 32 * 4^3",
+  "answer": "11",
+  "tier": "base"
+ },
+ {
+  "id": "workc",
+  "prompt": "A alone finishes a job in 12 days, B alone in 18 days. A, B and C working together finish it in 4 days. How many days would C alone take?",
+  "answer": "9",
+  "tier": "base"
+ },
+ {
+  "id": "boat",
+  "prompt": "A boat covers 24 km downstream in 2 hours and the same 24 km upstream in 3 hours. What is the speed of the stream in km/h?",
+  "answer": "2",
+  "tier": "base"
+ },
+ {
+  "id": "sequence",
+  "prompt": "In the sequence 3, 7, 15, 31, ... each term is twice the previous term plus one. What is the 6th term?",
+  "answer": "127",
+  "tier": "base"
+ },
+ {
+  "id": "discount",
+  "prompt": "An item marked $250 is sold after two successive discounts of 20% and then 10%. What is the final price in dollars?",
+  "answer": "180",
+  "tier": "base"
+ },
+ {
+  "id": "distinct4",
+  "prompt": "How many 4-digit numbers have all four digits distinct?",
+  "answer": "4536",
+  "tier": "hard"
+ },
+ {
+  "id": "committee",
+  "prompt": "A committee of 4 is chosen from 7 men and 5 women. How many committees contain at least 2 women?",
+  "answer": "285",
+  "tier": "hard"
+ },
+ {
+  "id": "mod13",
+  "prompt": "What is the remainder when 7^100 is divided by 13?",
+  "answer": "9",
+  "tier": "hard"
+ },
+ {
+  "id": "constterm",
+  "prompt": "What is the constant term in the expansion of (x^2 + 2/x)^6?",
+  "answer": "240",
+  "tier": "hard"
+ },
+ {
+  "id": "bird",
+  "prompt": "Two cars 300 km apart drive toward each other at 60 km/h and 40 km/h. A bird flying at 100 km/h leaves one car, flies to the other, turns around, and continues until the cars meet. How many kilometres does the bird fly?",
+  "answer": "300",
+  "tier": "hard"
+ },
+ {
+  "id": "urn",
+  "prompt": "An urn holds 5 red and 7 blue balls. Two are drawn without replacement. What is the probability both are red? Give the answer as a fraction in lowest terms.",
+  "answer": "5/33",
+  "tier": "hard"
+ },
+ {
+  "id": "consecutive",
+  "prompt": "The mean of 5 consecutive even integers is 30. What is the largest of them?",
+  "answer": "34",
+  "tier": "hard"
+ },
+ {
+  "id": "logeq",
+  "prompt": "Solve for x: log base 2 of x, plus log base 2 of (x - 6), equals 4.",
+  "answer": "8",
+  "tier": "hard"
+ },
+ {
+  "id": "circlesq",
+  "prompt": "A circle is inscribed in a square of side 10. What is the area inside the square but outside the circle, to two decimal places?",
+  "answer": "21.46",
+  "tier": "hard"
+ },
+ {
+  "id": "lcm10",
+  "prompt": "What is the smallest positive integer divisible by every integer from 1 to 10?",
+  "answer": "2520",
+  "tier": "hard"
+ },
+ {
+  "id": "apsum",
+  "prompt": "An arithmetic progression starts at 5 with common difference 3. What is the sum of its first 20 terms?",
+  "answer": "670",
+  "tier": "hard"
+ },
+ {
+  "id": "pctchain",
+  "prompt": "A population rises 10%, then falls 10%, then rises 20%. What is the net percentage change, to one decimal place? Give a signed number.",
+  "answer": "18.8",
+  "tier": "hard"
+ }
+]

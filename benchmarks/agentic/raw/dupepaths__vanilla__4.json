@@ -1,0 +1,22 @@
+{
+ "fixture": "dupepaths",
+ "arm": "vanilla",
+ "seed": 4,
+ "out_tokens": 2390,
+ "input_tokens": 132602,
+ "cost_usd": 0.0412093,
+ "turns": 11,
+ "answer": "Perfect! I've fixed the negative amount formatting in all three places where currency is displayed to customers:\n\n**Changes made:**\n\n1. **`src/money.js`** — Updated `formatMoney()` to place the negative sign before the dollar sign\n2. **`src/statement.js`** — Updated `statementRow()` to format negative amounts as `-$4.50` instead of `$-4.50`\n3. **`src/receipt.js`** — Updated `receiptTotal()` with the same fix\n\nThe fix works by:\n- Checking if the amount is negative\n- Using `Math.abs()` to get the absolute value for formatting\n- Prepending the negative sign (if needed) before the dollar sign\n\nNow negative amounts will render as **`-$4.50`** instead of **`$-4.50`** everywhere they're displayed to customers.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/money.js",
+  "src/receipt.js",
+  "src/statement.js"
+ ],
+ "loc_before": 20,
+ "loc_after": 26,
+ "loc_delta": 6,
+ "deps_added": []
+}

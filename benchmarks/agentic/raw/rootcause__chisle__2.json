@@ -1,0 +1,18 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 2,
+ "out_tokens": 1176,
+ "input_tokens": 65114,
+ "cost_usd": 0.0284274,
+ "turns": 6,
+ "answer": "✅ Fixed. Session now rejects at `now >= expiresAt`, matching the documented behavior: \"At the expiry instant it is over.\"",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

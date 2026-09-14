@@ -1,0 +1,18 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 5,
+ "out_tokens": 977,
+ "input_tokens": 51271,
+ "cost_usd": 0.0252569,
+ "turns": 5,
+ "answer": "Fixed. Changed `>` to `>=` so sessions expire at the exact millisecond `now` reaches `expiresAt`, not after.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

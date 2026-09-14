@@ -1,0 +1,22 @@
+{
+ "fixture": "dupepaths",
+ "arm": "chisle",
+ "seed": 7,
+ "out_tokens": 2789,
+ "input_tokens": 155341,
+ "cost_usd": 0.0500268,
+ "turns": 11,
+ "answer": "Done. Negative amounts now render as `-$4.50`. Fixed in all three places: `money.js`, `statement.js`, `receipt.js`. Root cause: string concatenation placed `$` before the sign. Solution: check sign separately, use `Math.abs()` for the amount, place sign first.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/money.js",
+  "src/receipt.js",
+  "src/statement.js"
+ ],
+ "loc_before": 20,
+ "loc_after": 26,
+ "loc_delta": 6,
+ "deps_added": []
+}

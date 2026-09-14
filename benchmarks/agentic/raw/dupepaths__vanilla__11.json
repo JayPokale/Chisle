@@ -1,0 +1,22 @@
+{
+ "fixture": "dupepaths",
+ "arm": "vanilla",
+ "seed": 11,
+ "out_tokens": 1892,
+ "input_tokens": 46661,
+ "cost_usd": 0.0288379,
+ "turns": 10,
+ "answer": "Perfect! ✅ I've fixed the negative amount formatting across all three files. Here's what changed:\n\n**`src/money.js`** — The core formatter now handles negatives correctly:\n- For negative amounts, it uses `-$` as the prefix instead of `$`\n- It applies `Math.abs()` to always format the amount part as positive\n\n**`src/statement.js`** and **`src/receipt.js`** — Now use the fixed `formatMoney()` function instead of inline formatting\n\n**Result:**\n- `-450` cents now formats as `-$4.50` (not `$-4.50`)\n- `450` cents still formats as `$4.50`\n\nThis ensures all customer-facing amounts display the negative sign before the dollar symbol consistently across invoices, statements, and receipts.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/money.js",
+  "src/receipt.js",
+  "src/statement.js"
+ ],
+ "loc_before": 20,
+ "loc_after": 24,
+ "loc_delta": 4,
+ "deps_added": []
+}

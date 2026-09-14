@@ -55,3 +55,32 @@ Receipts from the maintainer's corpus:
 
 The correctness gate matters: compression is only a benefit if the answer still
 solves the task. An arm that's 90% shorter but fails the task scores zero.
+
+## 3. Correctness suites (maths + coding, auto-graded)
+
+`quality/` asks the question the cost suites cannot: does the ruleset change how
+often the model is **right**? 32 maths problems graded by exact match, 20 coding
+problems graded by hidden unit tests, no judge model.
+
+```bash
+node benchmarks/quality/run.js [model] [seeds] [parallel]
+node benchmarks/quality/grade.js
+```
+
+## 4. Agentic suite (real repos, hidden tests)
+
+`agentic/` drives the real agent with real tools across five fixture repos, each
+with a planted trap (an existing helper that should be reused, a shared bug with
+three call sites, a config ask that invites a framework). The agent never sees
+the test.
+
+```bash
+node benchmarks/agentic/run.js [model] [seeds] [parallel]
+node benchmarks/agentic/score.js
+```
+
+Both scorers print Fisher exact p-values, Wilson intervals and every failing
+cell. Results:
+[`results/2026-09-14-quality-and-agentic.md`](./results/2026-09-14-quality-and-agentic.md)
+— which reports a **null result** on answer quality and a cost saving that is
+real for prose and negligible for code.

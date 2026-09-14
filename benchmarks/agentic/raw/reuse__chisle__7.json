@@ -1,0 +1,20 @@
+{
+ "fixture": "reuse",
+ "arm": "chisle",
+ "seed": 7,
+ "out_tokens": 1033,
+ "input_tokens": 64715,
+ "cost_usd": 0.027110399999999996,
+ "turns": 5,
+ "answer": "Done. `src/routes/posts.js` exports `postPath(title)` matching the pattern in `users.js` — uses `slugify()` to canonicalize the title and returns `/posts/{slug}`.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [
+  "src/routes/posts.js"
+ ],
+ "files_touched": [],
+ "loc_before": 18,
+ "loc_after": 23,
+ "loc_delta": 5,
+ "deps_added": []
+}

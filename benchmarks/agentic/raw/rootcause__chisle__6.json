@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 6,
+ "out_tokens": 1203,
+ "input_tokens": 65527,
+ "cost_usd": 0.0284308,
+ "turns": 5,
+ "answer": "Fixed. Bug: comparison used `>` instead of `>=`. Session valid only while `now < expiresAt`; at the exact millisecond when they're equal, it must be invalid.\n\nChanged line 3 from `return now > expiresAt;` to `return now >= expiresAt;`\n\nThis propagates through middleware (rejects expired sessions), refresh API (blocks refresh on expiry), and cleanup job (filters expired sessions).",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

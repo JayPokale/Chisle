@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 9,
+ "out_tokens": 1070,
+ "input_tokens": 52185,
+ "cost_usd": 0.0262292,
+ "turns": 5,
+ "answer": "Fixed. Bug: comparison used `now > expiresAt` → accepted session at exact expiry. Changed to `>=` so session is invalid once `now` reaches `expiresAt`, matching the documented behavior: \"At the expiry instant it is over.\"",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

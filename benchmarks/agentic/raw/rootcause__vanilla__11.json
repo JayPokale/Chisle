@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 11,
+ "out_tokens": 1027,
+ "input_tokens": 44369,
+ "cost_usd": 0.021397899999999997,
+ "turns": 4,
+ "answer": "Perfect! **Bug fixed.** \n\n**The issue:** The comparison operator was `>` instead of `>=`, which meant that when `now` equaled `expiresAt`, the function returned `false` (not expired), allowing the session to be accepted at the exact expiration millisecond.\n\n**The fix:** Changed the condition from `now > expiresAt` to `now >= expiresAt`, ensuring that once the current time reaches the expiration instant, the session is immediately considered expired.\n\nThis now matches the documented behavior: \"A session is valid until its expiry instant. At the expiry instant it is over.\"",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

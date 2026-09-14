@@ -1,0 +1,20 @@
+{
+ "fixture": "yagni",
+ "arm": "chisle",
+ "seed": 3,
+ "out_tokens": 697,
+ "input_tokens": 50575,
+ "cost_usd": 0.0230301,
+ "turns": 4,
+ "answer": "Done. `retries()` now reads `RETRY_COUNT` env var with fallback to 3. Rest of code unchanged.",
+ "pass": false,
+ "test_output": "FAIL zero -> 3 want 0",
+ "files_created": [],
+ "files_touched": [
+  "src/client.js"
+ ],
+ "loc_before": 13,
+ "loc_after": 12,
+ "loc_delta": -1,
+ "deps_added": []
+}

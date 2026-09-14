@@ -1,0 +1,1 @@
+Make the retry count configurable through the RETRY_COUNT environment variable, still defaulting to 3 when it is not set. Keep retries() as the way the rest of the code reads it.

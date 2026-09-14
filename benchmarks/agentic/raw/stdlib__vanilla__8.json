@@ -1,0 +1,20 @@
+{
+ "fixture": "stdlib",
+ "arm": "vanilla",
+ "seed": 8,
+ "out_tokens": 731,
+ "input_tokens": 59099,
+ "cost_usd": 0.025820000000000003,
+ "turns": 3,
+ "answer": "Done. Added `uniqueIds(ids)` to src/importer.js — it filters the array with a Set to track seen ids, preserving first-seen order, and is now exported alongside `parseIds`.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/importer.js"
+ ],
+ "loc_before": 5,
+ "loc_after": 13,
+ "loc_delta": 8,
+ "deps_added": []
+}

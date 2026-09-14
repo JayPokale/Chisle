@@ -1,0 +1,22 @@
+{
+ "fixture": "dupepaths",
+ "arm": "chisle",
+ "seed": 5,
+ "out_tokens": 2447,
+ "input_tokens": 151939,
+ "cost_usd": 0.046631399999999996,
+ "turns": 11,
+ "answer": "Done. Fixed in 3 places:\n\n**money.js** — Main `formatMoney` now checks sign, puts `-` before `$` for negatives.\n\n**statement.js & receipt.js** — Switched from inline formatting to use `formatMoney`, ensuring consistency.\n\nTest output:\n- Positive: `$4.50` ✓\n- Negative: `-$4.50` ✓ (was `$-4.50`)",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/money.js",
+  "src/receipt.js",
+  "src/statement.js"
+ ],
+ "loc_before": 20,
+ "loc_after": 24,
+ "loc_delta": 4,
+ "deps_added": []
+}

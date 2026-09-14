@@ -1,0 +1,1 @@
+Negative amounts currently render as "$-4.50". They must render as "-$4.50" everywhere an amount is shown to a customer. Fix it.

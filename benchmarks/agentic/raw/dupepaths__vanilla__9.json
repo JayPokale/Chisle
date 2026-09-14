@@ -1,0 +1,22 @@
+{
+ "fixture": "dupepaths",
+ "arm": "vanilla",
+ "seed": 9,
+ "out_tokens": 1901,
+ "input_tokens": 102208,
+ "cost_usd": 0.039534900000000005,
+ "turns": 9,
+ "answer": "Fixed! I've updated all three places where currency amounts are formatted:\n\n1. **`money.js`** — Core `formatMoney` function\n2. **`statement.js`** — `statementRow` function\n3. **`receipt.js`** — `receiptTotal` function\n\nEach now formats negative amounts as \"-$4.50\" instead of \"$-4.50\" by extracting the sign and applying it before the dollar sign.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/money.js",
+  "src/receipt.js",
+  "src/statement.js"
+ ],
+ "loc_before": 20,
+ "loc_after": 29,
+ "loc_delta": 9,
+ "deps_added": []
+}

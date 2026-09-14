@@ -1,0 +1,18 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 3,
+ "out_tokens": 884,
+ "input_tokens": 50700,
+ "cost_usd": 0.0240919,
+ "turns": 4,
+ "answer": "Fixed. Changed `now > expiresAt` to `now >= expiresAt` in `/tmp/wk-rootcause-bkOEkl/repo/src/auth/session.js:3`.\n\n**Root cause:** Boundary condition bug. Strict comparison (`>`) allowed the session to be valid at the exact expiration millisecond. Per the comment, session becomes invalid *at* the expiry instant, not after. `>=` catches that boundary.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

@@ -1,0 +1,20 @@
+{
+ "fixture": "reuse",
+ "arm": "chisle",
+ "seed": 3,
+ "out_tokens": 825,
+ "input_tokens": 51010,
+ "cost_usd": 0.024104200000000003,
+ "turns": 5,
+ "answer": "Done. Created `src/routes/posts.js` exporting `postPath(title)`. Follows the existing pattern → imports `slugify` from utils, returns `/posts/${slugify(title)}`. Matches how `users.js` builds URLs.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [
+  "src/routes/posts.js"
+ ],
+ "files_touched": [],
+ "loc_before": 18,
+ "loc_after": 23,
+ "loc_delta": 5,
+ "deps_added": []
+}

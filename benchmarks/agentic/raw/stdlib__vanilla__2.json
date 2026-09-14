@@ -1,0 +1,20 @@
+{
+ "fixture": "stdlib",
+ "arm": "vanilla",
+ "seed": 2,
+ "out_tokens": 700,
+ "input_tokens": 59107,
+ "cost_usd": 0.025699299999999998,
+ "turns": 3,
+ "answer": "Done. Added `uniqueIds(ids)` which removes duplicates while preserving first-seen order using a Set to track seen values.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/importer.js"
+ ],
+ "loc_before": 5,
+ "loc_after": 15,
+ "loc_delta": 10,
+ "deps_added": []
+}
