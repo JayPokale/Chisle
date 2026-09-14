@@ -14,7 +14,7 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/chisle"><img src="https://img.shields.io/npm/v/chisle?style=flat-square&color=d78a3c" alt="npm version"></a>
-  <img src="https://img.shields.io/badge/works%20with-9%20agents-d78a3c?style=flat-square" alt="Works with 9 agents">
+  <img src="https://img.shields.io/badge/works%20with-11%20agents-d78a3c?style=flat-square" alt="Works with 11 agents">
   <a href="https://github.com/JayPokale/Chisle/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/JayPokale/Chisle/test.yml?style=flat-square&label=CI" alt="CI"></a>
   <img src="https://img.shields.io/badge/deps-0-2da44e?style=flat-square" alt="Zero deps">
   <img src="https://img.shields.io/badge/license-MIT-d78a3c?style=flat-square" alt="MIT">
@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <strong>44% of a bare model's output tokens on coding prompts &middot; 9 agents &middot; zero dependencies &middot; one command</strong>
+  <strong>44% of a bare model's output tokens on coding prompts &middot; 11 agents &middot; zero dependencies &middot; one command</strong>
 </p>
 
 <p align="center">
@@ -122,7 +122,7 @@ Every "be concise" tool has a worst day, the day it makes the model write *more*
 
 ## Install
 
-One command. Auto-detects your agents (Claude Code, Pi, Cursor, Windsurf, Cline, Kiro, Codex, Gemini, Copilot) and wires each one. `--uninstall` puts everything back.
+One command. Auto-detects your agents (Claude Code, Pi, Cursor, Windsurf, Cline, Kiro, Codex, Gemini, Copilot, OpenCode, Hermes) and wires each one. `--uninstall` puts everything back.
 
 ```bash
 npx chisle
@@ -466,7 +466,7 @@ Chisle borrows the best published token-saving techniques and implements the one
 
 ## Multi-agent
 
-Ships to nine agents: Claude Code and Pi get both axes, live `/chisle` toggling, and a status badge; Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot get the always-on ruleset. Per-agent static copies come from `scripts/build-rules.js`; Pi uses its package extension plus the Agent Skills standard. See [`docs/agent-portability.md`](./docs/agent-portability.md).
+Ships to eleven agents: Claude Code and Pi get both axes, live `/chisle` toggling, and a status badge; Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot get the always-on ruleset; OpenCode gets the global fenced ruleset plus on-demand skills; Hermes gets the skills as `/chisle` commands. Per-agent static copies come from `scripts/build-rules.js`; Pi uses its package extension plus the Agent Skills standard. See [`docs/agent-portability.md`](./docs/agent-portability.md).
 
 ## FAQ
 

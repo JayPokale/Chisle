@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 // Every install path the project actually documents. Kept in sync with the
 // README's Install section. If a command changes there, it changes here.
 const INSTALLS = [
-  { id: "npx", label: "npx", cmd: "npx chisle", note: "auto-detects all 9 agents" },
+  { id: "npx", label: "npx", cmd: "npx chisle", note: "auto-detects all 11 agents" },
   {
     id: "plugin",
     label: "Claude Code",
