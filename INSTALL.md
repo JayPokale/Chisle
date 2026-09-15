@@ -14,7 +14,7 @@ Detects supported agents and installs Chisle for each:
 | Pi | package containing extension + skill | global |
 | Gemini CLI | Gemini extension | global |
 | Codex | fenced ruleset in `~/.codex/AGENTS.md` | global |
-| OpenCode | fenced ruleset in `~/.config/opencode/AGENTS.md` + skills in `~/.config/opencode/skills` | global |
+| OpenCode | fenced ruleset in `~/.config/opencode/AGENTS.md` + skills in `~/.config/opencode/skills` + compression plugin in `~/.config/opencode/plugins` | global |
 | Hermes Agent | skills in `~/.hermes/skills` (Agent Skills standard, `/chisle` commands) | global |
 | Cursor / Windsurf / Cline / Kiro / Copilot | rule file in current project | project |
 
@@ -78,6 +78,16 @@ bundled skills into `~/.config/opencode/skills/` for on-demand loading through
 OpenCode's native `skill` tool. No `instructions` entry is added, so nothing
 loads twice. Invoke with `/chisle` or let the ruleset apply automatically.
 
+It also installs the tool-output compression plugin into
+`~/.config/opencode/plugins/` (`chisle.js` plus its zero-dep compressor core in
+`chisle-hooks/`). OpenCode loads it at startup. It hooks `tool.execute.after`
+(mutating `output.output`, which persists onto the stored tool part) and
+`experimental.chat.messages.transform` (a request-time safety net over
+completed tool parts), eliding oversized read-only tool output (bash, grep,
+webfetch, MCP `server_tool` results) before the model reads it, keeping
+`read`/`edit`/`write` untouched. Disable it with `CHISLE_COMPRESS=0` or
+`CHISLE_DEFAULT_MODE=off`.
+
 ## Manual Hermes Agent
 
 ```bash
@@ -106,7 +116,7 @@ From 2.x to 3.x, replace legacy `lite` / `full` / `ultra` config with `on` / `of
 
 Claude Code: start a session and run `/chisle off`, then `/chisle`.
 
-OpenCode: `~/.config/opencode/AGENTS.md` contains the fenced block and `/chisle` resolves as a skill.
+OpenCode: `~/.config/opencode/AGENTS.md` contains the fenced block and `/chisle` resolves as a skill. `~/.config/opencode/plugins/chisle.js` exists and oversized bash/grep/webfetch output is elided in transcripts.
 
 Hermes: `~/.hermes/skills/chisle/SKILL.md` exists and `/chisle` loads the skill.
 

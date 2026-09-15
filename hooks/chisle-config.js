@@ -38,6 +38,16 @@ function getClaudeDir() {
   return process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
 }
 
+// OpenCode's global config dir. The compressor plugin keeps its spill/dedup/
+// stats here (as Copilot uses getCopilotDir), so recovery files sit beside
+// OpenCode's own config instead of leaking into ~/.claude.
+function getOpencodeDir() {
+  if (process.env.XDG_CONFIG_HOME) {
+    return path.join(process.env.XDG_CONFIG_HOME, 'opencode');
+  }
+  return path.join(os.homedir(), '.config', 'opencode');
+}
+
 // GitHub Copilot CLI's own user-level state directory (mirrors the
 // CLAUDE_CONFIG_DIR precedent above). Copilot CLI already reads/writes hook
 // config under this same directory (~/.copilot/hooks/), so chisle's
@@ -181,6 +191,6 @@ function readFlag(flagPath) {
 }
 
 module.exports = {
-  LEGACY_MODES, legacySetting, getDefaultMode, getClaudeDir, getCopilotDir,
+  LEGACY_MODES, legacySetting, getDefaultMode, getClaudeDir, getCopilotDir, getOpencodeDir,
   VALID_MODES, safeWriteFlag, readFlag,
 };
