@@ -5,8 +5,20 @@
 // Oversized tool results (Bash dumps, subagent reports, web fetches) get their
 // repetitive middle elided — head kept (command context), tail kept (results/
 // errors), error-looking lines salvaged from the cut — and the trimmed version
-// replaces what the model sees via `updatedToolOutput`. Deterministic, zero
-// LLM, zero network. Small outputs pass through untouched.
+// replaces what the model sees. Deterministic, zero LLM, zero network. Small
+// outputs pass through untouched.
+//
+// Two harnesses call into this same core:
+//   - Claude Code / Pi: `updatedToolOutput`, snake_case payload
+//     (tool_name, tool_response, session_id, tool_use_id), gated behind the
+//     /chisle on/off flag file (see chisle-config.js: getDefaultMode/readFlag).
+//   - GitHub Copilot CLI: `modifiedResult.textResultForLlm`, camelCase flat
+//     payload (toolName, toolResult.textResultForLlm, sessionId). Copilot has
+//     no /chisle-equivalent mode toggle (no UserPromptSubmit-driven flag), so
+//     compression is always-on for Copilot once the hook is installed —
+//     exactly like the static ruleset Copilot already gets unconditionally
+//     (see README: "the always-on ruleset still ships to every other agent").
+//     CHISLE_COMPRESS=0 is still honored as the one kill switch for both.
 //
 // Correctness guardrails (why this never touches Read/Edit/Write):
 //   - Read output feeds later Edit old_string matching — eliding it makes the
@@ -23,24 +35,27 @@
 // Plus dedup: a tool output byte-identical to that tool's immediately previous
 // output is replaced by a short marker — the content is already in context.
 //
-// Compression follows the /chisle flag (off → untouched). Tunables via env:
+// Compression follows the /chisle flag for Claude/Pi (off → untouched); it is
+// unconditional for Copilot (see above). Tunables via env, shared across all
+// three harnesses:
 //   CHISLE_COMPRESS=0                 — kill switch
 //   CHISLE_COMPRESS_SCRUB=0           — disable the lossless scrub tier
 //   CHISLE_COMPRESS_DEDUP=0           — disable duplicate-output markers
 //   CHISLE_COMPRESS_MAX_CHARS         — outputs at/under this size are not elided
 //   CHISLE_COMPRESS_HEAD_LINES        — lines kept from the top
 //   CHISLE_COMPRESS_TAIL_LINES        — lines kept from the bottom
-//   CHISLE_COMPRESS_TOOLS=Bash,Grep   — override the tool allowlist
+//   CHISLE_COMPRESS_TOOLS=Bash,Grep   — override the tool allowlist (both harnesses)
 //   CHISLE_COMPRESS_SPILL=0           — elide without writing the recovery copy
 //
-// Savings accrue in <claudeDir>/.chisle-compress-stats.json for the statusline.
-// Elided originals spill to <claudeDir>/chisle-spill/ so the dropped middle can
+// Savings accrue in <stateDir>/.chisle-compress-stats.json for the statusline
+// (Claude/Pi: <claudeDir>; Copilot: <copilotDir>, see chisle-config.js).
+// Elided originals spill to <stateDir>/chisle-spill/ so the dropped middle can
 // be grepped back instead of re-running the command; the newest 40 are kept.
 
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { getClaudeDir, readFlag } = require('./chisle-config');
+const { getClaudeDir, getCopilotDir, readFlag } = require('./chisle-config');
 
 // One threshold. Env overrides all.
 // These are the values the old 'full' level used — the default,
@@ -50,6 +65,14 @@ const THRESHOLDS = { maxChars: 8000, headLines: 60, tailLines: 40 };
 // Tools whose output is safe to elide. Read/Edit/Write are absent on purpose:
 // their output feeds exact-match edits. mcp__* are read-only info tools.
 const SAFE_TOOLS = ['Bash', 'Agent', 'WebFetch', 'WebSearch', 'Grep', 'Glob'];
+
+// Copilot CLI's own runtime tool names (lowercase, no mcp__ prefix scheme).
+// Same allowlist rule as SAFE_TOOLS: Copilot's Read/Edit/Write equivalents
+// are `view`/`create`/`edit` and are deliberately absent here too. Verified
+// against Copilot CLI's real tool set, not guessed — see the accompanying PR
+// description for the live-verification evidence (Beyin chisle-port project).
+const SAFE_TOOLS_COPILOT = ['bash', 'powershell', 'grep', 'glob', 'web_fetch', 'web_search', 'task'];
+
 const SALVAGE_RE = /\b(error|err!|fail(ed|ure|ing)?|exception|traceback|panic|fatal|denied|refused|timed?[ _-]?out|assert(ion)?|segfault|npe|undefined reference|cannot find|not found|warning)\b/i;
 const MAX_SALVAGED = 12;      // error lines rescued from the elided middle
 const MAX_SALVAGE_LINE = 300; // per-line char cap on salvaged lines
@@ -60,6 +83,27 @@ function toolAllowed(name) {
     ? process.env.CHISLE_COMPRESS_TOOLS.split(',').map(s => s.trim()).filter(Boolean)
     : SAFE_TOOLS;
   return list.includes(name) || (!process.env.CHISLE_COMPRESS_TOOLS && name.startsWith('mcp__'));
+}
+
+// Same override semantics as toolAllowed, against Copilot's tool-name scheme.
+function copilotToolAllowed(name) {
+  if (!name || typeof name !== 'string') return false;
+  const list = process.env.CHISLE_COMPRESS_TOOLS
+    ? process.env.CHISLE_COMPRESS_TOOLS.split(',').map(s => s.trim()).filter(Boolean)
+    : SAFE_TOOLS_COPILOT;
+  return list.includes(name);
+}
+
+// Copilot CLI's postToolUse payload is flat and camelCase:
+//   { sessionId, timestamp, cwd, toolName, toolArgs,
+//     toolResult: { resultType: "success", textResultForLlm: string } }
+// Detected structurally (no explicit "harness" field exists on either
+// payload shape), by the presence of toolResult.textResultForLlm together
+// with the camelCase toolName — Claude/Pi payloads use tool_name/tool_response
+// and never carry this shape.
+function isCopilotPayload(payload) {
+  return !!(payload && typeof payload.toolName === 'string' &&
+    payload.toolResult && typeof payload.toolResult.textResultForLlm === 'string');
 }
 
 function envInt(name, fallback) {
@@ -77,6 +121,7 @@ function limitsFor() {
 }
 
 // Pull a plain-text payload out of tool_response, whatever its shape.
+// Also handles Copilot's already-flat textResultForLlm string unchanged.
 function extractText(response) {
   if (response == null) return null;
   if (typeof response === 'string') return response;
@@ -143,12 +188,16 @@ function duplicateMarker(toolName, text, reference = 'previous') {
     ' lines, unchanged. First lines:]\n' + preview.join('\n');
 }
 
-function dedupCheck(toolName, text, sessionId, toolUseId) {
+// `stateDir` defaults to getClaudeDir() so every existing Claude/Pi call site
+// and test (none of which pass a third argument) keeps its exact prior
+// behaviour. Copilot's caller (processPayload, below) passes getCopilotDir().
+function dedupCheck(toolName, text, sessionId, toolUseId, stateDir) {
   if (process.env.CHISLE_COMPRESS_DEDUP === '0') return null;
   if (!sessionId || typeof sessionId !== 'string') return null;
   if (text.length < DEDUP_MIN) return null;
   try {
-    const p = path.join(getClaudeDir(), '.chisle-compress-last.json');
+    const dir = stateDir || getClaudeDir();
+    const p = path.join(dir, '.chisle-compress-last.json');
     try { if (fs.lstatSync(p).isSymbolicLink()) return null; } catch (e) { if (e.code !== 'ENOENT') return null; }
     let state = {};
     try { state = JSON.parse(fs.readFileSync(p, 'utf8')) || {}; } catch (e) {}
@@ -167,6 +216,7 @@ function dedupCheck(toolName, text, sessionId, toolUseId) {
     const sameCall = !!(toolUseId && rec.id && rec.id === toolUseId);
     const dup = rec.hash === hash && !sameCall;
     state.tools[toolName] = { hash, id: toolUseId || rec.id || null };
+    fs.mkdirSync(dir, { recursive: true });
     const tmp = p + '.' + process.pid + '.tmp';
     fs.writeFileSync(tmp, JSON.stringify(state), { mode: 0o600 });
     fs.renameSync(tmp, p);
@@ -188,8 +238,8 @@ function dedupCheck(toolName, text, sessionId, toolUseId) {
 const SPILL_DIR = 'chisle-spill';
 const SPILL_KEEP = 40;
 
-function spillDir() {
-  return path.join(getClaudeDir(), SPILL_DIR);
+function spillDir(stateDir) {
+  return path.join(stateDir || getClaudeDir(), SPILL_DIR);
 }
 
 // Keep the directory bounded. Oldest-first by mtime; cheap enough at this size
@@ -204,10 +254,10 @@ function pruneSpill(dir) {
   } catch (e) {}
 }
 
-function spill(text, toolName) {
+function spill(text, toolName, stateDir) {
   if (process.env.CHISLE_COMPRESS_SPILL === '0') return null;
   try {
-    const dir = spillDir();
+    const dir = spillDir(stateDir);
     fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
     const hash = crypto.createHash('sha256').update(text).digest('hex').slice(0, 12);
     const safeTool = String(toolName || 'tool').replace(/[^A-Za-z0-9_-]/g, '') || 'tool';
@@ -254,9 +304,10 @@ function compress(text, limits, spillPath) {
 
 // Best-effort savings ledger. Races between parallel tool calls can drop a
 // count — stats only, never worth a lock file.
-function recordSavings(saved) {
+function recordSavings(saved, stateDir) {
   try {
-    const p = path.join(getClaudeDir(), '.chisle-compress-stats.json');
+    const dir = stateDir || getClaudeDir();
+    const p = path.join(dir, '.chisle-compress-stats.json');
     try { if (fs.lstatSync(p).isSymbolicLink()) return; } catch (e) { if (e.code !== 'ENOENT') return; }
     let stats = { savedChars: 0, events: 0 };
     try {
@@ -265,6 +316,7 @@ function recordSavings(saved) {
     } catch (e) {}
     stats.savedChars += saved;
     stats.events += 1;
+    fs.mkdirSync(dir, { recursive: true });
     const tmp = p + '.' + process.pid + '.tmp';
     fs.writeFileSync(tmp, JSON.stringify(stats), { mode: 0o600 });
     fs.renameSync(tmp, p);
@@ -272,12 +324,13 @@ function recordSavings(saved) {
 }
 
 // Scrub + elide on plain text → transformed text, or null if no meaningful
-// win. Stateless — this is what the replay benchmark measures.
-function transform(text, limits, toolName) {
+// win. Stateless (aside from the spill side-effect) — this is what the
+// replay benchmark measures for Claude/Pi.
+function transform(text, limits, toolName, stateDir) {
   if (!text || text.length <= SCRUB_MIN) return null;
   let t = process.env.CHISLE_COMPRESS_SCRUB === '0' ? text : scrub(text);
   if (t.length > limits.maxChars) {
-    const elided = compress(t, limits, toolName ? spill(t, toolName) : null);
+    const elided = compress(t, limits, toolName ? spill(t, toolName, stateDir) : null);
     if (elided != null) t = elided;
   }
   return text.length - t.length >= MIN_WIN ? t : null;
@@ -291,6 +344,10 @@ function transform(text, limits, toolName) {
 // work, logs savings, and the model still receives the full output. Returning
 // null (skip) is always safer than emitting a shape the harness will refuse.
 // Reported with the transcript evidence by @sovdchains (#3).
+//
+// Not used for Copilot: its toolResult.textResultForLlm is already a flat
+// string, so main() builds { modifiedResult: { textResultForLlm } } directly
+// and never calls this function for a Copilot-shaped payload.
 function rebuildResponse(response, updated) {
   if (response == null || typeof response === 'string') return updated;
   if (typeof response === 'object' && !Array.isArray(response)) {
@@ -310,18 +367,35 @@ function rebuildResponse(response, updated) {
 }
 
 // Full pipeline on one hook payload → updated output string, or null to keep
-// the original. Pure given (payload, mode, env) except dedup state.
+// the original. Pure given (payload, mode, env) except dedup/spill/stats state.
+//
+// `mode` keeps meaning "off disables everything" for Claude/Pi, exactly as
+// before. For a Copilot-shaped payload the caller (main()) always passes
+// 'on' — Copilot has no /chisle toggle to read a flag file for — so this
+// function's Copilot branch below never actually sees 'off' in practice, but
+// still honors it if a future caller passes it explicitly.
 function processPayload(payload, mode) {
   if (!payload || typeof payload !== 'object') return null;
   if (!mode || mode === 'off') return null;
   if (process.env.CHISLE_COMPRESS === '0') return null;
-  if (!toolAllowed(payload.tool_name)) return null;
 
+  if (isCopilotPayload(payload)) {
+    const toolName = payload.toolName;
+    if (!copilotToolAllowed(toolName)) return null;
+    const text = payload.toolResult.textResultForLlm;
+    if (!text) return null;
+    const stateDir = getCopilotDir();
+    const dup = dedupCheck(toolName, text, payload.sessionId, null, stateDir);
+    if (dup != null && dup.length < text.length) return dup;
+    return transform(text, limitsFor(), toolName, stateDir);
+  }
+
+  if (!toolAllowed(payload.tool_name)) return null;
   const text = extractText(payload.tool_response != null ? payload.tool_response : payload.tool_output);
   if (!text) return null;
-  const dup = dedupCheck(payload.tool_name, text, payload.session_id, payload.tool_use_id);
+  const dup = dedupCheck(payload.tool_name, text, payload.session_id, payload.tool_use_id, getClaudeDir());
   if (dup != null && dup.length < text.length) return dup;
-  return transform(text, limitsFor(), payload.tool_name);
+  return transform(text, limitsFor(), payload.tool_name, getClaudeDir());
 }
 
 function main() {
@@ -330,9 +404,26 @@ function main() {
   process.stdin.on('end', () => {
     try {
       const payload = JSON.parse(input.replace(/^﻿/, ''));
-      const mode = readFlag(path.join(getClaudeDir(), '.chisle-active'));
+      const copilot = isCopilotPayload(payload);
+
+      // Copilot has no /chisle mode-toggle mechanism (no UserPromptSubmit
+      // hook wired for it yet, so there is nothing to flip a flag file with):
+      // treat it as always-on, matching the always-on ruleset it already
+      // gets. Claude/Pi keep reading the real flag file exactly as before.
+      const mode = copilot ? 'on' : readFlag(path.join(getClaudeDir(), '.chisle-active'));
+
       const updated = processPayload(payload, mode);
       if (updated == null) return;
+
+      if (copilot) {
+        const original = payload.toolResult.textResultForLlm;
+        recordSavings(original.length - updated.length, getCopilotDir());
+        process.stdout.write(JSON.stringify({
+          modifiedResult: { resultType: 'success', textResultForLlm: updated },
+        }));
+        return;
+      }
+
       const response = payload.tool_response != null ? payload.tool_response : payload.tool_output;
       const rebuilt = rebuildResponse(response, updated);
       // Shape we can't safely rebuild — emit nothing and count nothing.
@@ -340,7 +431,7 @@ function main() {
       const original = extractText(response);
       // Only after we know a replacement is actually going out, so the stats
       // file stops crediting savings the harness never applied.
-      recordSavings(original.length - updated.length);
+      recordSavings(original.length - updated.length, getClaudeDir());
       process.stdout.write(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: 'PostToolUse',
@@ -353,4 +444,9 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { extractText, rebuildResponse, scrub, compress, transform, limitsFor, toolAllowed, processPayload, duplicateMarker, THRESHOLDS, SAFE_TOOLS };
+module.exports = {
+  extractText, rebuildResponse, scrub, compress, transform, limitsFor, toolAllowed, processPayload,
+  duplicateMarker, THRESHOLDS, SAFE_TOOLS,
+  // Copilot-specific additions (see PR description for rationale):
+  isCopilotPayload, copilotToolAllowed, SAFE_TOOLS_COPILOT,
+};
