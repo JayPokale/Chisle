@@ -451,7 +451,16 @@ function writeFencedRuleset(target, opts, note) {
     }
     var b = existing.indexOf(FENCE_BEGIN);
     var e = existing.indexOf(FENCE_END, b);
-    var tail = e === -1 ? '' : existing.slice(e + FENCE_END.length);
+    // A begin marker with no end marker means the file was hand-edited or a
+    // write was cut short. Everything after the begin marker is then user
+    // content of unknown extent, so refuse rather than guess: rewriting would
+    // delete the rest of their global instructions.
+    if (e === -1) {
+      note('  ' + target + ' has a chisle-begin marker with no chisle-end; leaving it alone');
+      note('  remove the stray marker by hand, then re-run');
+      return 'skipped';
+    }
+    var tail = existing.slice(e + FENCE_END.length);
     if (tail.charAt(0) === '\n') tail = tail.slice(1);
     fs.writeFileSync(target, existing.slice(0, b) + block + tail, { mode: 0o644 });
     process.stdout.write('  refreshed ruleset in ' + target + '\n');
@@ -637,11 +646,13 @@ function uninstall(ctx) {
     const ocMd = path.join(homeDir(), '.config', 'opencode', 'AGENTS.md');
     if (fs.existsSync(ocMd)) {
       const txt = fs.readFileSync(ocMd, 'utf8');
-      if (txt.includes(FENCE_BEGIN)) {
-        const b = txt.indexOf(FENCE_BEGIN);
-        const e = txt.indexOf(FENCE_END, b);
-        const tail = e === -1 ? '' : txt.slice(e + FENCE_END.length).replace(/^\n/, '');
-        let stripped = (txt.slice(0, b) + tail).replace(/\n{3,}/g, '\n\n');
+      const b = txt.indexOf(FENCE_BEGIN);
+      const e = b === -1 ? -1 : txt.indexOf(FENCE_END, b);
+      if (b !== -1 && e === -1) {
+        note('  ' + ocMd + ' has a chisle-begin marker with no chisle-end; leaving it alone');
+      } else if (b !== -1) {
+        const tail = txt.slice(e + FENCE_END.length).replace(/^\n/, '');
+        const stripped = (txt.slice(0, b) + tail).replace(/\n{3,}/g, '\n\n');
         if (!opts.dryRun) fs.writeFileSync(ocMd, stripped, { mode: 0o644 });
         note('  removed chisle block from ' + ocMd); touched++;
       }

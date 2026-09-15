@@ -432,6 +432,31 @@ test('opencode+hermes dry-run changes nothing on disk', () => {
   fs.rmSync(home, { recursive: true, force: true });
 });
 
+test('a fence missing its end marker is left alone, not truncated', () => {
+  // A begin marker with no end marker means a hand edit or a cut-short write.
+  // Everything after it is user content of unknown extent, so both refresh and
+  // uninstall must refuse. Slicing to the end marker unconditionally would eat
+  // the rest of the user's global instructions.
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-fence-'));
+  const env = { CHISLE_HOME: home };
+  const body = 'my rules\n\n<!-- chisle-begin -->\nstale\n\nKEEP THIS\n';
+
+  for (const [id, rel] of [['codex', ['.codex', 'AGENTS.md']], ['opencode', ['.config', 'opencode', 'AGENTS.md']]]) {
+    const md = path.join(home, ...rel);
+    fs.mkdirSync(path.dirname(md), { recursive: true });
+
+    fs.writeFileSync(md, body);
+    let r = runCLI(['--only', id, '--force'], { env });
+    assert.match(r.out, /no chisle-end/, id + ': no warning');
+    assert.equal(fs.readFileSync(md, 'utf8'), body, id + ': --force rewrote a malformed fence');
+
+    fs.writeFileSync(md, body);
+    r = runCLI(['--uninstall', '--only', id], { env });
+    assert.equal(fs.readFileSync(md, 'utf8'), body, id + ': uninstall ate user content');
+  }
+
+  fs.rmSync(home, { recursive: true, force: true });
+});
 test('codex fenced install still works via shared helper (refactor guard)', () => {
   const home = mkHome();
   const env = { CHISLE_HOME: home };
