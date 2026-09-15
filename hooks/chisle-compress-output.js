@@ -418,8 +418,12 @@ function main() {
       if (copilot) {
         const original = payload.toolResult.textResultForLlm;
         recordSavings(original.length - updated.length, getCopilotDir());
+        // Echo back the result type we were handed. Hard-coding 'success'
+        // would relabel a failed tool call as a successful one on its way to
+        // the model — the compressor only ever rewrites text, never status.
+        const resultType = payload.toolResult.resultType || 'success';
         process.stdout.write(JSON.stringify({
-          modifiedResult: { resultType: 'success', textResultForLlm: updated },
+          modifiedResult: { resultType, textResultForLlm: updated },
         }));
         return;
       }

@@ -174,3 +174,24 @@ test('main(): small Copilot output produces no stdout at all', () => {
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('main(): a failed tool call keeps its resultType through compression', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-copilot-main-err-'));
+  try {
+    const scriptPath = path.join(__dirname, '..', 'hooks', 'chisle-compress-output.js');
+    const payload = copilotPayload({
+      toolResult: { resultType: 'error', textResultForLlm: bigOutput(500) },
+    });
+    const r = spawnSync(process.execPath, [scriptPath], {
+      input: JSON.stringify(payload),
+      encoding: 'utf8',
+      env: Object.assign({}, process.env, { COPILOT_HOME: dir }),
+    });
+    assert.equal(r.status, 0);
+    const out = JSON.parse(r.stdout);
+    assert.equal(out.modifiedResult.resultType, 'error'); // not relabeled 'success'
+    assert.ok(out.modifiedResult.textResultForLlm.includes('[chisle: elided'));
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
