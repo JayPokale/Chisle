@@ -52,6 +52,14 @@
   "engines": {
     "node": ">=18"
   },
+  "omp": {
+    "extensions": [
+      "./pi-extension/index.cjs"
+    ],
+    "skills": [
+      "./skills"
+    ]
+  },
   "pi": {
     "extensions": [
       "./pi-extension/index.js"

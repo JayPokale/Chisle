@@ -77,6 +77,20 @@ test('Pi package manifest ships extension and skill', () => {
   assert.ok(fs.existsSync(path.join(__dirname, '..', 'pi-extension', 'index.js')));
 });
 
+test('OMP manifest points at a .cjs entry resolving to the same factory', () => {
+  // OMP classifies a CommonJS entry named .js as ESM, so module.exports never
+  // reaches the default export and its factory lookup fails. Only the entry
+  // filename matters: a required .js dependency is classified correctly.
+  // Resolution is `pkg.omp ?? pkg.pi`, so Pi keeps loading index.js and
+  // nothing double-loads.
+  const pkg = require('../package.json');
+  assert.deepEqual(pkg.omp.extensions, ['./pi-extension/index.cjs']);
+  assert.deepEqual(pkg.omp.skills, ['./skills']);
+  assert.ok(pkg.files.includes('pi-extension/'));
+  assert.ok(fs.existsSync(path.join(__dirname, '..', 'pi-extension', 'index.cjs')));
+  assert.equal(require('../pi-extension/index.cjs'), require('../pi-extension/index.js'));
+});
+
 test('dry-run changes nothing on disk', () => {
   const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-dry-'));
   runCLI(['--only', 'cline', '--dry-run'], { cwd: proj });
