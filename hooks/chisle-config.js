@@ -38,6 +38,15 @@ function getClaudeDir() {
   return process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
 }
 
+// GitHub Copilot CLI's own user-level state directory (mirrors the
+// CLAUDE_CONFIG_DIR precedent above). Copilot CLI already reads/writes hook
+// config under this same directory (~/.copilot/hooks/), so chisle's
+// dedup/spill/stats state lives alongside it rather than under ~/.claude,
+// which would be misleading for a machine that never runs Claude Code.
+function getCopilotDir() {
+  return process.env.COPILOT_HOME || path.join(os.homedir(), '.copilot');
+}
+
 function getConfigDir() {
   if (process.env.XDG_CONFIG_HOME) {
     return path.join(process.env.XDG_CONFIG_HOME, 'chisle');
@@ -172,6 +181,6 @@ function readFlag(flagPath) {
 }
 
 module.exports = {
-  LEGACY_MODES, legacySetting, getDefaultMode, getClaudeDir,
+  LEGACY_MODES, legacySetting, getDefaultMode, getClaudeDir, getCopilotDir,
   VALID_MODES, safeWriteFlag, readFlag,
 };
