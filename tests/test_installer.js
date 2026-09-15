@@ -342,3 +342,107 @@ test('--update is read-only under --dry-run', { skip: process.platform === 'win3
 test('--help advertises --update', () => {
   assert.match(runCLI(['--help']).out, /--update/);
 });
+// ── OpenCode + Hermes ────────────────────────────────────────────────────────
+// Global agents. CHISLE_HOME redirects the home dir so tests never touch
+// the real ~/.config/opencode or ~/.hermes. Runs on win32 too (no shell).
+
+function mkHome() { return fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-home-')); }
+
+function repoSkill(rel) { return fs.readFileSync(path.join(__dirname, '..', 'skills', rel), 'utf8'); }
+
+test('--help and --list advertise opencode + hermes', () => {
+  assert.match(runCLI(['--help']).out, /opencode/);
+  assert.match(runCLI(['--help']).out, /hermes/);
+  assert.match(runCLI(['--list']).out, /OpenCode/);
+  assert.match(runCLI(['--list']).out, /Hermes/);
+});
+
+test('opencode install appends fenced ruleset, preserves user content, copies skills', () => {
+  const home = mkHome();
+  const env = { CHISLE_HOME: home };
+  const agents = path.join(home, '.config', 'opencode', 'AGENTS.md');
+  const skills = path.join(home, '.config', 'opencode', 'skills');
+  fs.mkdirSync(path.dirname(agents), { recursive: true });
+  fs.writeFileSync(agents, '# my setup\n\nmy instructions.\n');
+
+  const r = runCLI(['--only', 'opencode'], { env });
+  assert.match(r.out, /installed:/);
+  const txt = fs.readFileSync(agents, 'utf8');
+  assert.ok(txt.startsWith('# my setup\n\nmy instructions.\n'), 'user instructions moved or clobbered');
+  assert.ok(txt.includes('<!-- chisle-begin -->') && txt.includes('<!-- chisle-end -->'));
+  assert.equal(txt.indexOf('<!-- chisle-begin -->'), txt.lastIndexOf('<!-- chisle-begin -->'), 'fence duplicated');
+  for (const s of ['chisle', 'chisle-audit', 'chisle-help', 'chisle-review']) {
+    assert.equal(fs.readFileSync(path.join(skills, s, 'SKILL.md'), 'utf8'), repoSkill(s + '/SKILL.md'), s + ' not verbatim');
+  }
+
+  // Second run: ruleset skipped, never duplicated; skills refreshed.
+  const r2 = runCLI(['--only', 'opencode'], { env });
+  assert.match(r2.out, /already contains chisle ruleset/);
+  const txt2 = fs.readFileSync(agents, 'utf8');
+  assert.equal(txt2.indexOf('<!-- chisle-begin -->'), txt2.lastIndexOf('<!-- chisle-begin -->'));
+  assert.ok(txt2.startsWith('# my setup'), 'reinstall moved user content');
+
+  // Stale fence refreshes under --update, user content survives.
+  fs.writeFileSync(agents, txt2.replace(/# Chisle[\s\S]*<!-- chisle-end -->/, 'STALE\n<!-- chisle-end -->'));
+  runCLI(['--only', 'opencode', '--update'], { env });
+  const txt3 = fs.readFileSync(agents, 'utf8');
+  assert.doesNotMatch(txt3, /STALE/);
+  assert.ok(txt3.startsWith('# my setup'), 'update moved user content');
+
+  // Uninstall removes the block + owned skills, restores user content.
+  fs.mkdirSync(path.join(skills, 'foreign'), { recursive: true });
+  fs.writeFileSync(path.join(skills, 'foreign', 'SKILL.md'), 'not ours');
+  const u = runCLI(['--uninstall', '--only', 'opencode'], { env });
+  assert.match(u.out, /removed chisle block/);
+  const after = fs.readFileSync(agents, 'utf8');
+  assert.ok(after.startsWith('# my setup'), 'uninstall ate user content');
+  assert.doesNotMatch(after, /chisle-begin/);
+  assert.ok(!fs.existsSync(path.join(skills, 'chisle')), 'owned skill left behind');
+  assert.equal(fs.readFileSync(path.join(skills, 'foreign', 'SKILL.md'), 'utf8'), 'not ours', 'foreign skill touched');
+
+  fs.rmSync(home, { recursive: true, force: true });
+});
+
+test('hermes install copies skills verbatim, uninstall prunes only owned', () => {
+  const home = mkHome();
+  const env = { CHISLE_HOME: home };
+  const skills = path.join(home, '.hermes', 'skills');
+
+  const r = runCLI(['--only', 'hermes'], { env });
+  assert.match(r.out, /Hermes Agent detected/);
+  for (const s of ['chisle', 'chisle-audit', 'chisle-help', 'chisle-review']) {
+    assert.equal(fs.readFileSync(path.join(skills, s, 'SKILL.md'), 'utf8'), repoSkill(s + '/SKILL.md'), s + ' not verbatim');
+  }
+
+  fs.mkdirSync(path.join(skills, 'mine'), { recursive: true });
+  fs.writeFileSync(path.join(skills, 'mine', 'SKILL.md'), 'mine');
+  const u = runCLI(['--uninstall', '--only', 'hermes'], { env });
+  assert.match(u.out, /Uninstalled/);
+  assert.ok(!fs.existsSync(path.join(skills, 'chisle')));
+  assert.equal(fs.readFileSync(path.join(skills, 'mine', 'SKILL.md'), 'utf8'), 'mine');
+
+  fs.rmSync(home, { recursive: true, force: true });
+});
+
+test('opencode+hermes dry-run changes nothing on disk', () => {
+  const home = mkHome();
+  const env = { CHISLE_HOME: home };
+  runCLI(['--only', 'opencode', '--only', 'hermes', '--dry-run'], { env });
+  assert.deepEqual(fs.readdirSync(home), [], 'dry-run wrote into CHISLE_HOME');
+  fs.rmSync(home, { recursive: true, force: true });
+});
+
+test('codex fenced install still works via shared helper (refactor guard)', () => {
+  const home = mkHome();
+  const env = { CHISLE_HOME: home };
+  const agents = path.join(home, '.codex', 'AGENTS.md');
+
+  runCLI(['--only', 'codex'], { env });
+  assert.ok(fs.readFileSync(agents, 'utf8').includes('<!-- chisle-begin -->'));
+  const r = runCLI(['--only', 'codex'], { env });
+  assert.match(r.out, /already contains chisle ruleset/);
+  runCLI(['--uninstall', '--only', 'codex'], { env });
+  assert.doesNotMatch(fs.readFileSync(agents, 'utf8'), /chisle-begin/);
+
+  fs.rmSync(home, { recursive: true, force: true });
+});

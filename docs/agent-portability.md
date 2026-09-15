@@ -22,6 +22,8 @@ to every agent that supports a rules/context file. One source, many targets.
 | Cline | `.clinerules/chisle.md` | plain markdown |
 | Kiro | `.kiro/steering/chisle.md` | `inclusion: always` |
 | GitHub Copilot | `.github/copilot-instructions.md` | plain markdown |
+| OpenCode | `~/.config/opencode/AGENTS.md` (fenced block) + `~/.config/opencode/skills/` | global ruleset + Agent Skills |
+| Hermes Agent | `~/.hermes/skills/` | Agent Skills (`/chisle` commands) |
 
 ## Pi discovery and always-on delivery
 
@@ -31,6 +33,22 @@ Verified against Pi 0.85.1:
 - Pi implements the Agent Skills standard, but this repo's top-level `skills/` directory is not a project discovery location by itself. The package manifest explicitly exposes it; Pi then lists `chisle` for progressive disclosure and `/skill:chisle`.
 - Progressive-disclosure skills are not always-on. `pi-extension/index.js` injects the existing skill body once as a hidden persistent message when project `AGENTS.md` does not already provide Chisle. Resume and reload reuse that message; compaction restores it only when it fell out of active context.
 - The extension requires the existing compressor core from `hooks/`; no mirrored compressor or generated Pi rule exists, so no extra sync target is needed.
+
+## OpenCode delivery
+
+Verified against OpenCode 1.18.x docs (rules + Agent Skills pages):
+
+- OpenCode loads the global `~/.config/opencode/AGENTS.md` on every session alongside project `AGENTS.md`; the installer appends one fenced `<!-- chisle-begin -->` … `<!-- chisle-end -->` block after existing user content and refreshes only that block under `--force`/`--update`.
+- The bundled `skills/` copy into `~/.config/opencode/skills/` verbatim, discovered on demand through the native `skill` tool. The global skills dir is scanned by default, so `skills.paths` needs no edit and no `instructions` entry is added — no second system message, existing instructions preserved.
+- Plugin-less agents have no mode to track: the ruleset is always on. `/chisle` remains the toggle vocabulary so the skills read as Chisle.
+
+## Hermes delivery
+
+Verified against the Hermes skills docs (`~/.hermes/skills/` as source of truth, Agent Skills standard):
+
+- The installer copies the bundled `skills/` verbatim into `~/.hermes/skills/` — portable via `CHISLE_HOME`, no hardcoded machine paths, no config rewrite.
+- Hermes discovers each skill as a `/chisle*` slash command on demand. No ruleset is injected: Hermes already reads project `AGENTS.md`.
+- Uninstall prunes only the `chisle*` skill dirs; foreign skills stay put.
 
 ## Keeping copies in sync
 
@@ -49,6 +67,7 @@ and `git clone` installs work without a build step.
 |---------|:-----------:|:--:|:------------------:|
 | Always-on output rules | ✅ | ✅ | ✅ |
 | Tool-result compression | ✅ | ✅ | ❌ |
+| `/chisle` on-demand skill | ✅ | ✅ | ❌ (static ruleset only) / ✅ OpenCode + Hermes via skills |
 | `/chisle` + natural-language toggle | ✅ | ✅ | ❌ |
 | Status badge + measured savings | ✅ | ✅ | ❌ |
 

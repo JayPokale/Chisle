@@ -7,6 +7,8 @@
 //   - Pi           → Pi package (extension + skill)
 //   - Gemini CLI   → gemini extensions install
 //   - Codex        → fenced ruleset appended to ~/.codex/AGENTS.md
+//   - OpenCode     → fenced ruleset in ~/.config/opencode/AGENTS.md + skills copy
+//   - Hermes       → skills copy in ~/.hermes/skills (Agent Skills standard)
 //   - Cursor/Windsurf/Cline/Kiro/Copilot → project rule file dropped into CWD
 //
 // Usage:
@@ -43,6 +45,8 @@ const PROVIDERS = [
   { id: 'pi',       label: 'Pi',            scope: 'global',  detect: 'cmd:pi' },
   { id: 'gemini',   label: 'Gemini CLI',    scope: 'global',  detect: 'cmd:gemini' },
   { id: 'codex',    label: 'Codex CLI',     scope: 'global',  detect: 'cmd:codex||dir:~/.codex' },
+  { id: 'opencode', label: 'OpenCode',        scope: 'global',  detect: 'cmd:opencode||dir:~/.config/opencode' },
+  { id: 'hermes',   label: 'Hermes Agent',    scope: 'global',  detect: 'cmd:hermes||dir:~/.hermes' },
   { id: 'cursor',   label: 'Cursor',        scope: 'project', detect: 'cmd:cursor||dir:~/.cursor',
     rule: '.cursor/rules/chisle.mdc' },
   { id: 'windsurf', label: 'Windsurf',      scope: 'project', detect: 'cmd:windsurf||dir:~/.windsurf||dir:~/.codeium/windsurf',
@@ -168,6 +172,10 @@ function claudeDir(opts) {
   return path.join(os.homedir(), '.claude');
 }
 
+// Home dir for Chisle-managed global targets. CHISLE_HOME overrides it
+// (tests, containers); mirrors the CLAUDE_CONFIG_DIR precedent for Claude.
+function homeDir() { return process.env.CHISLE_HOME || os.homedir(); }
+
 // ── what is already installed ───────────────────────────────────────────────
 // Every install path skips when Chisle is already present, which is right for
 // `npx chisle` and useless for an upgrade: the run reports success and changes
@@ -200,9 +208,18 @@ function installedFor(id, opts) {
         return r.status === 0 && /chisle/i.test(r.stdout || '');
       }
       case 'codex': {
-        const md = path.join(os.homedir(), '.codex', 'AGENTS.md');
+        const md = path.join(homeDir(), '.codex', 'AGENTS.md');
         return fs.existsSync(md) && fs.readFileSync(md, 'utf8').includes(FENCE_BEGIN);
       }
+      case 'opencode': {
+        try {
+          const md = path.join(homeDir(), '.config', 'opencode', 'AGENTS.md');
+          if (fs.existsSync(md) && fs.readFileSync(md, 'utf8').includes(FENCE_BEGIN)) return true;
+        } catch (_) {}
+        return fs.existsSync(path.join(homeDir(), '.config', 'opencode', 'skills', 'chisle', 'SKILL.md'));
+      }
+      case 'hermes':
+        return fs.existsSync(path.join(homeDir(), '.hermes', 'skills', 'chisle', 'SKILL.md'));
       default: {
         const prov = PROVIDERS.find(x => x.id === id);
         return !!(prov && prov.rule && fs.existsSync(path.join(process.cwd(), prov.rule)));
@@ -366,6 +383,91 @@ function installGemini(ctx) {
   process.stdout.write('\n');
 }
 
+// Skills-root helpers for Agent-Skills hosts (OpenCode, Hermes). Both load
+// one dir per skill through the host's native `skill` tool, so the bundled
+// skills/ tree copies over verbatim: no conversion, no second system
+// message, existing user instructions untouched.
+function ownedSkillNames() {
+  var srcRoot = path.join(REPO_ROOT, 'skills');
+  try {
+    return fs.readdirSync(srcRoot).filter(function (n) {
+      try {
+        return fs.statSync(path.join(srcRoot, n)).isDirectory()
+          && fs.existsSync(path.join(srcRoot, n, 'SKILL.md'));
+      } catch (_) { return false; }
+    });
+  } catch (_) { return []; }
+}
+
+// Overwrites stale files, keeps foreign siblings, never touches files
+// outside the named skill dirs. Returns files written.
+function copySkills(dstRoot, opts) {
+  var names = ownedSkillNames();
+  var written = 0;
+  for (var i = 0; i < names.length; i++) {
+    var src = path.join(REPO_ROOT, 'skills', names[i]);
+    var dst = path.join(dstRoot, names[i]);
+    var files = fs.readdirSync(src);
+    if (!opts.dryRun) fs.mkdirSync(dst, { recursive: true });
+    for (var j = 0; j < files.length; j++) {
+      var st = null;
+      try { st = fs.statSync(path.join(src, files[j])); } catch (_) { continue; }
+      if (!st.isFile()) continue;
+      if (opts.dryRun) { written++; continue; }
+      fs.copyFileSync(path.join(src, files[j]), path.join(dst, files[j]));
+      written++;
+    }
+  }
+  return written;
+}
+
+// Removes only the skill dirs Chisle owns; foreign skills stay put.
+function pruneSkills(dstRoot) {
+  var removed = 0;
+  var names = ownedSkillNames();
+  for (var i = 0; i < names.length; i++) {
+    var dst = path.join(dstRoot, names[i]);
+    if (fs.existsSync(dst)) {
+      fs.rmSync(dst, { recursive: true, force: true });
+      removed++;
+    }
+  }
+  return removed;
+}
+
+// Fenced AGENTS.md append/refresh for Codex-style targets. Appends after
+// existing content (never prepends, never clobbers), refreshes one fenced
+// block in place under --force. Returns 'installed', 'refreshed', 'skipped'.
+function writeFencedRuleset(target, opts, note) {
+  var raw = fs.readFileSync(path.join(REPO_ROOT, 'AGENTS.md'), 'utf8');
+  var block = FENCE_BEGIN + '\n' + raw.trimEnd() + '\n' + FENCE_END + '\n';
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  var existing = '';
+  try { existing = fs.readFileSync(target, 'utf8'); } catch (_) {}
+  if (existing.indexOf(FENCE_BEGIN) !== -1) {
+    if (!opts.force) {
+      note('  ' + target + ' already contains chisle ruleset (--force to refresh)');
+      return 'skipped';
+    }
+    var b = existing.indexOf(FENCE_BEGIN);
+    var e = existing.indexOf(FENCE_END, b);
+    var tail = e === -1 ? '' : existing.slice(e + FENCE_END.length);
+    if (tail.charAt(0) === '\n') tail = tail.slice(1);
+    fs.writeFileSync(target, existing.slice(0, b) + block + tail, { mode: 0o644 });
+    process.stdout.write('  refreshed ruleset in ' + target + '\n');
+    return 'refreshed';
+  }
+  var sep = '';
+  if (existing) {
+    if (existing.slice(-2) === '\n\n') sep = '';
+    else if (existing.slice(-1) === '\n') sep = '\n';
+    else sep = '\n\n';
+  }
+  fs.writeFileSync(target, existing + sep + block, { mode: 0o644 });
+  process.stdout.write('  installed: ' + target + '\n');
+  return 'installed';
+}
+
 // ── Codex (fenced ruleset in ~/.codex/AGENTS.md) ────────────────────────────
 const FENCE_BEGIN = '<!-- chisle-begin -->';
 const FENCE_END = '<!-- chisle-end -->';
@@ -373,31 +475,73 @@ const FENCE_END = '<!-- chisle-end -->';
 function installCodex(ctx) {
   const { say, note, opts, results } = ctx;
   results.detected++;
-  say('→ Codex detected');
-  const target = path.join(os.homedir(), '.codex', 'AGENTS.md');
-  const body = fs.readFileSync(path.join(REPO_ROOT, 'AGENTS.md'), 'utf8').trimEnd() + '\n';
-  const block = `${FENCE_BEGIN}\n${body}${FENCE_END}\n`;
+  say('\u2192 Codex detected');
+  const target = path.join(homeDir(), '.codex', 'AGENTS.md');
 
-  if (opts.dryRun) { note(`  would write chisle ruleset → ${target}`); results.installed.push('codex'); process.stdout.write('\n'); return; }
+  if (opts.dryRun) { note('  would write chisle ruleset to ' + target); results.installed.push('codex'); process.stdout.write('\n'); return; }
 
   try {
-    fs.mkdirSync(path.dirname(target), { recursive: true });
-    let existing = '';
-    try { existing = fs.readFileSync(target, 'utf8'); } catch (_) {}
-    if (existing.includes(FENCE_BEGIN)) {
-      if (opts.force) {
-        const rewritten = existing.replace(new RegExp(`${FENCE_BEGIN}[\\s\\S]*?${FENCE_END}\\n?`), block);
-        fs.writeFileSync(target, rewritten, { mode: 0o644 });
-        process.stdout.write(`  refreshed ruleset in ${target}\n`);
-      } else { note(`  ${target} already contains chisle ruleset (--force to refresh)`); }
-      results.skipped.push(['codex', 'already present']);
-    } else {
-      const sep = existing && !existing.endsWith('\n\n') ? (existing.endsWith('\n') ? '\n' : '\n\n') : '';
-      fs.writeFileSync(target, existing + sep + block, { mode: 0o644 });
-      process.stdout.write(`  installed: ${target}\n`);
-      results.installed.push('codex');
-    }
+    const st = writeFencedRuleset(target, opts, note);
+    if (st === 'installed') results.installed.push('codex');
+    else results.skipped.push(['codex', 'already present']);
   } catch (e) { results.failed.push(['codex', (e && e.message) || 'write failed']); }
+  process.stdout.write('\n');
+}
+
+// ── OpenCode ─────────────────────────────────────────────────────────────
+// Global ruleset (~/.config/opencode/AGENTS.md) carries the always-on output
+// axis next to existing user instructions; the bundled skills copy into
+// ~/.config/opencode/skills for on-demand loading via the native skill tool
+// (the global skills dir is scanned by default, so skills.paths needs no
+// edit and no second system message is added).
+function installOpencode(ctx) {
+  const { say, note, opts, results } = ctx;
+  results.detected++;
+  say('\u2192 OpenCode detected');
+  const target = path.join(homeDir(), '.config', 'opencode', 'AGENTS.md');
+  const skillsDst = path.join(homeDir(), '.config', 'opencode', 'skills');
+
+  if (opts.dryRun) {
+    note('  would write chisle ruleset to ' + target);
+    note('  would copy skills to ' + skillsDst);
+    results.installed.push('opencode');
+    process.stdout.write('\n');
+    return;
+  }
+
+  try {
+    const st = writeFencedRuleset(target, opts, note);
+    const n = copySkills(skillsDst, opts);
+    process.stdout.write('  installed: ' + n + ' skill file(s) to ' + skillsDst + '\n');
+    if (st === 'installed') results.installed.push('opencode');
+    else results.skipped.push(['opencode', 'ruleset already present; skills refreshed']);
+  } catch (e) { results.failed.push(['opencode', (e && e.message) || 'write failed']); }
+  process.stdout.write('\n');
+}
+
+// ── Hermes ──────────────────────────────────────────────────────────
+// Agent-Skills host: bundled skills land verbatim in ~/.hermes/skills, where
+// Hermes discovers them as /chisle slash commands. No ruleset is injected:
+// Hermes already reads project AGENTS.md, which carries the always-on axis
+// when the repo ships it. Portable: honors CHISLE_HOME, no hardcoded paths.
+function installHermes(ctx) {
+  const { say, opts, results } = ctx;
+  results.detected++;
+  say('\u2192 Hermes Agent detected');
+  const skillsDst = path.join(homeDir(), '.hermes', 'skills');
+
+  if (opts.dryRun) {
+    process.stdout.write('  would copy skills to ' + skillsDst + '\n');
+    results.installed.push('hermes');
+    process.stdout.write('\n');
+    return;
+  }
+
+  try {
+    const n = copySkills(skillsDst, opts);
+    process.stdout.write('  installed: ' + n + ' skill file(s) to ' + skillsDst + '\n');
+    results.installed.push('hermes');
+  } catch (e) { results.failed.push(['hermes', (e && e.message) || 'copy failed']); }
   process.stdout.write('\n');
 }
 
@@ -478,7 +622,7 @@ function uninstall(ctx) {
   }
 
   if (wants('codex')) {
-    const codexMd = path.join(os.homedir(), '.codex', 'AGENTS.md');
+    const codexMd = path.join(homeDir(), '.codex', 'AGENTS.md');
     if (fs.existsSync(codexMd)) {
       const txt = fs.readFileSync(codexMd, 'utf8');
       if (txt.includes(FENCE_BEGIN)) {
@@ -487,6 +631,30 @@ function uninstall(ctx) {
         note(`  removed chisle block from ${codexMd}`); touched++;
       }
     }
+  }
+
+  if (wants('opencode')) {
+    const ocMd = path.join(homeDir(), '.config', 'opencode', 'AGENTS.md');
+    if (fs.existsSync(ocMd)) {
+      const txt = fs.readFileSync(ocMd, 'utf8');
+      if (txt.includes(FENCE_BEGIN)) {
+        const b = txt.indexOf(FENCE_BEGIN);
+        const e = txt.indexOf(FENCE_END, b);
+        const tail = e === -1 ? '' : txt.slice(e + FENCE_END.length).replace(/^\n/, '');
+        let stripped = (txt.slice(0, b) + tail).replace(/\n{3,}/g, '\n\n');
+        if (!opts.dryRun) fs.writeFileSync(ocMd, stripped, { mode: 0o644 });
+        note('  removed chisle block from ' + ocMd); touched++;
+      }
+    }
+    const ocSkills = path.join(homeDir(), '.config', 'opencode', 'skills');
+    const ocGone = opts.dryRun ? ownedSkillNames().filter(function (nm) { return fs.existsSync(path.join(ocSkills, nm)); }).length : pruneSkills(ocSkills);
+    if (ocGone > 0) { note('  removed ' + ocGone + ' chisle skill dir(s) from ' + ocSkills); touched++; }
+  }
+
+  if (wants('hermes')) {
+    const hSkills = path.join(homeDir(), '.hermes', 'skills');
+    const hGone = opts.dryRun ? ownedSkillNames().filter(function (nm) { return fs.existsSync(path.join(hSkills, nm)); }).length : pruneSkills(hSkills);
+    if (hGone > 0) { note('  removed ' + hGone + ' chisle skill dir(s) from ' + hSkills); touched++; }
   }
 
   if (!opts.only.length || opts.only.some(id => PROVIDERS.find(p => p.id === id).scope === 'project')) {
@@ -618,6 +786,8 @@ function main() {
     else if (p.id === 'pi') installPi(ctx);
     else if (p.id === 'gemini') installGemini(ctx);
     else if (p.id === 'codex') installCodex(ctx);
+    else if (p.id === 'opencode') installOpencode(ctx);
+    else if (p.id === 'hermes') installHermes(ctx);
     else installProjectRule(ctx, p);
   }
 

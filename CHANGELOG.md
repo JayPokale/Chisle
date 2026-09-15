@@ -3,6 +3,13 @@
 All notable changes to Chisle are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+- **OpenCode support.** `npx chisle --only opencode` appends the fenced Chisle ruleset to the global `~/.config/opencode/AGENTS.md` (existing instructions preserved, refresh only under `--force`/`--update`) and copies the bundled skills into `~/.config/opencode/skills/` for on-demand loading via the native `skill` tool. No `instructions` entry, no second system message. Uninstall removes only the fenced block and the `chisle*` skill dirs.
+- **Hermes Agent support.** `npx chisle --only hermes` copies the bundled skills verbatim into `~/.hermes/skills/` (Agent Skills standard, `/chisle` commands). No ruleset injection, no config rewrite. Portable via `CHISLE_HOME`; uninstall prunes only owned skill dirs.
+- Shared `writeFencedRuleset` helper: Codex and OpenCode now share one append/refresh path (behavior unchanged, covered by a refactor-guard test).
+
 ## [3.3.0] - 2026-09-13
 
 ### Added

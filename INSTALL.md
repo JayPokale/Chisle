@@ -14,6 +14,8 @@ Detects supported agents and installs Chisle for each:
 | Pi | package containing extension + skill | global |
 | Gemini CLI | Gemini extension | global |
 | Codex | fenced ruleset in `~/.codex/AGENTS.md` | global |
+| OpenCode | fenced ruleset in `~/.config/opencode/AGENTS.md` + skills in `~/.config/opencode/skills` | global |
+| Hermes Agent | skills in `~/.hermes/skills` (Agent Skills standard, `/chisle` commands) | global |
 | Cursor / Windsurf / Cline / Kiro / Copilot | rule file in current project | project |
 
 ```bash
@@ -64,12 +66,36 @@ pi install -l npm:chisle
 
 writes `.pi/settings.json` and loads only after Pi trusts that project.
 
+## Manual OpenCode
+
+```bash
+npx chisle --only opencode
+```
+
+Writes the fenced Chisle ruleset into the global `~/.config/opencode/AGENTS.md`
+(appended after your existing instructions, never replacing them) and copies the
+bundled skills into `~/.config/opencode/skills/` for on-demand loading through
+OpenCode's native `skill` tool. No `instructions` entry is added, so nothing
+loads twice. Invoke with `/chisle` or let the ruleset apply automatically.
+
+## Manual Hermes Agent
+
+```bash
+npx chisle --only hermes
+```
+
+Copies the bundled skills verbatim into `~/.hermes/skills/` (Agent Skills
+standard), where Hermes discovers them as `/chisle` slash commands. No ruleset
+is injected and no config file is rewritten: Hermes already reads project
+`AGENTS.md`, which carries the always-on axis when the repo ships it.
+
 ## Upgrading
 
 ```bash
 npx chisle
 claude plugin update chisle@chisle
 pi update npm:chisle
+npx chisle@latest --update   # refreshes OpenCode + Hermes copies too
 ```
 
 Chisle's Claude hook checks npm at session start and mentions major releases once (cached three days). `CHISLE_UPDATE_CHECK=0` disables that check.
@@ -79,6 +105,10 @@ From 2.x to 3.x, replace legacy `lite` / `full` / `ultra` config with `on` / `of
 ## Verify
 
 Claude Code: start a session and run `/chisle off`, then `/chisle`.
+
+OpenCode: `~/.config/opencode/AGENTS.md` contains the fenced block and `/chisle` resolves as a skill.
+
+Hermes: `~/.hermes/skills/chisle/SKILL.md` exists and `/chisle` loads the skill.
 
 Pi: start a session. Footer shows `[CHISLE]`; `/chisle off`, `stop chisle`, or `normal mode` clears it and disables both rules and tool-output compression. `/chisle` re-enables it. Default mode `off` only changes session startup behavior.
 
@@ -107,6 +137,8 @@ pi remove git:github.com/JayPokale/Chisle
 ```
 
 Pi owns its package entry and cache; `pi remove` removes both without rewriting unrelated `settings.json` values. Project-scoped static rule files remain versioned project files and must be removed per repository.
+
+Global `AGENTS.md` blocks keep surrounding user content: uninstall removes only the fenced `<!-- chisle-begin -->` … `<!-- chisle-end -->` block. Skill copies remove only the `chisle*` skill dirs; foreign skills are untouched.
 
 ## Config
 

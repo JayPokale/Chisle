@@ -7,7 +7,7 @@ Small focused PRs beat big rewrites. Chisle is a small package. Keep it that way
 | File | Purpose |
 |------|---------|
 | `skills/chisle/SKILL.md` | **Behaviour source.** All rules and examples. The activate hook reads it at runtime. |
-| `scripts/build-rules.js` | Condensed mirror of the skill for the 7 static-rule agents. **Editing SKILL.md alone does not propagate here**, so update the `BODY` too, then regenerate. |
+| `scripts/build-rules.js` | Condensed mirror of the skill for the 7 static-rule agents (OpenCode reuses `AGENTS.md` + `skills/` directly; no generated copy). **Editing SKILL.md alone does not propagate here**, so update the `BODY` too, then regenerate. |
 | `hooks/chisle-activate.js` | SessionStart: reads SKILL.md, writes flag, emits rules |
 | `hooks/chisle-mode-tracker.js` | UserPromptSubmit: `/chisle` commands, NL detection, per-turn reinforcement |
 | `hooks/chisle-compress-output.js` | PostToolUse: input-side compression (scrub / elide / dedup tiers, savings ledger) |
@@ -16,6 +16,7 @@ Small focused PRs beat big rewrites. Chisle is a small package. Keep it that way
 | `pi-extension/index.js` | Pi lifecycle, command, status, and `tool_result` adapter; reuses hook core. |
 | `hooks/chisle-statusline.sh` / `.ps1` | Statusline badge: mode + measured input-side savings |
 | `bin/install.js` + `bin/lib/settings.js` | Multi-agent installer, JSONC-safe settings merge |
+| `bin/install.js` (opencode/hermes paths) | Fenced global ruleset + verbatim skill copies; `CHISLE_HOME` redirects home in tests |
 
 ## What to edit
 
