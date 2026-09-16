@@ -2,12 +2,15 @@
 
 ## Supported versions
 
-Chisle is pre-1.0. Only the latest published release on npm receives security fixes.
+Only the latest published release on npm receives security fixes. Chisle is a
+zero-dependency tool with no long-term support branches — upgrade rather than
+expect a backport.
 
 | Version | Supported |
 |---------|-----------|
-| latest `0.x` | ✅ |
-| older `0.x` | ❌ |
+| latest `3.x` | ✅ |
+| older `3.x` | ❌ |
+| `2.x` and earlier | ❌ |
 
 ## Reporting a vulnerability
 

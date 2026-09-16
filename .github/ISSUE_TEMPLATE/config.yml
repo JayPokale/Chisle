@@ -1,0 +1,22 @@
+# Keeps the tracker for actionable defects and concrete requests. Anything that
+# is a question, a "does it work with X", or a result someone wants to share
+# goes to Discussions, where answers stay searchable instead of being buried in
+# a closed issue.
+# Left enabled on purpose: the two templates cover bugs and feature requests,
+# but not a doc correction or a packaging report, and this repo takes outside
+# PRs. The contact links below do the routing; forcing a template as well would
+# just push those into the wrong one.
+blank_issues_enabled: true
+contact_links:
+  - name: Question or install help
+    url: https://github.com/JayPokale/Chisle/discussions/categories/q-a
+    about: Not sure why Chisle isn't firing for your agent, or how to configure it? Ask here — answers get marked and stay findable.
+  - name: Idea or feature discussion
+    url: https://github.com/JayPokale/Chisle/discussions/categories/ideas
+    about: Float an idea before it's a concrete request. Well-formed proposals can still go straight to a feature request issue.
+  - name: Show your numbers
+    url: https://github.com/JayPokale/Chisle/discussions/categories/show-and-tell
+    about: Post your own before/after token counts, or a setup that worked well.
+  - name: Security vulnerability
+    url: https://github.com/JayPokale/Chisle/security/policy
+    about: Report privately. Never open a public issue for a vulnerability.
