@@ -95,6 +95,7 @@
     ".kiro/",
     ".github/copilot-instructions.md",
     ".claude-plugin/",
+    ".opencode/",
     "README.md",
     "LICENSE"
   ],

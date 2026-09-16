@@ -375,6 +375,12 @@ test('opencode install appends fenced ruleset, preserves user content, copies sk
     assert.equal(fs.readFileSync(path.join(skills, s, 'SKILL.md'), 'utf8'), repoSkill(s + '/SKILL.md'), s + ' not verbatim');
   }
 
+  // Compression plugin + its zero-dep core land in plugins/.
+  const plugins = path.join(home, '.config', 'opencode', 'plugins');
+  assert.ok(fs.existsSync(path.join(plugins, 'chisle.js')), 'plugin not installed');
+  assert.ok(fs.existsSync(path.join(plugins, 'chisle-hooks', 'chisle-compress-output.js')), 'compressor core not installed');
+  assert.ok(fs.existsSync(path.join(plugins, 'chisle-hooks', 'chisle-config.js')), 'config core not installed');
+
   // Second run: ruleset skipped, never duplicated; skills refreshed.
   const r2 = runCLI(['--only', 'opencode'], { env });
   assert.match(r2.out, /already contains chisle ruleset/);
@@ -399,6 +405,8 @@ test('opencode install appends fenced ruleset, preserves user content, copies sk
   assert.doesNotMatch(after, /chisle-begin/);
   assert.ok(!fs.existsSync(path.join(skills, 'chisle')), 'owned skill left behind');
   assert.equal(fs.readFileSync(path.join(skills, 'foreign', 'SKILL.md'), 'utf8'), 'not ours', 'foreign skill touched');
+  assert.ok(!fs.existsSync(path.join(plugins, 'chisle.js')), 'plugin left behind');
+  assert.ok(!fs.existsSync(path.join(plugins, 'chisle-hooks')), 'plugin core left behind');
 
   fs.rmSync(home, { recursive: true, force: true });
 });

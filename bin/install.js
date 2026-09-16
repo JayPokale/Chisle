@@ -503,16 +503,41 @@ function installCodex(ctx) {
 // ~/.config/opencode/skills for on-demand loading via the native skill tool
 // (the global skills dir is scanned by default, so skills.paths needs no
 // edit and no second system message is added).
+// Copies the OpenCode compression plugin and the shared compressor core it
+// requires into ~/.config/opencode/plugins/. OpenCode auto-discovers any *.js
+// or *.ts file in that dir at startup (not *.mjs), and its config dir is
+// type:module, so the ESM source ships as chisle.js. The core is plain zero-dep
+// CommonJS, so no package.json is needed. Returns the number of files written.
+// Never called on a dry run (installOpencode returns early), so no dry-run branch.
+function copyOpencodePlugin() {
+  const pluginDir = path.join(homeDir(), '.config', 'opencode', 'plugins');
+  const hooksDir = path.join(pluginDir, 'chisle-hooks');
+  const files = [
+    ['.opencode/plugins/chisle.mjs', path.join(pluginDir, 'chisle.js')],
+    ['hooks/chisle-compress-output.js', path.join(hooksDir, 'chisle-compress-output.js')],
+    ['hooks/chisle-config.js', path.join(hooksDir, 'chisle-config.js')],
+  ];
+  fs.mkdirSync(hooksDir, { recursive: true });
+  var n = 0;
+  for (var i = 0; i < files.length; i++) {
+    fs.copyFileSync(path.join(REPO_ROOT, files[i][0]), files[i][1]);
+    n++;
+  }
+  return n;
+}
+
 function installOpencode(ctx) {
   const { say, note, opts, results } = ctx;
   results.detected++;
   say('\u2192 OpenCode detected');
   const target = path.join(homeDir(), '.config', 'opencode', 'AGENTS.md');
   const skillsDst = path.join(homeDir(), '.config', 'opencode', 'skills');
+  const pluginDst = path.join(homeDir(), '.config', 'opencode', 'plugins');
 
   if (opts.dryRun) {
     note('  would write chisle ruleset to ' + target);
     note('  would copy skills to ' + skillsDst);
+    note('  would copy compression plugin to ' + pluginDst);
     results.installed.push('opencode');
     process.stdout.write('\n');
     return;
@@ -522,8 +547,10 @@ function installOpencode(ctx) {
     const st = writeFencedRuleset(target, opts, note);
     const n = copySkills(skillsDst, opts);
     process.stdout.write('  installed: ' + n + ' skill file(s) to ' + skillsDst + '\n');
+    const p = copyOpencodePlugin();
+    process.stdout.write('  installed: ' + p + ' plugin file(s) to ' + pluginDst + '\n');
     if (st === 'installed') results.installed.push('opencode');
-    else results.skipped.push(['opencode', 'ruleset already present; skills refreshed']);
+    else results.skipped.push(['opencode', 'ruleset already present; skills + plugin refreshed']);
   } catch (e) { results.failed.push(['opencode', (e && e.message) || 'write failed']); }
   process.stdout.write('\n');
 }
@@ -660,6 +687,16 @@ function uninstall(ctx) {
     const ocSkills = path.join(homeDir(), '.config', 'opencode', 'skills');
     const ocGone = opts.dryRun ? ownedSkillNames().filter(function (nm) { return fs.existsSync(path.join(ocSkills, nm)); }).length : pruneSkills(ocSkills);
     if (ocGone > 0) { note('  removed ' + ocGone + ' chisle skill dir(s) from ' + ocSkills); touched++; }
+
+    const ocPlugins = path.join(homeDir(), '.config', 'opencode', 'plugins');
+    for (const rel of ['chisle.js', 'chisle-hooks']) {
+      const dst = path.join(ocPlugins, rel);
+      if (fs.existsSync(dst)) { if (!opts.dryRun) fs.rmSync(dst, { recursive: true, force: true }); note('  removed ' + dst); touched++; }
+    }
+    for (const f of ['chisle-spill', '.chisle-compress-stats.json', '.chisle-compress-last.json']) {
+      const p = path.join(homeDir(), '.config', 'opencode', f);
+      if (fs.existsSync(p)) { if (!opts.dryRun) fs.rmSync(p, { recursive: true, force: true }); note('  removed ' + p); touched++; }
+    }
   }
 
   if (wants('hermes')) {

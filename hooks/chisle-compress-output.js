@@ -55,7 +55,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { getClaudeDir, getCopilotDir, readFlag } = require('./chisle-config');
+const { getClaudeDir, getCopilotDir, getOpencodeDir, readFlag } = require('./chisle-config');
 
 // One threshold. Env overrides all.
 // These are the values the old 'full' level used — the default,
@@ -92,6 +92,51 @@ function copilotToolAllowed(name) {
     ? process.env.CHISLE_COMPRESS_TOOLS.split(',').map(s => s.trim()).filter(Boolean)
     : SAFE_TOOLS_COPILOT;
   return list.includes(name);
+}
+
+// OpenCode runtime tool names are lowercase (bash, grep, glob, webfetch, ...)
+// and MCP tools are `server_tool` (an underscore), not Claude's mcp__ prefix.
+// read/edit/write/patch are excluded on purpose: their output feeds exact-match
+// edits, exactly as SAFE_TOOLS omits Read/Edit/Write.
+const SAFE_TOOLS_OPENCODE = ['bash', 'grep', 'glob', 'webfetch', 'websearch', 'task', 'list'];
+const UNSAFE_TOOLS_OPENCODE = ['read', 'edit', 'write', 'patch', 'todowrite', 'todoread'];
+
+function opencodeToolAllowed(name) {
+  if (!name || typeof name !== 'string') return false;
+  const lower = name.toLowerCase();
+  // read/edit/write/patch are never compressed, even via CHISLE_COMPRESS_TOOLS:
+  // their output feeds exact-match edits (the invariant INSTALL.md promises).
+  if (UNSAFE_TOOLS_OPENCODE.includes(lower)) return false;
+  if (process.env.CHISLE_COMPRESS_TOOLS) {
+    return process.env.CHISLE_COMPRESS_TOOLS
+      .split(',').map(s => s.trim()).filter(Boolean).includes(name);
+  }
+  if (SAFE_TOOLS_OPENCODE.includes(lower)) return true;
+  // ponytail: underscore = MCP `server_tool`, treated as read-only info tool
+  // like SAFE_TOOLS' mcp__ clause. Set CHISLE_COMPRESS_TOOLS to override if a
+  // custom underscore-named tool ever needs protecting.
+  return name.includes('_');
+}
+
+// One OpenCode tool_result → replacement string, or null to keep the original.
+// The plugin passes output.output (already a plain string), so no extractText/
+// rebuild dance is needed — just gate on mode/kill-switch/allowlist and reuse
+// the shared scrub+elide core. stateDir keeps spill/recovery beside OpenCode's
+// config (CHISLE_STATE_DIR overrides, used by tests).
+//
+// Fires for the common case: outputs under OpenCode's own on-disk store limits
+// (~50 KB / 2000 lines) arrive here FULL, both in tool.execute.after (whose
+// mutation persists to the tool part's state.output) and again, request-time,
+// in experimental.chat.messages.transform. Larger outputs arrive as OpenCode's
+// notice plus a retained tail; the tail still compresses here.
+function compressForOpencode(toolName, text, opts) {
+  opts = opts || {};
+  if (opts.mode === 'off') return null;
+  if (process.env.CHISLE_COMPRESS === '0') return null;
+  if (!opencodeToolAllowed(toolName)) return null;
+  if (typeof text !== 'string' || !text) return null;
+  const stateDir = opts.stateDir || process.env.CHISLE_STATE_DIR || getOpencodeDir();
+  return transform(text, limitsFor(), toolName, stateDir);
 }
 
 // Copilot CLI's postToolUse payload is flat and camelCase:
@@ -453,4 +498,7 @@ module.exports = {
   duplicateMarker, THRESHOLDS, SAFE_TOOLS,
   // Copilot-specific additions (see PR description for rationale):
   isCopilotPayload, copilotToolAllowed, SAFE_TOOLS_COPILOT,
+  // OpenCode-specific additions (plugin uses tool.execute.after +
+  // experimental.chat.messages.transform):
+  opencodeToolAllowed, compressForOpencode, SAFE_TOOLS_OPENCODE,
 };
