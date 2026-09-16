@@ -236,3 +236,40 @@ test('tool.execute.after skips output that already carries a chisle marker', asy
   await after({ tool: 'bash', callID: 'c' }, out);
   assert.equal(out.output, already);
 });
+
+// ── installed layout: CJS core under a type:module config dir ───────────────
+// OpenCode's config dir declares "type": "module". Node applies that to every
+// .js file beneath it, so without an explicit pin the CommonJS compressor core
+// is parsed as ESM and throws ReferenceError on its first `require` — which
+// loadFrom rethrows, taking the whole plugin down. Bun tolerates it; Node does
+// not. This asserts the installed layout survives the strict runtime.
+test('installed plugin still compresses when the config dir is type:module', async () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-mod-'));
+  try {
+    const { spawnSync } = require('child_process');
+    const cli = path.join(__dirname, '..', 'bin', 'install.js');
+    const r = spawnSync(process.execPath, [cli, '--only', 'opencode'], {
+      encoding: 'utf8',
+      env: Object.assign({}, process.env, { HOME: home, USERPROFILE: home }),
+    });
+    assert.equal(r.status, 0, r.stderr);
+
+    const oc = path.join(home, '.config', 'opencode');
+    fs.writeFileSync(path.join(oc, 'package.json'), '{ "type": "module" }\n');
+
+    const probe = `
+      const big = Array.from({length:500},(_,i)=>'line '+i+' '+'x'.repeat(80)).join('\\n');
+      import(${JSON.stringify('file://' + path.join(oc, 'plugins', 'chisle.js'))})
+        .then(async (m) => {
+          const hooks = await m.default({});
+          const out = { output: big };
+          await hooks['tool.execute.after']({ tool: 'bash' }, out);
+          process.stdout.write(out.output.length < big.length ? 'COMPRESSED' : 'NOOP');
+        });
+    `;
+    const p = spawnSync(process.execPath, ['--input-type=module', '-e', probe], { encoding: 'utf8' });
+    assert.equal(p.stdout, 'COMPRESSED', 'core failed to load under type:module: ' + p.stderr);
+  } finally {
+    fs.rmSync(home, { recursive: true, force: true });
+  }
+});

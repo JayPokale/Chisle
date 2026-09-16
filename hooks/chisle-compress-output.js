@@ -112,7 +112,7 @@ function opencodeToolAllowed(name) {
       .split(',').map(s => s.trim()).filter(Boolean).includes(name);
   }
   if (SAFE_TOOLS_OPENCODE.includes(lower)) return true;
-  // ponytail: underscore = MCP `server_tool`, treated as read-only info tool
+  // Heuristic: underscore = MCP `server_tool`, treated as read-only info tool
   // like SAFE_TOOLS' mcp__ clause. Set CHISLE_COMPRESS_TOOLS to override if a
   // custom underscore-named tool ever needs protecting.
   return name.includes('_');

@@ -80,7 +80,8 @@ loads twice. Invoke with `/chisle` or let the ruleset apply automatically.
 
 It also installs the tool-output compression plugin into
 `~/.config/opencode/plugins/` (`chisle.js` plus its zero-dep compressor core in
-`chisle-hooks/`). OpenCode loads it at startup. It hooks `tool.execute.after`
+`chisle-hooks/`, pinned to CommonJS so the config dir's `type: module` does not
+propagate into it). OpenCode loads it at startup. It hooks `tool.execute.after`
 (mutating `output.output`, which persists onto the stored tool part) and
 `experimental.chat.messages.transform` (a request-time safety net over
 completed tool parts), eliding oversized read-only tool output (bash, grep,

@@ -87,8 +87,9 @@ export default async () => {
     // normalization and BEFORE OpenCode converts parts to model messages
     // (and before compaction summarization), so it re-applies compression to
     // any full output that reached the model store uncompressed — e.g. parts
-    // recorded before this plugin was installed. Cheap and in-memory: it never
-    // touches disk and skips parts already carrying our marker.
+    // recorded before this plugin was installed. Skips parts already carrying
+    // our marker, so each part is compressed at most once; the elided original
+    // still spills to disk exactly as it does on the tool.execute.after path.
     'experimental.chat.messages.transform': async (_input, output) => {
       try {
         if (!compressForOpencode) return;

@@ -506,9 +506,15 @@ function installCodex(ctx) {
 // Copies the OpenCode compression plugin and the shared compressor core it
 // requires into ~/.config/opencode/plugins/. OpenCode auto-discovers any *.js
 // or *.ts file in that dir at startup (not *.mjs), and its config dir is
-// type:module, so the ESM source ships as chisle.js. The core is plain zero-dep
-// CommonJS, so no package.json is needed. Returns the number of files written.
-// Never called on a dry run (installOpencode returns early), so no dry-run branch.
+// type:module, so the ESM source ships as chisle.js. Returns the number of
+// files written. Never called on a dry run (installOpencode returns early),
+// so no dry-run branch.
+//
+// chisle-hooks/package.json pins the core as CommonJS. Without it the config
+// dir's own "type": "module" propagates down to these .js files, and the core
+// dies on its first `require` with a ReferenceError that takes the whole
+// plugin with it (loadFrom only swallows MODULE_NOT_FOUND). Bun is lenient
+// enough not to care; Node is not, so pin it rather than rely on the runtime.
 function copyOpencodePlugin() {
   const pluginDir = path.join(homeDir(), '.config', 'opencode', 'plugins');
   const hooksDir = path.join(pluginDir, 'chisle-hooks');
@@ -523,6 +529,8 @@ function copyOpencodePlugin() {
     fs.copyFileSync(path.join(REPO_ROOT, files[i][0]), files[i][1]);
     n++;
   }
+  fs.writeFileSync(path.join(hooksDir, 'package.json'), '{ "type": "commonjs" }\n');
+  n++;
   return n;
 }
 

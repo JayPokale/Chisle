@@ -380,6 +380,11 @@ test('opencode install appends fenced ruleset, preserves user content, copies sk
   assert.ok(fs.existsSync(path.join(plugins, 'chisle.js')), 'plugin not installed');
   assert.ok(fs.existsSync(path.join(plugins, 'chisle-hooks', 'chisle-compress-output.js')), 'compressor core not installed');
   assert.ok(fs.existsSync(path.join(plugins, 'chisle-hooks', 'chisle-config.js')), 'config core not installed');
+  // The CJS core must stay CJS even though OpenCode's config dir is type:module,
+  // which would otherwise propagate down and kill it on its first `require`.
+  assert.equal(
+    JSON.parse(fs.readFileSync(path.join(plugins, 'chisle-hooks', 'package.json'), 'utf8')).type,
+    'commonjs', 'compressor core not pinned to commonjs');
 
   // Second run: ruleset skipped, never duplicated; skills refreshed.
   const r2 = runCLI(['--only', 'opencode'], { env });
