@@ -22,6 +22,8 @@ jobs:
         run: node scripts/build-rules.js --check
       - name: Verify benchmark chart is in sync
         run: node scripts/build-chart.js --check
+      - name: Verify README samples are in sync
+        run: node scripts/build-samples.js --check
       - name: Lint shell scripts
         run: bash -n hooks/chisle-statusline.sh && bash -n install.sh
       - name: Installer smoke test

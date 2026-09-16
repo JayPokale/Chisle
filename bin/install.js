@@ -161,6 +161,14 @@ function run(cmd, args, dry) {
   process.stdout.write(`  $ ${cmd} ${args.join(' ')}\n`);
   return spawnX(cmd, args, { stdio: 'inherit' });
 }
+
+// spawnSync reports a missing binary as { status: null, error: ENOENT } and a
+// signal death as { status: null, signal }. `(r.status || 0) === 0` reads both
+// as success, so a machine without the CLI was told the install succeeded.
+// Only an explicit exit code of 0 counts.
+function ranOk(r) {
+  return !!r && !r.error && r.status === 0;
+}
 function capture(cmd, args) {
   try { return spawnX(cmd, args, { encoding: 'utf8' }); } catch (_) { return { status: 1, stdout: '', stderr: '' }; }
 }
@@ -248,7 +256,7 @@ function installClaude(ctx) {
     } else {
       const r1 = run('claude', ['plugin', 'marketplace', 'add', REPO], opts.dryRun);
       const r2 = run('claude', ['plugin', 'install', 'chisle@chisle'], opts.dryRun);
-      if ((r1.status || 0) === 0 && (r2.status || 0) === 0) { results.installed.push('claude'); pluginOK = true; }
+      if (ranOk(r1) && ranOk(r2)) { results.installed.push('claude'); pluginOK = true; }
       else warn('  claude plugin install failed, falling back to standalone hooks');
     }
   } else {
@@ -360,7 +368,7 @@ function installPi(ctx) {
     }
   }
   const r = run('pi', ['install', 'npm:chisle'], opts.dryRun);
-  if ((r.status || 0) === 0) results.installed.push('pi');
+  if (ranOk(r)) results.installed.push('pi');
   else results.failed.push(['pi', 'pi package install failed']);
   process.stdout.write('\n');
 }
@@ -378,7 +386,7 @@ function installGemini(ctx) {
     }
   }
   const r = run('gemini', ['extensions', 'install', `https://github.com/${REPO}`], opts.dryRun);
-  if ((r.status || 0) === 0) results.installed.push('gemini');
+  if (ranOk(r)) results.installed.push('gemini');
   else results.failed.push(['gemini', 'gemini extensions install failed']);
   process.stdout.write('\n');
 }
@@ -661,7 +669,7 @@ function uninstall(ctx) {
   if (wants('pi') && hasCmd('pi')) {
     const sources = piSources(capture('pi', ['list']).stdout);
     for (const source of sources) {
-      if ((run('pi', ['remove', source], opts.dryRun).status || 0) === 0) touched++;
+      if (ranOk(run('pi', ['remove', source], opts.dryRun))) touched++;
     }
   }
 

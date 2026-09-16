@@ -484,3 +484,42 @@ test('codex fenced install still works via shared helper (refactor guard)', () =
 
   fs.rmSync(home, { recursive: true, force: true });
 });
+
+// A shell-out install whose CLI is missing must be reported as a failure, not a
+// success. spawnSync returns { status: null, error: ENOENT } for a missing
+// binary, and the old `(r.status || 0) === 0` check read that null as 0 — so a
+// machine without `gemini`/`pi` was told the install had succeeded, and the
+// process still exited 0. Guard both the message and the exit code.
+test('shell-out install with the CLI absent reports failure, not success', () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-absent-'));
+  // A PATH with nothing on it: every `gemini`/`pi` lookup resolves to ENOENT.
+  const emptyBin = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-nopath-'));
+  try {
+    for (const agent of ['gemini', 'pi']) {
+      const r = runCLI(['--only', agent, '--force'], {
+        env: { HOME: home, USERPROFILE: home, PATH: emptyBin },
+      });
+      assert.match(r.out, new RegExp('failed:\\s+' + agent),
+        `${agent}: expected a failure line, got:\n${r.out}`);
+      assert.doesNotMatch(r.out, new RegExp('installed:\\s+' + agent),
+        `${agent}: reported success despite a missing CLI`);
+      assert.equal(r.status, 1, `${agent}: expected exit 1 on failure`);
+    }
+  } finally {
+    fs.rmSync(home, { recursive: true, force: true });
+    fs.rmSync(emptyBin, { recursive: true, force: true });
+  }
+});
+
+// --dry-run must keep reporting success: nothing is executed, so there is no
+// exit status to judge, and run() short-circuits to { status: 0 }.
+test('--dry-run still reports success for shell-out agents', () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-dry-'));
+  try {
+    const r = runCLI(['--only', 'gemini', '--dry-run'], { env: { HOME: home, USERPROFILE: home } });
+    assert.match(r.out, /installed:\s+gemini/);
+    assert.equal(r.status, 0);
+  } finally {
+    fs.rmSync(home, { recursive: true, force: true });
+  }
+});
