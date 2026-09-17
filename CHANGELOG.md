@@ -5,7 +5,11 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [3.4.0] - 2026-09-17
+
 ### Added
+- **GitHub Copilot CLI tool-output compression.** The `postToolUse` hook now recognises Copilot CLI's flat camelCase payload (`toolName` + `toolResult.textResultForLlm`) and replies with `modifiedResult`, reusing the same scrub -> dedup -> elide core as every other agent. Copilot state (dedup/spill/stats) lives under `~/.copilot` via a new `getCopilotDir()`, never `~/.claude`. Copilot's `view`/`create`/`edit` are excluded for the same reason `Read`/`Edit`/`Write` are. Detection is structural, so the Claude/Pi path is untouched. Thanks [@ishaksar](https://github.com/ishaksar) ([#11](https://github.com/JayPokale/Chisle/pull/11)).
+  - Installer wiring for Copilot hooks is deliberately not included yet; the compression core is in place but Copilot is not yet advertised as having the input axis.
 - **OpenCode tool-output compression.** `npx chisle --only opencode` now also installs a native OpenCode plugin (`~/.config/opencode/plugins/chisle.js` + the zero-dep compressor core in `chisle-hooks/`). It elides oversized read-only tool output (bash, grep, glob, webfetch, MCP `server_tool` results) via two hooks, reusing the exact scrub+elide core the Claude/Pi hook uses; `read`/`edit`/`write` stay untouched (even under `CHISLE_COMPRESS_TOOLS`).
   - `tool.execute.after` rewrites `output.output` in place. For outputs under OpenCode's on-disk store limits (~50 KB / 2000 lines) the mutation persists onto the tool part's `state.output`, so every later turn reuses the compressed form.
   - `experimental.chat.messages.transform` re-applies compression over completed tool parts just before parts become model messages — a request-time safety net for full output the store still holds (e.g. recorded before install). Idempotent: parts already carrying the `[chisle:` marker are skipped.
@@ -14,6 +18,19 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 - **OpenCode support.** `npx chisle --only opencode` appends the fenced Chisle ruleset to the global `~/.config/opencode/AGENTS.md` (existing instructions preserved, refresh only under `--force`/`--update`) and copies the bundled skills into `~/.config/opencode/skills/` for on-demand loading via the native `skill` tool. No `instructions` entry, no second system message. Uninstall removes only the fenced block and the `chisle*` skill dirs.
 - **Hermes Agent support.** `npx chisle --only hermes` copies the bundled skills verbatim into `~/.hermes/skills/` (Agent Skills standard, `/chisle` commands). No ruleset injection, no config rewrite. Portable via `CHISLE_HOME`; uninstall prunes only owned skill dirs.
 - Shared `writeFencedRuleset` helper: Codex and OpenCode now share one append/refresh path (behavior unchanged, covered by a refactor-guard test).
+
+### Fixed
+- **`CHISLE_COMPRESS_TOOLS` could defeat the `Read`/`Edit`/`Write` exclusion.** The override replaces the allowlist, and on the Claude and Copilot paths it was consulted *before* any exclusion check — so `CHISLE_COMPRESS_TOOLS=Read` genuinely re-enabled compression of `Read` output. That output feeds `Edit`'s `old_string` matching, so eliding it can make the model edit text it never saw. The Pi extension (`NEVER_COMPRESS`) and the OpenCode path (`UNSAFE_TOOLS_OPENCODE`) always checked first; all four paths now do. The exclusion is a correctness guarantee, not a default.
+- **A failed install reported success.** `spawnSync` returns `{ status: null, error: ENOENT }` when the target CLI is not on `PATH` (and `{ status: null, signal }` on a signal death), and the `(r.status || 0) === 0` check read that `null` as `0`. On a machine without `gemini` or `pi`, `npx chisle` printed `installed: gemini` and exited `0` while installing nothing. Four call sites shared the pattern; all now require an explicit zero exit. `--dry-run` still reports success.
+- **The OpenCode compressor core could fail to load.** OpenCode's config dir declares `"type": "module"`, which Node applies to every `.js` beneath it — including the CommonJS core copied to `plugins/chisle-hooks/`. It then threw `ReferenceError` on its first `require`, taking the plugin with it. The installer now writes `chisle-hooks/package.json` pinning `"type": "commonjs"`. Bun tolerated this; Node did not.
+- **A compressed Copilot tool result was always labelled `success`.** The reply builder hard-coded `resultType: 'success'`, so compressing the output of a call that errored relabelled it. It now echoes back the `resultType` it was given.
+
+### Changed
+- **Benchmarks publish their results.** `benchmarks/README.md`, `quality/README.md` and `agentic/README.md` described how to run each suite but printed no numbers. All three now carry result tables regenerated from the committed raw data by the deterministic graders — including both null results (Fisher p = 1.000 on correctness and on the agentic suite) and the agentic cost regression ($0.0276 vs $0.0269).
+- `benchmarks/quality/README.md` claimed 20 maths and 12 coding items; the real counts are 32 and 20. The table predated the `hard` tier and only ever counted `base`.
+- `SECURITY.md` declared Chisle "pre-1.0" and listed `0.x` as the supported line, several majors out of date.
+- Support routing: `SUPPORT.md` is now a routing table and `.github/ISSUE_TEMPLATE/config.yml` points questions at GitHub Discussions Q&A rather than the issue tracker.
+- CI runs `scripts/build-samples.js --check` alongside the rule and chart checks, in both the test and publish workflows.
 
 ## [3.3.0] - 2026-09-13
 

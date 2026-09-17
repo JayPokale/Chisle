@@ -66,12 +66,23 @@ const THRESHOLDS = { maxChars: 8000, headLines: 60, tailLines: 40 };
 // their output feeds exact-match edits. mcp__* are read-only info tools.
 const SAFE_TOOLS = ['Bash', 'Agent', 'WebFetch', 'WebSearch', 'Grep', 'Glob'];
 
+// The correctness invariant, enforced rather than merely defaulted: these tools'
+// output feeds later exact-match edits, so eliding it makes the model edit text
+// it never saw. CHISLE_COMPRESS_TOOLS is an override for the *allowlist*, not a
+// way to switch this off — the Pi extension (NEVER_COMPRESS) and the OpenCode
+// path (UNSAFE_TOOLS_OPENCODE) have always checked it first, and this is the
+// same guard for the Claude/Pi hook payloads.
+const NEVER_COMPRESS = ['read', 'edit', 'write', 'multiedit', 'notebookedit', 'notebookread'];
+
 // Copilot CLI's own runtime tool names (lowercase, no mcp__ prefix scheme).
 // Same allowlist rule as SAFE_TOOLS: Copilot's Read/Edit/Write equivalents
 // are `view`/`create`/`edit` and are deliberately absent here too. Verified
 // against Copilot CLI's real tool set, not guessed — see the accompanying PR
 // description for the live-verification evidence (Beyin chisle-port project).
 const SAFE_TOOLS_COPILOT = ['bash', 'powershell', 'grep', 'glob', 'web_fetch', 'web_search', 'task'];
+// Copilot's Read/Edit/Write family, hard-blocked for the same reason as
+// NEVER_COMPRESS above — not merely absent from the allowlist.
+const NEVER_COMPRESS_COPILOT = ['view', 'create', 'edit', 'str_replace', 'insert'];
 
 const SALVAGE_RE = /\b(error|err!|fail(ed|ure|ing)?|exception|traceback|panic|fatal|denied|refused|timed?[ _-]?out|assert(ion)?|segfault|npe|undefined reference|cannot find|not found|warning)\b/i;
 const MAX_SALVAGED = 12;      // error lines rescued from the elided middle
@@ -79,6 +90,7 @@ const MAX_SALVAGE_LINE = 300; // per-line char cap on salvaged lines
 
 function toolAllowed(name) {
   if (!name || typeof name !== 'string') return false;
+  if (NEVER_COMPRESS.includes(name.toLowerCase())) return false;
   const list = process.env.CHISLE_COMPRESS_TOOLS
     ? process.env.CHISLE_COMPRESS_TOOLS.split(',').map(s => s.trim()).filter(Boolean)
     : SAFE_TOOLS;
@@ -88,6 +100,7 @@ function toolAllowed(name) {
 // Same override semantics as toolAllowed, against Copilot's tool-name scheme.
 function copilotToolAllowed(name) {
   if (!name || typeof name !== 'string') return false;
+  if (NEVER_COMPRESS_COPILOT.includes(name.toLowerCase())) return false;
   const list = process.env.CHISLE_COMPRESS_TOOLS
     ? process.env.CHISLE_COMPRESS_TOOLS.split(',').map(s => s.trim()).filter(Boolean)
     : SAFE_TOOLS_COPILOT;
@@ -495,9 +508,9 @@ if (require.main === module) main();
 
 module.exports = {
   extractText, rebuildResponse, scrub, compress, transform, limitsFor, toolAllowed, processPayload,
-  duplicateMarker, THRESHOLDS, SAFE_TOOLS,
+  duplicateMarker, THRESHOLDS, SAFE_TOOLS, NEVER_COMPRESS,
   // Copilot-specific additions (see PR description for rationale):
-  isCopilotPayload, copilotToolAllowed, SAFE_TOOLS_COPILOT,
+  isCopilotPayload, copilotToolAllowed, SAFE_TOOLS_COPILOT, NEVER_COMPRESS_COPILOT,
   // OpenCode-specific additions (plugin uses tool.execute.after +
   // experimental.chat.messages.transform):
   opencodeToolAllowed, compressForOpencode, SAFE_TOOLS_OPENCODE,

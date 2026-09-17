@@ -27,6 +27,7 @@ jobs:
       - run: node --test tests/*.js
       - run: node scripts/build-rules.js --check
       - run: node scripts/build-chart.js --check
+      - run: node scripts/build-samples.js --check
 
   publish:
     needs: test

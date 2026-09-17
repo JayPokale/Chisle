@@ -195,3 +195,31 @@ test('main(): a failed tool call keeps its resultType through compression', () =
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+// Same invariant as the Claude path: the allowlist override must not be able to
+// re-enable Copilot's Read/Edit/Write equivalents. Their output feeds
+// exact-match edits.
+test('Copilot: CHISLE_COMPRESS_TOOLS cannot re-enable view/create/edit', () => {
+  const saved = process.env.CHISLE_COMPRESS_TOOLS;
+  process.env.CHISLE_COMPRESS_TOOLS = 'bash,view,create,edit,str_replace';
+  try {
+    for (const t of ['view', 'create', 'edit', 'str_replace']) {
+      assert.equal(copilotToolAllowed(t), false, `${t} must stay excluded`);
+    }
+    assert.equal(copilotToolAllowed('bash'), true, 'the override itself must still work');
+  } finally {
+    if (saved !== undefined) process.env.CHISLE_COMPRESS_TOOLS = saved;
+    else delete process.env.CHISLE_COMPRESS_TOOLS;
+  }
+});
+
+test('Copilot: processPayload never compresses a view payload, override or not', () => {
+  const saved = process.env.CHISLE_COMPRESS_TOOLS;
+  process.env.CHISLE_COMPRESS_TOOLS = 'view';
+  try {
+    assert.equal(processPayload(copilotPayload({ toolName: 'view' }), 'on'), null);
+  } finally {
+    if (saved !== undefined) process.env.CHISLE_COMPRESS_TOOLS = saved;
+    else delete process.env.CHISLE_COMPRESS_TOOLS;
+  }
+});

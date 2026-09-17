@@ -335,3 +335,39 @@ test('a broken spill target still compresses', () => {
     assert.doesNotMatch(out, /Full output:/);
   });
 });
+
+// CHISLE_COMPRESS_TOOLS overrides the allowlist; it must not be able to switch
+// off the Read/Edit/Write exclusion. That exclusion is the one thing standing
+// between the compressor and a corrupted edit: Read output feeds Edit's
+// old_string, so eliding it makes the model edit text it never saw. The Pi
+// extension (NEVER_COMPRESS) and the OpenCode path (UNSAFE_TOOLS_OPENCODE)
+// always enforced this; the Claude and Copilot paths used to let the env var
+// through.
+test('CHISLE_COMPRESS_TOOLS cannot re-enable Read/Edit/Write (Claude)', () => {
+  const saved = process.env.CHISLE_COMPRESS_TOOLS;
+  process.env.CHISLE_COMPRESS_TOOLS = 'Bash,Read,Edit,Write,NotebookEdit';
+  try {
+    for (const t of ['Read', 'Edit', 'Write', 'NotebookEdit']) {
+      assert.equal(toolAllowed(t), false, `${t} must stay excluded`);
+    }
+    assert.equal(toolAllowed('Bash'), true, 'the override itself must still work');
+  } finally {
+    if (saved !== undefined) process.env.CHISLE_COMPRESS_TOOLS = saved;
+    else delete process.env.CHISLE_COMPRESS_TOOLS;
+  }
+});
+
+test('the exclusion is case-insensitive and survives an empty override', () => {
+  const saved = process.env.CHISLE_COMPRESS_TOOLS;
+  try {
+    delete process.env.CHISLE_COMPRESS_TOOLS;
+    for (const t of ['read', 'READ', 'ReAd', 'write', 'edit']) {
+      assert.equal(toolAllowed(t), false, `${t} must stay excluded`);
+    }
+    // defaults still intact
+    assert.equal(toolAllowed('Bash'), true);
+    assert.equal(toolAllowed('mcp__server__tool'), true);
+  } finally {
+    if (saved !== undefined) process.env.CHISLE_COMPRESS_TOOLS = saved;
+  }
+});

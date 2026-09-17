@@ -175,3 +175,8 @@ CHISLE_COMPRESS_HEAD_LINES=60
 CHISLE_COMPRESS_TAIL_LINES=40
 CHISLE_COMPRESS_TOOLS=bash,grep
 ```
+
+`CHISLE_COMPRESS_TOOLS` replaces the allowlist, but it cannot switch off the
+`read`/`edit`/`write` exclusion — naming them has no effect on any agent. That
+output feeds later exact-match edits, so eliding it would make the model edit
+text it never saw; it is a correctness guarantee, not a default.
