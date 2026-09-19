@@ -159,6 +159,99 @@ function filterSections(content, sections, proseHeadings, codeHeadings) {
   }
 }
 
+// ── Output-style detection ──────────────────────────────────────────────────
+// Claude Code's output-style mechanism also dictates prose structure, so an
+// active style and Chisle's prose section issue contradicting instructions with
+// no precedence between them (#15). `outputStyle` is a documented settings key
+// (schemastore: claude-code-settings.json), and `/output-style` persists the
+// selection to .claude/settings.local.json at the local project level, so the
+// active style IS readable — it just isn't in the SessionStart payload.
+//
+// Kept dependency-free on purpose: this file is copied standalone into
+// ~/.config/opencode/plugins/chisle-hooks/, so it must not require anything
+// outside itself.
+
+// Claude Code parses settings.json with strict JSON, but users do leave
+// comments in it. Tolerate that rather than silently reading no style.
+function parseJsonLoose(raw) {
+  try { return JSON.parse(raw.replace(/^\uFEFF/, '')); } catch (e) {}
+  try {
+    const stripped = raw
+      .replace(/^\uFEFF/, '')
+      .replace(/"(?:[^"\\]|\\.)*"|\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,
+        (m) => (m[0] === '"' ? m : ' '));
+    return JSON.parse(stripped);
+  } catch (e) { return null; }
+}
+
+function readJsonFile(p) {
+  try {
+    const st = fs.lstatSync(p);
+    if (st.isSymbolicLink() || !st.isFile()) return null;
+    return parseJsonLoose(fs.readFileSync(p, 'utf8'));
+  } catch (e) { return null; }
+}
+
+// Claude Code's own precedence, most specific first. A style set for this
+// project must beat a different one set globally.
+function outputStyleSources(opts) {
+  const o = opts || {};
+  const cwd = o.cwd || process.cwd();
+  const claudeDir = o.claudeDir || getClaudeDir();
+  return [
+    path.join(cwd, '.claude', 'settings.local.json'),
+    path.join(cwd, '.claude', 'settings.json'),
+    path.join(claudeDir, 'settings.json'),
+  ];
+}
+
+// The active output style, or null when none is. "default" is the built-in
+// no-op style, so it counts as none.
+function getActiveOutputStyle(opts) {
+  try {
+    for (const file of outputStyleSources(opts)) {
+      const json = readJsonFile(file);
+      if (!json || typeof json !== 'object') continue;
+      const style = json.outputStyle;
+      if (typeof style !== 'string') continue;
+      const trimmed = style.trim();
+      if (!trimmed) continue;
+      return trimmed.toLowerCase() === 'default' ? null : trimmed;
+    }
+    return null;
+  } catch (e) { return null; }
+}
+
+// What the user wrote, distinguishing "absent" from "explicitly true". Only an
+// absent value may be overridden by output-style detection.
+function explicitSections() {
+  try {
+    const json = readJsonFile(path.join(getConfigDir(), 'config.json'));
+    const s = json && typeof json === 'object' ? json.sections : null;
+    if (!s || typeof s !== 'object') return {};
+    const out = {};
+    if (typeof s.prose === 'boolean') out.prose = s.prose;
+    if (typeof s.code === 'boolean') out.code = s.code;
+    return out;
+  } catch (e) { return {}; }
+}
+
+// Final prose/code decision for the Claude Code hooks. Explicit config always
+// wins — a user who wrote `sections.prose: true` has said they want the prose
+// rules even alongside a style, and this must not overrule that. Only an unset
+// prose key yields to an active style. `code` is never touched: output styles
+// govern prose structure, not the efficiency ladder.
+//
+// Pi has no output-style mechanism, so pi-extension keeps calling getSections().
+function resolveSections(opts) {
+  const explicit = explicitSections();
+  const base = getSections();
+  if (explicit.prose !== undefined) return { ...base, outputStyle: null };
+  const style = getActiveOutputStyle(opts);
+  if (!style) return { ...base, outputStyle: null };
+  return { prose: false, code: base.code, outputStyle: style };
+}
+
 // Symlink-safe, atomic flag write with 0600 perms.
 // Defends against local attacker replacing predictable path with symlink to clobber other files.
 function safeWriteFlag(flagPath, content) {
@@ -261,4 +354,5 @@ module.exports = {
   LEGACY_MODES, legacySetting, getDefaultMode, getClaudeDir, getCopilotDir, getOpencodeDir,
   VALID_MODES, safeWriteFlag, readFlag,
   PROSE_HEADINGS, CODE_HEADINGS, getSections, filterSections,
+  getActiveOutputStyle, explicitSections, resolveSections,
 };

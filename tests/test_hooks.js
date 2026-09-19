@@ -447,3 +447,115 @@ test('no SKILL.md heading-like line hides inside a fenced code block', () => {
   });
   assert.equal(inFence, false, 'SKILL.md has an unclosed code fence');
 });
+
+// ── Automatic output-style detection (#17) ──────────────────────────────────
+// Claude Code's output styles govern prose structure, so an active style and
+// Chisle's prose section contradict each other (#15). `outputStyle` is a
+// documented settings key and `/output-style` persists it to
+// .claude/settings.local.json, so the active style is readable even though the
+// SessionStart payload does not carry it.
+const { getActiveOutputStyle, resolveSections } = require('../hooks/chisle-config');
+
+function styleFixture() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-style-'));
+  fs.mkdirSync(path.join(root, 'proj', '.claude'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'home', '.claude'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'cfg', 'chisle'), { recursive: true });
+  return {
+    root,
+    cwd: path.join(root, 'proj'),
+    claudeDir: path.join(root, 'home', '.claude'),
+    cfg: path.join(root, 'cfg'),
+    write(rel, obj) {
+      const p = path.join(root, rel);
+      fs.mkdirSync(path.dirname(p), { recursive: true });
+      fs.writeFileSync(p, typeof obj === 'string' ? obj : JSON.stringify(obj));
+    },
+  };
+}
+
+test('getActiveOutputStyle honours Claude Code precedence: local > project > user', () => {
+  const f = styleFixture();
+  try {
+    const at = () => getActiveOutputStyle({ cwd: f.cwd, claudeDir: f.claudeDir });
+    assert.equal(at(), null, 'nothing set');
+    f.write('home/.claude/settings.json', { outputStyle: 'Explanatory' });
+    assert.equal(at(), 'Explanatory');
+    f.write('proj/.claude/settings.json', { outputStyle: 'Learning' });
+    assert.equal(at(), 'Learning', 'project must beat user');
+    f.write('proj/.claude/settings.local.json', { outputStyle: 'concise' });
+    assert.equal(at(), 'concise', 'local must beat project — /output-style writes here');
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test('getActiveOutputStyle treats the built-in "default" as no style', () => {
+  const f = styleFixture();
+  try {
+    for (const v of ['default', 'Default', 'DEFAULT']) {
+      f.write('proj/.claude/settings.local.json', { outputStyle: v });
+      assert.equal(getActiveOutputStyle({ cwd: f.cwd, claudeDir: f.claudeDir }), null, v);
+    }
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test('getActiveOutputStyle falls through junk without throwing', () => {
+  const f = styleFixture();
+  try {
+    const at = () => getActiveOutputStyle({ cwd: f.cwd, claudeDir: f.claudeDir });
+    f.write('home/.claude/settings.json', { outputStyle: 'Explanatory' });
+    for (const junk of ['{ not json', JSON.stringify({ outputStyle: '   ' }),
+                        JSON.stringify({ outputStyle: 42 }), JSON.stringify({ outputStyle: null }),
+                        JSON.stringify([]), '']) {
+      f.write('proj/.claude/settings.local.json', junk);
+      assert.equal(at(), 'Explanatory', `should fall through: ${junk.slice(0, 24)}`);
+    }
+    // JSONC: Claude parses strict JSON but users leave comments in settings.
+    f.write('proj/.claude/settings.local.json', '{ /* mine */ "outputStyle": "Proactive" } ');
+    assert.equal(at(), 'Proactive');
+  } finally { fs.rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test('resolveSections: an active style suppresses prose but never code', () => {
+  const f = styleFixture();
+  const saved = process.env.XDG_CONFIG_HOME;
+  process.env.XDG_CONFIG_HOME = f.cfg;
+  try {
+    const r = () => resolveSections({ cwd: f.cwd, claudeDir: f.claudeDir });
+    assert.deepEqual(r(), { prose: true, code: true, outputStyle: null }, 'no style = untouched');
+    f.write('proj/.claude/settings.local.json', { outputStyle: 'Explanatory' });
+    assert.deepEqual(r(), { prose: false, code: true, outputStyle: 'Explanatory' });
+  } finally {
+    if (saved === undefined) delete process.env.XDG_CONFIG_HOME;
+    else process.env.XDG_CONFIG_HOME = saved;
+    fs.rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+test('resolveSections: an explicit sections.prose always beats detection', () => {
+  const f = styleFixture();
+  const saved = process.env.XDG_CONFIG_HOME;
+  process.env.XDG_CONFIG_HOME = f.cfg;
+  try {
+    f.write('proj/.claude/settings.local.json', { outputStyle: 'Explanatory' });
+    const r = () => resolveSections({ cwd: f.cwd, claudeDir: f.claudeDir });
+
+    // The important one: a user who asked for prose rules keeps them.
+    f.write('cfg/chisle/config.json', { sections: { prose: true } });
+    assert.equal(r().prose, true, 'explicit true must survive an active style');
+
+    f.write('cfg/chisle/config.json', { sections: { prose: false } });
+    assert.equal(r().prose, false);
+
+    // Only `code` set: prose is still unset, so detection applies.
+    f.write('cfg/chisle/config.json', { sections: { code: false } });
+    assert.deepEqual(r(), { prose: false, code: false, outputStyle: 'Explanatory' });
+
+    // Non-boolean is not "explicit" — it falls back and detection applies.
+    f.write('cfg/chisle/config.json', { sections: { prose: 'yes' } });
+    assert.equal(r().prose, false);
+  } finally {
+    if (saved === undefined) delete process.env.XDG_CONFIG_HOME;
+    else process.env.XDG_CONFIG_HOME = saved;
+    fs.rmSync(f.root, { recursive: true, force: true });
+  }
+});

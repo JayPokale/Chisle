@@ -9,7 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getDefaultMode, getClaudeDir, safeWriteFlag, legacySetting, getSections, filterSections } = require('./chisle-config');
+const { getDefaultMode, getClaudeDir, safeWriteFlag, legacySetting, resolveSections, filterSections } = require('./chisle-config');
 
 // ── Update-notice helpers (pure — tested directly) ─────────────────────────
 // Minor/patch releases stay quiet: a nudge per major is signal, more is spam.
@@ -100,7 +100,10 @@ function run(source) {
     );
   } catch (e) {}
 
-  const sections = getSections();
+  // Yields the prose section to an active Claude Code output style, which
+  // governs the same thing and would otherwise contradict it (#15/#17).
+  // An explicit sections.prose in config.json still wins.
+  const sections = resolveSections({ cwd: process.cwd(), claudeDir });
   let output;
 
   if (skillContent) {

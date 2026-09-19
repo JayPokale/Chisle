@@ -448,12 +448,23 @@ export CHISLE_DEFAULT_MODE=off
 
 Resolution: env var → config file → `on`. Valid: `off`, `on`.
 
-**Suppress a rule group.** Claude Code ships a first-class output-style mechanism that also governs
-prose structure, and there's no way today for Chisle to yield its own prose rules to it — an active
-output style and Chisle's prose section give directly conflicting instructions (the style mandates
-tables and bullets for comparisons; Chisle's prose section forbids manufactured tables and bullets
-the question didn't ask for). `sections` in the same config file lets prose rules step aside while
-code rules stay on, or vice versa:
+**Output styles are detected automatically.** Claude Code's output-style mechanism also governs
+prose structure, so an active style and Chisle's prose section give directly conflicting
+instructions — the style mandates tables and bullets for comparisons, Chisle's prose section forbids
+manufactured tables and bullets the question didn't ask for. Chisle now reads the active style and
+steps its prose rules aside on its own. Nothing to configure: run `/output-style Explanatory` and the
+prose section stops shipping; switch back to `default` and it returns.
+
+The code rules, the ladder, the context diet and the compressor are all unaffected — output styles
+govern prose, so only the prose section yields.
+
+Detection reads the `outputStyle` key across Claude Code's own settings precedence
+(`.claude/settings.local.json`, where `/output-style` writes, then `.claude/settings.json`, then
+`~/.claude/settings.json`). Claude Code and Pi only; Pi has no output-style mechanism, so nothing
+changes there.
+
+**Suppress a rule group manually.** The same `sections` key gives explicit control, and it always
+beats detection — set `prose: true` to keep Chisle's prose rules even with a style active:
 
 ```json
 { "sections": { "prose": false } }
@@ -461,7 +472,9 @@ code rules stay on, or vice versa:
 
 `sections.prose: false` suppresses the prose rules; `sections.code: false` suppresses the code
 rules. Config file only, no env override. Anything absent, malformed, or non-boolean falls back to
-enabled — configuring nothing leaves today's behavior byte-identical. The always-on sections
+enabled, which is also what lets automatic detection apply — only an explicitly written boolean
+overrides it. With no style active and nothing configured, the emitted ruleset is byte-identical to
+before either feature existed. The always-on sections
 (Persistence, Thinking Is Billed Too, Auto-Clarity, When NOT to be lazy, Boundaries) ship regardless
 of either setting.
 

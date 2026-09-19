@@ -5,7 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getClaudeDir, safeWriteFlag, readFlag, getSections } = require('./chisle-config');
+const { getClaudeDir, safeWriteFlag, readFlag, resolveSections } = require('./chisle-config');
 const { requestedMode } = require('./chisle-mode');
 
 // Per-turn reinforcement clauses. `Code/commits/security: write normal.` is
@@ -50,7 +50,7 @@ process.stdin.on('end', () => {
       process.stdout.write(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: 'UserPromptSubmit',
-          additionalContext: reinforcementLine(getSections())
+          additionalContext: reinforcementLine(resolveSections({ cwd: process.cwd(), claudeDir }))
         }
       }));
     }
