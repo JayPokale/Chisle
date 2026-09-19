@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s · Chisle",
   },
   description:
-    "Chisle cuts your coding agent's token usage three ways: a terse dev persona, a tool-output compression hook, and context-diet rules. Measured against caveman and ponytail: 52% of a bare model's 20-task bill, 1 backfire in 20. Runs on Claude Code, Pi, and seven more agents.",
+    "Chisle cuts your coding agent's token usage three ways: a terse dev persona, a tool-output compression hook, and context-diet rules. Measured against caveman and ponytail: 52% of a bare model's 20-task bill, 1 backfire in 20. Runs on Claude Code, Pi, OpenCode, and eight more agents.",
   keywords: [
     "claude code plugin",
     "token optimization",

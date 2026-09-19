@@ -460,8 +460,8 @@ govern prose, so only the prose section yields.
 
 Detection reads the `outputStyle` key across Claude Code's own settings precedence
 (`.claude/settings.local.json`, where `/output-style` writes, then `.claude/settings.json`, then
-`~/.claude/settings.json`). Claude Code and Pi only; Pi has no output-style mechanism, so nothing
-changes there.
+`~/.claude/settings.json`). Claude Code only — Pi and OpenCode have no output-style mechanism, so
+there is nothing to detect and nothing changes for them.
 
 **Suppress a rule group manually.** The same `sections` key gives explicit control, and it always
 beats detection — set `prose: true` to keep Chisle's prose rules even with a style active:
@@ -501,7 +501,7 @@ Chisle borrows the best published token-saving techniques and implements the one
 
 ## Multi-agent
 
-Ships to eleven agents: Claude Code and Pi get both axes, live `/chisle` toggling, and a status badge; Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot get the always-on ruleset; OpenCode gets the global fenced ruleset plus on-demand skills; Hermes gets the skills as `/chisle` commands. Per-agent static copies come from `scripts/build-rules.js`; Pi uses its package extension plus the Agent Skills standard. See [`docs/agent-portability.md`](./docs/agent-portability.md).
+Ships to eleven agents: Claude Code and Pi get both axes, live `/chisle` toggling, and a status badge; OpenCode gets both axes too — the global fenced ruleset, on-demand skills, and a native compression plugin — but no live toggle; Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot get the always-on ruleset; Hermes gets the skills as `/chisle` commands. Per-agent static copies come from `scripts/build-rules.js`; Pi uses its package extension plus the Agent Skills standard. See [`docs/agent-portability.md`](./docs/agent-portability.md).
 
 ## FAQ
 

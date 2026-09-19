@@ -18,7 +18,11 @@ const QA = [
   },
   {
     q: "Does it work outside Claude Code?",
-    a: "Pi runs both axes, with live toggling and a savings badge, the same as Claude Code. The ruleset ships to Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot via generated rule files; there the persona is always on and the compressor does not apply.",
+    a: "Eleven agents in total. Pi runs both axes with live toggling and a savings badge, the same as Claude Code. OpenCode runs both axes too, via a native plugin that compresses tool output plus the fenced ruleset and on-demand skills, but has no live toggle. Hermes gets the skills as /chisle commands. The ruleset alone ships to Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot via generated rule files; there the persona is always on and the compressor does not apply.",
+  },
+  {
+    q: "Does it fight with my Claude Code output style?",
+    a: "No, not since 3.5.0. Output styles also govern prose structure, so an active style and Chisle's prose rules used to issue contradicting instructions with no precedence between them. Chisle now reads the active style and steps its prose rules aside on its own, with nothing to configure. The code rules, the ladder, the context diet, and the compressor all keep running. If you want the prose rules even with a style active, set sections.prose to true in ~/.config/chisle/config.json; explicit config always beats detection.",
   },
   {
     q: "How do I turn it off?",
