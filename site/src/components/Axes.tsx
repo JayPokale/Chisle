@@ -17,7 +17,7 @@ const AXES = [
   {
     name: "Output compressor",
     what: "What survives into context",
-    body: "A post-tool hook shrinks tool results before the model reads them: ANSI scrub, head + tail elide with error-line salvage, same-session dedup. Never touches Read, Edit, or Write. Runs on Claude Code and Pi.",
+    body: "A post-tool hook shrinks tool results before the model reads them: ANSI scrub, head + tail elide with error-line salvage, same-session dedup. Never touches Read, Edit, or Write. Runs on Claude Code, Pi, and OpenCode.",
     demo: [
       ["scrub", "strips ANSI escapes, collapses blank runs and `line repeated N×`, losslessly"],
       ["elide", "oversized output → head + tail, error-like lines salvaged from the cut"],
@@ -38,7 +38,7 @@ const AXES = [
 
 const EXTRAS = [
   { name: "Live savings statusline", body: "A ⇣9k tok badge showing chars actually elided. Before v2.0.0 it counted compressions the harness went on to reject. That is fixed, and it now records only what is really applied." },
-  { name: "Works beyond Claude Code", body: "Pi gets both axes plus live toggling. Generated rulesets for Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot ship in the same install." },
+  { name: "Works beyond Claude Code", body: "Pi and OpenCode get both axes; Pi adds live toggling. Hermes gets the skills as /chisle commands. Generated rulesets for Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot ship in the same install." },
   { name: "Tested where it matters", body: "The compressor is where a bug corrupts files, so it's covered by the test suite, with a hard allowlist." },
   { name: "Easy off-switch", body: "\"stop chisle\" for the persona, CHISLE_COMPRESS=0 for the hook, npx chisle --uninstall for everything." },
 ];
