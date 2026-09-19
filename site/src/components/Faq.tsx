@@ -30,7 +30,7 @@ const QA = [
   },
   {
     q: "How do I update it?",
-    a: "npx chisle@latest --update. Plain npx chisle will not upgrade you: every install path skips what is already present, so the run reports success and changes nothing. The @latest pin matters too, since npx can serve a cached copy of the package. Native equivalents work as well: claude plugin update chisle@chisle, or pi install npm:chisle. Cursor, Windsurf, Cline, Kiro, and Copilot keep their rule file in the repo, so update once per project.",
+    a: "npx chisle@latest --update covers every agent you have installed. Plain npx chisle will not upgrade you: every install path skips what is already present, so the run reports success and changes nothing. The @latest pin matters too, since npx can serve a cached copy of the package. Add --only <id> for one agent: claude, pi, gemini, codex, opencode, hermes, cursor, windsurf, cline, kiro, copilot. Native equivalents work as well: claude plugin update chisle@chisle, or pi install npm:chisle. Cursor, Windsurf, Cline, Kiro, and Copilot keep their rule file inside the repo, so cd into the project first — run from your home directory and --update reports \"Nothing to update\" even when the project is set up correctly. Full per-agent table in INSTALL.md.",
   },
 ];
 

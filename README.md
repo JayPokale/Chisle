@@ -153,15 +153,25 @@ That refreshes every agent that already has Chisle and installs it into none tha
 - **Plain `npx chisle` does not upgrade.** Every install path skips what is already present, so an upgrade run reports success and changes nothing. `--update` pairs the refresh with that check.
 - **`@latest` matters.** `npx chisle` can serve a cached copy of the package from a previous run, so the pin is what guarantees you get the new one.
 
-Per-agent equivalents, if you prefer the native tool:
+Update one agent at a time with `--only`:
 
 ```bash
-claude plugin update chisle@chisle    # Claude Code plugin install
-pi install npm:chisle                 # Pi package
-gemini extensions install https://github.com/JayPokale/Chisle
+npx chisle@latest --update --only claude     # or: claude plugin update chisle@chisle
+npx chisle@latest --update --only pi         # or: pi install npm:chisle
+npx chisle@latest --update --only gemini     # or: gemini extensions install https://github.com/JayPokale/Chisle
+npx chisle@latest --update --only codex
+npx chisle@latest --update --only opencode   # ruleset + skills + the compression plugin
+npx chisle@latest --update --only hermes
 ```
 
-Project-scoped agents (Cursor, Windsurf, Cline, Kiro, Copilot) keep their rule file inside the repo, so run the update once per project that has one.
+Cursor, Windsurf, Cline, Kiro and Copilot keep their rule file **inside the repo**, because that is how those agents load rules:
+
+```bash
+cd ~/code/my-project
+npx chisle@latest --update --only cursor
+```
+
+`--update` looks for that file in the current directory, so running it from `~` reports "Nothing to update" even when the project is set up correctly. Run it once per repo that has one. Full table, including what each agent's update actually refreshes: [INSTALL.md](./INSTALL.md#per-agent).
 
 Not sure what you are running? `npx chisle --list` prints the agents it detects, and `claude plugin list` shows the installed plugin and its version.
 

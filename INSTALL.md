@@ -102,12 +102,38 @@ is injected and no config file is rewritten: Hermes already reads project
 
 ## Upgrading
 
+One command covers every agent that already has Chisle:
+
 ```bash
-npx chisle
-claude plugin update chisle@chisle
-pi update npm:chisle
-npx chisle@latest --update   # refreshes OpenCode + Hermes copies too
+npx chisle@latest --update
 ```
+
+It refreshes what is installed and adds nothing new. Two details it exists to handle:
+
+- **Plain `npx chisle` does not upgrade.** Every install path skips what is already present, so an upgrade run reports success and changes nothing.
+- **`@latest` matters.** `npx` can serve a cached copy of the package from a previous run; the pin is what guarantees you get the new one.
+
+### Per agent
+
+Add `--only <id>` to update one agent. The native command is listed where the agent owns its own installer — either works.
+
+| Agent | Update command | Notes |
+|-------|----------------|-------|
+| Claude Code | `npx chisle@latest --update --only claude`<br>or `claude plugin update chisle@chisle` | Restart the session afterwards. |
+| Pi | `npx chisle@latest --update --only pi`<br>or `pi install npm:chisle` | Needs `pi` on `PATH`, or Chisle reports it as not installed. |
+| Gemini CLI | `npx chisle@latest --update --only gemini`<br>or `gemini extensions install https://github.com/JayPokale/Chisle` | Needs `gemini` on `PATH`. |
+| Codex | `npx chisle@latest --update --only codex` | Refreshes the fenced block in `~/.codex/AGENTS.md`, leaving your own instructions alone. |
+| OpenCode | `npx chisle@latest --update --only opencode` | Refreshes the ruleset, the skills, **and the compression plugin** in `~/.config/opencode/plugins/`. |
+| Hermes Agent | `npx chisle@latest --update --only hermes` | Refreshes the skills in `~/.hermes/skills/`. |
+| Cursor | `npx chisle@latest --update --only cursor` | **Run inside the project.** |
+| Windsurf | `npx chisle@latest --update --only windsurf` | **Run inside the project.** |
+| Cline | `npx chisle@latest --update --only cline` | **Run inside the project.** |
+| Kiro | `npx chisle@latest --update --only kiro` | **Run inside the project.** |
+| GitHub Copilot | `npx chisle@latest --update --only copilot` | **Run inside the project.** |
+
+The last five keep their rule file inside the repo, because that is how those agents load rules. `--update` looks for that file in the current directory, so running it from `~` reports *"Nothing to update"* even when the project is set up correctly. Run it once per repo that has one.
+
+Preview any update without touching disk by adding `--dry-run`.
 
 Chisle's Claude hook checks npm at session start and mentions major releases once (cached three days). `CHISLE_UPDATE_CHECK=0` disables that check.
 
