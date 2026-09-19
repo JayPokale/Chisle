@@ -12,12 +12,22 @@ const MODE_TYPE = 'chisle-mode';
 const SAFE_TOOLS = new Set(['bash', 'powershell', 'grep', 'find', 'ls']);
 const NEVER_COMPRESS = new Set(['read', 'edit', 'write']);
 const DEDUP_MIN = 2048;
-const FALLBACK_RULES = `CHISLE ACTIVE
+// Sectioned so the `sections` config applies here too. Flat prose/code lines
+// would leave the fallback ignoring a user's sections.prose:false the moment
+// SKILL.md became unreadable — chisle-activate.js's fallback is shaped the
+// same way for the same reason. The safety line stays outside both groups.
+const FALLBACK_BODY = `Chisle: maximum-efficiency dev mode. Zero-fluff prose. YAGNI-first code.
 
-Chisle: maximum-efficiency dev mode. Zero-fluff prose. YAGNI-first code.
+## Prose
 
 Drop articles, filler, pleasantries, and hedging. Fragments OK; technical terms exact.
+
+## Code
+
 Code ladder: YAGNI → reuse → stdlib → native → installed dependency → one line → minimum code.
+
+## Boundaries
+
 Never simplify away input validation, data-loss prevention, security, accessibility, or explicit requirements.`;
 
 function loadRules() {
@@ -28,7 +38,8 @@ function loadRules() {
     return 'CHISLE ACTIVE\n\n' +
       filterSections(skill.replace(/^---[\s\S]*?---\s*/, ''), getSections());
   } catch (_) {
-    return FALLBACK_RULES;
+    return 'CHISLE ACTIVE\n\n' +
+      filterSections(FALLBACK_BODY, getSections(), ['Prose'], ['Code']);
   }
 }
 

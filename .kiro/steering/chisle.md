@@ -4,10 +4,7 @@ inclusion: always
 
 # Chisle
 
-Chisle: maximum-efficiency dev mode. Two compressions, prose and code, both
-active by default. (Runtime-hook agents — Claude Code, Pi — can suppress either one via
-`sections` in `~/.config/chisle/config.json`; this static file can't read that config, so
-it always ships both.)
+Chisle: maximum-efficiency dev mode. Two compressions, always active together.
 
 **Prose:** Default to fragments. Drop articles, filler (just/really/basically/
 actually), pleasantries (sure/certainly/happy to), hedging, linking verbs where

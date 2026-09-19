@@ -14,10 +14,7 @@ const ROOT = path.join(__dirname, '..');
 // The canonical rule body for the per-agent copies. Edit HERE, then
 // `node scripts/build-rules.js`. NOTE: this is a condensed manual mirror of
 // skills/chisle/SKILL.md — editing SKILL.md alone does NOT propagate here.
-const BODY = `Chisle: maximum-efficiency dev mode. Two compressions, prose and code, both
-active by default. (Runtime-hook agents — Claude Code, Pi — can suppress either one via
-\`sections\` in \`~/.config/chisle/config.json\`; this static file can't read that config, so
-it always ships both.)
+const BODY = `Chisle: maximum-efficiency dev mode. Two compressions, always active together.
 
 **Prose:** Default to fragments. Drop articles, filler (just/really/basically/
 actually), pleasantries (sure/certainly/happy to), hedging, linking verbs where

@@ -399,3 +399,51 @@ test('activate: malformed sections value falls back to enabled, does not throw',
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+
+// The section filter matches SKILL.md headings by exact string, from constants
+// living in hooks/. That is the one place this repo duplicates SKILL.md content
+// into code, against its own "SKILL.md is the source of truth" rule, so it needs
+// a guard: rename a heading in SKILL.md and the filter silently stops matching
+// it — the section just keeps shipping, with no error and no failing assertion,
+// because every other test checks "is it absent" against the same stale string.
+test('every PROSE/CODE heading constant still exists in SKILL.md', () => {
+  const md = fs.readFileSync(
+    path.join(__dirname, '..', 'skills', 'chisle', 'SKILL.md'), 'utf8');
+  const present = [...md.matchAll(/^## (.+)$/gm)].map((m) => m[1].trim());
+  for (const h of [...PROSE_HEADINGS, ...CODE_HEADINGS]) {
+    assert.ok(present.includes(h),
+      `heading constant "${h}" is not in SKILL.md — filterSections would silently skip it`);
+  }
+});
+
+// The inverse: a heading added to SKILL.md that belongs to neither group, and is
+// not one of the deliberate always-on sections, is almost certainly an oversight
+// — it would ship even with both groups suppressed.
+test('every SKILL.md heading is classified: prose, code, or deliberately always-on', () => {
+  const ALWAYS_ON = [
+    'Persistence', 'Thinking Is Billed Too', 'Auto-Clarity',
+    'When NOT to be lazy', 'Boundaries',
+  ];
+  const md = fs.readFileSync(
+    path.join(__dirname, '..', 'skills', 'chisle', 'SKILL.md'), 'utf8');
+  const classified = new Set([...PROSE_HEADINGS, ...CODE_HEADINGS, ...ALWAYS_ON]);
+  for (const m of md.matchAll(/^## (.+)$/gm)) {
+    const h = m[1].trim();
+    assert.ok(classified.has(h),
+      `SKILL.md heading "${h}" is in no group — add it to PROSE_HEADINGS, CODE_HEADINGS, or ALWAYS_ON`);
+  }
+});
+
+// filterSections splits on /^## /m, so a "## " line inside a fenced code block
+// would cut the fence in half and emit broken markdown into the model's context.
+test('no SKILL.md heading-like line hides inside a fenced code block', () => {
+  const md = fs.readFileSync(
+    path.join(__dirname, '..', 'skills', 'chisle', 'SKILL.md'), 'utf8');
+  let inFence = false;
+  md.split('\n').forEach((line, i) => {
+    if (line.trim().startsWith('```')) { inFence = !inFence; return; }
+    assert.ok(!(inFence && line.startsWith('## ')),
+      `SKILL.md:${i + 1} has a "## " line inside a code fence; filterSections would split it`);
+  });
+  assert.equal(inFence, false, 'SKILL.md has an unclosed code fence');
+});

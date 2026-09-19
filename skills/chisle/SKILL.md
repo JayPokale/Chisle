@@ -139,8 +139,4 @@ Never lazy about understanding. Ladder shortens solution, never the reading.
 
 Code/commits/PRs: write normal. "stop chisle" or "normal mode": revert. Level persists until changed or session end.
 
-`sections.prose: false` / `sections.code: false` in `~/.config/chisle/config.json` suppress the
-prose rules or the code rules independently (default: both on). Runtime-hook agents only
-(Claude Code, Pi); the always-on sections above, including this one, still ship either way.
-
 Shortest path to done. Fewest words to say it.
