@@ -43,6 +43,24 @@ function loadRules() {
   }
 }
 
+// OMP (oh-my-pi) ships a subset of Pi's sessionManager: buildContextEntries and
+// getBranch are absent there, so calling one throws inside session_start and
+// takes the whole extension down —
+// "ctx.sessionManager.buildContextEntries is not a function" (issue #14).
+// Treat both as optional readers. An absent one means we cannot prove the
+// session state, and every caller here already behaves correctly on "unknown":
+// no mode entry leaves `active` at getDefaultMode(), and rulesInContext=false
+// re-injects the ruleset, which promptHasRules still de-duplicates.
+function sessionEntries(ctx, method) {
+  try {
+    const sm = ctx && ctx.sessionManager;
+    if (!sm || typeof sm[method] !== 'function') return [];
+    return sm[method]() || [];
+  } catch (_) {
+    return [];
+  }
+}
+
 function hasRulesEntry(entries) {
   return (entries || []).some(entry =>
     (entry.type === 'custom_message' && entry.customType === RULES_TYPE) ||
@@ -91,12 +109,12 @@ function chisleExtension(pi) {
     lastByToolBlock = new Map();
     dedupBaseline = new Map();
 
-    const modeEntry = ctx.sessionManager.getBranch()
+    const modeEntry = sessionEntries(ctx, 'getBranch')
       .filter(entry => entry.type === 'custom' && entry.customType === MODE_TYPE).pop();
     if (modeEntry && modeEntry.data && ['on', 'off'].includes(modeEntry.data.mode)) {
       active = modeEntry.data.mode === 'on';
     }
-    rulesInContext = hasRulesEntry(ctx.sessionManager.buildContextEntries());
+    rulesInContext = hasRulesEntry(sessionEntries(ctx, 'buildContextEntries'));
     updateStatus(ctx);
   }
 
@@ -130,7 +148,7 @@ function chisleExtension(pi) {
   pi.on('session_compact', async (_event, ctx) => {
     lastByToolBlock.clear();
     dedupBaseline.clear();
-    rulesInContext = hasRulesEntry(ctx.sessionManager.buildContextEntries());
+    rulesInContext = hasRulesEntry(sessionEntries(ctx, 'buildContextEntries'));
   });
 
   pi.on('input', async (event, ctx) => {
@@ -199,4 +217,5 @@ function chisleExtension(pi) {
 module.exports = chisleExtension;
 module.exports.loadRules = loadRules;
 module.exports.hasRulesEntry = hasRulesEntry;
+module.exports.sessionEntries = sessionEntries;
 module.exports.piToolAllowed = piToolAllowed;

@@ -266,3 +266,43 @@ test('headless sessions never call UI status methods', async () => {
   await h.handlers.get('session_shutdown')({}, h.ctx);
   assert.deepEqual(h.statuses, []);
 });
+
+// ── OMP compatibility (issue #14) ───────────────────────────────────────────
+// OMP (oh-my-pi) implements a subset of Pi's sessionManager. Calling an absent
+// reader threw inside session_start and took the whole extension down with
+// "ctx.sessionManager.buildContextEntries is not a function", so chisle failed
+// to load at all under OMP. Both readers must be optional.
+const { sessionEntries, hasRulesEntry } = require('../pi-extension');
+
+test('sessionEntries tolerates an OMP-shaped sessionManager missing the readers', () => {
+  const omp = { sessionManager: {} };
+  assert.deepEqual(sessionEntries(omp, 'buildContextEntries'), []);
+  assert.deepEqual(sessionEntries(omp, 'getBranch'), []);
+  // The safe default: we cannot prove the ruleset is present, so it gets
+  // injected. promptHasRules still de-duplicates.
+  assert.equal(hasRulesEntry(sessionEntries(omp, 'buildContextEntries')), false);
+});
+
+test('sessionEntries still reads a full Pi sessionManager unchanged', () => {
+  const pi = {
+    sessionManager: {
+      buildContextEntries: () => [{ type: 'custom_message', customType: 'chisle-rules' }],
+      getBranch: () => [{ type: 'custom', customType: 'chisle-mode', data: { mode: 'off' } }],
+    },
+  };
+  assert.equal(hasRulesEntry(sessionEntries(pi, 'buildContextEntries')), true);
+  const mode = sessionEntries(pi, 'getBranch')
+    .filter((e) => e.type === 'custom' && e.customType === 'chisle-mode').pop();
+  assert.equal(mode.data.mode, 'off');
+});
+
+test('sessionEntries survives a missing ctx, a null manager, and a throwing reader', () => {
+  assert.deepEqual(sessionEntries(undefined, 'getBranch'), []);
+  assert.deepEqual(sessionEntries({}, 'getBranch'), []);
+  assert.deepEqual(sessionEntries({ sessionManager: null }, 'getBranch'), []);
+  assert.deepEqual(sessionEntries({ sessionManager: { getBranch: 'nope' } }, 'getBranch'), []);
+  assert.deepEqual(
+    sessionEntries({ sessionManager: { getBranch() { throw new Error('boom'); } } }, 'getBranch'), []);
+  // A reader returning null must not become a crash downstream either.
+  assert.deepEqual(sessionEntries({ sessionManager: { getBranch: () => null } }, 'getBranch'), []);
+});
