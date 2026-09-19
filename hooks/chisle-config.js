@@ -92,6 +92,73 @@ function getDefaultMode() {
   return 'on';
 }
 
+// ── Section suppression ─────────────────────────────────────────────────────
+// Optional config key letting a user drop Chisle's prose rules or code rules
+// independently, while keeping the other. Config file only — no env override,
+// unlike defaultMode. Absent, malformed, or non-boolean always falls back to
+// enabled (true); never throws.
+//   { "sections": { "prose": false } }   // suppress prose rules, keep code
+
+// Headings from skills/chisle/SKILL.md, grouped by section.
+const PROSE_HEADINGS = [
+  'Prose: Maximum Signal Per Token',
+  'Output Format',
+  'What it sounds like',
+];
+const CODE_HEADINGS = [
+  'Code: The Efficiency Ladder',
+  'Code Rules',
+  'Context Diet: Read Less Into the Window',
+];
+
+function readSectionsFromConfigFile(configPath) {
+  try {
+    const raw = fs.readFileSync(configPath, 'utf8');
+    const config = JSON.parse(raw);
+    const s = config && typeof config === 'object' ? config.sections : null;
+    return {
+      prose: !!(s && typeof s === 'object' && typeof s.prose === 'boolean' ? s.prose : true),
+      code: !!(s && typeof s === 'object' && typeof s.code === 'boolean' ? s.code : true),
+    };
+  } catch (e) {
+    return { prose: true, code: true };
+  }
+}
+
+function getSections() {
+  return readSectionsFromConfigFile(path.join(getConfigDir(), 'config.json'));
+}
+
+// Drops whole `## Heading` sections (heading line through the line before the
+// next `## ` heading) whose heading is in an excluded group. Byte-identical
+// to `content` when nothing is excluded. Never throws — falls back to the
+// unfiltered content. Assumes no `## ` line appears inside a fenced code
+// block (true for SKILL.md and the fallback ruleset at 07c603b).
+function filterSections(content, sections, proseHeadings, codeHeadings) {
+  try {
+    if (typeof content !== 'string' || !content) return content;
+    const prose = sections ? sections.prose !== false : true;
+    const code = sections ? sections.code !== false : true;
+    if (prose && code) return content;
+
+    const dropProse = proseHeadings || PROSE_HEADINGS;
+    const dropCode = codeHeadings || CODE_HEADINGS;
+
+    const chunks = content.split(/(?=^## .+$)/m);
+    const kept = chunks.filter((chunk) => {
+      const m = /^## (.+)$/m.exec(chunk);
+      if (!m) return true; // preamble chunk (no heading)
+      const heading = m[1].trim();
+      if (!prose && dropProse.includes(heading)) return false;
+      if (!code && dropCode.includes(heading)) return false;
+      return true;
+    });
+    return kept.join('');
+  } catch (e) {
+    return content;
+  }
+}
+
 // Symlink-safe, atomic flag write with 0600 perms.
 // Defends against local attacker replacing predictable path with symlink to clobber other files.
 function safeWriteFlag(flagPath, content) {
@@ -193,4 +260,5 @@ function readFlag(flagPath) {
 module.exports = {
   LEGACY_MODES, legacySetting, getDefaultMode, getClaudeDir, getCopilotDir, getOpencodeDir,
   VALID_MODES, safeWriteFlag, readFlag,
+  PROSE_HEADINGS, CODE_HEADINGS, getSections, filterSections,
 };

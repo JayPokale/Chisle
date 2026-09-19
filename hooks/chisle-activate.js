@@ -9,7 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getDefaultMode, getClaudeDir, safeWriteFlag, legacySetting } = require('./chisle-config');
+const { getDefaultMode, getClaudeDir, safeWriteFlag, legacySetting, getSections, filterSections } = require('./chisle-config');
 
 // ── Update-notice helpers (pure — tested directly) ─────────────────────────
 // Minor/patch releases stay quiet: a nudge per major is signal, more is spam.
@@ -90,7 +90,9 @@ function run(source) {
   }
 
   // 3. Read SKILL.md — single source of truth for behaviour. No level
-  // filtering any more: there is one mode, so the whole body ships.
+  // filtering any more: there is one mode, so the whole body ships, minus
+  // whatever `sections` in config.json opts out of (prose and/or code rules;
+  // config-file only, defaults to both enabled — see chisle-config.js).
   let skillContent = '';
   try {
     skillContent = fs.readFileSync(
@@ -98,14 +100,15 @@ function run(source) {
     );
   } catch (e) {}
 
+  const sections = getSections();
   let output;
 
   if (skillContent) {
-    output = 'CHISLE ACTIVE\n\n' + skillContent.replace(/^---[\s\S]*?---\s*/, '');
+    output = 'CHISLE ACTIVE\n\n' +
+      filterSections(skillContent.replace(/^---[\s\S]*?---\s*/, ''), sections);
   } else {
     // Fallback ruleset when SKILL.md not found
-    output =
-      'CHISLE ACTIVE\n\n' +
+    const fallbackBody =
       'Chisle: maximum-efficiency dev mode. Zero-fluff prose. YAGNI-first code.\n\n' +
       '## Persistence\n\n' +
       'ACTIVE EVERY RESPONSE. Off only: "stop chisle" / "normal mode".\n\n' +
@@ -114,6 +117,7 @@ function run(source) {
       '## Code\n\n' +
       'Ladder: YAGNI → reuse → stdlib → native → installed dep → one line → min code.\n' +
       'No unrequested abstractions. Deletion over addition. Shortest diff wins.';
+    output = 'CHISLE ACTIVE\n\n' + filterSections(fallbackBody, sections, ['Prose'], ['Code']);
   }
 
   // 3. Detect missing statusline config

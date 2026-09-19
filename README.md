@@ -448,6 +448,28 @@ export CHISLE_DEFAULT_MODE=off
 
 Resolution: env var → config file → `on`. Valid: `off`, `on`.
 
+**Suppress a rule group.** Claude Code ships a first-class output-style mechanism that also governs
+prose structure, and there's no way today for Chisle to yield its own prose rules to it — an active
+output style and Chisle's prose section give directly conflicting instructions (the style mandates
+tables and bullets for comparisons; Chisle's prose section forbids manufactured tables and bullets
+the question didn't ask for). `sections` in the same config file lets prose rules step aside while
+code rules stay on, or vice versa:
+
+```json
+{ "sections": { "prose": false } }
+```
+
+`sections.prose: false` suppresses the prose rules; `sections.code: false` suppresses the code
+rules. Config file only, no env override. Anything absent, malformed, or non-boolean falls back to
+enabled — configuring nothing leaves today's behavior byte-identical. The always-on sections
+(Persistence, Thinking Is Billed Too, Auto-Clarity, When NOT to be lazy, Boundaries) ship regardless
+of either setting.
+
+Scope: this only affects the runtime-hook agents that read `skills/chisle/SKILL.md` live — Claude
+Code and Pi. The seven static-rule agents built by `scripts/build-rules.js` (Cursor, Windsurf,
+Cline, Kiro, Codex, Gemini, Copilot) get flat files baked at build time with no runtime config to
+read, so they can't honor this key.
+
 ---
 
 ## Prior art & what stacks with it
