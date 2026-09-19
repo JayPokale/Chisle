@@ -5,8 +5,26 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getClaudeDir, safeWriteFlag, readFlag } = require('./chisle-config');
+const { getClaudeDir, safeWriteFlag, readFlag, getSections } = require('./chisle-config');
 const { requestedMode } = require('./chisle-mode');
+
+// Per-turn reinforcement clauses. `Code/commits/security: write normal.` is
+// the Boundaries carve-out (always-on in SKILL.md) and ships regardless of
+// `sections`; the prose/code clauses honor it the same way the SessionStart
+// ruleset does.
+const PROSE_CLAUSE = 'Prose: drop articles/filler/pleasantries/hedging. Fragments OK.';
+const CODE_CLAUSE = 'Code: YAGNI ladder first (reuse → stdlib → native → dep → one line → min code).';
+const BOUNDARIES_CLAUSE = 'Code/commits/security: write normal.';
+
+function reinforcementLine(sections) {
+  const prose = sections ? sections.prose !== false : true;
+  const code = sections ? sections.code !== false : true;
+  const parts = ['CHISLE ACTIVE.'];
+  if (prose) parts.push(PROSE_CLAUSE);
+  if (code) parts.push(CODE_CLAUSE);
+  parts.push(BOUNDARIES_CLAUSE);
+  return parts.join(' ');
+}
 
 const claudeDir = getClaudeDir();
 const flagPath = path.join(claudeDir, '.chisle-active');
@@ -32,11 +50,7 @@ process.stdin.on('end', () => {
       process.stdout.write(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: 'UserPromptSubmit',
-          additionalContext:
-            'CHISLE ACTIVE. ' +
-            'Prose: drop articles/filler/pleasantries/hedging. Fragments OK. ' +
-            'Code: YAGNI ladder first (reuse → stdlib → native → dep → one line → min code). ' +
-            'Code/commits/security: write normal.'
+          additionalContext: reinforcementLine(getSections())
         }
       }));
     }
