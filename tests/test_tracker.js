@@ -86,3 +86,78 @@ test('REGRESSION: "use chisle to turn off the logger" stays active', () => {
 test('REGRESSION: "chisle please stop the server" stays active', () => {
   assert.equal(runTracker('chisle please stop the server', { preActive: 'on' }), 'on');
 });
+
+// ── sections config: per-turn reinforcement line ─────────────────────────────
+// `sections.prose`/`sections.code` in config.json must gate the same clauses
+// in the reinforcement line as the SessionStart ruleset. The Boundaries
+// carve-out ("Code/commits/security: write normal.") is always-on and ships
+// regardless.
+
+function runTrackerOutput(prompt, { preActive = 'on', sectionsValue } = {}) {
+  const claudeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-trk-'));
+  const xdgDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-trk-xdg-'));
+  const flagPath = path.join(claudeDir, '.chisle-active');
+  if (preActive) fs.writeFileSync(flagPath, preActive, { mode: 0o600 });
+  if (sectionsValue !== undefined) {
+    const chisleDir = path.join(xdgDir, 'chisle');
+    fs.mkdirSync(chisleDir, { recursive: true });
+    fs.writeFileSync(path.join(chisleDir, 'config.json'), JSON.stringify({ sections: sectionsValue }));
+  }
+
+  let stdout = '';
+  try {
+    stdout = execFileSync(process.execPath, [TRACKER], {
+      input: JSON.stringify({ prompt }),
+      env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir, XDG_CONFIG_HOME: xdgDir, CHISLE_DEFAULT_MODE: 'on' },
+      encoding: 'utf8',
+      timeout: 5000,
+    });
+  } catch (e) { /* tracker silent-fails */ }
+
+  fs.rmSync(claudeDir, { recursive: true, force: true });
+  fs.rmSync(xdgDir, { recursive: true, force: true });
+
+  let context = null;
+  try { context = JSON.parse(stdout).hookSpecificOutput.additionalContext; } catch (e) {}
+  return context;
+}
+
+test('reinforcement: no config → unchanged (byte-identical to prior hardcoded line)', () => {
+  const line = runTrackerOutput('hello');
+  assert.equal(
+    line,
+    'CHISLE ACTIVE. ' +
+      'Prose: drop articles/filler/pleasantries/hedging. Fragments OK. ' +
+      'Code: YAGNI ladder first (reuse → stdlib → native → dep → one line → min code). ' +
+      'Code/commits/security: write normal.'
+  );
+});
+
+test('reinforcement: sections.prose false drops the prose clause, keeps code + boundaries', () => {
+  const line = runTrackerOutput('hello', { sectionsValue: { prose: false } });
+  assert.ok(!line.includes('Prose:'), line);
+  assert.ok(line.includes('Code: YAGNI ladder'), line);
+  assert.ok(line.includes('Code/commits/security: write normal.'), line);
+});
+
+test('reinforcement: sections.code false drops the code clause, keeps prose + boundaries', () => {
+  const line = runTrackerOutput('hello', { sectionsValue: { code: false } });
+  assert.ok(!line.includes('Code: YAGNI ladder'), line);
+  assert.ok(line.includes('Prose:'), line);
+  assert.ok(line.includes('Code/commits/security: write normal.'), line);
+});
+
+test('reinforcement: both false still ships the always-on Boundaries clause', () => {
+  const line = runTrackerOutput('hello', { sectionsValue: { prose: false, code: false } });
+  assert.ok(!line.includes('Prose:'), line);
+  assert.ok(!line.includes('Code: YAGNI ladder'), line);
+  assert.equal(line, 'CHISLE ACTIVE. Code/commits/security: write normal.');
+});
+
+test('reinforcement: malformed sections value falls back to enabled, no throw', () => {
+  for (const malformed of ['off', null, 5, [], { prose: 'no' }]) {
+    const line = runTrackerOutput('hello', { sectionsValue: malformed });
+    assert.ok(line.includes('Prose:'), JSON.stringify(malformed));
+    assert.ok(line.includes('Code: YAGNI ladder'), JSON.stringify(malformed));
+  }
+});

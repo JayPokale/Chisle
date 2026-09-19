@@ -134,12 +134,12 @@ test('requiring chisle-activate has no side effects', () => {
 const { execFileSync } = require('child_process');
 const ACTIVATE = path.join(__dirname, '..', 'hooks', 'chisle-activate.js');
 
-function activate(stdin) {
+function activate(stdin, extraEnv = {}) {
   const dir = tmpDir();
   try {
     return execFileSync(process.execPath, [ACTIVATE], {
       input: stdin,
-      env: { ...process.env, CLAUDE_CONFIG_DIR: dir, CHISLE_DEFAULT_MODE: 'on', CHISLE_UPDATE_CHECK: '0' },
+      env: { ...process.env, CLAUDE_CONFIG_DIR: dir, CHISLE_DEFAULT_MODE: 'on', CHISLE_UPDATE_CHECK: '0', ...extraEnv },
       encoding: 'utf8',
       timeout: 5000,
     });
@@ -227,4 +227,175 @@ test('a current setting reports no legacy value', () => {
   process.env.CHISLE_DEFAULT_MODE = 'on';
   assert.equal(legacySetting(), null);
   delete process.env.CHISLE_DEFAULT_MODE;
+});
+
+// ── sections config: getSections / filterSections ────────────────────────────
+// `{ "sections": { "prose": false } }` in config.json suppresses prose rules,
+// keeping code rules (and vice versa). Config-file only, no env override.
+// Absent/malformed/non-boolean always falls back to enabled; never throws.
+
+const { getSections, filterSections, PROSE_HEADINGS, CODE_HEADINGS } = require('../hooks/chisle-config');
+
+function withSectionsConfig(sectionsValue, fn) {
+  const dir = tmpDir();
+  const chisleDir = path.join(dir, 'chisle');
+  fs.mkdirSync(chisleDir, { recursive: true });
+  if (sectionsValue !== undefined) {
+    fs.writeFileSync(
+      path.join(chisleDir, 'config.json'),
+      JSON.stringify({ defaultMode: 'on', sections: sectionsValue })
+    );
+  }
+  const saved = process.env.XDG_CONFIG_HOME;
+  process.env.XDG_CONFIG_HOME = dir;
+  try {
+    return fn();
+  } finally {
+    if (saved === undefined) delete process.env.XDG_CONFIG_HOME;
+    else process.env.XDG_CONFIG_HOME = saved;
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+test('getSections: no config file → both enabled', () => {
+  withSectionsConfig(undefined, () => {
+    assert.deepEqual(getSections(), { prose: true, code: true });
+  });
+});
+
+test('getSections: sections.prose false → prose disabled, code enabled', () => {
+  withSectionsConfig({ prose: false }, () => {
+    assert.deepEqual(getSections(), { prose: false, code: true });
+  });
+});
+
+test('getSections: sections.code false → code disabled, prose enabled', () => {
+  withSectionsConfig({ code: false }, () => {
+    assert.deepEqual(getSections(), { prose: true, code: false });
+  });
+});
+
+test('getSections: both false', () => {
+  withSectionsConfig({ prose: false, code: false }, () => {
+    assert.deepEqual(getSections(), { prose: false, code: false });
+  });
+});
+
+test('getSections: malformed sections values fall back to enabled, never throw', () => {
+  for (const malformed of ['off', null, 5, [], { prose: 'no' }, { prose: null }, { prose: 1 }, { prose: [] }]) {
+    withSectionsConfig(malformed, () => {
+      assert.deepEqual(getSections(), { prose: true, code: true }, JSON.stringify(malformed));
+    });
+  }
+});
+
+test('getSections: malformed config.json (invalid JSON) falls back to enabled, never throws', () => {
+  const dir = tmpDir();
+  const chisleDir = path.join(dir, 'chisle');
+  fs.mkdirSync(chisleDir, { recursive: true });
+  fs.writeFileSync(path.join(chisleDir, 'config.json'), '{ not json');
+  const saved = process.env.XDG_CONFIG_HOME;
+  process.env.XDG_CONFIG_HOME = dir;
+  try {
+    assert.deepEqual(getSections(), { prose: true, code: true });
+  } finally {
+    if (saved === undefined) delete process.env.XDG_CONFIG_HOME;
+    else process.env.XDG_CONFIG_HOME = saved;
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+const SKILL_BODY = fs.readFileSync(
+  path.join(__dirname, '..', 'skills', 'chisle', 'SKILL.md'), 'utf8'
+).replace(/^---[\s\S]*?---\s*/, '');
+const ALWAYS_ON_HEADINGS = [
+  'Persistence', 'Thinking Is Billed Too', 'Auto-Clarity', 'When NOT to be lazy', 'Boundaries',
+];
+
+test('filterSections: both enabled is byte-identical to input', () => {
+  assert.equal(filterSections(SKILL_BODY, { prose: true, code: true }), SKILL_BODY);
+});
+
+test('filterSections: prose false drops only the prose headings', () => {
+  const out = filterSections(SKILL_BODY, { prose: false, code: true });
+  for (const h of PROSE_HEADINGS) assert.ok(!out.includes(`## ${h}`), `still has ${h}`);
+  for (const h of CODE_HEADINGS) assert.ok(out.includes(`## ${h}`), `missing ${h}`);
+  for (const h of ALWAYS_ON_HEADINGS) assert.ok(out.includes(`## ${h}`), `missing ${h}`);
+});
+
+test('filterSections: code false drops only the code headings', () => {
+  const out = filterSections(SKILL_BODY, { prose: true, code: false });
+  for (const h of CODE_HEADINGS) assert.ok(!out.includes(`## ${h}`), `still has ${h}`);
+  for (const h of PROSE_HEADINGS) assert.ok(out.includes(`## ${h}`), `missing ${h}`);
+  for (const h of ALWAYS_ON_HEADINGS) assert.ok(out.includes(`## ${h}`), `missing ${h}`);
+});
+
+test('filterSections: both false still emits every always-on heading', () => {
+  const out = filterSections(SKILL_BODY, { prose: false, code: false });
+  for (const h of [...PROSE_HEADINGS, ...CODE_HEADINGS]) assert.ok(!out.includes(`## ${h}`), `still has ${h}`);
+  for (const h of ALWAYS_ON_HEADINGS) assert.ok(out.includes(`## ${h}`), `missing ${h}`);
+});
+
+test('filterSections: malformed sections values fall back to enabled (identity)', () => {
+  for (const malformed of ['off', null, 5, [], undefined]) {
+    assert.equal(filterSections(SKILL_BODY, malformed), SKILL_BODY);
+  }
+});
+
+// ── SessionStart end-to-end: sections config wired into the emitted ruleset ──
+
+test('activate: no config file → full ruleset, all headings present (default unchanged)', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-xdg-'));
+  try {
+    const out = activate(JSON.stringify({ source: 'startup' }), { XDG_CONFIG_HOME: dir });
+    for (const h of [...PROSE_HEADINGS, ...CODE_HEADINGS, ...ALWAYS_ON_HEADINGS]) {
+      assert.ok(out.includes(`## ${h}`), `missing ${h}`);
+    }
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('activate: config file present but no sections key → full ruleset (default unchanged)', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-xdg-'));
+  const chisleDir = path.join(dir, 'chisle');
+  fs.mkdirSync(chisleDir, { recursive: true });
+  fs.writeFileSync(path.join(chisleDir, 'config.json'), JSON.stringify({ defaultMode: 'on' }));
+  try {
+    const out = activate(JSON.stringify({ source: 'startup' }), { XDG_CONFIG_HOME: dir });
+    for (const h of [...PROSE_HEADINGS, ...CODE_HEADINGS, ...ALWAYS_ON_HEADINGS]) {
+      assert.ok(out.includes(`## ${h}`), `missing ${h}`);
+    }
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('activate: sections.prose false → emitted ruleset drops prose headings only', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-xdg-'));
+  const chisleDir = path.join(dir, 'chisle');
+  fs.mkdirSync(chisleDir, { recursive: true });
+  fs.writeFileSync(path.join(chisleDir, 'config.json'), JSON.stringify({ sections: { prose: false } }));
+  try {
+    const out = activate(JSON.stringify({ source: 'startup' }), { XDG_CONFIG_HOME: dir });
+    for (const h of PROSE_HEADINGS) assert.ok(!out.includes(`## ${h}`), `still has ${h}`);
+    for (const h of [...CODE_HEADINGS, ...ALWAYS_ON_HEADINGS]) assert.ok(out.includes(`## ${h}`), `missing ${h}`);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('activate: malformed sections value falls back to enabled, does not throw', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-xdg-'));
+  const chisleDir = path.join(dir, 'chisle');
+  fs.mkdirSync(chisleDir, { recursive: true });
+  fs.writeFileSync(path.join(chisleDir, 'config.json'), JSON.stringify({ sections: 'nope' }));
+  try {
+    const out = activate(JSON.stringify({ source: 'startup' }), { XDG_CONFIG_HOME: dir });
+    for (const h of [...PROSE_HEADINGS, ...CODE_HEADINGS, ...ALWAYS_ON_HEADINGS]) {
+      assert.ok(out.includes(`## ${h}`), `missing ${h}`);
+    }
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });
