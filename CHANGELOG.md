@@ -5,6 +5,24 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [3.5.0] - 2026-09-19
+
+### Added
+- **Output styles are detected automatically.** Claude Code's output-style mechanism also governs prose structure, so an active style and Chisle's prose section issued directly contradicting instructions with no precedence between them: the style mandates tables and bullets for a comparison, Chisle's prose section forbids the ones the question didn't ask for. Chisle now reads the active style and steps its prose rules aside on its own — `/output-style Explanatory` and the prose section stops shipping, back to `default` and it returns. Nothing to configure. ([#17](https://github.com/JayPokale/Chisle/issues/17))
+  - Detection reads the `outputStyle` key across Claude Code's own settings precedence: `.claude/settings.local.json` (where `/output-style` persists the selection), then `.claude/settings.json`, then the user settings file.
+  - **Code rules never yield.** Output styles govern prose, not the efficiency ladder or the context diet, so only the prose section steps aside. The compressor is untouched.
+  - **An explicit `sections.prose` always wins.** Only an unwritten key yields to detection, so a user who set `prose: true` keeps their prose rules alongside an active style. A non-boolean is not explicit and falls back.
+  - Claude Code only. Pi has no output-style mechanism and is unchanged.
+- **`sections.prose` / `sections.code` config.** Suppress Chisle's prose rules or code rules independently while keeping the other, via `~/.config/chisle/config.json`. Config-file only, no env override; absent, malformed or non-boolean falls back to enabled. Honoured at every runtime emission point — the SessionStart ruleset, its no-SKILL.md fallback, the per-turn reinforcement line, and pi-extension's SKILL.md load. Persistence, Thinking Is Billed Too, Auto-Clarity, When NOT to be lazy and Boundaries always ship, and the reinforcement line's Boundaries carve-out is emitted outside the code group so suppressing code rules cannot drop a safety rule. Thanks [@zaphod72](https://github.com/zaphod72) ([#15](https://github.com/JayPokale/Chisle/issues/15), [#16](https://github.com/JayPokale/Chisle/pull/16)).
+
+### Fixed
+- **The Pi extension did not load under OMP at all.** OMP (oh-my-pi) ships a subset of Pi's `sessionManager`, and chisle called `ctx.sessionManager.buildContextEntries()` unguarded inside `session_start`, so the extension threw `ctx.sessionManager.buildContextEntries is not a function` before it finished loading. `getBranch()` was reachable the same way. Both now read through a helper returning `[]` when the method is absent, the manager is missing, or the call throws; neither caller needs the data to be correct, only safe when unknown. A full Pi `sessionManager` takes exactly the path it did before. Thanks [@pyshivam](https://github.com/pyshivam) ([#14](https://github.com/JayPokale/Chisle/issues/14)).
+- **Pi's fallback ruleset ignored `sections`.** `FALLBACK_RULES` carried no `##` headings, so the section filter could match nothing and a user's `sections.prose: false` was silently dropped the moment SKILL.md became unreadable. Restructured to match `chisle-activate.js`'s fallback, with the safety line outside both groups.
+
+### Changed
+- **The `sections` key is documented in the README, not in the prompts.** Documenting it in the five static rule files added 202 chars (~9%) to each always-on ruleset to describe a key those agents cannot read, and the `SKILL.md` paragraph spent tokens in every Claude Code and Pi session on configuration the model cannot act on. Both reverted; the five static files are byte-identical to 3.4.0 again.
+- Guards for the one place SKILL.md content is duplicated into code: every prose/code heading constant must exist in SKILL.md, every SKILL.md heading must be classified (a new one would otherwise become silently always-on), and no `## ` line may hide inside a code fence, since the section filter splits on `/^## /m`.
+
 ## [3.4.0] - 2026-09-17
 
 ### Added
