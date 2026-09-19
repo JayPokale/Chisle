@@ -3,7 +3,7 @@
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
-const { getDefaultMode } = require('../hooks/chisle-config');
+const { getDefaultMode, getSections, filterSections } = require('../hooks/chisle-config');
 const { duplicateMarker, limitsFor, transform } = require('../hooks/chisle-compress-output');
 const { requestedMode } = require('../hooks/chisle-mode');
 
@@ -23,7 +23,10 @@ Never simplify away input validation, data-loss prevention, security, accessibil
 function loadRules() {
   try {
     const skill = fs.readFileSync(path.join(__dirname, '..', 'skills', 'chisle', 'SKILL.md'), 'utf8');
-    return 'CHISLE ACTIVE\n\n' + skill.replace(/^---[\s\S]*?---\s*/, '');
+    // Shares the SKILL.md emission path with chisle-activate.js, so it honors
+    // the same `sections` config (prose/code rule suppression) the same way.
+    return 'CHISLE ACTIVE\n\n' +
+      filterSections(skill.replace(/^---[\s\S]*?---\s*/, ''), getSections());
   } catch (_) {
     return FALLBACK_RULES;
   }
