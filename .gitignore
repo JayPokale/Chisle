@@ -11,3 +11,6 @@ __pycache__/
 
 # local Claude Code editor state — not part of the package
 .claude/
+
+# Terminal-Bench job dirs: raw trajectories, may echo container env
+benchmarks/terminal-bench/jobs/
