@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <em>The only tool in this class that publishes the runs where it lost.</em>
+  <em>The only tool in this class that publishes the runs where it lost. <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">Here's why.</a></em>
 </p>
 
 <p align="center">
