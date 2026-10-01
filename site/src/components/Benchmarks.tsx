@@ -66,7 +66,7 @@ export default function Benchmarks() {
                   animate={inView ? { width: `${a.pct}%` } : {}}
                   transition={{ duration: 1, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
                   className={`flex h-full items-center justify-end rounded-md pr-2.5 text-xs font-semibold ${
-                    a.self ? "bg-gradient-to-r from-brand to-[#a950ff] text-white" : "bg-dim/35 text-fg"
+                    a.self ? "bg-gradient-to-r from-brand to-[#ffc56b] text-on-brand" : "bg-dim/35 text-fg"
                   }`}
                 >
                   {a.pct}%

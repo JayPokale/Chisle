@@ -24,7 +24,7 @@ export default function OG() {
           <div
             style={{
               background: "rgba(215,135,0,0.25)",
-              color: "#a796ff",
+              color: "#ffa028",
               padding: "6px 14px",
               borderRadius: 8,
               fontSize: 32,
@@ -37,13 +37,13 @@ export default function OG() {
           <div style={{ fontSize: 84, fontWeight: 700, lineHeight: 1.05 }}>
             Write less. Ship less.
           </div>
-          <div style={{ fontSize: 84, fontWeight: 700, color: "#a796ff", lineHeight: 1.05 }}>
+          <div style={{ fontSize: 84, fontWeight: 700, color: "#ffa028", lineHeight: 1.05 }}>
             Mean more.
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 28, color: "#a09fa8" }}>
           <div>52% of a bare model&apos;s 20-task bill · 1 backfire in 20</div>
-          <div style={{ color: "#8465ff" }}>npx chisle</div>
+          <div style={{ color: "#d78700" }}>npx chisle</div>
         </div>
       </div>
     ),

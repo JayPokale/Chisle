@@ -88,7 +88,7 @@ export default function Compare() {
             </div>
 
             {/* selected arm */}
-            <div className="flex flex-col rounded-xl border border-brand-hover/60 bg-surface shadow-[0_0_40px_-12px_#631bff]">
+            <div className="flex flex-col rounded-xl border border-brand-hover/60 bg-surface shadow-[0_0_40px_-12px_#ffa028]">
               <header className="flex items-baseline justify-between gap-3 border-b border-line px-4 py-3">
                 <div className="flex gap-1.5">
                   {RIVALS.filter((r) => task.arms[r.key]).map((r) => (

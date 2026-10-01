@@ -28,7 +28,7 @@ export default async function Community() {
                 href="https://github.com/JayPokale/Chisle"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-md bg-brand px-5 py-2.5 text-sm font-medium text-white shadow-[0_0_30px_-6px_#631bff] transition-colors hover:bg-brand-hover"
+                className="flex items-center gap-2 rounded-md bg-brand px-5 py-2.5 text-sm font-medium text-on-brand shadow-[0_0_30px_-6px_#ffa028] transition-colors hover:bg-brand-hover"
               >
                 <GitHubIcon size={15} />
                 Star on GitHub{stats.stars > 0 ? ` · ${stats.stars.toLocaleString()}` : ""}

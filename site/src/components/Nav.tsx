@@ -15,7 +15,7 @@ export function Logo() {
     <span className="flex items-center gap-2 font-semibold tracking-tight">
       <span
         aria-hidden
-        className="grid h-7 w-7 place-items-center rounded-md bg-gradient-to-br from-brand to-[#cd88ff] font-mono text-xs text-white"
+        className="grid h-7 w-7 place-items-center rounded-md bg-gradient-to-br from-brand to-[#ffc56b] font-mono text-xs text-on-brand"
       >
         C
       </span>
@@ -48,7 +48,7 @@ export default async function Nav() {
           <ThemeToggle />
           <a
             href="#get-started"
-            className="rounded-md bg-brand px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
+            className="rounded-md bg-brand px-3.5 py-1.5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-hover"
           >
             Get started
           </a>

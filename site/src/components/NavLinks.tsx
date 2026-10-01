@@ -73,7 +73,7 @@ export default function NavLinks() {
       ))}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-brand to-[#cd88ff] transition-[width] duration-150"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-brand to-[#ffc56b] transition-[width] duration-150"
         style={{ width: `${progress}%` }}
       />
     </>

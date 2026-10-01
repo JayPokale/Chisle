@@ -101,7 +101,7 @@ export default function Hero() {
         >
           <a
             href="#get-started"
-            className="rounded-md bg-brand px-5 py-2.5 text-sm font-medium text-white shadow-[0_0_30px_-6px_#631bff] transition-colors hover:bg-brand-hover"
+            className="rounded-md bg-brand px-5 py-2.5 text-sm font-medium text-on-brand shadow-[0_0_30px_-6px_#ffa028] transition-colors hover:bg-brand-hover"
           >
             Get started
           </a>

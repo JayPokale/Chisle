@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Dark-first palette: near-black surfaces, violet brand, lavender accent.
+/* Dark-first palette: near-black surfaces, amber brand and accent.
    Light theme swaps the same tokens, so utilities re-resolve automatically. */
 @theme {
   --color-bg: #0e0e10;
@@ -9,10 +9,11 @@
   --color-line: #2b2a31;
   --color-fg: #f4f4f6;
   --color-dim: #a09fa8;
-  --color-brand: #631bff;
-  --color-brand-hover: #8465ff;
-  --color-accent: #a796ff;
-  --color-accent-soft: #8465ff26;
+  --color-brand: #ffa028;
+  --color-brand-hover: #ffb54f;
+  --color-on-brand: #16130e;
+  --color-accent: #ffa028;
+  --color-accent-soft: #ffa02824;
   --color-save: #43f6b6;
   --color-waste: #ff6a6c;
   /* the terminal stays dark in both themes */
@@ -20,7 +21,7 @@
   --color-term-line: #2b2a31;
   --color-term-dim: #8b8a93;
   --color-term-fg: #e6e6ea;
-  --color-term-accent: #a796ff;
+  --color-term-accent: #ffa028;
   --font-sans: var(--font-mona);
   --font-mono: var(--font-geist-mono);
 }
@@ -32,10 +33,10 @@
   --color-line: #e4e2ec;
   --color-fg: #1c1c20;
   --color-dim: #5f5e68;
-  --color-brand: #631bff;
-  --color-brand-hover: #5212e0;
-  --color-accent: #631bff;
-  --color-accent-soft: #f1efff;
+  --color-brand: #e08a00;
+  --color-brand-hover: #c77800;
+  --color-accent: #c77800;
+  --color-accent-soft: #f5e9d8;
   --color-save: #12865e;
   --color-waste: #d92d3a;
 }
@@ -57,7 +58,7 @@ body {
 
 ::selection {
   background: var(--color-brand);
-  color: #fff;
+  color: var(--color-on-brand);
 }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -70,7 +71,7 @@ body {
 .pane-scroll { scrollbar-width: thin; scrollbar-color: var(--color-line) transparent; }
 .pane-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
 
-/* Hero backdrop: faint grid fading out at the edges, violet glow on top. */
+/* Hero backdrop: faint grid fading out at the edges, amber glow on top. */
 .grid-bg {
   background-image:
     linear-gradient(var(--color-line) 1px, transparent 1px),
@@ -80,25 +81,25 @@ body {
   opacity: 0.55;
 }
 .glow {
-  background: radial-gradient(ellipse 50% 45% at 50% 0%, #631bff66, transparent 70%),
-    radial-gradient(ellipse 30% 30% at 80% 20%, #f62e7622, transparent 70%);
+  background: radial-gradient(ellipse 50% 45% at 50% 0%, #ffa02852, transparent 70%),
+    radial-gradient(ellipse 30% 30% at 80% 20%, #e5484d1f, transparent 70%);
 }
 [data-theme="light"] .glow {
-  background: radial-gradient(ellipse 50% 45% at 50% 0%, #631bff2e, transparent 70%),
-    radial-gradient(ellipse 30% 30% at 80% 20%, #f62e7614, transparent 70%);
+  background: radial-gradient(ellipse 50% 45% at 50% 0%, #ffa02838, transparent 70%),
+    radial-gradient(ellipse 30% 30% at 80% 20%, #e5484d12, transparent 70%);
 }
 
 .text-gradient {
-  background: linear-gradient(90deg, #a796ff, #cd88ff 45%, #f62e76);
+  background: linear-gradient(90deg, #ffc56b, #ffa028 45%, #e5484d);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 [data-theme="light"] .text-gradient {
-  background-image: linear-gradient(90deg, #631bff, #a950ff 50%, #e0245e);
+  background-image: linear-gradient(90deg, #c77800, #e08a00 50%, #c23b41);
 }
 
-/* Card under the cursor lifts and borders in violet. */
+/* Card under the cursor lifts and borders in amber. */
 .lift { transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease; }
 .lift:hover { transform: translateY(-3px); border-color: var(--color-brand-hover); }
 
