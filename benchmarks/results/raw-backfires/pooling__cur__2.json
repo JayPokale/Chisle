@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "cur",
+ "seed": 2,
+ "out_tokens": 613,
+ "input_tokens": 21868,
+ "turns": 1,
+ "cost_usd": 0.023183500000000003,
+ "answer": "**How it works:** Instead of creating a new database connection for each request, a connection pool maintains a set of open connections. When your app needs a connection, it borrows one from the pool; when done, it returns it rather than closing it. The pool manages reuse: if all connections are in use, the request waits (or times out); idle connections may be closed after a timeout to save resources.\n\n**Why it helps:**\n\n1. **Connection overhead is expensive.** Opening a TCP socket to the database, performing TLS handshake, authenticating, initializing session state—this takes 10–100ms per connection. Creating a new one per request → slow.\n\n2. **Resource limits.** Your database has a max connection count. If each of N concurrent requests opens one connection and never closes it (common in buggy code), you hit the limit fast and everything blocks.\n\n3. **Reuse is fast.** A pooled connection is already authenticated and idle. Borrowing it → near-zero overhead.\n\n4. **Graceful degradation.** When requests exceed available connections, the pool queues them instead of failing. The database stays responsive, not overwhelmed.\n\n5. **Reduces database load.** Fewer total connections → lower memory on the DB server, simpler transaction management, less context-switching.\n\nExample: a web app with 100 concurrent users, 5-second average request time.\n- No pool: 100 new connections/second, each taking 50ms to open → bottleneck, some fail.\n- Pool of 20: borrowing from pool takes <1ms, connections serve multiple users over time, database stable.\n\nMost frameworks (Django, SQLAlchemy, Node.js drivers, Go database/sql) have pooling built in. You configure min/max pool size; tuning depends on your DB limits and request patterns.",
+ "answer_lines": 19
+}

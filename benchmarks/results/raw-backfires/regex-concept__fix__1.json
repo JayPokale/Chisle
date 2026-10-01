@@ -1,0 +1,11 @@
+{
+ "id": "regex-concept",
+ "arm": "fix",
+ "seed": 1,
+ "out_tokens": 285,
+ "input_tokens": 21891,
+ "turns": 1,
+ "cost_usd": 0.0215895,
+ "answer": "A backreference refers back to a captured group in the same regex, using `\\1`, `\\2`, etc. for the 1st, 2nd, captured groups.\n\nExample: `(\\w+)\\s+\\1` matches repeated words separated by whitespace.\n\n```\n\"hello hello\" → matches (captures \"hello\" in group 1, `\\1` matches it again)\n\"hello world\" → no match\n```\n\nPractical use: `<(\\w+)>.*?</\\1>` matches paired HTML tags like `<div>content</div>` but rejects mismatched pairs like `<div>content</span>`.",
+ "answer_lines": 10
+}

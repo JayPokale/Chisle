@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "fix",
+ "seed": 1,
+ "out_tokens": 611,
+ "input_tokens": 21890,
+ "turns": 1,
+ "cost_usd": 0.023217500000000002,
+ "answer": "**What it is:** A pool maintains a set of ready-to-use database connections. Apps request connections from the pool instead of creating new ones each time.\n\n**How it works:**\n- Pool starts with N idle connections open to the database\n- App requests a connection → pool hands over an existing one from the idle set\n- App finishes query, returns connection to pool → it goes back to idle (not closed)\n- If all connections busy, app waits in queue until one frees up (or times out)\n- Connections stay open indefinitely, avoiding the setup/teardown cycle\n\n**Why it helps:**\n\n1. **Speed** — opening a connection is expensive: DNS lookup, TCP handshake, auth, resource allocation. Reusing existing connections is 100x+ faster than creating new ones per request. For a web server handling 1000 req/sec, pooling cuts connection overhead from the critical path entirely.\n\n2. **Resource efficiency** — databases can only handle so many open connections (maybe 100–10k depending on config). Without pooling, N requests = N connections. With a pool of size 10, those same N requests share 10 connections → same throughput, 10x fewer server resources consumed. Frees up memory, file descriptors, and CPU on both client and server.\n\n3. **Predictable load** — the database sees a constant, small number of connections from your app instead of a spike whenever traffic spikes. Easier to capacity-plan. Protects the server from connection exhaustion if one app misbehaves.\n\n4. **Concurrent requests** — waiting queue in the pool lets your app handle more concurrent requests than it has physical connections. A pool of 20 can queue hundreds of requests; the first 20 hit the DB immediately, the rest wait for a connection to free up.\n\n**Example:** Without pooling, a web app handling 500 concurrent users with 1 query per user = 500 open connections to the DB, each holding memory/threads. With a 20-connection pool, those 500 users share 20 connections, cycling through them in milliseconds. Same throughput, fraction of the resource cost.",
+ "answer_lines": 20
+}

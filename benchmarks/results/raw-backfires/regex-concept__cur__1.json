@@ -1,0 +1,11 @@
+{
+ "id": "regex-concept",
+ "arm": "cur",
+ "seed": 1,
+ "out_tokens": 269,
+ "input_tokens": 21869,
+ "turns": 1,
+ "cost_usd": 0.0214655,
+ "answer": "A backreference lets you match text that's identical to what a capturing group already matched. It's written as `\\1`, `\\2`, etc., referring to the group number.\n\n**Example:** Find repeated words separated by a space.\n\n```regex\n\\b(\\w+)\\s+\\1\\b\n```\n\nThis captures a word in group 1, matches one or more spaces, then `\\1` matches that exact same word again. So it finds \"hello hello\" or \"test test\" but not \"hello world\".\n\nUse case: Find duplicates in text, validate paired delimiters like `\"...\"` or `(...) ` where the open and close must match, or HTML tags where opening and closing tags should be identical.",
+ "answer_lines": 11
+}

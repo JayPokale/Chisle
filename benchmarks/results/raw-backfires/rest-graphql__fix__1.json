@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "fix",
+ "seed": 1,
+ "out_tokens": 491,
+ "input_tokens": 20318,
+ "turns": 1,
+ "cost_usd": 0.0194868,
+ "answer": "**REST:** Standardized, cacheable by default (HTTP semantics), simpler backend, massive tooling ecosystem → straightforward to ship, teams already know it. But clients get fixed response shapes (over/under-fetching waste bandwidth, N+1 queries), many endpoints to maintain.\n\n**GraphQL:** Clients request exactly what they need (one query, minimal payload), single endpoint, introspectable schema → elegant for complex multi-client UIs or mobile. But POST-based (HTTP caching breaks down, need app-level caching strategy), steeper backend complexity (query planning, depth limits to prevent abuse), fewer developers know it well, new debugging surface.\n\n**Pick REST if:** you want proven patterns, caching matters, team is comfortable with it, API is mostly CRUD with clear resource shapes. **Pick GraphQL if:** clients have wildly different data needs (web vs mobile vs third-party), reducing round trips is critical, you can invest in proper tooling (Apollo, etc.), and you want schema-as-contract.\n\nNeither rules out the other — hybrid APIs exist (GraphQL on top of REST resources). Start REST unless GraphQL's precision solves an actual problem.",
+ "answer_lines": 7
+}

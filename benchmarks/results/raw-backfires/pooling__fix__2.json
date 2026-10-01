@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "fix",
+ "seed": 2,
+ "out_tokens": 493,
+ "input_tokens": 21888,
+ "turns": 1,
+ "cost_usd": 0.022623499999999998,
+ "answer": "**Connection pooling** maintains a set of pre-opened database connections ready to reuse, rather than creating a new connection for each query.\n\n**How it works:** At startup, the pool opens N connections (e.g., 10) and keeps them idle. When your app needs one, it borrows from the pool; when done, the connection returns to the pool for the next request. If all N are in use, new requests wait (or timeout). Idle connections stay open but consume minimal resources.\n\n**Why it helps:**\n\n- **Speed:** Opening a DB connection is expensive—TCP handshake, authentication, session setup. Reusing bypasses that cost. Query latency drops dramatically.\n- **Resource control:** Without pooling, 1000 concurrent requests = 1000 open connections. Pooling caps this (e.g., 20 connections handle all 1000 requests sequentially). Saves memory, file handles, and keeps the database from collapsing under connection overhead.\n- **Stability:** Database has limits on concurrent connections. Pooling prevents your app from exhausting it.\n- **Connection cleanup:** Pool handles timeouts, retries, and stale connection eviction automatically.\n\n**Tradeoff:** Pool must be sized right. Too small → requests queue and wait. Too large → waste memory and DB resources. Most apps tune by load-testing and monitoring queue depth.\n\nAll major databases (PostgreSQL, MySQL, MongoDB) and languages (Python's `sqlalchemy`, Node's `pg`, Go's `database/sql`) include pooling built-in or as a standard library.",
+ "answer_lines": 14
+}

@@ -1,0 +1,11 @@
+{
+ "id": "regex-concept",
+ "arm": "fix",
+ "seed": 2,
+ "out_tokens": 253,
+ "input_tokens": 21889,
+ "turns": 1,
+ "cost_usd": 0.0214255,
+ "answer": "A backreference recalls a previously captured group in the same regex pattern. Denoted `\\1`, `\\2`, etc. for the 1st, 2nd group.\n\nExample: Match a repeated word:\n```\n(\\w+)\\s+\\1\n```\nCaptures a word in group 1, then `\\1` matches that exact same word again. Matches \"hello hello\" but not \"hello world\".",
+ "answer_lines": 7
+}

@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "cur",
+ "seed": 1,
+ "out_tokens": 1028,
+ "input_tokens": 44262,
+ "turns": 2,
+ "cost_usd": 0.0284855,
+ "answer": "No existing code found. Here's a debounced search input using React hooks:\n\n```jsx\nimport { useState, useRef, useCallback } from 'react';\n\nfunction SearchInput() {\n  const [query, setQuery] = useState('');\n  const [results, setResults] = useState([]);\n  const timeoutRef = useRef(null);\n\n  const search = useCallback(async (q) => {\n    if (!q) {\n      setResults([]);\n      return;\n    }\n    const response = await fetch(`/api/search?q=${encodeURIComponent(q)}`);\n    const data = await response.json();\n    setResults(data);\n  }, []);\n\n  const handleChange = (e) => {\n    const value = e.target.value;\n    setQuery(value);\n\n    clearTimeout(timeoutRef.current);\n    timeoutRef.current = setTimeout(() => {\n      search(value);\n    }, 300);\n  };\n\n  return (\n    <div>\n      <input\n        type=\"text\"\n        value={query}\n        onChange={handleChange}\n        placeholder=\"Search...\"\n      />\n      <ul>\n        {results.map((r) => <li key={r.id}>{r.name}</li>)}\n      </ul>\n    </div>\n  );\n}\n\nexport default SearchInput;\n```\n\n**Key change:** `setTimeout` with 300ms delay + `clearTimeout` on each keystroke. Only the *last* keystroke's timer fires, preventing duplicate API calls.\n\n**Vanilla JS alternative** — same pattern, no hooks needed:\n\n```js\nconst input = document.querySelector('input');\nlet timeoutId;\n\ninput.addEventListener('input', (e) => {\n  clearTimeout(timeoutId);\n  timeoutId = setTimeout(() => {\n    fetch(`/api/search?q=${encodeURIComponent(e.target.value)}`)\n      .then(r => r.json())\n      .then(data => console.log(data));\n  }, 300);\n});\n```\n\nAdjust delay (300ms) to your needs. Shorter = more responsive, more API calls. Longer = fewer calls, slower feedback.",
+ "answer_lines": 67
+}

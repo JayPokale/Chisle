@@ -1,0 +1,11 @@
+{
+ "id": "regex-concept",
+ "arm": "cur",
+ "seed": 2,
+ "out_tokens": 300,
+ "input_tokens": 21871,
+ "turns": 1,
+ "cost_usd": 0.021624499999999998,
+ "answer": "A backreference lets you match the same text that a capturing group already matched. Denoted `\\1`, `\\2`, etc., based on the group's position.\n\n**Example:** Match repeated words:\n```regex\n\\b(\\w+)\\s+\\1\\b\n```\nThis matches \"hello hello\" or \"test test\"—`(\\w+)` captures a word, then `\\1` matches that exact word again. Useful for finding duplicates: `the the`, `a a`.\n\nIn replacements, backreferences keep matched groups: `\"foo bar\"` with regex `(\\w+) (\\w+)` and replacement `\\2 \\1` → `\"bar foo\"`.",
+ "answer_lines": 9
+}

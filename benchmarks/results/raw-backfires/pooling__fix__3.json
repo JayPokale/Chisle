@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "fix",
+ "seed": 3,
+ "out_tokens": 472,
+ "input_tokens": 21888,
+ "turns": 1,
+ "cost_usd": 0.0225185,
+ "answer": "**How it works:** A pool maintains a set of open database connections. When your app needs one, it borrows from the pool instead of opening a fresh connection. When done, it returns the connection to the pool for reuse. A connection manager handles lifecycle—opening spares on demand, closing idle ones, validating connections before handing them out.\n\n**Why it helps:**\n\n- **Connection overhead is huge.** Creating a TCP connection, authenticating, initializing state takes 100–1000ms. A pool amortizes this across requests; reusing an existing connection is ~1ms.\n- **Limits resource consumption.** Without pooling, each concurrent request opens a new connection. Under load, you hit OS limits (file descriptors), memory spikes, or database connection limits. A pool caps connections to a fixed size (typically 10–100).\n- **Improves throughput.** Requests queue for an available connection instead of each spawning a new one. The pool serves requests faster than creating fresh connections.\n- **Handles connection failures gracefully.** Bad connections get replaced. The pool validates before reuse (`SELECT 1` or similar).\n\n**Trade-off:** Pool size tuning matters. Too small = queuing delays. Too large = wasted resources, connection limits hit. Sweet spot is usually `connections = (core_count * 2) + spare_for_io_wait`.\n\nMost frameworks handle this automatically (SQLAlchemy, Django ORM, node-postgres, etc.). You typically just set `pool_size` and forget it.",
+ "answer_lines": 12
+}

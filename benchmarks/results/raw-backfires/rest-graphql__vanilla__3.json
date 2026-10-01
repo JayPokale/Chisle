@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "vanilla",
+ "seed": 3,
+ "out_tokens": 438,
+ "input_tokens": 20999,
+ "turns": 1,
+ "cost_usd": 0.02058,
+ "answer": "**REST is simpler and more cacheable; GraphQL eliminates over/under-fetching but adds complexity.**\n\n**REST:** Stateless, cacheable by default, and straightforward for simple CRUD operations. Downside: clients often fetch unnecessary fields or need multiple requests to get related data, increasing payload size and network calls.\n\n**GraphQL:** Clients request exactly what they need in a single query, reducing bandwidth and improving efficiency for complex, interconnected data. Downside: harder to cache (requires custom solutions), steeper learning curve, and overkill for simple APIs.\n\n**Recommendation:** Start with REST if your data is mostly hierarchical and clients have predictable needs; choose GraphQL if clients need flexible queries over interconnected data or you're building a platform where different consumers want different fields.",
+ "answer_lines": 7
+}

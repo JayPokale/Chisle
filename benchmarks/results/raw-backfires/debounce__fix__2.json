@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "fix",
+ "seed": 2,
+ "out_tokens": 841,
+ "input_tokens": 21900,
+ "turns": 1,
+ "cost_usd": 0.0243875,
+ "answer": "Need to see your search input code first. Where is it? (React, vanilla JS, Vue, etc.)\n\nIn the meantime, here's the most common patterns:\n\n**React + useState:**\n```javascript\nimport { useState, useCallback } from 'react';\n\nfunction SearchInput() {\n  const [query, setQuery] = useState('');\n  const [timeoutId, setTimeoutId] = useState(null);\n\n  const handleSearch = useCallback((value) => {\n    if (timeoutId) clearTimeout(timeoutId);\n    \n    const id = setTimeout(() => {\n      // API call here\n      console.log('Searching:', value);\n    }, 300);\n    \n    setTimeoutId(id);\n  }, [timeoutId]);\n\n  return (\n    <input\n      onChange={(e) => {\n        setQuery(e.target.value);\n        handleSearch(e.target.value);\n      }}\n      value={query}\n      placeholder=\"Search...\"\n    />\n  );\n}\n```\n\n**React + custom hook (cleaner):**\n```javascript\nfunction useDebounce(callback, delay) {\n  const timeoutRef = useRef(null);\n  \n  return useCallback((value) => {\n    clearTimeout(timeoutRef.current);\n    timeoutRef.current = setTimeout(() => callback(value), delay);\n  }, [callback, delay]);\n}\n\n// Usage:\nconst debouncedSearch = useDebounce((query) => {\n  // API call\n}, 300);\n\n<input onChange={(e) => debouncedSearch(e.target.value)} />\n```\n\n**Vanilla JS:**\n```javascript\nlet timeoutId;\nconst input = document.querySelector('input');\n\ninput.addEventListener('input', (e) => {\n  clearTimeout(timeoutId);\n  timeoutId = setTimeout(() => {\n    console.log('Searching:', e.target.value);\n  }, 300);\n});\n```\n\nShare your current code and I'll add debounce to it.",
+ "answer_lines": 69
+}

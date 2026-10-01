@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "cur",
+ "seed": 2,
+ "out_tokens": 506,
+ "input_tokens": 21875,
+ "turns": 1,
+ "cost_usd": 0.022662500000000002,
+ "answer": "**REST:** Simple contract, standard HTTP caching, stateless. Client makes N requests per view → network overhead, high latency on slow connections. Client gets unused fields → over-fetching. Building new fields means versioning or new endpoints. Mature tooling, boring to scale.\n\n**GraphQL:** Single request, client specifies fields → no over-fetching. Server parses + optimizes queries → resource-intensive (DB queries explode without careful batching/caching). HTTP caching doesn't apply — need custom logic. Steeper learning curve, but powerful for complex, highly-variable clients (mobile, third-party). Tooling still maturing.\n\n**Verdict:** REST for simple, stable APIs and public third-party integrations (you can't control clients). GraphQL for internal tools, mobile apps with variable data needs, or heavy frontend complexity where the extra server cost buys real client-side wins. Don't pick GraphQL to avoid versioning alone — good REST design handles evolution.",
+ "answer_lines": 5
+}

@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "cur",
+ "seed": 3,
+ "out_tokens": 459,
+ "input_tokens": 21871,
+ "turns": 1,
+ "cost_usd": 0.022419500000000002,
+ "answer": "**REST** → simple ops, HTTP caching, loose coupling; clients over/under-fetch data, multiple round trips for related data, endpoint explosion as needs diverge.\n\n**GraphQL** → precise data fetching (client declares shape), single request for related data, fast client iteration; tight coupling between schema and clients, HTTP caching harder, server complexity higher.\n\n**Pick REST if:** API is stable, clients are diverse (can't coordinate on schema), caching matters, you want boring.\n\n**Pick GraphQL if:** clients vary widely (mobile vs web vs internal tools), server controls data shape, you'll iterate fast, caching strategy is custom anyway.\n\nHybrid: REST for public/stable surfaces, GraphQL for internal/mobile-heavy APIs. Start REST unless you're certain of GraphQL's tradeoffs.",
+ "answer_lines": 9
+}

@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "vanilla",
+ "seed": 1,
+ "out_tokens": 519,
+ "input_tokens": 20994,
+ "turns": 1,
+ "cost_usd": 0.020975,
+ "answer": "# Database Connection Pooling\n\n## How It Works\n\nA connection pool maintains a pre-established set of database connections that applications can reuse. Instead of creating a new connection for every database request (expensive), the pool:\n\n1. **Initializes N connections** ahead of time (configurable minimum)\n2. **Hands out connections** from the pool when an application requests one\n3. **Returns connections** to the pool after use (instead of closing them)\n4. **Grows or shrinks** dynamically based on demand (up to a maximum limit)\n\nWhen all pooled connections are in use, new requests typically wait for one to become available, or fail if a timeout is exceeded.\n\n## Why It Helps\n\n**Connection overhead is expensive:**\n- Opening a connection involves TCP handshake, authentication, and driver initialization\n- This can take 100-500ms per connection\n- Creating a fresh connection for every query kills performance\n\n**Connection pooling eliminates this waste:**\n\n| Metric | Without Pooling | With Pooling |\n|--------|-----------------|--------------|\n| Per-query overhead | 100-500ms (new connection) | < 1ms (reused) |\n| Concurrent users | Limited by max OS connections | Controlled by pool size |\n| Resource usage | Spikes during traffic | Stable and predictable |\n\n**Key benefits:**\n- **Speed**: Reused connections eliminate initialization overhead\n- **Resource control**: Pool size caps database load; prevents connection exhaustion\n- **Concurrency**: Handle thousands of users with just dozens of actual DB connections\n- **Reliability**: Detects stale/dead connections and replaces them automatically\n\nMost web frameworks (Node.js, Python, Java, Go, etc.) and ORMs use connection pooling by default. The pool typically sits between your application and the database, managed transparently.",
+ "answer_lines": 35
+}

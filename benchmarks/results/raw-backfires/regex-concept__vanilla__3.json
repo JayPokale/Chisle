@@ -1,0 +1,11 @@
+{
+ "id": "regex-concept",
+ "arm": "vanilla",
+ "seed": 3,
+ "out_tokens": 381,
+ "input_tokens": 20997,
+ "turns": 1,
+ "cost_usd": 0.020291,
+ "answer": "A **backreference** lets you match the same text that was previously captured by a group in the regex pattern.\n\n**Example:** `(\\w+)\\s+\\1` matches a word repeated twice with whitespace between them.\n\n- `(\\w+)` captures one or more word characters into group 1\n- `\\s+` matches whitespace\n- `\\1` backreferences group 1, requiring it to match the exact same text\n\nThis pattern matches `\"hello hello\"` and `\"the the\"`, but not `\"hello world\"`. Backreferences are written as `\\1`, `\\2`, etc. (or `$1`, `$2` in replacement strings, depending on the language).",
+ "answer_lines": 9
+}

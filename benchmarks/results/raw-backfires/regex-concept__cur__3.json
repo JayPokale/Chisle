@@ -1,0 +1,11 @@
+{
+ "id": "regex-concept",
+ "arm": "cur",
+ "seed": 3,
+ "out_tokens": 251,
+ "input_tokens": 21871,
+ "turns": 1,
+ "cost_usd": 0.0213795,
+ "answer": "Backreference: `\\1`, `\\2`, etc. match the exact same text captured by an earlier group (in parentheses). Used to find repetition.\n\n**Example:** `(\\w+) \\1` matches repeated words:\n- `\"hello hello\"` ✓\n- `\"hello world\"` ✗\n\nReplace pattern: `(\\w+) \\1` → `$1` removes the duplicate.\n\nCommon use: HTML tags `<(\\w+)>.*?</\\1>` ensures opening and closing tags match.",
+ "answer_lines": 9
+}

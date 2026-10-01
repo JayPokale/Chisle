@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "vanilla",
+ "seed": 1,
+ "out_tokens": 339,
+ "input_tokens": 19422,
+ "turns": 1,
+ "cost_usd": 0.0169443,
+ "answer": "**REST** is simpler to start with—caching, monitoring, and pagination are built-in at the HTTP level—but requires multiple requests for related data and returns fixed response shapes that may include unnecessary fields.\n\n**GraphQL** lets clients request exactly what they need in a single query, reducing over-fetching and eliminating N+1 problems, but adds complexity: you need a query language, caching becomes harder (everything is POST), and you must invest upfront in schema design and server implementation.\n\n**Choose REST if:** You have simple, predictable data access patterns, your clients are bandwidth-constrained (the fixed response shapes matter less), or you want something you can ship quickly without much API governance.\n\n**Choose GraphQL if:** Clients need flexible queries (mobile apps fetching different data shapes, rapid UI iteration), you have complex nested relationships, or you're building a platform where many teams consume your API and schema versioning matters.\n\nA middle ground: start with REST, add GraphQL later as a wrapper if flexibility becomes a bottleneck.",
+ "answer_lines": 9
+}

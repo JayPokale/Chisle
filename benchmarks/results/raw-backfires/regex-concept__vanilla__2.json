@@ -1,0 +1,11 @@
+{
+ "id": "regex-concept",
+ "arm": "vanilla",
+ "seed": 2,
+ "out_tokens": 282,
+ "input_tokens": 20993,
+ "turns": 1,
+ "cost_usd": 0.019788,
+ "answer": "A **backreference** in regex matches the exact same text that was previously captured by a group earlier in the pattern. It's denoted as `\\1`, `\\2`, etc., referring to the 1st, 2nd capturing group.\n\n**Example:**\n```regex\n(\\w+)\\s+\\1\n```\n\nThis matches repeated words separated by whitespace:\n- `(\\w+)` — captures a word into group 1\n- `\\s+` — matches whitespace\n- `\\1` — matches the exact same text as group 1\n\nSo it matches: `hello hello`, `test test`, `foo foo` — but not `hello world`.\n\n**Use case:** Detecting duplicates, balanced tags (`<tag>.*?</tag>`), or enforcing identical patterns without hardcoding what they should be.",
+ "answer_lines": 15
+}

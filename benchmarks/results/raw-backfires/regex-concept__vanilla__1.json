@@ -1,0 +1,11 @@
+{
+ "id": "regex-concept",
+ "arm": "vanilla",
+ "seed": 1,
+ "out_tokens": 321,
+ "input_tokens": 20999,
+ "turns": 1,
+ "cost_usd": 0.019995,
+ "answer": "A **backreference** is a way to match the exact same text that was captured by an earlier group in the same regex pattern. You reference a group using `\\1`, `\\2`, etc., based on the group's position.\n\n**Example:**\n```regex\n(\\w+)\\s+\\1\n```\n\nThis matches any word repeated with whitespace between them — like \"hello hello\" or \"test test\". The `(\\w+)` captures a word, and `\\1` backreferences it, requiring the second word to be identical to the first.\n\nIn practice (JavaScript):\n```javascript\n/(\\w+)\\s+\\1/.test(\"hello hello\")   // true\n/(\\w+)\\s+\\1/.test(\"hello world\")   // false\n```\n\nBackreferences are useful for finding repeated patterns, validating matching pairs (like `<tag>...</tag>`), or replacing text while preserving parts of it.",
+ "answer_lines": 16
+}

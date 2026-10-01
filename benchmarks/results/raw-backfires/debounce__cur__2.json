@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "cur",
+ "seed": 2,
+ "out_tokens": 273,
+ "input_tokens": 21874,
+ "turns": 1,
+ "cost_usd": 0.0214955,
+ "answer": "Need context to show the right code. What framework/tech are you using — React, Vue, vanilla JS, something else? And do you have the current search input code you want me to update, or should I show an example?",
+ "answer_lines": 1
+}

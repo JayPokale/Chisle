@@ -1,0 +1,11 @@
+{
+ "id": "regex-concept",
+ "arm": "fix",
+ "seed": 3,
+ "out_tokens": 293,
+ "input_tokens": 21889,
+ "turns": 1,
+ "cost_usd": 0.021625500000000002,
+ "answer": "Backreference: inside a regex, `\\1`, `\\2`, etc. refer to text matched by earlier groups `(...)` in the same pattern. Lets you match *identical* repeated content.\n\nExample: `(\\w+)\\s+\\1` matches repeated words: \"hello hello\" or \"the the\" but not \"hello world\". The `\\1` says \"match whatever word we just captured.\"\n\nCommon use: finding duplicate words in text, validating matching quotes/brackets, or replacing with `$1 $2` syntax in replacement strings.",
+ "answer_lines": 5
+}

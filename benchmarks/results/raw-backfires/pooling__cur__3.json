@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "cur",
+ "seed": 3,
+ "out_tokens": 598,
+ "input_tokens": 21870,
+ "turns": 1,
+ "cost_usd": 0.0231125,
+ "answer": "**Connection pooling**: maintains a cache of open database connections. Requests borrow a connection from the pool, execute queries, then return it—instead of opening and closing a connection for every operation.\n\n**Why it matters**: establishing a connection is expensive. Handshake overhead (TCP round-trip, auth, session init) adds 10–100ms per connection on typical networks. If your app serves 1000 req/s each needing a query, that's 10–100 seconds of pure connection overhead *per second*. Pooling keeps N connections open (typically 10–100), so the 1000 requests reuse those N connections—reducing latency from 50ms to 1–2ms and cutting server load proportionally.\n\n**How it works**: \n- Client requests a connection → pool returns an idle one (or creates one if pool is small)\n- Query executes\n- Connection returns to pool, stays open\n- Next client grabs it\n\n**Key benefits**: \n- *Throughput*: fewer stalled threads waiting for new connections\n- *Latency*: skip 10–100ms handshake per request\n- *Resource limits*: database doesn't exhaust RAM on thousands of half-open sockets\n- *CPU*: less context-switching on connection setup/teardown\n\n**Tradeoff**: connections idle between requests (memory cost), but that's negligible vs. the throughput gain. Pools also need tuning—too small → requests wait; too large → wasted connections. Most frameworks (Rails, Django, Node, Java) include pooling out of the box.",
+ "answer_lines": 17
+}

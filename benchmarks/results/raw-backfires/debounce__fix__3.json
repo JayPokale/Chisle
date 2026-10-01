@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "fix",
+ "seed": 3,
+ "out_tokens": 1101,
+ "input_tokens": 66946,
+ "turns": 3,
+ "cost_usd": 0.0316049,
+ "answer": "No existing file, so here are the main patterns:\n\n**React (custom hook):**\n```javascript\nfunction useDebounce(value, delay) {\n  const [debouncedValue, setDebouncedValue] = useState(value);\n\n  useEffect(() => {\n    const handler = setTimeout(() => setDebouncedValue(value), delay);\n    return () => clearTimeout(handler);\n  }, [value, delay]);\n\n  return debouncedValue;\n}\n\nexport function SearchInput() {\n  const [query, setQuery] = useState(\"\");\n  const debouncedQuery = useDebounce(query, 300);\n\n  useEffect(() => {\n    if (debouncedQuery) {\n      fetch(`/api/search?q=${debouncedQuery}`)\n        .then(r => r.json())\n        .then(setResults);\n    }\n  }, [debouncedQuery]);\n\n  return <input value={query} onChange={e => setQuery(e.target.value)} />;\n}\n```\n\n**Vanilla JS:**\n```javascript\nclass SearchInput {\n  constructor(inputEl, onSearch) {\n    this.timeoutId = null;\n    this.inputEl = inputEl;\n    this.onSearch = onSearch;\n    this.inputEl.addEventListener(\"input\", (e) => this.debounce(e.target.value));\n  }\n\n  debounce(value) {\n    clearTimeout(this.timeoutId);\n    this.timeoutId = setTimeout(() => this.onSearch(value), 300);\n  }\n}\n\nnew SearchInput(\n  document.querySelector(\"#search\"),\n  (query) => fetch(`/api/search?q=${query}`).then(r => r.json())\n);\n```\n\n**Using lodash:**\n```javascript\nimport { debounce } from 'lodash';\n\nconst handleSearch = debounce((query) => {\n  fetch(`/api/search?q=${query}`).then(r => r.json());\n}, 300);\n\nexport function SearchInput() {\n  return <input onChange={e => handleSearch(e.target.value)} />;\n}\n```\n\n300ms delay is standard; adjust up for slower APIs. What's your stack—React, vanilla, or a specific framework?",
+ "answer_lines": 67
+}

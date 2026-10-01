@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "vanilla",
+ "seed": 3,
+ "out_tokens": 585,
+ "input_tokens": 20992,
+ "turns": 1,
+ "cost_usd": 0.021301,
+ "answer": "## Database Connection Pooling\n\n**What it is:** Connection pooling maintains a pre-created set of database connections that applications reuse, rather than creating and destroying a connection for each query.\n\n**How it works:**\n1. At startup, the pool creates N idle connections to the database (e.g., 10-100 connections)\n2. When your app needs a connection, it requests one from the pool\n3. If an idle connection is available, it's returned instantly\n4. If all connections are busy, the request waits (or fails, depending on configuration)\n5. When your app finishes its query, the connection is returned to the pool (not closed)\n6. The connection stays idle, ready for the next request\n\n**Why it helps:**\n\n- **Performance**: Creating a TCP connection, authenticating, and initializing a session is expensive (~100ms+). Reusing connections saves this overhead per query\n- **Resource efficiency**: Connection limits are expensive (memory, file descriptors, database server slots). A pool uses fewer total connections by multiplexing—10 app threads might share 5-10 DB connections instead of needing 10\n- **Scalability**: Without pooling, thousands of concurrent requests would create thousands of connections, overwhelming the database. A pool caps this and queues excess requests\n- **Stability**: Prevents connection exhaustion from crashing your app or database\n- **Latency predictability**: Reusing warm connections has consistent latency vs. creating new ones each time\n\n**Example:** A web server with 1000 concurrent users doesn't need 1000 DB connections. With a pool of 20 connections, those 20 connections rapidly service all 1000 users by completing queries fast. Without pooling, you'd need 1000 connections (and likely hit the database's limit).\n\nMost ORMs and database drivers provide pooling built-in (e.g., HikariCP for Java, SQLAlchemy for Python, node-postgres for Node.js).",
+ "answer_lines": 23
+}

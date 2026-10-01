@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "vanilla",
+ "seed": 2,
+ "out_tokens": 485,
+ "input_tokens": 20988,
+ "turns": 1,
+ "cost_usd": 0.020793,
+ "answer": "## How Database Connection Pooling Works\n\nA connection pool maintains a set of open database connections that are reused across requests, rather than creating a new connection for each query.\n\n**The process:**\n1. When your app starts, the pool creates a fixed number of connections (e.g., 10–20) and keeps them open\n2. When a request needs to query the database, it requests a connection from the pool\n3. The pool gives it an available connection (or waits if all are in use)\n4. After the query completes, the connection returns to the pool—still open, ready for the next request\n5. When the app shuts down, all pooled connections close\n\n## Why It Helps\n\n**Performance**\n- Creating a database connection is expensive (TCP handshake, authentication, schema negotiation). Reusing connections eliminates this overhead per query.\n- Pooling lets you handle many concurrent requests with a small fixed number of connections—one request doesn't tie up a connection for long.\n\n**Resource efficiency**\n- Without pooling, high request volume could exhaust system file descriptors or memory, causing failures.\n- A fixed pool size caps resource consumption.\n\n**Stability**\n- Prevents connection leaks (forgetting to close connections), which would gradually exhaust database capacity.\n- Detects and removes stale/broken connections automatically.\n\n**Example impact**: A web server handling 1000 requests/second without pooling might need 1000+ open connections; with pooling (say, 50 connections), each request borrows one for milliseconds, then releases it.\n\nMost database drivers (psycopg for PostgreSQL, mysql-connector for MySQL, etc.) include built-in pooling, or you can use dedicated libraries like HikariCP (Java) or SQLAlchemy (Python).",
+ "answer_lines": 28
+}

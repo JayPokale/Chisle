@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "cur",
+ "seed": 1,
+ "out_tokens": 514,
+ "input_tokens": 21868,
+ "turns": 1,
+ "cost_usd": 0.0226885,
+ "answer": "**Connection pooling:** A cache of open database connections. Instead of creating a new connection per query (expensive), the app borrows a connection from the pool, uses it, then returns it to the pool for reuse.\n\n**Why it helps:**\n\nCreating a DB connection = TCP handshake + authentication + session setup → ~100ms of latency per query if done fresh. With pooling → reuse a warm connection in microseconds. Most apps spend 90% of connection lifecycle idle, so a pool of 10 connections can handle hundreds of concurrent requests.\n\n**Mechanics:** Pool maintains a minimum (e.g., 5 idle connections) and max (e.g., 20). When a request needs a connection, it checks out one; if all are in use and limit allows, it creates a temporary one; if at max, it queues and waits. When done, the connection returns to idle. Stale connections are periodically validated or recycled.\n\n**Concrete win:** A web server handling 1000 req/s. Without pooling: each request spawns a connection → database runs out of file descriptors, clients time out, server crashes. With a 20-connection pool: requests share 20 connections via queuing → CPU-bound instead of I/O-bound, server stays stable.\n\n**Trade-off:** Must size the pool carefully. Too small → queuing, high latency. Too large → wasted memory, connection overhead. Typical sweet spot is 5–20 for most web apps, tuned by load testing.",
+ "answer_lines": 11
+}

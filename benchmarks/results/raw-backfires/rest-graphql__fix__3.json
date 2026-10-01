@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "fix",
+ "seed": 3,
+ "out_tokens": 563,
+ "input_tokens": 21893,
+ "turns": 1,
+ "cost_usd": 0.022983499999999997,
+ "answer": "**REST: simple, cache-friendly, but rigid.**\nSingle operation per endpoint → separate requests for related data (under-fetching), extra fields you don't need (over-fetching). HTTP caching works out-of-the-box; clients are straightforward to build. Cost: endpoint sprawl as product grows.\n\n**GraphQL: query-shaped, exact fetch, but harder to cache.**\nClient specifies fields → no over/under-fetching. Single endpoint → reduced surface area. Cost: POST requests bypass HTTP caching; server must prevent N+1 queries; teams need resolver discipline or face hidden performance cliffs.\n\n**Pick REST if:** standard CRUD, cacheable content (static files, user profiles), small team, monitoring is simple. **Pick GraphQL if:** highly interconnected data (graph of users → posts → comments), mobile clients bandwidth-sensitive, complex queries common, you have infra expertise.\n\nHybrid approach (REST + caching layer) splits the difference but adds deployment complexity.",
+ "answer_lines": 9
+}

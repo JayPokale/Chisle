@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "fix",
+ "seed": 2,
+ "out_tokens": 634,
+ "input_tokens": 21893,
+ "turns": 1,
+ "cost_usd": 0.023338499999999998,
+ "answer": "**REST pros:** Simpler to build and cache (standard HTTP caching works). Smaller initial learning curve. Better for stateless, resource-oriented APIs. Easier to monitor and debug with standard tools. Strong maturity and tooling.\n\n**REST cons:** Over/under-fetching (client gets fields it doesn't need, or must fetch related data in separate requests). No built-in versioning path → often need `/v2` endpoints. Hard to evolve without breaking clients.\n\n**GraphQL pros:** Clients request exactly what they need (single round-trip for complex queries). Strong API contracts (schema + introspection). Easy evolution (add fields without breaking). Excellent developer experience (playground, IDE autocomplete).\n\n**GraphQL cons:** Harder to cache (POST, query-dependent). Steeper learning curve. Requires more server complexity (query planning, N+1 query risks). Overkill for simple, read-only APIs. Needs monitoring discipline (unbounded queries can DoS).\n\n**Pick REST if:** API is simple, resources are naturally hierarchical, clients are bandwidth-constrained, your team prefers simplicity.\n\n**Pick GraphQL if:** Clients have varied data needs, you expect rapid evolution, queries are complex, you want strong schema contracts, your team has capacity for the ops complexity.\n\nFor a new API, start with REST unless you know clients need flexible querying or you're building for internal tools where development velocity matters more than ops simplicity.",
+ "answer_lines": 13
+}

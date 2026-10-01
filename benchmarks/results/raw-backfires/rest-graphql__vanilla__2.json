@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "vanilla",
+ "seed": 2,
+ "out_tokens": 580,
+ "input_tokens": 20997,
+ "turns": 1,
+ "cost_usd": 0.021286,
+ "answer": "**REST** is simpler and cacheable but leads to over/under-fetching: you often need multiple requests to get related resources, or you receive data you don't need. It's mature, well-understood, and ideal for resource-focused APIs.\n\n**GraphQL** eliminates over/under-fetching—clients request exactly what they need in a single query—and is self-documenting through its type system. But it's more complex to implement, harder to cache (since requests are POST queries with variable structure), and introduces a steeper learning curve. It shines for complex, interconnected data; it's overkill for simple CRUD.\n\n**Choose REST if:** your API is resource-centric, caching matters, or your team values simplicity. **Choose GraphQL if:** clients need flexible data shapes, you have deeply nested relationships, or frontend teams would benefit from strong typing and introspection.\n\nFor a new API, consider your data model's complexity and whether clients will have varying data needs. A hybrid approach (REST for stable, frequently-accessed resources + GraphQL for complex queries) is also viable.",
+ "answer_lines": 7
+}

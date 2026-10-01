@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "cur",
+ "seed": 1,
+ "out_tokens": 627,
+ "input_tokens": 20294,
+ "turns": 1,
+ "cost_usd": 0.0201188,
+ "answer": "**REST**: Simpler mental model, HTTP caching works out of the box, easy to debug (browser, curl). Versioning is straightforward (`/v2/users`). Downside: fixed response shapes mean you often get too much data (over-fetching) or too little (need multiple requests). Monitoring and rate-limiting are standard.\n\n**GraphQL**: Clients request exactly what they need → less bandwidth, fewer round trips. Single endpoint, introspection for free documentation. Downside: query complexity can explode (N+1 queries, deeply nested resolvers hammering your DB). POST-only breaks HTTP caching. Requires a query parser and validator on every request. Versioning is implicit (old fields stay, new ones coexist), which sounds good but makes cleanup harder. Monitoring is harder — you can't tell from the URL alone what work a request will do.\n\n**Verdict**: REST for public/simple APIs, stable schemas, or if your clients have predictable needs. GraphQL for internal APIs, mobile clients with varying data demands, or if you have teams building many different views on the same data. Hybrid (GraphQL on top of REST services) is common but adds a translation layer.\n\nStart with REST. Migrate to GraphQL only if over-fetching or request chaining becomes a real bottleneck.",
+ "answer_lines": 7
+}
