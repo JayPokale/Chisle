@@ -73,6 +73,17 @@ about the ruleset's own size times the request count. The rest is extra turns:
 extra request re-sends the whole context, so fetching less per call costs more
 if it means more calls.
 
+**Follow-up with tool-call and per-request logs** (`raw-diag/`, `raw-diag2/`):
+most of that gap is turn-count noise, not behaviour. Every Chisle request
+carries the ruleset, ~0.9k tokens (first prompt 20.3k vs 19.4k bare), and that
+part repeats exactly. Everything else is how many requests a run takes, which
+swings both ways: in one `noisylog` batch Chisle took 6 turns in all three
+cells (172k context vs 248–276k bare), in another it took more than bare.
+Pooled over 12 `noisylog` cells per arm: 233k vs 210k (+11%), wide spread.
+The tool sequences themselves match closely; on `dupepaths` Chisle sometimes
+stops after fixing `money.js` alone and fails, as bare does. The repeatable
+cost is the ruleset; the turn gap needs far more than six seeds to call.
+
 ## Results, 2026-09-14 (pre-trim ruleset, five fixtures)
 
 Regenerated from the committed `raw/` by `score.js` — deterministic, no tokens
