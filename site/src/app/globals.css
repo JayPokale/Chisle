@@ -1,150 +1,116 @@
 @import "tailwindcss";
 
+/* Dark-first palette: near-black surfaces, violet brand, lavender accent.
+   Light theme swaps the same tokens, so utilities re-resolve automatically. */
 @theme {
-  --color-ink: #16130e;
-  --color-paper: #faf9f6;
-  --color-panel: #f2f0ea;
-  --color-line: #e4e1d8;
-  --color-dim: #79736a;
-  --color-amber: #c77800;
-  --color-amber-soft: #f5e9d8;
-  --color-save: #3d7a2e;
-  --color-waste: #c23b41;
-  --color-term: #16130e;
-  --color-term-line: #2c2820;
-  --color-term-dim: #8f8574;
-  --color-term-paper: #ece5d8;
-  --color-term-amber: #ffa028;
-  --font-sans: var(--font-geist);
+  --color-bg: #0e0e10;
+  --color-surface: #131316;
+  --color-raised: #1c1c20;
+  --color-line: #2b2a31;
+  --color-fg: #f4f4f6;
+  --color-dim: #a09fa8;
+  --color-brand: #631bff;
+  --color-brand-hover: #8465ff;
+  --color-accent: #a796ff;
+  --color-accent-soft: #8465ff26;
+  --color-save: #43f6b6;
+  --color-waste: #ff6a6c;
+  /* the terminal stays dark in both themes */
+  --color-term: #0b0b0d;
+  --color-term-line: #2b2a31;
+  --color-term-dim: #8b8a93;
+  --color-term-fg: #e6e6ea;
+  --color-term-accent: #a796ff;
+  --font-sans: var(--font-mona);
   --font-mono: var(--font-geist-mono);
 }
 
-/* dark theme: same tokens, swapped values; utilities re-resolve automatically */
-[data-theme="dark"] {
-  --color-ink: #ece5d8;
-  --color-paper: #0b0a08;
-  --color-panel: #14120e;
-  --color-line: #292418;
-  --color-dim: #8f8574;
-  --color-amber: #ffa028;
-  --color-amber-soft: #2a2013;
-  --color-save: #86c06c;
-  --color-waste: #e5484d;
+[data-theme="light"] {
+  --color-bg: #ffffff;
+  --color-surface: #f7f7f9;
+  --color-raised: #f1f0f5;
+  --color-line: #e4e2ec;
+  --color-fg: #1c1c20;
+  --color-dim: #5f5e68;
+  --color-brand: #631bff;
+  --color-brand-hover: #5212e0;
+  --color-accent: #631bff;
+  --color-accent-soft: #f1efff;
+  --color-save: #12865e;
+  --color-waste: #d92d3a;
 }
 
 html {
   scroll-behavior: smooth;
-}
-
-body {
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-body {
-  background: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-geist), system-ui, sans-serif;
-}
-
-::selection {
-  background: var(--color-amber);
-  color: var(--color-paper);
-}
-
-/* ── Scrollbars ─────────────────────────────────────────────────────────────
-   Built from the theme tokens, so they re-resolve in dark mode with everything
-   else. Firefox gets the standard properties; WebKit/Blink gets the pseudo-
-   elements, which allow the thinner, inset treatment used inside panels.
-   scrollbar-gutter keeps the page from shifting when content grows past the
-   fold. */
-
-/* Transparent track, fully rounded thumb, thumb in the theme accent.
-   Applies to the page and every scrollable panel alike. */
-html {
-  /* reserve the gutter so the page doesn't jump when content crosses the fold */
+  scroll-padding-top: 5rem;
   scrollbar-gutter: stable;
-  /* Firefox */
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-amber) transparent;
-}
-
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-track,
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-amber);
-  border-radius: 999px;
-}
-
-/* Panels that scroll inside the page: transcripts, wide tables, the pipeline
-   SVG. Narrower and neutral: amber is right for the page rail, but two of these
-   sit side by side, and accent-coloured bars inside a panel compete with the
-   content they're framing. */
-.pane-scroll {
   scrollbar-width: thin;
   scrollbar-color: var(--color-line) transparent;
 }
 
-.pane-scroll::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-mona), system-ui, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.pane-scroll::-webkit-scrollbar-track {
-  background: transparent;
+::selection {
+  background: var(--color-brand);
+  color: #fff;
 }
 
-.pane-scroll::-webkit-scrollbar-thumb {
-  background: var(--color-line);
-  border-radius: 999px;
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-line); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-dim); }
+
+/* Panels that scroll inside the page: transcripts, tables, the ladder rail. */
+.pane-scroll { scrollbar-width: thin; scrollbar-color: var(--color-line) transparent; }
+.pane-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+
+/* Hero backdrop: faint grid fading out at the edges, violet glow on top. */
+.grid-bg {
+  background-image:
+    linear-gradient(var(--color-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+  opacity: 0.55;
+}
+.glow {
+  background: radial-gradient(ellipse 50% 45% at 50% 0%, #631bff66, transparent 70%),
+    radial-gradient(ellipse 30% 30% at 80% 20%, #f62e7622, transparent 70%);
+}
+[data-theme="light"] .glow {
+  background: radial-gradient(ellipse 50% 45% at 50% 0%, #631bff2e, transparent 70%),
+    radial-gradient(ellipse 30% 30% at 80% 20%, #f62e7614, transparent 70%);
 }
 
-.pane-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--color-dim);
+.text-gradient {
+  background: linear-gradient(90deg, #a796ff, #cd88ff 45%, #f62e76);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+[data-theme="light"] .text-gradient {
+  background-image: linear-gradient(90deg, #631bff, #a950ff 50%, #e0245e);
 }
 
-
-/* Hover treatment shared by the interactive cards: the element under the
-   cursor lifts and warms, rather than its neighbours being dimmed. Adding
-   attention reads better than removing it, and it degrades to nothing when
-   the user has asked for reduced motion. */
-.lift {
-  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
-}
-.lift:hover {
-  transform: translateY(-2px);
-  border-color: var(--color-amber);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lift,
-  .lift:hover {
-    transition: none;
-    transform: none;
-  }
-}
+/* Card under the cursor lifts and borders in violet. */
+.lift { transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease; }
+.lift:hover { transform: translateY(-3px); border-color: var(--color-brand-hover); }
 
 .caret::after {
   content: "▌";
-  color: var(--color-term-amber);
+  color: var(--color-term-accent);
   animation: blink 1.1s steps(1) infinite;
 }
-@keyframes blink {
-  50% { opacity: 0; }
-}
+@keyframes blink { 50% { opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  .caret::after {
-    animation: none;
-  }
+  html { scroll-behavior: auto; }
+  .lift, .lift:hover { transition: none; transform: none; }
+  .caret::after { animation: none; }
 }

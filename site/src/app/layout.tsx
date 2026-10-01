@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Mona_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geist = Geist({
+const mona = Mona_Sans({
   subsets: ["latin"],
-  variable: "--font-geist",
+  variable: "--font-mona",
 });
 
 const geistMono = Geist_Mono({
@@ -77,12 +77,12 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
+    <html lang="en" data-theme="dark" suppressHydrationWarning className={`${mona.variable} ${geistMono.variable}`}>
       <body className="antialiased">
-        {/* set theme before paint, so no flash; default light, honors saved choice or OS dark */}
+        {/* set theme before paint, so no flash; dark by default, honors a saved choice */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("chisle-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}`,
+            __html: `try{var t=localStorage.getItem("chisle-theme")||"dark";document.documentElement.dataset.theme=t}catch(e){}`,
           }}
         />
         <script
