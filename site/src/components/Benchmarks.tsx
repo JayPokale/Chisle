@@ -215,10 +215,10 @@ export default function Benchmarks() {
             </h3>
             <p className="mt-3 max-w-2xl text-sm text-dim">
               Six real repos, 6 seeds per arm, hidden tests, hooks off, trimmed ruleset. Correctness
-              ties. Context and cost come out higher: the ruleset rides along on every request, and
-              Chisle took 9% more turns, each of which re-sends the whole context. Shorter answers
-              do not make a loop on a small repo cheaper. Before the trim it was −4.6% context and
-              +2.6% cost; the trim did not fix it.
+              ties and shorter answers do not make the loop cheaper. Per-request logs from follow-up
+              runs split the gap: the ruleset adds ~900 tokens to every request, about 4% on these
+              small repos, every time. The rest is turn count, which flipped direction between
+              batches. Expect Chisle to cost a little more in an agent loop, not less.
             </p>
 
             <div className="pane-scroll mt-6 overflow-x-auto rounded-xl border border-line bg-bg px-5 py-2">
