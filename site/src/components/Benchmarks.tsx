@@ -34,14 +34,14 @@ const PI_ROWS = [
   { label: "visible answer", vanilla: 100, caveman: 56, ponytail: 49, chisle: 37 },
   { label: "answer lines", vanilla: 100, caveman: 75, ponytail: 38, chisle: 37 },
 ];
-// Agent loop: 5 fixture repos x 12 seeds per arm, Haiku 4.5, hidden tests, hooks
-// off. From benchmarks/results/2026-09-14-quality-and-agentic.md. Measured with
-// the pre-trim ruleset; it is the reason the ruleset was cut.
+// Agent loop: 6 fixture repos x 6 seeds per arm, Haiku 4.5, hidden tests, hooks
+// off, trimmed ruleset. From benchmarks/agentic/README.md (2026-10-01 run).
 const LOOP_ROWS = [
-  { label: "hidden tests passed", bare: "49/60", chisle: "48/60", delta: "noise (p = 1.0)" },
-  { label: "output tokens / run", bare: "1,171", chisle: "1,083", delta: "−7.5%" },
-  { label: "context tokens / run", bare: "67,832", chisle: "64,695", delta: "−4.6%" },
-  { label: "cost / run", bare: "$0.0269", chisle: "$0.0276", delta: "+2.6%" },
+  { label: "hidden tests passed", bare: "28/36", chisle: "28/36", delta: "tie" },
+  { label: "output tokens / run", bare: "1,118", chisle: "1,155", delta: "+3.3%" },
+  { label: "context tokens / run", bare: "115,063", chisle: "133,974", delta: "+16%" },
+  { label: "turns / run", bare: "5.42", chisle: "5.92", delta: "+9%" },
+  { label: "cost / run", bare: "$0.0397", chisle: "$0.0424", delta: "+6.8%" },
 ];
 
 
@@ -211,14 +211,14 @@ export default function Benchmarks() {
         <Reveal>
           <div className="mt-20 border-t border-line pt-12">
             <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">
-              In an agent loop, the gain mostly vanished
+              In an agent loop, Chisle costs more
             </h3>
             <p className="mt-3 max-w-2xl text-sm text-dim">
-              Five real repos, 12 seeds per arm, hidden tests, hooks off. Output and context
-              barely moved and cost per run came out higher: the ~1.8k-token ruleset rides along
-              on every request, about 5 per run, which ate an estimated three quarters of what the
-              behaviour saved. So the ruleset was cut to ~900 tokens. These rows are the old
-              ruleset; the re-run is pending.
+              Six real repos, 6 seeds per arm, hidden tests, hooks off, trimmed ruleset. Correctness
+              ties. Context and cost come out higher: the ruleset rides along on every request, and
+              Chisle took 9% more turns, each of which re-sends the whole context. Shorter answers
+              do not make a loop on a small repo cheaper. Before the trim it was −4.6% context and
+              +2.6% cost; the trim did not fix it.
             </p>
 
             <div className="pane-scroll mt-6 overflow-x-auto rounded-xl border border-line bg-bg px-5 py-2">
