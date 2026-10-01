@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 // you can go. A reading-progress rail sits under the bar, and the link for the
 // section currently in view is marked.
 const SECTIONS = [
+  { id: "get-started", label: "Get started" },
   { id: "features", label: "Features" },
   { id: "compare", label: "Compare" },
   { id: "ladder", label: "Ladder" },
@@ -57,14 +58,14 @@ export default function NavLinks() {
           key={s.id}
           href={`#${s.id}`}
           aria-current={active === s.id ? "location" : undefined}
-          className={`relative hidden transition-colors sm:block ${
-            active === s.id ? "text-amber" : "hover:text-ink"
+          className={`relative hidden transition-colors md:block ${
+            active === s.id ? "text-fg" : "hover:text-fg"
           }`}
         >
           {s.label}
           <span
             aria-hidden
-            className={`absolute -bottom-1 left-0 h-px bg-amber transition-all duration-300 ${
+            className={`absolute -bottom-1 left-0 h-px bg-accent transition-all duration-300 ${
               active === s.id ? "w-full opacity-100" : "w-0 opacity-0"
             }`}
           />
@@ -72,7 +73,7 @@ export default function NavLinks() {
       ))}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-amber transition-[width] duration-150"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-brand to-[#cd88ff] transition-[width] duration-150"
         style={{ width: `${progress}%` }}
       />
     </>

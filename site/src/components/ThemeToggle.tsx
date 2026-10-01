@@ -6,7 +6,7 @@ export default function ThemeToggle() {
   const [theme, setTheme] = useState<string | null>(null);
 
   useEffect(() => {
-    setTheme(document.documentElement.dataset.theme ?? "light");
+    setTheme(document.documentElement.dataset.theme ?? "dark");
   }, []);
 
   const flip = () => {
@@ -20,7 +20,7 @@ export default function ThemeToggle() {
     <button
       onClick={flip}
       aria-label="Toggle color theme"
-      className="flex h-8 w-8 items-center justify-center rounded-full border border-line text-dim transition-colors hover:border-amber hover:text-amber"
+      className="flex h-8 w-8 items-center justify-center rounded-md border border-line text-dim transition-colors hover:border-brand-hover hover:text-fg"
     >
       {theme === "dark" ? (
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
