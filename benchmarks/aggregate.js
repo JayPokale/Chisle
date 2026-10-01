@@ -31,6 +31,9 @@ const KIND = {
   thread: 'coding', retry: 'coding', mixed: 'coding', signup: 'coding',
   ratelimit: 'coding', caching: 'coding', palindrome: 'coding',
   deadlock: 'noncoding', letconst: 'noncoding',
+  // SUITE=large (run-live.sh), first run 2026-10-01
+  migration: 'coding', statemachine: 'coding', csvpipeline: 'coding', authflow: 'coding',
+  apidesign: 'noncoding', postmortem: 'noncoding', architecture: 'noncoding',
 };
 
 const estTok = (s) => Math.round((s || '').replace(/\s+/g, ' ').trim().length / 4);

@@ -47,11 +47,13 @@ function cell(task, arm) {
   };
 }
 
-// Aggregates over ALL suites, so the site can offer more than one metric
-// without inventing numbers: billed tokens is the bill, answer lines is what
-// the reader actually wades through.
-const ALL_RAW = ['raw', 'raw-sonnet', 'raw-verify'].map((d) =>
-  path.join(ROOT, 'benchmarks', 'results', d));
+// Aggregates over the current re-run (2026-10-01: default + large suites, two
+// seeds, current ruleset and harness), so the site's split table describes the
+// product as it ships. Two metrics without inventing numbers: billed tokens is
+// the bill, answer lines is what the reader actually wades through. The June
+// transcripts above stay as the browsable samples.
+const ALL_RAW = ['default-s1', 'default-s2', 'large-s1', 'large-s2'].map((d) =>
+  path.join(ROOT, 'benchmarks', 'results', 'raw-oct', d));
 const KINDS = require('../benchmarks/aggregate').KIND;
 
 function aggregates() {

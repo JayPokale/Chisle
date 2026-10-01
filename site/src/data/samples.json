@@ -214,76 +214,76 @@
     }
   ],
   "aggregates": {
-    "median": 522,
+    "median": 1564,
     "groups": [
       {
         "label": "all tasks",
-        "n": 20,
+        "n": 26,
         "tokens": {
-          "caveman": 80,
-          "ponytail": 68,
-          "rdxmin": 52
+          "caveman": 102,
+          "ponytail": 105,
+          "rdxmin": 83
         },
         "lines": {
-          "caveman": 80,
-          "ponytail": 52,
-          "rdxmin": 43
+          "caveman": 112,
+          "ponytail": 107,
+          "rdxmin": 81
         }
       },
       {
         "label": "coding",
-        "n": 12,
+        "n": 14,
         "tokens": {
-          "caveman": 74,
-          "ponytail": 59,
-          "rdxmin": 44
+          "caveman": 100,
+          "ponytail": 120,
+          "rdxmin": 76
         },
         "lines": {
-          "caveman": 80,
-          "ponytail": 40,
-          "rdxmin": 37
+          "caveman": 132,
+          "ponytail": 116,
+          "rdxmin": 83
         }
       },
       {
         "label": "explanation",
-        "n": 8,
+        "n": 12,
         "tokens": {
-          "caveman": 103,
-          "ponytail": 104,
-          "rdxmin": 87
+          "caveman": 106,
+          "ponytail": 86,
+          "rdxmin": 91
         },
         "lines": {
-          "caveman": 80,
-          "ponytail": 103,
-          "rdxmin": 64
+          "caveman": 98,
+          "ponytail": 100,
+          "rdxmin": 79
         }
       },
       {
         "label": "short answers",
-        "n": 10,
+        "n": 13,
         "tokens": {
-          "caveman": 84,
-          "ponytail": 106,
-          "rdxmin": 84
+          "caveman": 104,
+          "ponytail": 141,
+          "rdxmin": 106
         },
         "lines": {
-          "caveman": 71,
-          "ponytail": 74,
-          "rdxmin": 71
+          "caveman": 140,
+          "ponytail": 157,
+          "rdxmin": 108
         }
       },
       {
         "label": "long answers",
-        "n": 10,
+        "n": 13,
         "tokens": {
-          "caveman": 79,
-          "ponytail": 59,
-          "rdxmin": 45
+          "caveman": 102,
+          "ponytail": 97,
+          "rdxmin": 77
         },
         "lines": {
-          "caveman": 83,
-          "ponytail": 43,
-          "rdxmin": 32
+          "caveman": 106,
+          "ponytail": 95,
+          "rdxmin": 74
         }
       }
     ]
