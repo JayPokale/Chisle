@@ -1,0 +1,20 @@
+{
+ "fixture": "noisylog",
+ "arm": "chisle",
+ "seed": 5,
+ "out_tokens": 1666,
+ "input_tokens": 282306,
+ "cost_usd": 0.0722936,
+ "turns": 11,
+ "answer": "Fixed. Bug was in `src/price.js:3` — `applyDiscount` used `Math.floor()` which always rounds down. Changed to `Math.round()` to properly round half-cents up. Test `1995 at 10%` now correctly returns 1796 instead of 1795. All 401 tests pass.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/price.js"
+ ],
+ "loc_before": 66,
+ "loc_after": 66,
+ "loc_delta": 0,
+ "deps_added": []
+}

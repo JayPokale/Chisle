@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 5,
+ "out_tokens": 1137,
+ "input_tokens": 109022,
+ "cost_usd": 0.036006899999999994,
+ "turns": 5,
+ "answer": "Done. Fixed the off-by-one error at `src/auth/session.js:3`. Changed the comparison from `now > expiresAt` to `now >= expiresAt` so sessions are properly rejected at the exact expiration instant instead of being accepted for that extra millisecond. All other code uses this `isExpired` function, so the fix applies everywhere.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

@@ -1,0 +1,20 @@
+{
+ "fixture": "noisylog",
+ "arm": "vanilla",
+ "seed": 5,
+ "out_tokens": 1829,
+ "input_tokens": 192183,
+ "cost_usd": 0.08023609999999999,
+ "turns": 11,
+ "answer": "Fixed! The issue was in `src/price.js:3` where the `applyDiscount` function was using `Math.floor()` instead of `Math.round()`. The test required rounding half-cents up (1995 at 10% discount = 1795.5 cents → 1796 cents), but `Math.floor()` was truncating it to 1795. All 401 tests now pass.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/price.js"
+ ],
+ "loc_before": 66,
+ "loc_after": 66,
+ "loc_delta": 0,
+ "deps_added": []
+}

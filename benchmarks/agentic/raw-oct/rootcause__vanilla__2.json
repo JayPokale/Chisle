@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 2,
+ "out_tokens": 968,
+ "input_tokens": 86881,
+ "cost_usd": 0.0325568,
+ "turns": 5,
+ "answer": "Fixed. The session expiration check now correctly uses `>=` so that a session becomes invalid at the exact millisecond it expires, not after.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

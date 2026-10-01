@@ -1,0 +1,20 @@
+{
+ "fixture": "noisylog",
+ "arm": "vanilla",
+ "seed": 1,
+ "out_tokens": 1334,
+ "input_tokens": 190995,
+ "cost_usd": 0.060585999999999994,
+ "turns": 7,
+ "answer": "All tests passing! The bug was in `src/price.js` where `applyDiscount` used `Math.floor()` to round down, but needed to use `Math.round()` to round half-cents up. Changing that single line fixed the failing test.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/price.js"
+ ],
+ "loc_before": 66,
+ "loc_after": 66,
+ "loc_delta": 0,
+ "deps_added": []
+}

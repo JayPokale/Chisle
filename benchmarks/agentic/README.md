@@ -56,7 +56,24 @@ log itself? The results below predate it and cover five fixtures.
 | context tokens | the context diet: input + cache read + cache creation, i.e. everything the run pulled into the window |
 | $ / run | the two above, priced |
 
-## Results
+## Results, 2026-10-01 (trimmed ruleset, six fixtures)
+
+`ARMS=vanilla,chisle RAW_DIR=benchmarks/agentic/raw-oct`, 6 fixtures x 6 seeds,
+Haiku 4.5, Claude Code 2.1.285, ruleset 48485e7 (~900 tokens per request).
+
+| arm | n | passed | net LOC | out tokens | context tokens | turns | $ / run |
+|-----|--:|-------:|--------:|-----------:|---------------:|------:|--------:|
+| vanilla | 36 | 28 | 2.8 | 1118 | 115,063 | 5.42 | 0.0397 |
+| chisle | 36 | 28 | 2.5 | 1155 | 133,974 | 5.92 | 0.0424 |
+
+The trim did not make Chisle cheaper in a loop. Pass rate ties again; context
+is **+16%** and cost **+6.8%**. On the three easy fixtures the gap is +4%,
+about the ruleset's own size times the request count. The rest is extra turns:
+`dupepaths` 8.2 vs 6.8 (+22% context), `noisylog` 9.8 vs 8.2 (+37%). Each
+extra request re-sends the whole context, so fetching less per call costs more
+if it means more calls.
+
+## Results, 2026-09-14 (pre-trim ruleset, five fixtures)
 
 Regenerated from the committed `raw/` by `score.js` — deterministic, no tokens
 spent. 5 fixtures x 12 seeds = 60 cells per arm. Run on 2026-09-14 with the

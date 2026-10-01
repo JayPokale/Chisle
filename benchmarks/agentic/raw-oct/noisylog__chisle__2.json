@@ -1,0 +1,20 @@
+{
+ "fixture": "noisylog",
+ "arm": "chisle",
+ "seed": 2,
+ "out_tokens": 1885,
+ "input_tokens": 305218,
+ "cost_usd": 0.0760404,
+ "turns": 11,
+ "answer": "Fixed. The `applyDiscount` function was using `Math.floor()`, which always rounds down. For proper half-cent rounding, it needs `Math.round()`. \n\nExample: 1995 cents at 10% discount = 1795.5 cents → should round to 1796, not 1795.\n\nChange in `src/price.js:3`: `Math.floor` → `Math.round`. All 401 tests now pass.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/price.js"
+ ],
+ "loc_before": 66,
+ "loc_after": 66,
+ "loc_delta": 0,
+ "deps_added": []
+}

@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 3,
+ "out_tokens": 1383,
+ "input_tokens": 110208,
+ "cost_usd": 0.038024300000000004,
+ "turns": 6,
+ "answer": "The fix is applied. The comparison is now `now >= expiresAt`, so a session becomes invalid the moment it reaches its expiration time, not one millisecond later.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

@@ -1,0 +1,20 @@
+{
+ "fixture": "reuse",
+ "arm": "chisle",
+ "seed": 6,
+ "out_tokens": 887,
+ "input_tokens": 90182,
+ "cost_usd": 0.0339183,
+ "turns": 5,
+ "answer": "Done. `src/routes/posts.js` created, following the same pattern as `userPath`: imports `slugify` and returns `/posts/${slugify(title)}`, reusing the app's standard slug rules.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [
+  "src/routes/posts.js"
+ ],
+ "files_touched": [],
+ "loc_before": 18,
+ "loc_after": 23,
+ "loc_delta": 5,
+ "deps_added": []
+}

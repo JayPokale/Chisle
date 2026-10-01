@@ -1,0 +1,22 @@
+{
+ "fixture": "dupepaths",
+ "arm": "chisle",
+ "seed": 1,
+ "out_tokens": 3301,
+ "input_tokens": 387490,
+ "cost_usd": 0.08231870000000001,
+ "turns": 16,
+ "answer": "Fixed. Negative amounts now render as `-$4.50` everywhere in the codebase:\n\n- `money.js` - `formatMoney()` \n- `statement.js` - `statementRow()`\n- `receipt.js` - `receiptTotal()`\n- `invoice.js` - uses `formatMoney()`\n\nEach function now checks if the value is negative, puts the minus sign before the currency symbol, and uses the absolute value for the amount. Verified with positive, negative, and zero test cases.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/money.js",
+  "src/receipt.js",
+  "src/statement.js"
+ ],
+ "loc_before": 20,
+ "loc_after": 23,
+ "loc_delta": 3,
+ "deps_added": []
+}

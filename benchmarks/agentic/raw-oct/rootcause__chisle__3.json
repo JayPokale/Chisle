@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 3,
+ "out_tokens": 961,
+ "input_tokens": 89858,
+ "cost_usd": 0.03407350000000001,
+ "turns": 4,
+ "answer": "**Fixed.** Changed line 3 from `now > expiresAt` to `now >= expiresAt`. Now the session expires at the exact millisecond, not after it. The logic now matches the comment: \"At the expiry instant it is over.\"",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

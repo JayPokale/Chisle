@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 1,
+ "out_tokens": 1121,
+ "input_tokens": 91172,
+ "cost_usd": 0.0357307,
+ "turns": 5,
+ "answer": "Fixed. The issue was a boundary condition: the check used `now > expiresAt` instead of `now >= expiresAt`. When `now` equals `expiresAt` exactly, the session was still accepted. Changed to `>=` so the session becomes invalid at its expiry instant, not after it.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

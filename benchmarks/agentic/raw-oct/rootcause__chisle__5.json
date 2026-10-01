@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 5,
+ "out_tokens": 1015,
+ "input_tokens": 90271,
+ "cost_usd": 0.0348199,
+ "turns": 5,
+ "answer": "Fixed. Line 3 in `session.js` used `now > expiresAt`, which means at the exact instant where `now === expiresAt`, the session was still valid. Changed to `>=` so the session becomes invalid at its expiry instant, matching the documented behavior on line 1.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

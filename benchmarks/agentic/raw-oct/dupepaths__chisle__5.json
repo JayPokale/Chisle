@@ -1,0 +1,22 @@
+{
+ "fixture": "dupepaths",
+ "arm": "chisle",
+ "seed": 5,
+ "out_tokens": 2178,
+ "input_tokens": 259362,
+ "cost_usd": 0.0610695,
+ "turns": 11,
+ "answer": "Fixed all three locations where amounts render to customers:\n\n1. **money.js** — `formatMoney()` now uses `-$` for negatives\n2. **statement.js** — `statementRow()` fixed  \n3. **receipt.js** — `receiptTotal()` fixed\n\nAll now render `-$4.50` instead of `$-4.50`. Invoice.js already uses the shared `formatMoney()` function, so it's covered automatically.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/money.js",
+  "src/receipt.js",
+  "src/statement.js"
+ ],
+ "loc_before": 20,
+ "loc_after": 23,
+ "loc_delta": 3,
+ "deps_added": []
+}

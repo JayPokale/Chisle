@@ -1,0 +1,20 @@
+{
+ "fixture": "yagni",
+ "arm": "vanilla",
+ "seed": 5,
+ "out_tokens": 810,
+ "input_tokens": 86110,
+ "cost_usd": 0.030984800000000003,
+ "turns": 4,
+ "answer": "Done. The retry count is now configurable via the `RETRY_COUNT` environment variable, defaulting to 3 when not set. The `retries()` function reads from `process.env.RETRY_COUNT` and parses it as an integer, with the `|| 3` fallback handling missing or invalid values.",
+ "pass": false,
+ "test_output": "FAIL zero -> 3 want 0",
+ "files_created": [],
+ "files_touched": [
+  "src/client.js"
+ ],
+ "loc_before": 13,
+ "loc_after": 12,
+ "loc_delta": -1,
+ "deps_added": []
+}

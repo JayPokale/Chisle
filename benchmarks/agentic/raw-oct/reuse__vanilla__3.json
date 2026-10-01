@@ -1,0 +1,20 @@
+{
+ "fixture": "reuse",
+ "arm": "vanilla",
+ "seed": 3,
+ "out_tokens": 893,
+ "input_tokens": 86683,
+ "cost_usd": 0.031920699999999996,
+ "turns": 5,
+ "answer": "Done. Created `src/routes/posts.js` with `postPath(title)` that uses the app's `slugify` utility to return URL-safe paths like `/posts/my-post-title`. It mirrors the pattern in `src/routes/users.js`.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [
+  "src/routes/posts.js"
+ ],
+ "files_touched": [],
+ "loc_before": 18,
+ "loc_after": 23,
+ "loc_delta": 5,
+ "deps_added": []
+}

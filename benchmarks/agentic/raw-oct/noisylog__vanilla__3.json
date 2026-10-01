@@ -1,0 +1,20 @@
+{
+ "fixture": "noisylog",
+ "arm": "vanilla",
+ "seed": 3,
+ "out_tokens": 1766,
+ "input_tokens": 193551,
+ "cost_usd": 0.0619585,
+ "turns": 9,
+ "answer": "Fixed! Changed `Math.floor()` to `Math.round()` in the `applyDiscount` function to properly round half-cents up. All 401 tests now pass.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/price.js"
+ ],
+ "loc_before": 66,
+ "loc_after": 66,
+ "loc_delta": 0,
+ "deps_added": []
+}

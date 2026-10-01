@@ -1,0 +1,20 @@
+{
+ "fixture": "noisylog",
+ "arm": "chisle",
+ "seed": 3,
+ "out_tokens": 1433,
+ "input_tokens": 198383,
+ "cost_usd": 0.0615937,
+ "turns": 9,
+ "answer": "Fixed. Changed `Math.floor` → `Math.round` in `src/price.js:3`. The discount calculation was rounding 1795.5 down to 1795 instead of up to 1796. All 401 tests pass.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/price.js"
+ ],
+ "loc_before": 66,
+ "loc_after": 66,
+ "loc_delta": 0,
+ "deps_added": []
+}

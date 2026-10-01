@@ -1,0 +1,20 @@
+{
+ "fixture": "stdlib",
+ "arm": "chisle",
+ "seed": 4,
+ "out_tokens": 630,
+ "input_tokens": 66667,
+ "cost_usd": 0.0291726,
+ "turns": 3,
+ "answer": "Done. `uniqueIds()` filters ids through a Set, keeping first-seen order by returning only the first occurrence of each id.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/importer.js"
+ ],
+ "loc_before": 5,
+ "loc_after": 13,
+ "loc_delta": 8,
+ "deps_added": []
+}

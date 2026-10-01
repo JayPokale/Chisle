@@ -1,0 +1,20 @@
+{
+ "fixture": "reuse",
+ "arm": "chisle",
+ "seed": 3,
+ "out_tokens": 1121,
+ "input_tokens": 91272,
+ "cost_usd": 0.03596300000000001,
+ "turns": 6,
+ "answer": "Done. `postPath(title)` returns `/posts/` + slugified title, matching the `userPath` pattern in users.js. Uses the app's canonical slugify utility (normalizes accents, converts \"&\" → \"and\", lowercase, dashes for word boundaries).",
+ "pass": true,
+ "test_output": "",
+ "files_created": [
+  "src/routes/posts.js"
+ ],
+ "files_touched": [],
+ "loc_before": 18,
+ "loc_after": 23,
+ "loc_delta": 5,
+ "deps_added": []
+}

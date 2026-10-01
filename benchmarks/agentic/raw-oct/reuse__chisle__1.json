@@ -1,0 +1,20 @@
+{
+ "fixture": "reuse",
+ "arm": "chisle",
+ "seed": 1,
+ "out_tokens": 847,
+ "input_tokens": 90217,
+ "cost_usd": 0.033733200000000005,
+ "turns": 5,
+ "answer": "Done. `src/routes/posts.js` exports `postPath(title)` following the same pattern as `userPath` — using the canonical `slugify` utility for URL-safe encoding.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [
+  "src/routes/posts.js"
+ ],
+ "files_touched": [],
+ "loc_before": 18,
+ "loc_after": 23,
+ "loc_delta": 5,
+ "deps_added": []
+}

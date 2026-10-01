@@ -1,0 +1,20 @@
+{
+ "fixture": "reuse",
+ "arm": "chisle",
+ "seed": 4,
+ "out_tokens": 1011,
+ "input_tokens": 113275,
+ "cost_usd": 0.0373773,
+ "turns": 6,
+ "answer": "Done. `postPath(title)` uses the app's `slugify` utility to convert the title to URL-safe form and returns `/posts/{slugified-title}`, matching the pattern from `userPath`.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [
+  "src/routes/posts.js"
+ ],
+ "files_touched": [],
+ "loc_before": 18,
+ "loc_after": 23,
+ "loc_delta": 5,
+ "deps_added": []
+}

@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 4,
+ "out_tokens": 1170,
+ "input_tokens": 113343,
+ "cost_usd": 0.038504,
+ "turns": 5,
+ "answer": "Fixed. Bug was in `/tmp/wk-rootcause-ggkjbs/repo/src/auth/session.js:3` — comparison operator was `>` instead of `>=`. At the exact moment when `now === expiresAt`, the session should be expired, but `now > expiresAt` only catches strictly later times. Changed to `now >= expiresAt` so it correctly invalidates at the expiry instant.\n\nThe centralized `isExpired` function fixes all three call sites: middleware auth check, refresh validation, and session cleanup.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

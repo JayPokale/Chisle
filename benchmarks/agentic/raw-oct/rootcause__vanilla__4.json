@@ -1,0 +1,20 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 4,
+ "out_tokens": 805,
+ "input_tokens": 86115,
+ "cost_usd": 0.0310116,
+ "turns": 4,
+ "answer": "Fixed. The comparison is now `now >= expiresAt`, so sessions are correctly marked as expired at the exact instant they reach their expiration time, not after.",
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}
