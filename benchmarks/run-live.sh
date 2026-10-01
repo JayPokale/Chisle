@@ -52,7 +52,9 @@ find_skill() {  # $1 = tool name → path to its SKILL.md, or empty
   local standard="$HOME/.agents/skills/$1/SKILL.md"
   local pi_git="$HOME/.pi/agent/git/github.com/DietrichGebert/$1/skills/$1/SKILL.md"
   for file in "$clone" "$standard" "$pi_git"; do [ -f "$file" ] && { echo "$file"; return; }; done
-  ls "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/cache/$1/$1"/*/skills/"$1"/SKILL.md 2>/dev/null | head -1
+  # Plugin cache, both layouts: <ver>/skills/<name>/ and (newer caveman) <ver>/<name>/.
+  local cache="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/cache/$1/$1"
+  ls "$cache"/*/skills/"$1"/SKILL.md "$cache"/*/"$1"/SKILL.md 2>/dev/null | head -1
 }
 CAVEMAN_SKILL="$(find_skill caveman)"
 PONYTAIL_SKILL="$(find_skill ponytail)"
