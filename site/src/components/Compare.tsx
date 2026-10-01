@@ -70,7 +70,7 @@ export default function Compare() {
         <Reveal delay={0.1}>
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
             {/* baseline */}
-            <div className="flex flex-col rounded-xl border border-line bg-surface">
+            <div className="flex min-w-0 flex-col rounded-xl border border-line bg-surface">
               <header className="flex items-baseline justify-between border-b border-line px-4 py-3">
                 <span className="text-sm font-semibold">bare model</span>
                 <span className="font-mono text-xs text-dim">
@@ -88,8 +88,8 @@ export default function Compare() {
             </div>
 
             {/* selected arm */}
-            <div className="flex flex-col rounded-xl border border-brand-hover/60 bg-surface shadow-[0_0_40px_-12px_#ffa028]">
-              <header className="flex items-baseline justify-between gap-3 border-b border-line px-4 py-3">
+            <div className="flex min-w-0 flex-col rounded-xl border border-brand-hover/60 bg-surface shadow-[0_0_40px_-12px_#ffa028]">
+              <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-2 border-b border-line px-4 py-3">
                 <div className="flex gap-1.5">
                   {RIVALS.filter((r) => task.arms[r.key]).map((r) => (
                     <button
