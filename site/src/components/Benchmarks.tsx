@@ -209,9 +209,9 @@ export default function Benchmarks() {
             </h3>
             <p className="mt-3 max-w-2xl text-sm text-dim">
               Five real repos, 12 seeds per arm, hidden tests, hooks off. Output and context
-              barely moved and cost per run came out higher: the ~1.7k-token ruleset rides along
+              barely moved and cost per run came out higher: the ~1.8k-token ruleset rides along
               on every request, about 5 per run, which ate an estimated three quarters of what the
-              behaviour saved. So the ruleset was cut to ~750 tokens. These rows are the old
+              behaviour saved. So the ruleset was cut to ~900 tokens. These rows are the old
               ruleset; the re-run is pending.
             </p>
 

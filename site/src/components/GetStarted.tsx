@@ -99,7 +99,7 @@ export default function GetStarted() {
 
             <Step n={2} title="Open your agent as usual">
               <p className="text-sm leading-relaxed text-dim">
-                The ruleset loads once on a new session (~750 tokens), then a ~50-token reminder
+                The ruleset loads once on a new session (~900 tokens), then a ~50-token reminder
                 per turn keeps it alive through compaction. Tool output gets compressed before the
                 model reads it, and the statusline shows what was actually elided.
               </p>

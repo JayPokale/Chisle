@@ -11,7 +11,7 @@ const QA = [
   },
   {
     q: "What's the overhead of the plugin itself?",
-    a: "~750 tokens of rules at session start, plus a ~50-token reminder per turn. Both stay in context and ride along on every later request, which is why the ruleset was cut from ~1.7k. It used to be worse: the ruleset was re-sent on every resume and clear, which a user measured across 173 sessions as roughly cancelling the compressor's savings. That re-injection is fixed. On a one-line throwaway prompt the overhead still exceeds the saving.",
+    a: "~900 tokens of rules at session start, plus a ~50-token reminder per turn. Both stay in context and ride along on every later request, which is why the ruleset was cut from ~1.8k. It used to be worse: the ruleset was re-sent on every resume and clear, which a user measured across 173 sessions as roughly cancelling the compressor's savings. That re-injection is fixed. On a one-line throwaway prompt the overhead still exceeds the saving.",
   },
   {
     q: "Can the compressor corrupt my files?",
