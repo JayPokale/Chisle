@@ -1,7 +1,7 @@
 # Agentic benchmark (real repo, hidden tests)
 
 The single-turn suites cannot test most of what the skill actually claims. "Is
-it already in this codebase?", "grep every caller before editing", "fewest files
+it already in this codebase?", "bug fix = root cause, not symptom", "fewest files
 possible" and the context diet are all statements about an agent working in a
 repo, and a `-p` prompt in an empty directory measures none of them.
 
