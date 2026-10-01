@@ -40,7 +40,27 @@ Still open:
       their prevention layer.
 - [ ] Adversarial correctness benchmark for eliding, same bar as the output
       axis's 0/14: N real debugging tasks where the needed line was in an
-      elided region, did the agent recover?
+      elided region, did the agent recover? **Narrowed 2026-10-01:** failing
+      commands are out of reach (Claude Code sends them to
+      `PostToolUseFailure`, which cannot rewrite output), so this only applies
+      to successful outputs with an important mid-log line (warnings, logs).
+
+## Open from 2026-10-01
+
+- [ ] **Agent loops cost more with Chisle.** Six fixtures x 6 seeds: context
+      +16% (95% CI +1% to +34%), cost +6.8% (CI -1% to +15%), pass rate tied.
+      Easy fixtures show the clean part: ~+4%, the ~900-token ruleset times
+      ~5 requests. Diagnose the rest with the tool-call logs the runner now
+      records: `ARMS=vanilla,chisle FIXTURES=noisylog,dupepaths,reuse
+      RAW_DIR=benchmarks/agentic/raw-diag node benchmarks/agentic/run.js
+      claude-haiku-4-5-20251001 3` resumes the partial run (usage limit hit:
+      vanilla 3/3 per fixture, chisle 1/3). First look: bare also verifies
+      with `| tail -20`, so the context diet is not the obvious culprit;
+      Chisle explored `dupepaths` in more calls (two `ls` + `package.json`
+      vs one `find`).
+- [ ] Decide on a release only after that: the trim, the structure-rule
+      propagation and the doc corrections are ready under [Unreleased], but
+      the agent-loop result argues against advertising lower session cost.
 
 ## Ideas not yet started
 
