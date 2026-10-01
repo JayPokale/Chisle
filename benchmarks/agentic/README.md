@@ -38,9 +38,12 @@ ARMS=vanilla,chisle,chisle-hook RAW_DIR=benchmarks/agentic/raw-2 node benchmarks
 | `stdlib` | Order-preserving dedupe, which invites a dependency | Behaviour, plus `deps added` in the score table |
 | `noisylog` | `npm test` prints 401 results (17k chars) with one half-cent rounding failure mid-log | A fix that only special-cases the visible failure misses `1005 @ 50%` and `1 @ 50%`; editing the test instead of `price.js` fails outright |
 
-`noisylog` was added on 2026-10-01, before any run that includes it, to give
-the `chisle-hook` arm something to compress: the other five repos produce
-almost no shell output. The results below predate it and cover five fixtures.
+`noisylog` was added on 2026-10-01, before any run that includes it. It was
+meant to give the `chisle-hook` arm something to compress, but a smoke run
+showed it cannot: the log comes from a *failing* `npm test`, and Claude Code
+sends failed calls to `PostToolUseFailure`, whose output no hook can rewrite.
+What it measures instead is the context diet: does the agent filter a 17k-char
+log itself? The results below predate it and cover five fixtures.
 
 ## Metrics
 

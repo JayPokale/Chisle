@@ -13,8 +13,11 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 - The `What it sounds like` heading is gone, so it left the `sections.prose` group.
 - **The site's headline is scoped to what was measured.** "Less than half the tokens" became "Half the words", with the agent-loop result (output −7.5%, context −4.6%, cost +2.6%) published alongside the 20-task numbers.
 
+### Fixed
+- **The compressor never reached failing commands, and the docs implied it did.** Claude Code sends a failed call (a non-zero `Bash` exit included) to `PostToolUseFailure`, whose output schema allows only `additionalContext` (checked on 2.1.285), so no hook can shrink a failing test run. The site demo showed exactly that case, with a `34,120 → 612` figure head + tail could never produce; it now shows a successful 411-line build log with the real hook's numbers (37,745 → 8,756 chars, both mid-log warnings salvaged). The replay no longer counts failed results as savings; on today's corpus that moved 163 outputs to 162, so the per-output numbers stand.
+
 ### Added
-- **Agentic benchmark: a compressor arm and a fixture for it.** `ARMS=vanilla,chisle,chisle-hook` adds the shipped PostToolUse hook, wired from `plugin.json`, with chars elided recorded per cell; `RAW_DIR` keeps a re-run from reusing stale cells. The new `noisylog` fixture prints 401 test results (17k chars) with one failure mid-log, so the arm measures both the context saved and whether the agent still finds the bug. Not run yet.
+- **Agentic benchmark: a compressor arm and a fixture for it.** `ARMS=vanilla,chisle,chisle-hook` adds the shipped PostToolUse hook, wired from `plugin.json`, with chars elided recorded per cell; `RAW_DIR` keeps a re-run from reusing stale cells. The new `noisylog` fixture prints 401 test results (17k chars) with one failure mid-log; since the run fails, no hook can compress it (see Fixed), so it measures whether the agent filters the log itself.
 
 ## [3.5.0] - 2026-09-19
 
