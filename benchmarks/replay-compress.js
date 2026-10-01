@@ -30,6 +30,7 @@ const totals = {
   dedup: 0, dedupChars: 0, failedBig: 0, failedBigChars: 0,
 };
 const skippedByTool = {};
+const byTool = {};
 
 function walk(dir) {
   let entries;
@@ -71,6 +72,18 @@ function account(name, text, lastHash, allowDedup, failed) {
       const marker = duplicateMarker(name, text);
       totals.dedup++;
       totals.dedupChars += size - marker.length;
+
+      if (!byTool[name]) {
+        byTool[name] = {
+          outputs: 0,
+          before: 0,
+          after: 0,
+        };
+      }
+      byTool[name].outputs++;
+      byTool[name].before += size;
+      byTool[name].after += marker.length;
+
       return;
     }
     lastHash[name] = hash;
@@ -81,6 +94,18 @@ function account(name, text, lastHash, allowDedup, failed) {
   totals.eligible++;
   totals.before += size;
   totals.after += output.length;
+
+  if (!byTool[name]) {
+    byTool[name] = {
+      outputs: 0,
+      before: 0,
+      after: 0,
+    };
+  }
+  byTool[name].outputs++;
+  byTool[name].before += size;
+  byTool[name].after += output.length;
+
   if (output.includes('error-like line(s) below')) totals.salvaged++;
 }
 
@@ -149,6 +174,16 @@ console.log(`scrubbed/elided outputs:     ${totals.eligible.toLocaleString('en-U
 console.log(`deduped repeat outputs:      ${totals.dedup.toLocaleString('en-US')}  (${totals.dedupChars.toLocaleString('en-US')} chars)`);
 console.log(`saved:                       ${saved.toLocaleString('en-US')} chars (~${Math.round(saved / 4).toLocaleString('en-US')} tokens)`);
 console.log(`  = ${pct(saved, totals.chars)} of all tool output, ${pct(saved, sessionChars)} of all session content`);
+console.log('\nper-tool breakdown:');
+for (const [name, stats] of Object.entries(byTool)
+  .sort((a, b) => (b[1].before - b[1].after) - (a[1].before - a[1].after))) {
+  const saved = stats.before - stats.after;
+  console.log(
+    `  ${name.padEnd(20)} ${stats.outputs.toLocaleString('en-US')} outputs  `
+    + `${stats.before.toLocaleString('en-US')} → ${stats.after.toLocaleString('en-US')} chars  `
+    + `saved ${saved.toLocaleString('en-US')} chars`
+  );
+}
 console.log(`outputs with error lines salvaged from the cut: ${totals.salvaged}`);
 if (totals.failedBig) {
   console.log(`big failed outputs, unreachable: ${totals.failedBig.toLocaleString('en-US')}  (${totals.failedBigChars.toLocaleString('en-US')} chars; `

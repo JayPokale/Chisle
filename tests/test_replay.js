@@ -51,8 +51,12 @@ test('Pi replay reads toolResult messages and reports marginal post-truncation s
   assert.match(result, /replay \(pi\)/);
   assert.match(result, /marginal savings/);
   assert.match(result, /tool_results scanned:\s+2/);
-  assert.match(result, /read\s+[\d,]+ chars/);
-  assert.doesNotMatch(result, /saved:\s+0 chars/);
+  assert.match(result, /per-tool breakdown:/);
+  assert.match(result, /bash\s+\d+ outputs\s+[\d,]+ → [\d,]+ chars\s+saved [\d,]+ chars/);
+  assert.doesNotMatch(
+    result.match(/per-tool breakdown:\n([\s\S]*?)(?:\noutputs with error lines salvaged|$)/)?.[1] || '',
+    /read/
+  );
 
   fs.rmSync(dir, { recursive: true, force: true });
 });
@@ -70,6 +74,48 @@ test('Claude replay never counts a failed tool call as compressible', () => {
   assert.match(out, /tool_results scanned:\s+2/);
   assert.match(out, /scrubbed\/elided outputs:\s+1 /);
   assert.match(out, /big failed outputs, unreachable: 1 /);
+
+  fs.rmSync(dir, { recursive: true, force: true });
+});
+
+test('Claude replay reports per-tool compression savings', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-claude-breakdown-'));
+
+  const use = (id, name) => ({
+    message: {
+      role: 'assistant',
+      content: [{ type: 'tool_use', id, name, input: {} }],
+    },
+  });
+
+  const result = (id) => ({
+    message: {
+      role: 'user',
+      content: [{
+        type: 'tool_result',
+        tool_use_id: id,
+        is_error: false,
+        content: output(500),
+      }],
+    },
+  });
+
+  fs.writeFileSync(path.join(dir, 'session.jsonl'), [
+    use('bash-1', 'Bash'),
+    result('bash-1'),
+    use('grep-1', 'Grep'),
+    result('grep-1'),
+  ].map(JSON.stringify).join('\n'));
+
+  const out = execFileSync(
+    process.execPath,
+    [REPLAY, 'claude', dir],
+    { encoding: 'utf8' }
+  );
+
+  assert.match(out, /per-tool breakdown:/);
+  assert.match(out, /Bash\s+\d+ outputs\s+[\d,]+ → [\d,]+ chars\s+saved [\d,]+ chars/);
+  assert.match(out, /Grep\s+\d+ outputs\s+[\d,]+ → [\d,]+ chars\s+saved [\d,]+ chars/);
 
   fs.rmSync(dir, { recursive: true, force: true });
 });
