@@ -64,6 +64,8 @@ from noise.
   `rest-graphql` and the auth expiry bug almost verbatim, and a third matched
   the Sonnet suite's `deadlock`. The revised examples (timezone bug, CDN)
   appear in no suite, so the old arm's explanation numbers here are flattered.
-- **Not yet measured:** the agent loop, which is the case the trim targets.
-  `ARMS=vanilla,chisle,chisle-hook RAW_DIR=… node benchmarks/agentic/run.js`
-  re-runs it with the new ruleset, the compressor arm and the `noisylog` fixture.
+- **Agent loop, measured afterwards:** the trim did not make loops cheaper.
+  Pass rate tied (28/36 each), but context ran +16% and cost per run +6.8%:
+  easy fixtures cost ~4% more (ruleset size x requests), and Chisle took 9%
+  more turns, each re-sending the whole context. See
+  [`../agentic/README.md`](../agentic/README.md).
