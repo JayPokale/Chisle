@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "cmp",
+ "seed": 2,
+ "out_tokens": 495,
+ "input_tokens": 21681,
+ "turns": 1,
+ "cost_usd": 0.0222328,
+ "answer": "**Connection pooling** maintains a pre-created cache of database connections reused across requests, instead of opening/closing a new connection per query.\n\n**How it works:**\n1. App starts → pool creates N idle connections (configurable)\n2. Request arrives → app borrows a connection from the pool\n3. Query runs → connection returns to pool when done\n4. Request leaves → connection stays open, ready for next request\n\n**Why it helps:**\n\n**Speed** — Opening a connection = handshake + auth overhead (100s of ms). Reusing avoids this per request. Cold start: new connection. Warm: grab from pool (microseconds).\n\n**Resource limits** — Databases cap concurrent connections. Without pooling, thousands of app instances each open their own → hit limit → requests fail. Pool enforces ceiling (e.g., 20 connections total) shared across all requests.\n\n**Memory/CPU** — Fewer live connections = less overhead on database. Operating system doesn't maintain thousands of idle sockets.\n\n**Stability** — Pool detects dead connections, removes them, creates replacements. Without pooling, app crashes without noticing the database went down.\n\n**Trade-off:** Pool size tuning is critical — too small (queuing/timeouts), too large (idle waste + database strain). Typical: 5–20 for app servers, 50–200 for connection pools on a shared database.\n\nMost frameworks (Rails, Django, Node) ship with built-in pooling; databases like PostgreSQL, MySQL expect it on the client side.",
+ "answer_lines": 21
+}

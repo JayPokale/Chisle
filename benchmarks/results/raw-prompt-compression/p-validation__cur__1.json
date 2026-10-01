@@ -1,0 +1,11 @@
+{
+ "id": "p-validation",
+ "arm": "cur",
+ "seed": 1,
+ "out_tokens": 822,
+ "input_tokens": 21871,
+ "turns": 1,
+ "cost_usd": 0.0242478,
+ "answer": "```javascript\n// Install: npm install multer\n\nconst express = require('express');\nconst multer = require('multer');\nconst path = require('path');\nconst fs = require('fs');\n\nconst app = express();\n\n// Configure storage\nconst storage = multer.diskStorage({\n  destination: (req, file, cb) => {\n    const uploadDir = path.join(__dirname, 'uploads', 'avatars');\n    // Create directory if it doesn't exist\n    fs.mkdirSync(uploadDir, { recursive: true });\n    cb(null, uploadDir);\n  },\n  filename: (req, file, cb) => {\n    // Save with timestamp + original extension\n    const ext = path.extname(file.originalname);\n    const name = `${Date.now()}${ext}`;\n    cb(null, name);\n  }\n});\n\n// Validate file type\nconst fileFilter = (req, file, cb) => {\n  const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];\n  if (allowed.includes(file.mimetype)) {\n    cb(null, true);\n  } else {\n    cb(new Error('Only image files are allowed'));\n  }\n};\n\nconst upload = multer({\n  storage,\n  fileFilter,\n  limits: { fileSize: 5 * 1024 * 1024 } // 5MB\n});\n\n// Endpoint\napp.post('/avatar', upload.single('avatar'), (req, res) => {\n  if (!req.file) {\n    return res.status(400).json({ error: 'No file uploaded' });\n  }\n\n  res.json({\n    message: 'Avatar saved successfully',\n    filename: req.file.filename,\n    path: `/avatars/${req.file.filename}`\n  });\n});\n\n// Error handler for multer\napp.use((err, req, res, next) => {\n  if (err instanceof multer.MulterError) {\n    return res.status(400).json({ error: err.message });\n  }\n  if (err) {\n    return res.status(400).json({ error: err.message });\n  }\n  next();\n});\n\n// Serve uploaded files\napp.use('/avatars', express.static(path.join(__dirname, 'uploads', 'avatars')));\n\napp.listen(3000, () => console.log('Server running on port 3000'));\n```\n\n**Usage:** POST `/avatar` with form-data field `avatar` containing the image file. Returns filename and accessible URL path. Validates MIME type (images only) and enforces 5MB limit.",
+ "answer_lines": 73
+}

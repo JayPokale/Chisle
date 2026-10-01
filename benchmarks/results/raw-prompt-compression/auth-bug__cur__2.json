@@ -1,0 +1,11 @@
+{
+ "id": "auth-bug",
+ "arm": "cur",
+ "seed": 2,
+ "out_tokens": 1129,
+ "input_tokens": 90645,
+ "turns": 4,
+ "cost_usd": 0.0351214,
+ "answer": "Working directory is empty. Paste the auth middleware code or project files so I can locate and fix the token expiry bug.",
+ "answer_lines": 1
+}

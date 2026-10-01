@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "ultra",
+ "seed": 2,
+ "out_tokens": 529,
+ "input_tokens": 21564,
+ "turns": 1,
+ "cost_usd": 0.0221688,
+ "answer": "**REST** is simpler to build and cache (HTTP semantics are standardized), has mature tooling, and works well for public APIs with predictable access patterns. The tradeoff: clients often get too much or too little data per request, and versioning creates maintenance burden as the API evolves.\n\n**GraphQL** eliminates over/under-fetching—clients request exactly what they need—and scales better across diverse clients (web, mobile, different devices). The tradeoff: queries can become expensive to execute without careful complexity limits, HTTP caching no longer comes free (requires custom logic), and you need to maintain a more complex backend.\n\n**Recommendation for a new API**: Start with **REST if** you have well-defined, stable domain models and can predict client needs. Start with **GraphQL if** you're serving multiple clients with different data requirements (mobile + web + third-party integrations) or expect the schema to evolve frequently. For most internal APIs or simple use cases, REST wins on simplicity; GraphQL's value emerges at scale or with heterogeneous consumers.",
+ "answer_lines": 5
+}

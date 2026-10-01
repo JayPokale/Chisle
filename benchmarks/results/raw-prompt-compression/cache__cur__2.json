@@ -1,0 +1,11 @@
+{
+ "id": "cache",
+ "arm": "cur",
+ "seed": 2,
+ "out_tokens": 514,
+ "input_tokens": 44046,
+ "turns": 2,
+ "cost_usd": 0.0255291,
+ "answer": "Directory is empty. Need to know: what's your API stack (Node/Express, Python/Flask, Go, etc.)? I'll create a complete example you can drop in.\n\nOr want me to build a Node.js example to start with?",
+ "answer_lines": 3
+}

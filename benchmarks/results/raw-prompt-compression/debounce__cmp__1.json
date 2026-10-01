@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "cmp",
+ "seed": 1,
+ "out_tokens": 1036,
+ "input_tokens": 43629,
+ "turns": 2,
+ "cost_usd": 0.0306187,
+ "answer": "I'll show you a React example with a custom debounce hook:\n\n```jsx\n// useDebounce.js\nexport function useDebounce(value, delay) {\n  const [debouncedValue, setDebouncedValue] = React.useState(value);\n\n  React.useEffect(() => {\n    const handler = setTimeout(() => setDebouncedValue(value), delay);\n    return () => clearTimeout(handler);\n  }, [value, delay]);\n\n  return debouncedValue;\n}\n\n// SearchComponent.jsx\nexport function SearchComponent() {\n  const [query, setQuery] = React.useState('');\n  const [results, setResults] = React.useState([]);\n  const [loading, setLoading] = React.useState(false);\n  const debouncedQuery = useDebounce(query, 300);\n\n  React.useEffect(() => {\n    if (!debouncedQuery) {\n      setResults([]);\n      return;\n    }\n\n    setLoading(true);\n    fetch(`/api/search?q=${encodeURIComponent(debouncedQuery)}`)\n      .then(r => r.json())\n      .then(data => setResults(data))\n      .finally(() => setLoading(false));\n  }, [debouncedQuery]);\n\n  return (\n    <>\n      <input\n        value={query}\n        onChange={(e) => setQuery(e.target.value)}\n        placeholder=\"Search...\"\n      />\n      {loading && <p>Loading...</p>}\n      <ul>\n        {results.map(item => <li key={item.id}>{item.name}</li>)}\n      </ul>\n    </>\n  );\n}\n```\n\n**How it works:** user types in the input → `query` updates instantly → `useDebounce` waits 300ms → only fires API call once typing stops for 300ms. Previous request cancels if new input arrives.\n\nFor vanilla JS, use lodash (`_.debounce`) or this simpler pattern:\n\n```js\nlet timeoutId;\ninput.addEventListener('input', (e) => {\n  clearTimeout(timeoutId);\n  timeoutId = setTimeout(() => {\n    fetch(`/api/search?q=${e.target.value}`);\n  }, 300);\n});\n```\n\nDo you have an existing search component to modify, or need a different tech stack?",
+ "answer_lines": 66
+}

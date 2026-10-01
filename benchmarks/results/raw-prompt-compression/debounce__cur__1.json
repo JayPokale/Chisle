@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "cur",
+ "seed": 1,
+ "out_tokens": 886,
+ "input_tokens": 43908,
+ "turns": 2,
+ "cost_usd": 0.0300733,
+ "answer": "No existing code found. Here's a debounce solution for React:\n\n```jsx\n// Custom hook\nfunction useDebounce(value, delay) {\n  const [debouncedValue, setDebouncedValue] = useState(value);\n\n  useEffect(() => {\n    const handler = setTimeout(() => {\n      setDebouncedValue(value);\n    }, delay);\n\n    return () => clearTimeout(handler);\n  }, [value, delay]);\n\n  return debouncedValue;\n}\n\n// In your component\nfunction SearchInput() {\n  const [query, setQuery] = useState('');\n  const debouncedQuery = useDebounce(query, 300);\n\n  useEffect(() => {\n    if (debouncedQuery) {\n      // API call fires here, not on every keystroke\n      fetch(`/api/search?q=${debouncedQuery}`)\n        .then(res => res.json())\n        .then(data => setResults(data));\n    }\n  }, [debouncedQuery]);\n\n  return <input value={query} onChange={e => setQuery(e.target.value)} />;\n}\n```\n\n**Alternative: Direct debounce on handler** (simpler if no intermediate state needed)\n```jsx\nfunction SearchInput() {\n  const [results, setResults] = useState([]);\n  const timeoutRef = useRef(null);\n\n  const handleSearch = (query) => {\n    clearTimeout(timeoutRef.current);\n    timeoutRef.current = setTimeout(() => {\n      fetch(`/api/search?q=${query}`)\n        .then(res => res.json())\n        .then(data => setResults(data));\n    }, 300);\n  };\n\n  return <input onChange={e => handleSearch(e.target.value)} />;\n}\n```\n\nPick the first if you need the debounced value elsewhere; the second if you just want to delay the side effect. Replace `300` (milliseconds) with your preferred delay.",
+ "answer_lines": 56
+}

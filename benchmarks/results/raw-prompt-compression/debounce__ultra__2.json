@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "ultra",
+ "seed": 2,
+ "out_tokens": 720,
+ "input_tokens": 21569,
+ "turns": 1,
+ "cost_usd": 0.0231338,
+ "answer": "I don't see existing code in your project. What framework are you using—React, Vue, vanilla JS? And do you have the current search input code to modify?\n\nFor now, here's a React example with debounce:\n\n```jsx\nimport { useState, useRef } from 'react';\n\nfunction SearchInput() {\n  const [results, setResults] = useState([]);\n  const timeoutRef = useRef(null);\n\n  const handleSearch = async (query) => {\n    if (!query) {\n      setResults([]);\n      return;\n    }\n    const res = await fetch(`/api/search?q=${query}`);\n    const data = await res.json();\n    setResults(data);\n  };\n\n  const handleChange = (e) => {\n    clearTimeout(timeoutRef.current);\n    timeoutRef.current = setTimeout(() => {\n      handleSearch(e.target.value);\n    }, 300); // debounce delay in ms\n  };\n\n  return (\n    <div>\n      <input\n        type=\"text\"\n        placeholder=\"Search...\"\n        onChange={handleChange}\n      />\n      <ul>\n        {results.map((item) => (\n          <li key={item.id}>{item.name}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n```\n\n**Key changes:**\n- `useRef` stores the timeout ID so it can be cleared on each keystroke\n- `handleChange` clears the previous timeout before setting a new one\n- API call only fires 300ms after the user stops typing\n\nIf you're using a different framework or have existing code, share it and I'll adapt this.",
+ "answer_lines": 51
+}

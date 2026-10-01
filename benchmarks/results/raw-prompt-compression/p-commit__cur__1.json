@@ -1,0 +1,11 @@
+{
+ "id": "p-commit",
+ "arm": "cur",
+ "seed": 1,
+ "out_tokens": 363,
+ "input_tokens": 21873,
+ "turns": 1,
+ "cost_usd": 0.021956800000000002,
+ "answer": "```\nFix CSV parser crash on empty lines\n\nParser crashed when encountering empty lines. Now skips them.\n\nCo-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>\n```",
+ "answer_lines": 7
+}

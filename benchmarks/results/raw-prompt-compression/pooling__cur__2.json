@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "cur",
+ "seed": 2,
+ "out_tokens": 444,
+ "input_tokens": 21865,
+ "turns": 1,
+ "cost_usd": 0.0223458,
+ "answer": "Database connection pooling maintains a cache of open connections ready to reuse rather than creating a fresh connection for each request.\n\n**How it works:** A pool holds N idle connections. When your app needs one, it grabs a connection from the pool instead of opening TCP to the database, executing auth handshake, and warming up query state—all takes 100s of ms per connection. After the request finishes, the connection returns to the pool rather than closing. If no idle connections exist, the app either waits for one to free up or creates a new one up to a limit.\n\n**Why it matters:** Connection setup is expensive. With pooling, subsequent requests pay near-zero overhead; you're reusing warm sockets and authenticated sessions. Under concurrent load without pooling, each request stalls on connection setup, and the database exhausts file descriptors (has a hard limit on open connections). Pooling lets 1000 app instances share a fixed pool (e.g., 10–100 connections), so database load stays bounded while throughput multiplies.\n\n**Trade-off:** Pools hold connections open even when idle, burning RAM and database memory. Set pool size to match expected concurrency, not peak: too small → requests queue; too large → wasted resources. Most pools have min/max settings (e.g., keep 5 warm, up to 50 if needed).\n\nCommon pool implementations: HikariCP (Java), psycopg2 pool (Python), connection.createPool (Node), sqlc (Go).",
+ "answer_lines": 9
+}

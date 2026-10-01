@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "cur",
+ "seed": 2,
+ "out_tokens": 551,
+ "input_tokens": 21873,
+ "turns": 1,
+ "cost_usd": 0.022896800000000002,
+ "answer": "I need to see your current code to modify it directly. Share:\n\n1. The search input component (React, Vue, vanilla JS, etc.)\n2. How the API call is currently triggered\n\nOr if you just want a pattern example, common options:\n\n**React with useState + useEffect:**\n```jsx\nconst [search, setSearch] = useState('');\n\nuseEffect(() => {\n  const timer = setTimeout(() => {\n    if (search) fetchResults(search);\n  }, 300);\n  return () => clearTimeout(timer);\n}, [search]);\n\nreturn <input value={search} onChange={e => setSearch(e.target.value)} />;\n```\n\n**React with useRef (manual debounce):**\n```jsx\nconst timerRef = useRef(null);\n\nconst handleSearch = (query) => {\n  clearTimeout(timerRef.current);\n  timerRef.current = setTimeout(() => fetchResults(query), 300);\n};\n\nreturn <input onChange={e => handleSearch(e.target.value)} />;\n```\n\n**Vanilla JS:**\n```js\nlet timer;\ninput.addEventListener('input', (e) => {\n  clearTimeout(timer);\n  timer = setTimeout(() => fetchResults(e.target.value), 300);\n});\n```\n\nWhich framework, and can you share the current code?",
+ "answer_lines": 43
+}

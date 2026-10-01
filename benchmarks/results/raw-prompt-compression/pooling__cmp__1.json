@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "cmp",
+ "seed": 1,
+ "out_tokens": 578,
+ "input_tokens": 21681,
+ "turns": 1,
+ "cost_usd": 0.022647800000000003,
+ "answer": "Connection pooling maintains a ready set of reusable database connections instead of creating new ones per request. When your app needs the DB, it grabs an idle connection from the pool; when done, it returns it (not closing it). New requests reuse that connection immediately.\n\n**Why it helps:**\n\nCreating a connection = expensive: TCP handshake, auth, session setup → 10–100ms latency per request. With pooling, you pay that cost once during startup, then requests get sub-millisecond connection time.\n\nLimits resource exhaustion: databases cap concurrent connections; creating one per request (even briefly) wastes slots on open-but-idle connections. Pooling holds exactly as many as you configure, keeping them busy.\n\nThroughput scales without blowing up: 100 requests hitting the DB via 10 pooled connections circulates faster than trying to open 100 parallel connections (which will either fail at the DB limit or at OS socket limits first).\n\n**Gotcha:** Holding a connection from the pool while doing other work (API calls, disk I/O) starves other requests. Keep connection ownership brief — grab, query, release.\n\nPool sizing: too small → requests queue waiting for a free connection; too large → connections idle, wasting memory. Sweet spot is usually connections ≈ workers × (1 + I/O wait ratio), tuned per workload.",
+ "answer_lines": 13
+}

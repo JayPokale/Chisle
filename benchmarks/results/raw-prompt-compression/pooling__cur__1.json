@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "cur",
+ "seed": 1,
+ "out_tokens": 608,
+ "input_tokens": 21861,
+ "turns": 1,
+ "cost_usd": 0.0231578,
+ "answer": "**What it is:** Pool = set of pre-created, open database connections ready to use. Client requests a connection → borrows from pool → runs query → returns connection to pool (doesn't close it).\n\n**How it works:**\n- App starts, creates N connections (e.g., 10-100) upfront, keeps them open\n- Request arrives → picks idle connection from pool instead of creating one\n- Query finishes → connection returns to pool, stays open for next caller\n- Pool size bounded → prevents exhausting system resources\n\n**Why it helps:**\n\n1. **Connection handshake is expensive.** Opening a fresh DB connection = TCP handshake + auth + negotiating protocol/charset/timezone. Pooling amortizes this cost across many requests.\n\n2. **Limited OS resources.** Each connection = file descriptor, memory, network socket. Creating/destroying them per request = thrashing the OS. Pool keeps resource count stable.\n\n3. **Latency drops.** Borrowing an open connection (microseconds) vs. creating one (~milliseconds). On high-traffic apps, this is the difference between 10ms and 100ms per request.\n\n4. **Stability under load.** Pool max-size = circuit breaker. Hit the limit, queue or reject; prevents connection explosion that'd crash the database.\n\n**Tradeoff:** Pool consumes idle resources (connections sit open when no traffic). Min/max tuning required—too small = queueing, too large = waste. Most frameworks default conservatively (5–20 idle, up to 50–100 under load).",
+ "answer_lines": 19
+}

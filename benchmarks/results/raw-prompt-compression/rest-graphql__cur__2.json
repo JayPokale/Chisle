@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "cur",
+ "seed": 2,
+ "out_tokens": 582,
+ "input_tokens": 20297,
+ "turns": 1,
+ "cost_usd": 0.0198998,
+ "answer": "**REST wins on:** simplicity, HTTP caching (free via ETag/status codes), and predictability—you write endpoints, clients call them, no surprises. Tooling is mature everywhere.\n\n**GraphQL wins on:** clients fetch exactly what they need (no over/under-fetching), schema evolves without versioning (add fields without breaking old clients), and single endpoint reduces API surface.\n\n**REST's cost:** clients pull multiple endpoints or fat payloads they don't use → wasteful, especially mobile.\n\n**GraphQL's cost:** queries can spiral (N+1 queries, arbitrarily deep nesting) without discipline → server complexity, harder caching (GET-friendly queries still need POST), and client-side tooling overhead.\n\n**Choose REST if:** API is simple (CRUD on a few resources), caching matters (public APIs, CDN-heavy), or team is small/unfamiliar with query languages.\n\n**Choose GraphQL if:** clients are diverse (web, mobile, IoT with different data needs), schema evolves fast, or you need precise data fetching for high-latency clients.\n\nHybrid is also viable: REST for stable, high-volume endpoints; GraphQL for complex/exploratory queries.",
+ "answer_lines": 13
+}

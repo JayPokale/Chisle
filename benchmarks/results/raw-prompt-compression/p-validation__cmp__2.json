@@ -1,0 +1,11 @@
+{
+ "id": "p-validation",
+ "arm": "cmp",
+ "seed": 2,
+ "out_tokens": 1610,
+ "input_tokens": 21685,
+ "turns": 1,
+ "cost_usd": 0.027815799999999998,
+ "answer": "```javascript\nconst express = require('express');\nconst multer = require('multer');\nconst path = require('path');\nconst fs = require('fs');\n\nconst app = express();\n\n// Configure storage\nconst avatarStorage = multer.diskStorage({\n  destination: (req, file, cb) => {\n    const uploadDir = path.join(__dirname, 'uploads/avatars');\n    if (!fs.existsSync(uploadDir)) {\n      fs.mkdirSync(uploadDir, { recursive: true });\n    }\n    cb(null, uploadDir);\n  },\n  filename: (req, file, cb) => {\n    const ext = path.extname(file.originalname);\n    const filename = `${Date.now()}-${Math.round(Math.random() * 1E9)}${ext}`;\n    cb(null, filename);\n  }\n});\n\n// File type validation\nconst imageFilter = (req, file, cb) => {\n  const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];\n  if (allowed.includes(file.mimetype)) {\n    cb(null, true);\n  } else {\n    cb(new Error('Only image files allowed'));\n  }\n};\n\nconst upload = multer({\n  storage: avatarStorage,\n  fileFilter: imageFilter,\n  limits: { fileSize: 5 * 1024 * 1024 } // 5MB\n});\n\n// Upload endpoint\napp.post('/api/users/:userId/avatar', upload.single('avatar'), (req, res) => {\n  if (!req.file) {\n    return res.status(400).json({ error: 'No file uploaded' });\n  }\n  \n  res.json({\n    success: true,\n    filename: req.file.filename,\n    path: `/uploads/avatars/${req.file.filename}`\n  });\n});\n\n// Error handler\napp.use((err, req, res, next) => {\n  if (err instanceof multer.MulterError) {\n    if (err.code === 'LIMIT_FILE_SIZE') {\n      return res.status(400).json({ error: 'File too large (max 5MB)' });\n    }\n  }\n  if (err) {\n    return res.status(400).json({ error: err.message });\n  }\n  next();\n});\n\napp.listen(3000);\n```\n\nInstall multer: `npm install multer`\n\n**Key points:**\n- `diskStorage` → saves to `uploads/avatars/`\n- `fileFilter` → validates JPEG/PNG/GIF/WebP only\n- `limits.fileSize` → 5MB max\n- `filename` → unique names with timestamp to prevent collisions\n- Error handler catches multer errors (file too large, invalid type, etc.)\n\nUpload via `POST /api/users/123/avatar` with form-data key `avatar`.",
+ "answer_lines": 79
+}

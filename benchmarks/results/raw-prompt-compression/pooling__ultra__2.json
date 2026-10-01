@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "ultra",
+ "seed": 2,
+ "out_tokens": 479,
+ "input_tokens": 21561,
+ "turns": 1,
+ "cost_usd": 0.021912800000000003,
+ "answer": "# Database Connection Pooling\n\n**What it is:** A cache of open database connections that can be reused by applications instead of creating a new connection for every request.\n\n## How it works\n\nWhen your app needs to query the database:\n1. Instead of opening a fresh connection (expensive: TCP handshake, authentication, initialization), the pool returns an idle connection from its cache\n2. Your app uses it\n3. The connection returns to the pool when done, staying open for the next request\n\nThe pool manages a minimum and maximum number of connections. If all are in use, new requests wait; if idle connections exceed the max, extras are closed.\n\n## Why it helps\n\n**Performance**: Opening a connection is slow—TCP setup, authentication, and database-side initialization each take milliseconds. Reusing connections saves this overhead on every query.\n\n**Resource efficiency**: Databases and servers have finite connections. Without pooling, each concurrent user or request needs its own connection, rapidly exhausting limits. Pooling ensures idle connections are reclaimed and reused.\n\n**Scalability**: A pool of 20 connections can serve hundreds of concurrent requests by queueing them, rather than creating hundreds of connections that saturate the database.\n\n**Latency consistency**: Connection reuse is predictable; connection creation has variable latency depending on network/auth delays.\n\n## Trade-off\n\nThe pool adds a small overhead (queue wait, connection state validation) but eliminates the larger cost of repeated connection setup—always a win unless you have only one request ever.",
+ "answer_lines": 26
+}

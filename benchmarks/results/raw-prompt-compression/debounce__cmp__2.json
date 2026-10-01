@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "cmp",
+ "seed": 2,
+ "out_tokens": 1061,
+ "input_tokens": 43848,
+ "turns": 2,
+ "cost_usd": 0.028194900000000002,
+ "answer": "Directory is empty — here's a debounce pattern for common frameworks:\n\n**React (with `useEffect`):**\n```jsx\nimport { useState, useEffect, useRef } from 'react';\n\nexport function SearchInput() {\n  const [query, setQuery] = useState('');\n  const timeoutRef = useRef(null);\n\n  useEffect(() => {\n    clearTimeout(timeoutRef.current);\n    timeoutRef.current = setTimeout(() => {\n      if (query) {\n        // API call here\n        fetch(`/api/search?q=${encodeURIComponent(query)}`)\n          .then(r => r.json())\n          .then(data => console.log(data));\n      }\n    }, 300); // 300ms delay\n\n    return () => clearTimeout(timeoutRef.current);\n  }, [query]);\n\n  return (\n    <input\n      value={query}\n      onChange={(e) => setQuery(e.target.value)}\n      placeholder=\"Search...\"\n    />\n  );\n}\n```\n\n**Vanilla JS:**\n```js\nlet timeoutId;\nconst input = document.querySelector('input');\n\ninput.addEventListener('input', (e) => {\n  clearTimeout(timeoutId);\n  timeoutId = setTimeout(() => {\n    fetch(`/api/search?q=${encodeURIComponent(e.target.value)}`)\n      .then(r => r.json())\n      .then(data => console.log(data));\n  }, 300);\n});\n```\n\n**Reusable hook:**\n```jsx\nfunction useDebounce(value, delay) {\n  const [debouncedValue, setDebouncedValue] = useState(value);\n\n  useEffect(() => {\n    const handler = setTimeout(() => setDebouncedValue(value), delay);\n    return () => clearTimeout(handler);\n  }, [value, delay]);\n\n  return debouncedValue;\n}\n\n// Usage:\nfunction SearchInput() {\n  const [query, setQuery] = useState('');\n  const debouncedQuery = useDebounce(query, 300);\n\n  useEffect(() => {\n    if (debouncedQuery) {\n      fetch(`/api/search?q=${encodeURIComponent(debouncedQuery)}`)\n        .then(r => r.json());\n    }\n  }, [debouncedQuery]);\n\n  return <input value={query} onChange={(e) => setQuery(e.target.value)} />;\n}\n```\n\n300ms is standard; adjust up for heavier APIs. If you have existing code to modify, share it and I'll update it directly.",
+ "answer_lines": 79
+}

@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "vanilla",
+ "seed": 2,
+ "out_tokens": 549,
+ "input_tokens": 20987,
+ "turns": 1,
+ "cost_usd": 0.021124300000000002,
+ "answer": "## How Database Connection Pooling Works\n\nA connection pool maintains a set of pre-established database connections that applications can reuse, rather than creating a new connection for each request.\n\n**The lifecycle:**\n\n1. **Initialization**: The pool creates a fixed number of connections at startup (e.g., 10 connections)\n2. **Request arrives**: Instead of opening a new connection, the app borrows one from the pool\n3. **Query executes**: The app uses the borrowed connection normally\n4. **Request completes**: The connection returns to the pool, ready for the next request\n5. **Idle timeout**: Connections left unused too long are closed; new ones are created as needed\n\n## Why It Helps\n\n**Eliminates connection overhead**: Opening a database connection is expensive—it involves authentication, memory allocation, and TCP handshakes. Reusing connections skips all this per-request.\n\n**Limits resource exhaustion**: Databases can only handle so many concurrent connections. A pool caps this at a safe number, preventing the app from crashing the database by opening thousands of connections during traffic spikes. Without pooling, every request spawns a new connection.\n\n**Improves latency**: Borrowing an idle connection is nearly instant compared to establishing a fresh one (often 10-100ms saved per request).\n\n**Enables concurrent handling**: A pool of 20 connections can serve hundreds of concurrent requests by queuing them—requests wait briefly for a connection to free up rather than all trying to connect simultaneously.\n\n**Example trade-off**: A pool of 10 connections under moderate load serves ~1000 requests/sec. Without pooling, opening connections would take 10-100ms each, bottlenecking at ~100 requests/sec. The tradeoff is memory (holding idle connections) for throughput and stability.\n\nMost modern frameworks (Spring, Node.js with Knex/Sequelize, Django, etc.) include pooling by default or via standard libraries like `pg` (Node) or `psycopg2` (Python).",
+ "answer_lines": 25
+}

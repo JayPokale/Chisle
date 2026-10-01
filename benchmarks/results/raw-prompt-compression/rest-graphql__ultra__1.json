@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "ultra",
+ "seed": 1,
+ "out_tokens": 443,
+ "input_tokens": 21566,
+ "turns": 1,
+ "cost_usd": 0.0217428,
+ "answer": "**REST** is simpler to build, cache, and reason about—good if your API surface is stable and queries map cleanly to resources. **GraphQL** eliminates over/under-fetching and gives clients surgical data access, but shifts complexity to the server (requires resolvers, query planning, N+1 management) and complicates caching at the HTTP level.\n\nThe main tradeoff: **simplicity and operational clarity vs. client flexibility**. Pick REST if you control both client and API or have simple, predictable query patterns. Pick GraphQL if you have diverse clients (web, mobile, third-party), rapidly evolving data requirements, or benefit from a unified query layer over multiple services. For most new APIs, REST remains the easier default unless you have a specific reason to handle variable client needs.",
+ "answer_lines": 3
+}

@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "ultra",
+ "seed": 1,
+ "out_tokens": 521,
+ "input_tokens": 19988,
+ "turns": 1,
+ "cost_usd": 0.0189768,
+ "answer": "**How it works:**\n\nA connection pool maintains a set of pre-opened database connections. When your application needs to query the database, it requests a connection from the pool instead of creating a new one. After use, the connection returns to the pool rather than closing. If all pooled connections are busy, requests either wait or create temporary additional connections up to a configured limit.\n\n**Why it helps:**\n\n1. **Eliminates connection overhead** — Creating a TCP connection, authenticating, and initializing each query takes 10–100ms per new connection. Reusing existing connections drops this to microseconds.\n\n2. **Bounds resource usage** — A pool caps how many connections exist at once. Without pooling, each concurrent request spawns a new connection, quickly exhausting the database's connection limit and the OS's file descriptor budget. A pool of 20 connections can handle thousands of concurrent requests by queuing them.\n\n3. **Improves throughput** — Reduces time spent opening/closing connections, so the database spends more time actually executing queries.\n\n4. **Prevents connection storms** — Without pooling, traffic spikes create connection thrashing: the database struggles under the load of managing thousands of short-lived connections, and new requests fail because the server hits its connection limit before queries even execute.\n\n**Example trade-off:** A pool uses memory and database resources even when idle (keeping connections warm), so you tune pool size to balance responsiveness against resource cost. Too small and you queue requests; too large and you waste memory and hit the database's max-connection setting.\n\nMost frameworks (ORMs, database drivers) include pooling by default—you just configure the size. Direct raw sockets typically don't, which is why production systems always layer a pool.",
+ "answer_lines": 17
+}

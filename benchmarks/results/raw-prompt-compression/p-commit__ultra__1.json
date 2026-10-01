@@ -1,0 +1,11 @@
+{
+ "id": "p-commit",
+ "arm": "ultra",
+ "seed": 1,
+ "out_tokens": 420,
+ "input_tokens": 21571,
+ "turns": 1,
+ "cost_usd": 0.0216378,
+ "answer": "```\nFix CSV parser to skip empty lines instead of crashing\n\nThe parser would crash when encountering empty lines during parsing. Now it gracefully skips them.\n\nCo-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>\n```\n\nOr more concisely, if you prefer:\n\n```\nSkip empty lines in CSV parser\n\nCo-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>\n```\n\nThe first option explains both the problem (crash) and solution (skip), which is helpful for future readers. The second is tighter if your repo prefers minimal messages.",
+ "answer_lines": 17
+}

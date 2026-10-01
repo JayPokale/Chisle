@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "vanilla",
+ "seed": 1,
+ "out_tokens": 541,
+ "input_tokens": 19421,
+ "turns": 1,
+ "cost_usd": 0.0179523,
+ "answer": "# Database Connection Pooling\n\n**What it is:** A connection pool maintains a pre-established set of open database connections, reusing them for multiple requests instead of creating a new connection for each query.\n\n## How it works\n\n1. **Initialization**: The pool creates a fixed number of connections at startup (e.g., 5–20 connections)\n2. **Request arrives**: Your app borrows an available connection from the pool\n3. **Query executes**: The connection handles your request\n4. **Return to pool**: After the request completes, the connection goes back to the pool, ready for reuse\n5. **If no connections available**: The request waits in a queue until one becomes available\n\n## Why it helps\n\n**Connection overhead is expensive:**\n- Establishing a DB connection requires authentication, resource allocation, and initialization—typically 100ms–1s per connection\n- Without pooling, every query pays this cost\n\n**Resource efficiency:**\n- Limits the total number of connections to the database (prevents `too many connections` errors)\n- Uses a smaller, bounded set of connections instead of creating/destroying thousands\n- Reduces memory usage on both client and server\n\n**Performance:**\n- Reusing open connections is much faster (microseconds vs. milliseconds)\n- Eliminates latency spikes from creating new connections during traffic surges\n\n**Stability:**\n- Protects the database from connection storms when traffic spikes\n- Provides backpressure—requests queue instead of overwhelming the server\n\n## Trade-offs\n\n- Connections sit idle but stay open (costs a small amount of memory)\n- Pool needs tuning for your workload (too small = queue buildup; too large = waste)\n- Connection reuse can expose bugs if state isn't properly cleaned between requests\n\nMost modern frameworks (Django, Node.js ORMs, Spring, Rails) include connection pooling by default.",
+ "answer_lines": 38
+}

@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "cmp",
+ "seed": 1,
+ "out_tokens": 489,
+ "input_tokens": 21684,
+ "turns": 1,
+ "cost_usd": 0.0222088,
+ "answer": "**REST** wins on simplicity, caching, and tooling — familiar patterns, native HTTP semantics (GET caching, conditional requests), easy to monitor. Costs: clients fetch unused fields (overfetch) or make multiple round trips (N+1 queries).\n\n**GraphQL** wins on precision — clients request exactly what they need in one shot, better for diverse clients (web + mobile with different data needs). Costs: steeper learning curve, harder to cache HTTP-wise (bypasses standard caching), needs more server complexity to prevent query DoS, overkill if your API is simple/homogeneous.\n\n**Verdict:** Start REST if your data model is simple, your clients are similar, or your team is unfamiliar with GraphQL. Use GraphQL if you're serving multiple client types with divergent needs (web UI, mobile app, third-party integrations) and you have the server expertise to handle complexity and security.",
+ "answer_lines": 5
+}
