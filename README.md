@@ -516,7 +516,7 @@ Ships to eleven agents: Claude Code and Pi get both axes, live `/chisle` togglin
 ## FAQ
 
 **Doesn't injecting a persona every turn cost tokens?**
-Claude Code uses a ruleset at session start (~1.6k tokens) plus a ~50-token reminder per turn. Pi injects one persistent rules message only when project `AGENTS.md` does not already provide it; resume/reload does not duplicate it, and compaction restores it only if removed.
+Claude Code uses a ruleset at session start (~750 tokens) plus a ~50-token reminder per turn. Pi injects one persistent rules message only when project `AGENTS.md` does not already provide it; resume/reload does not duplicate it, and compaction restores it only if removed.
 
 Worth reading the dissent before you take that on faith: [@enc0ded](https://github.com/enc0ded) measured 173 of their own sessions ([#2](https://github.com/JayPokale/Chisle/issues/2)) and found the injection overhead roughly cancelling the compressor's savings, because the ruleset was being re-sent on every resume and clear, not just at startup. That re-injection is fixed, which removes most of the overhead they measured, but their wider point stands: prose is only ~25% of what the model emits, so the ceiling on the output axis is lower than the headline suggests, and on a one-line throwaway prompt the overhead still exceeds the saving.
 

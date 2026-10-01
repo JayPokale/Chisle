@@ -58,7 +58,7 @@ async function latestVersion(cachePath) {
 // SessionStart fires on startup, resume, clear and compact. Only a genuinely
 // new session needs the whole ruleset: on the other three the conversation
 // already carries it, and the UserPromptSubmit reminder re-states the active
-// behaviour every turn anyway. Re-sending ~1.6k tokens each time was the bulk
+// behaviour every turn anyway. Re-sending the full ruleset each time was the bulk
 // of the plugin's own overhead and piled standing instructions on top of what
 // the user actually asked for. Measured and reported by @enc0ded (#2).
 const FULL_INJECT_SOURCES = new Set(['startup']);

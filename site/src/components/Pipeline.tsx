@@ -19,7 +19,7 @@ const HOOKS = [
   {
     id: "session",
     label: "SessionStart",
-    body: "Injects the ruleset once, on a genuinely new session. Resume, clear and compact get a 27-token reactivation line instead; re-sending the full ~1.6k every time was most of the plugin's own overhead.",
+    body: "Injects the ruleset once, on a genuinely new session. Resume, clear and compact get a 27-token reactivation line instead; re-sending the full ruleset every time was most of the plugin's own overhead.",
   },
   {
     id: "prompt",
@@ -61,7 +61,7 @@ export default function Pipeline() {
               viewBox="0 20 716 274"
               className="mx-auto block w-full min-w-[620px] max-w-[760px]"
               role="img"
-              aria-label="Session diagram. SessionStart injects about 1.6k tokens on new sessions only. UserPromptSubmit adds a 50-token reminder each turn. Both feed the model, which either writes output or calls a tool. Tool output returns through the PostToolUse hook, which scrubs, elides and dedups it before the model reads it. Read and Edit results bypass the hook untouched."
+              aria-label="Session diagram. SessionStart injects about 750 tokens on new sessions only. UserPromptSubmit adds a 50-token reminder each turn. Both feed the model, which either writes output or calls a tool. Tool output returns through the PostToolUse hook, which scrubs, elides and dedups it before the model reads it. Read and Edit results bypass the hook untouched."
             >
               <defs>
                 <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -89,7 +89,7 @@ export default function Pipeline() {
                   stroke={on("session") ? "var(--color-accent)" : "var(--color-line)"}
                   strokeWidth={on("session") ? 1.8 : 1} />
                 <text x="102" y="55" textAnchor="middle" fontSize="11" fontWeight="600" fill="currentColor">SessionStart</text>
-                <text x="102" y="72" textAnchor="middle" fontSize="11" fill="var(--color-dim)">~1.6k tok · new sessions only</text>
+                <text x="102" y="72" textAnchor="middle" fontSize="11" fill="var(--color-dim)">~750 tok · new sessions only</text>
               </g>
 
               {/* UserPromptSubmit */}
