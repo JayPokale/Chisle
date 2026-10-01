@@ -103,7 +103,6 @@ function getDefaultMode() {
 const PROSE_HEADINGS = [
   'Prose: Maximum Signal Per Token',
   'Output Format',
-  'What it sounds like',
 ];
 const CODE_HEADINGS = [
   'Code: The Efficiency Ladder',
