@@ -69,7 +69,7 @@ export default function Hero() {
           initial="hidden"
           animate="show"
           variants={rise}
-          className="mx-auto mt-8 flex max-w-2xl flex-wrap justify-center gap-2"
+          className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-2"
         >
           {BADGES.map((b) => (
             <li
