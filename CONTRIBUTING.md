@@ -56,9 +56,13 @@ node benchmarks/replay-compress.js [claude|pi] [session-dir]     # input replay
 
 ## Hacktoberfest
 
-Chisle takes part. Start from an issue labelled `hacktoberfest`, `good first issue` or `help wanted`, and comment before you start so two people don't build the same thing. One issue per PR.
+Chisle welcomes Hacktoberfest contributors. Start from an issue labelled `hacktoberfest`, `good first issue` or `help wanted`, and comment before you start so two people don't build the same thing. One issue per PR.
 
-What counts: a fix, a fixture, a test, a measurement with receipts, a docs correction backed by data. What doesn't: whitespace, typo sweeps across unrelated files, reworded README sections, or anything that adds a dependency. Those get labelled `invalid` or `spam` and don't count. Accepted PRs get `hacktoberfest-accepted`, merged or not.
+No rewards: Hacktoberfest 2026 no longer counts pull requests, and this is an unfunded, one-person project with no swag or bounties. What you get is a merged change, credit in the changelog, and your name in the repo's history.
+
+What gets merged: a fix, a fixture, a test, a measurement with receipts, a docs correction backed by data. What doesn't: whitespace, typo sweeps across unrelated files, reworded README sections, or anything that adds a dependency; those get labelled `invalid` or `spam`.
+
+If Chisle saved you tokens, or you enjoyed contributing, a ⭐ on the repo is the best thanks and helps others find it. It's optional and never a condition for review or merge.
 
 Benchmark PRs follow the same rule as everything else: raw cells committed, losses published.
 
