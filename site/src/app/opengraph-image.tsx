@@ -42,7 +42,7 @@ export default function OG() {
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 28, color: "#a09fa8" }}>
-          <div>52% of a bare model&apos;s 20-task bill · 1 backfire in 20</div>
+          <div>83% of a bare model&apos;s bill · rivals 102–105%</div>
           <div style={{ color: "#d78700" }}>npx chisle</div>
         </div>
       </div>
