@@ -244,7 +244,7 @@ Re-run with the shipped ruleset, Claude Code 2.1.285 and the rivals' current plu
 | ponytail | 105% | 86–129% | 97% | 493% | 16 / 26 |
 | **Chisle** | **83%** | **69–95%** | **76%** | **170%** | **11 / 26** |
 
-Chisle is the only arm measurably below a bare model, by about a third of what the June table below claimed. It pays on long answers (77%) and coding prompts (76%); on short answers it breaks even (106%), on explanation prompts ponytail is leaner (86% vs 91%), and reasoning tokens are not cut (107%). Single cells swing hard between seeds (57% → 135% on one prompt), so read totals.
+Chisle is the only arm measurably below a bare model, by about a third of what the June table below claimed. It pays on long answers (77%) and coding prompts (76%); on short answers it breaks even (106%), on explanation prompts ponytail is leaner (86% vs 91%), and reasoning tokens are not cut (107%). Single cells swing hard between seeds (57% → 135% on one prompt), and the bare model "backfires" against itself on 13 of 26 cells, so read totals, not backfire counts ([control](benchmarks/results/2026-10-01-backfires.md)).
 
 **Why the June headline was retired.** Its 52% leaned on one cell: the June bare `cache` answer billed 4,910 tokens, while every later run of the same prompt billed 375–813. The ruleset also carried examples matching `cache` (from June 18) and `auth-bug` (from June 27), so four cells may have been primed; without them the June total was 70%. The tables below stay as what they were.
 

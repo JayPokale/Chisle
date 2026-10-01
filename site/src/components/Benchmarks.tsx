@@ -93,7 +93,8 @@ export default function Benchmarks() {
         <Reveal delay={0.1}>
           <p className="mt-8 text-xs text-dim">
             95% interval for Chisle&apos;s total: 69–95%; neither rival&apos;s clears 100%. Average
-            cell: 93% vs 113% (caveman) and 124% (ponytail). Both rivals are credited in the
+            cell: 93% vs 113% (caveman) and 124% (ponytail). A single cell says little: the bare
+            model beats itself on 13 of 26 cells between seeds. Both rivals are credited in the
             repo&apos;s prior-art table.
           </p>
         </Reveal>
@@ -218,7 +219,8 @@ export default function Benchmarks() {
               ties and shorter answers do not make the loop cheaper. Per-request logs from follow-up
               runs split the gap: the ruleset adds ~900 tokens to every request, about 4% on these
               small repos, every time. The rest is turn count, which flipped direction between
-              batches. Expect Chisle to cost a little more in an agent loop, not less.
+              batches. In real sessions, where the median request is ~248k tokens, those 900
+              cached tokens are 0.4%. Expect a loop to cost about the same, not less.
             </p>
 
             <div className="pane-scroll mt-6 overflow-x-auto rounded-xl border border-line bg-bg px-5 py-2">
