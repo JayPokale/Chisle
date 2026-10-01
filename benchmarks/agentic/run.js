@@ -8,6 +8,7 @@
 //
 // Usage: node benchmarks/agentic/run.js [model] [seeds] [parallel]
 //   ARMS=vanilla,chisle,chisle-hook  arms to run (default: vanilla,chisle)
+//   FIXTURES=noisylog,reuse          run only these fixtures (default: all)
 //   RAW_DIR=path                     where cells go (default: ./raw); use a fresh
 //                                    dir when the ruleset changes, or old cells
 //                                    are reused as if they were new
@@ -48,7 +49,9 @@ const plugin = JSON.parse(fs.readFileSync(path.join(ROOT, '.claude-plugin', 'plu
 const HOOK_SETTINGS = JSON.stringify({ hooks: { PostToolUse: plugin.hooks.PostToolUse } })
   .split('${CLAUDE_PLUGIN_ROOT}').join(ROOT);
 
-const fixtures = fs.readdirSync(FIX).filter((f) => fs.existsSync(path.join(FIX, f, 'task.txt')));
+const only = process.env.FIXTURES ? process.env.FIXTURES.split(',').map((f) => f.trim()) : null;
+const fixtures = fs.readdirSync(FIX).filter((f) => fs.existsSync(path.join(FIX, f, 'task.txt')) && (!only || only.includes(f)));
+if (only && fixtures.length !== only.length) { console.error(`unknown fixture in FIXTURES=${process.env.FIXTURES}`); process.exit(1); }
 
 const walk = (dir, base = dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
   if (e.name === 'node_modules' || e.name === '.git') return [];
@@ -70,6 +73,9 @@ for (const arm of ARMS) {
     for (const fx of fixtures) cells.push({ fx, arm, seed });
   }
 }
+// One short line per tool call: enough to see the pattern, small enough to commit.
+const summarize = (i) => String(i.command || i.pattern || (i.file_path ? path.basename(i.file_path)
+  + (i.offset || i.limit ? ` [${i.offset || 1}+${i.limit || ''}]` : '') : '') || i.path || '').slice(0, 100);
 const outPath = (c) => path.join(RAW, `${c.fx}__${c.arm}__${c.seed}.json`);
 const todo = cells.filter((c) => !fs.existsSync(outPath(c)));
 let limited = false;
@@ -83,7 +89,8 @@ function runCell(c) {
     const before = snapshot(repo);
     const task = fs.readFileSync(path.join(FIX, c.fx, 'task.txt'), 'utf8').trim();
 
-    const args = ['-p', task, '--model', MODEL, '--output-format', 'json', '--dangerously-skip-permissions'];
+    // stream-json, so each cell also records the tool calls it made, not only totals.
+    const args = ['-p', task, '--model', MODEL, '--output-format', 'stream-json', '--verbose', '--dangerously-skip-permissions'];
     if (c.arm !== 'vanilla') args.push('--append-system-prompt-file', path.join(ISO, 'chisle.txt'));
     let cfg = ISO;
     if (c.arm === 'chisle-hook') {
@@ -107,12 +114,26 @@ function runCell(c) {
         rec.error = String(err.message).slice(0, 200);
       } else {
         let d = {};
-        try { d = JSON.parse(stdout); } catch (_) {}
+        const calls = [];
+        for (const line of stdout.split('\n')) {
+          let e; try { e = JSON.parse(line); } catch (_) { continue; }
+          if (e.type === 'result') d = e;
+          const blocks = (e.message && Array.isArray(e.message.content)) ? e.message.content : [];
+          for (const b of blocks) {
+            if (b.type === 'tool_use') calls.push({ tool: b.name, input: summarize(b.input || {}) });
+            if (b.type === 'tool_result') {
+              const text = typeof b.content === 'string' ? b.content : (b.content || []).map((x) => x.text || '').join('');
+              const call = calls[calls.length - 1];
+              if (call && call.chars === undefined) { call.chars = text.length; if (b.is_error) call.error = true; }
+            }
+          }
+        }
         rec.out_tokens = d.usage ? d.usage.output_tokens : 0;
         rec.input_tokens = d.usage ? (d.usage.input_tokens || 0) + (d.usage.cache_creation_input_tokens || 0) + (d.usage.cache_read_input_tokens || 0) : 0;
         rec.cost_usd = d.total_cost_usd || 0;
         rec.turns = d.num_turns || 0;
         rec.answer = (d.result || '').trim();
+        rec.tool_calls = calls;
         if (c.arm === 'chisle-hook') {
           let stats = {};
           try { stats = JSON.parse(fs.readFileSync(path.join(cfg, '.chisle-compress-stats.json'), 'utf8')); } catch (_) {}
