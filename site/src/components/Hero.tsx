@@ -119,15 +119,15 @@ export default function Hero() {
             className="flex flex-col items-center gap-5 text-center"
           >
             <h1 className="text-4xl font-semibold leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl">
-              Half the words.
+              Cut the filler.
               <br />
-              <span className="text-gradient">Same answers.</span>
+              <span className="text-gradient">Keep the facts.</span>
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-fg/85 sm:text-lg">
               One command. Eleven agents. Three levers.
               <br className="hidden sm:block" />{" "}
-              Answers bill 52% of a bare model on 20 live tasks. Agent loops gain less, and the repo
-              publishes both.
+              Answers bill 83% of a bare model, where caveman and ponytail bill 102–105%. Receipts,
+              losses included, in the repo.
             </p>
           </motion.div>
 

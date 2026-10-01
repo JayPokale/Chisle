@@ -7,7 +7,7 @@ import SectionHead from "./SectionHead";
 const QA = [
   {
     q: "Does terse output mean worse answers?",
-    a: "No. Terse ≠ incomplete. The rules cut words around the facts, never the facts: the fix, the gotcha, the caveat all stay. In the 20-task benchmark every Chisle answer was verified correct.",
+    a: "No. Terse ≠ incomplete. The rules cut words around the facts, never the facts: the fix, the gotcha, the caveat all stay. On 156 auto-graded maths and coding problems Chisle scored 156/156, the bare model 155/156.",
   },
   {
     q: "What's the overhead of the plugin itself?",

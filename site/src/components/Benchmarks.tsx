@@ -6,13 +6,15 @@ import Reveal from "./Reveal";
 import SectionHead from "./SectionHead";
 import samples from "@/data/samples.json";
 
-// Verified numbers from benchmarks/results/, 20 live tasks, billed output tokens.
+// From benchmarks/results/2026-10-01-live-rerun.md: 13 live prompts x 2 seeds,
+// billed output tokens, shipped ruleset, current harness and rival versions.
 const ARMS = [
-  { name: "chisle", pct: 52, self: true, note: "1 backfire" },
-  { name: "ponytail", pct: 68, note: "8 backfires" },
-  { name: "caveman", pct: 80, note: "6 backfires" },
+  { name: "chisle", pct: 83, self: true, note: "worst cell 170%" },
   { name: "bare model", pct: 100, note: "baseline" },
+  { name: "caveman", pct: 102, note: "worst cell 305%" },
+  { name: "ponytail", pct: 105, note: "worst cell 493%" },
 ];
+const MAX_PCT = Math.max(...ARMS.map((a) => a.pct));
 
 // Generated from every committed cell by scripts/build-samples.js. Two
 // metrics, because they answer different questions: tokens is the bill, lines
@@ -51,9 +53,11 @@ export default function Benchmarks() {
   return (
     <section id="numbers" className="border-y border-line bg-surface py-28">
       <div className="mx-auto max-w-6xl px-5">
-        <SectionHead eyebrow="Benchmarks" title="The 20-task bill">
-          Four arms, same 20 live tasks, same model, isolated configs, billed tokens, shown as
-          a share of the bare model. Raw transcripts and the runner{" "}
+        <SectionHead eyebrow="Benchmarks" title="The bill, re-measured">
+          Four arms, 13 live prompts × 2 seeds, same model, isolated configs, billed output
+          tokens as a share of the bare model. Re-run on 2026-10-01 with the shipped ruleset,
+          after the June headline of 52% turned out to lean on one outlier baseline. Raw
+          transcripts and the runner{" "}
           <a
             href="https://github.com/JayPokale/Chisle/tree/main/benchmarks"
             className="text-accent underline underline-offset-4"
@@ -72,7 +76,7 @@ export default function Benchmarks() {
               <div className="h-8 overflow-hidden rounded-md bg-raised">
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={inView ? { width: `${a.pct}%` } : {}}
+                  animate={inView ? { width: `${(a.pct / MAX_PCT) * 100}%` } : {}}
                   transition={{ duration: 1, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
                   className={`flex h-full items-center justify-end rounded-md pr-2.5 text-xs font-semibold ${
                     a.self ? "bg-gradient-to-r from-brand to-[#ffc56b] text-on-brand" : "bg-dim/35 text-fg"
@@ -88,8 +92,9 @@ export default function Benchmarks() {
 
         <Reveal delay={0.1}>
           <p className="mt-8 text-xs text-dim">
-            Average task: 69% vs 91% / 98%. Worst single task: 173% vs 227% / 424%. Both rivals
-            are credited in the repo&apos;s prior-art table, right above these numbers.
+            95% interval for Chisle&apos;s total: 69–95%; neither rival&apos;s clears 100%. Average
+            cell: 93% vs 113% (caveman) and 124% (ponytail). Both rivals are credited in the
+            repo&apos;s prior-art table.
           </p>
         </Reveal>
 
@@ -98,7 +103,7 @@ export default function Benchmarks() {
             <div>
               <h3 className="text-lg font-semibold tracking-tight">Where the average hides the story</h3>
               <p className="mt-2 max-w-xl text-sm text-dim">
-                Same 20 cells, sliced two ways. Above 100% means the tool made the model produce{" "}
+                Same 26 cells, sliced two ways. Above 100% means the tool made the model produce{" "}
                 <em>more</em> than using nothing at all.
               </p>
             </div>
@@ -142,7 +147,7 @@ export default function Benchmarks() {
                       <td className="py-2 pr-4 text-right text-dim tabular-nums">{g.n}</td>
                       <td className={cell(row.caveman)}>{row.caveman}%</td>
                       <td className={cell(row.ponytail)}>{row.ponytail}%</td>
-                      <td className={`py-2 text-right tabular-nums font-semibold text-accent ${row.rdxmin > 100 ? "text-waste" : ""}`}>
+                      <td className={`py-2 text-right tabular-nums font-semibold ${row.rdxmin > 100 ? "text-waste" : "text-accent"}`}>
                         {row.rdxmin}%
                       </td>
                     </tr>
@@ -152,10 +157,11 @@ export default function Benchmarks() {
             </table>
           </div>
           <p className="mt-4 max-w-xl text-xs text-dim">
-            Honest reading: on <strong className="text-fg">short coding</strong> prompts caveman
-            wins outright (62% to our 70%): little to skip, and the ruleset costs more than the
-            ladder saves. Kind and size are correlated too, since coding prompts run ~3&times; the
-            baseline of explanation ones. Cells are small; directional, not a leaderboard.
+            Honest reading: Chisle pays on <strong className="text-fg">long answers</strong> (77%)
+            and breaks even on short ones (106%), where there is little to cut. On explanation
+            prompts ponytail is leaner (86% to our 91%). The saving is in what gets written:
+            reasoning tokens run 107% of bare. One prompt swung 57% → 135% between seeds, so read
+            totals, not single cells.
           </p>
         </Reveal>
         <Reveal>
