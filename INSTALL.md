@@ -76,7 +76,8 @@ Writes the fenced Chisle ruleset into the global `~/.config/opencode/AGENTS.md`
 (appended after your existing instructions, never replacing them) and copies the
 bundled skills into `~/.config/opencode/skills/` for on-demand loading through
 OpenCode's native `skill` tool. No `instructions` entry is added, so nothing
-loads twice. Invoke with `/chisle` or let the ruleset apply automatically.
+loads twice. The ruleset is always on; `/chisle` loads the skill but does not
+toggle the global instructions.
 
 It also installs the tool-output compression plugin into
 `~/.config/opencode/plugins/` (`chisle.js` plus its zero-dep compressor core in
@@ -84,10 +85,14 @@ It also installs the tool-output compression plugin into
 propagate into it). OpenCode loads it at startup. It hooks `tool.execute.after`
 (mutating `output.output`, which persists onto the stored tool part) and
 `experimental.chat.messages.transform` (a request-time safety net over
-completed tool parts), eliding oversized read-only tool output (bash, grep,
-webfetch, MCP `server_tool` results) before the model reads it, keeping
-`read`/`edit`/`write` untouched. Disable it with `CHISLE_COMPRESS=0` or
-`CHISLE_DEFAULT_MODE=off`.
+completed tool parts), eliding oversized explicitly allowed tool output before
+the model reads it. OpenCode applies its `tool_output` line/byte truncation
+before `tool.execute.after`, so Chisle compresses only the retained preview in
+that path and preserves OpenCode's full-output recovery hint. MCP tools are not
+assumed safe from their names; add known read-only tools with
+`CHISLE_COMPRESS_TOOLS`. Source-bearing and mutating tools remain excluded even
+when configured. Disable compression with `CHISLE_COMPRESS=0` or
+`CHISLE_DEFAULT_MODE=off`; this does not remove the always-on instructions.
 
 ## Manual Hermes Agent
 
@@ -190,19 +195,20 @@ export CHISLE_DEFAULT_MODE=off
 { "defaultMode": "off" }
 ```
 
-Input-axis switches work identically on Claude Code and Pi:
+Input-axis switches work across Claude Code, Pi, Copilot, and OpenCode where supported:
 
 ```bash
 CHISLE_COMPRESS=0
 CHISLE_COMPRESS_SCRUB=0
 CHISLE_COMPRESS_DEDUP=0
-CHISLE_COMPRESS_MAX_CHARS=8000
+CHISLE_COMPRESS_MAX_CHARS=8000  # also the final OpenCode output bound
 CHISLE_COMPRESS_HEAD_LINES=60
 CHISLE_COMPRESS_TAIL_LINES=40
 CHISLE_COMPRESS_TOOLS=bash,grep
 ```
 
-`CHISLE_COMPRESS_TOOLS` replaces the allowlist, but it cannot switch off the
-`read`/`edit`/`write` exclusion — naming them has no effect on any agent. That
-output feeds later exact-match edits, so eliding it would make the model edit
-text it never saw; it is a correctness guarantee, not a default.
+`CHISLE_COMPRESS_TOOLS` replaces the allowlist. OpenCode defaults to `bash`,
+`grep`, `glob`, `webfetch`, `websearch`, and `list`; configure read-only MCP
+tools explicitly. The override cannot enable source-bearing or mutating tools
+such as `read`, `edit`, `write`, `patch`, or notebook edits. Their output can
+feed later exact-match edits, so this is a correctness guarantee, not a default.

@@ -22,7 +22,7 @@
 // Tunables (shared with the Claude/Pi/Copilot compressor, see chisle-config):
 //   CHISLE_COMPRESS=0            kill switch
 //   CHISLE_DEFAULT_MODE=off      disable by default (env or ~/.config/chisle)
-//   CHISLE_COMPRESS_MAX_CHARS    outputs at/under this size are not elided
+//   CHISLE_COMPRESS_MAX_CHARS    elision threshold and final OpenCode bound
 //   CHISLE_COMPRESS_TOOLS=bash,… override the tool allowlist
 
 import { createRequire } from 'module';
@@ -52,12 +52,16 @@ const config = loadFrom([
 ]) || { getDefaultMode: () => 'on' };
 
 const compressForOpencode = core && core.compressForOpencode;
+const recordSavings = core && core.recordSavings;
 const getDefaultMode = config.getDefaultMode || (() => 'on');
+const getOpencodeDir = config.getOpencodeDir || (() => path.dirname(__dirname));
 
 // Already compressed: our elision marker. Skip such text so a second pass
 // (messages.transform after tool.execute.after already ran) never nests a
 // marker or eats an earlier salvage block. Keeps compression idempotent.
 const CHISLE_MARK = '[chisle:';
+const getOpencodeMaxChars = () =>
+  (core && core.limitsFor && core.limitsFor().maxChars) || 8000;
 
 export default async () => {
   return {
@@ -75,10 +79,19 @@ export default async () => {
         // MCP tools can hand back a content[] array rather than a string;
         // built-ins give a string. Only the string case is ours to touch.
         if (!output || typeof output.output !== 'string') return;
-        if (output.output.includes(CHISLE_MARK)) return;
-        const updated = compressForOpencode(input && input.tool, output.output, { mode: getDefaultMode() });
-        if (updated != null && updated.length < output.output.length) {
+        if (output.output.includes(CHISLE_MARK) && output.output.length <= getOpencodeMaxChars()) return;
+        const original = output.output;
+        const updated = compressForOpencode(input && input.tool, original, {
+          mode: getDefaultMode(),
+          sessionId: input && input.sessionID,
+          callId: input && input.callID,
+        });
+        if (updated != null && updated.length < original.length) {
           output.output = updated;
+          if (recordSavings) {
+            recordSavings(original.length - updated.length,
+              process.env.CHISLE_STATE_DIR || getOpencodeDir());
+          }
         }
       } catch (e) { /* keep the original output */ }
     },
@@ -102,7 +115,7 @@ export default async () => {
             if (!part || part.type !== 'tool') continue;
             const st = part.state;
             if (!st || st.status !== 'completed' || typeof st.output !== 'string') continue;
-            if (st.output.includes(CHISLE_MARK)) continue;
+            if (st.output.includes(CHISLE_MARK) && st.output.length <= getOpencodeMaxChars()) continue;
             const updated = compressForOpencode(part.tool, st.output, { mode });
             if (updated != null && updated.length < st.output.length) {
               st.output = updated;

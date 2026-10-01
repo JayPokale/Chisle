@@ -85,8 +85,48 @@ const SAFE_TOOLS_COPILOT = ['bash', 'powershell', 'grep', 'glob', 'web_fetch', '
 const NEVER_COMPRESS_COPILOT = ['view', 'create', 'edit', 'str_replace', 'insert'];
 
 const SALVAGE_RE = /\b(error|err!|fail(ed|ure|ing)?|exception|traceback|panic|fatal|denied|refused|timed?[ _-]?out|assert(ion)?|segfault|npe|undefined reference|cannot find|not found|warning)\b/i;
-const MAX_SALVAGED = 12;      // error lines rescued from the elided middle
-const MAX_SALVAGE_LINE = 300; // per-line char cap on salvaged lines
+const MAX_SALVAGED = 12;
+const MAX_SALVAGE_LINE = 300;
+
+function splitsSurrogatePair(text, index) {
+  if (index <= 0 || index >= text.length) return false;
+  const before = text.charCodeAt(index - 1);
+  const after = text.charCodeAt(index);
+  return before >= 0xD800 && before <= 0xDBFF && after >= 0xDC00 && after <= 0xDFFF;
+}
+
+function safePrefix(text, maxChars) {
+  let end = Math.max(0, Math.min(text.length, maxChars));
+  if (splitsSurrogatePair(text, end)) end -= 1;
+  return text.slice(0, end);
+}
+
+function safeSuffix(text, maxChars) {
+  let start = Math.max(0, text.length - Math.max(0, maxChars));
+  if (splitsSurrogatePair(text, start)) start += 1;
+  return text.slice(start);
+}
+
+function safeSlice(text, start, end) {
+  let safeStart = Math.max(0, Math.min(text.length, start));
+  let safeEnd = Math.max(safeStart, Math.min(text.length, end));
+  if (splitsSurrogatePair(text, safeStart)) safeStart += 1;
+  if (splitsSurrogatePair(text, safeEnd)) safeEnd -= 1;
+  return text.slice(safeStart, Math.max(safeStart, safeEnd));
+}
+
+function salvageLine(line) {
+  const match = SALVAGE_RE.exec(line.replace(/error-like/gi, 'diagnostic'));
+  if (!match) return null;
+  if (line.length <= MAX_SALVAGE_LINE) return line;
+  const contentLimit = MAX_SALVAGE_LINE - 2;
+  const start = Math.max(0, Math.min(
+    match.index - Math.floor((contentLimit - match[0].length) / 2),
+    line.length - contentLimit,
+  ));
+  const end = start + contentLimit;
+  return (start > 0 ? '…' : '') + safeSlice(line, start, end) + (end < line.length ? '…' : '');
+}
 
 function toolAllowed(name) {
   if (!name || typeof name !== 'string') return false;
@@ -107,28 +147,44 @@ function copilotToolAllowed(name) {
   return list.includes(name);
 }
 
-// OpenCode runtime tool names are lowercase (bash, grep, glob, webfetch, ...)
-// and MCP tools are `server_tool` (an underscore), not Claude's mcp__ prefix.
-// read/edit/write/patch are excluded on purpose: their output feeds exact-match
-// edits, exactly as SAFE_TOOLS omits Read/Edit/Write.
-const SAFE_TOOLS_OPENCODE = ['bash', 'grep', 'glob', 'webfetch', 'websearch', 'task', 'list'];
-const UNSAFE_TOOLS_OPENCODE = ['read', 'edit', 'write', 'patch', 'todowrite', 'todoread'];
+const SAFE_TOOLS_OPENCODE = ['bash', 'grep', 'glob', 'webfetch', 'websearch', 'list'];
+const UNSAFE_TOOLS_OPENCODE = [
+  'read', 'edit', 'write', 'patch', 'apply_patch', 'multiedit',
+  'notebookedit', 'notebookread', 'notebook_write', 'notebook_edit',
+  'create', 'str_replace', 'insert', 'todowrite', 'todoread',
+];
 
 function opencodeToolAllowed(name) {
   if (!name || typeof name !== 'string') return false;
   const lower = name.toLowerCase();
-  // read/edit/write/patch are never compressed, even via CHISLE_COMPRESS_TOOLS:
-  // their output feeds exact-match edits (the invariant INSTALL.md promises).
   if (UNSAFE_TOOLS_OPENCODE.includes(lower)) return false;
   if (process.env.CHISLE_COMPRESS_TOOLS) {
     return process.env.CHISLE_COMPRESS_TOOLS
       .split(',').map(s => s.trim()).filter(Boolean).includes(name);
   }
-  if (SAFE_TOOLS_OPENCODE.includes(lower)) return true;
-  // Heuristic: underscore = MCP `server_tool`, treated as read-only info tool
-  // like SAFE_TOOLS' mcp__ clause. Set CHISLE_COMPRESS_TOOLS to override if a
-  // custom underscore-named tool ever needs protecting.
-  return name.includes('_');
+  return SAFE_TOOLS_OPENCODE.includes(lower);
+}
+
+function boundForOpencode(text, spillPath, maxChars) {
+  const outputLimit = maxChars || THRESHOLDS.maxChars;
+  if (text.length <= outputLimit) return text;
+  if (outputLimit < 7) return safePrefix(text, outputLimit);
+  const recover = spillPath ? ' Full output: ' + spillPath + ' (grep it, do not re-run)' : '';
+  let marker = '... [chisle: rebound compressed output to ' +
+    outputLimit.toLocaleString('en-US') + ' chars.' + recover + '] ...';
+  if (marker.length > outputLimit - 2) marker = safePrefix(marker, outputLimit - 7) + '] ...';
+  const middle = [marker];
+  for (const line of text.split('\n')) {
+    if (middle.length > MAX_SALVAGED) break;
+    const candidate = salvageLine(line);
+    if (!candidate) continue;
+    if (middle.join('\n').length + candidate.length + 1 > outputLimit - 2050) break;
+    if (!middle.includes(candidate)) middle.push(candidate);
+  }
+  const center = middle.join('\n');
+  const remaining = Math.max(0, outputLimit - center.length - 2);
+  const headChars = Math.ceil(remaining / 2);
+  return safePrefix(text, headChars) + '\n' + center + '\n' + safeSuffix(text, Math.floor(remaining / 2));
 }
 
 // One OpenCode tool_result → replacement string, or null to keep the original.
@@ -149,7 +205,23 @@ function compressForOpencode(toolName, text, opts) {
   if (!opencodeToolAllowed(toolName)) return null;
   if (typeof text !== 'string' || !text) return null;
   const stateDir = opts.stateDir || process.env.CHISLE_STATE_DIR || getOpencodeDir();
-  return transform(text, limitsFor(), toolName, stateDir);
+  const dup = dedupCheck(toolName, text, opts.sessionId, opts.callId, stateDir, true);
+  if (dup != null && dup.length < text.length) return dup;
+  if (text.length <= SCRUB_MIN) return null;
+  const limits = limitsFor();
+  const spillPath = text.length > limits.maxChars && toolName ? spill(text, toolName, stateDir) : null;
+  let updated = process.env.CHISLE_COMPRESS_SCRUB === '0' ? text : scrub(text);
+  if (updated.length > limits.maxChars) {
+    if (updated.split('\n').length <= limits.headLines + limits.tailLines) {
+      updated = boundForOpencode(updated, spillPath, limits.maxChars);
+    } else {
+      const elided = compress(updated, limits, spillPath);
+      if (elided != null) updated = elided;
+    }
+  }
+  updated = boundForOpencode(updated, spillPath, limits.maxChars);
+  if (text.length > limits.maxChars) return updated;
+  return text.length - updated.length >= MIN_WIN ? updated : null;
 }
 
 // Copilot CLI's postToolUse payload is flat and camelCase:
@@ -240,44 +312,122 @@ function duplicateMarker(toolName, text, reference = 'previous') {
   const lines = text.split('\n');
   const prior = reference === 'previous' ? 'the previous' : 'an earlier';
   const preview = lines.slice(0, 5)
-    .map(l => l.length > MAX_SALVAGE_LINE ? l.slice(0, MAX_SALVAGE_LINE) + '…' : l);
+    .map(l => l.length > MAX_SALVAGE_LINE ? safePrefix(l, MAX_SALVAGE_LINE - 1) + '…' : l);
   return '[chisle: output byte-identical to ' + prior + ' ' + toolName + ' result — ' +
     text.length.toLocaleString('en-US') + ' chars / ' + lines.length +
     ' lines, unchanged. First lines:]\n' + preview.join('\n');
 }
 
-// `stateDir` defaults to getClaudeDir() so every existing Claude/Pi call site
-// and test (none of which pass a third argument) keeps its exact prior
-// behaviour. Copilot's caller (processPayload, below) passes getCopilotDir().
-function dedupCheck(toolName, text, sessionId, toolUseId, stateDir) {
+const DEDUP_SESSION_KEEP = 20;
+const DEDUP_DIR = 'chisle-dedup';
+
+function readDedupFile(p) {
+  let st;
+  try { st = fs.lstatSync(p); }
+  catch (e) { return { state: null, unsafe: e.code !== 'ENOENT' }; }
+  if (st.isSymbolicLink() || !st.isFile()) return { state: null, unsafe: true };
+  const noFollow = typeof fs.constants.O_NOFOLLOW === 'number' ? fs.constants.O_NOFOLLOW : 0;
+  let fd;
+  let raw;
+  try {
+    fd = fs.openSync(p, fs.constants.O_RDONLY | noFollow);
+    raw = fs.readFileSync(fd, 'utf8');
+  } catch (e) {
+    return { state: null, unsafe: true };
+  } finally {
+    if (fd !== undefined) { try { fs.closeSync(fd); } catch (e) {} }
+  }
+  try { return { state: JSON.parse(raw) || null, unsafe: false }; }
+  catch (e) { return { state: null, unsafe: false }; }
+}
+
+function dedupStateDir(stateDir) {
+  const dir = path.join(stateDir || getClaudeDir(), DEDUP_DIR);
+  try { fs.mkdirSync(dir, { recursive: true, mode: 0o700 }); } catch (e) { return null; }
+  try {
+    const st = fs.lstatSync(dir);
+    return st.isDirectory() && !st.isSymbolicLink() ? dir : null;
+  } catch (e) { return null; }
+}
+
+function writeDedupState(p, state) {
+  const tmp = p + '.' + process.pid + '.' + crypto.randomBytes(6).toString('hex') + '.tmp';
+  const noFollow = typeof fs.constants.O_NOFOLLOW === 'number' ? fs.constants.O_NOFOLLOW : 0;
+  const flags = fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | noFollow;
+  let fd;
+  try {
+    fd = fs.openSync(tmp, flags, 0o600);
+    fs.writeFileSync(fd, JSON.stringify(state));
+    try { fs.fchmodSync(fd, 0o600); } catch (e) {}
+    fs.closeSync(fd);
+    fd = undefined;
+    fs.renameSync(tmp, p);
+  } catch (e) {
+    if (fd !== undefined) { try { fs.closeSync(fd); } catch (closeError) {} }
+    try { fs.unlinkSync(tmp); } catch (unlinkError) {}
+    throw e;
+  }
+}
+
+function pruneDedupSessions(dir) {
+  try {
+    const files = fs.readdirSync(dir)
+      .filter(name => /^[a-f0-9]{64}\.json$/.test(name))
+      .map(name => {
+        const p = path.join(dir, name);
+        const st = fs.lstatSync(p);
+        return st.isFile() || st.isSymbolicLink() ? { p, t: st.mtimeMs } : null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.t - a.t || a.p.localeCompare(b.p));
+    for (const file of files.slice(DEDUP_SESSION_KEEP)) {
+      try { fs.unlinkSync(file.p); } catch (e) {}
+    }
+  } catch (e) {}
+}
+
+function dedupCheck(toolName, text, sessionId, toolUseId, stateDir, perSession) {
   if (process.env.CHISLE_COMPRESS_DEDUP === '0') return null;
   if (!sessionId || typeof sessionId !== 'string') return null;
   if (text.length < DEDUP_MIN) return null;
   try {
-    const dir = stateDir || getClaudeDir();
-    const p = path.join(dir, '.chisle-compress-last.json');
-    try { if (fs.lstatSync(p).isSymbolicLink()) return null; } catch (e) { if (e.code !== 'ENOENT') return null; }
-    let state = {};
-    try { state = JSON.parse(fs.readFileSync(p, 'utf8')) || {}; } catch (e) {}
-    if (state.session !== sessionId) state = { session: sessionId, tools: {} };
-    if (!state.tools || typeof state.tools !== 'object') state.tools = {};
+    if (!perSession) {
+      const dir = stateDir || getClaudeDir();
+      const p = path.join(dir, '.chisle-compress-last.json');
+      try { if (fs.lstatSync(p).isSymbolicLink()) return null; } catch (e) { if (e.code !== 'ENOENT') return null; }
+      let state = {};
+      try { state = JSON.parse(fs.readFileSync(p, 'utf8')) || {}; } catch (e) {}
+      if (state.session !== sessionId) state = { session: sessionId, tools: {} };
+      if (!state.tools || typeof state.tools !== 'object') state.tools = {};
+      const hash = crypto.createHash('sha256').update(text).digest('hex');
+      const prev = state.tools[toolName];
+      const rec = (prev && typeof prev === 'object') ? prev : { hash: prev, id: null };
+      const sameCall = !!(toolUseId && rec.id && rec.id === toolUseId);
+      const dup = rec.hash === hash && !sameCall;
+      state.tools[toolName] = { hash, id: toolUseId || rec.id || null };
+      fs.mkdirSync(dir, { recursive: true });
+      const tmp = p + '.' + process.pid + '.tmp';
+      fs.writeFileSync(tmp, JSON.stringify(state), { mode: 0o600 });
+      fs.renameSync(tmp, p);
+      return dup ? duplicateMarker(toolName, text) : null;
+    }
+    const dir = dedupStateDir(stateDir);
+    if (!dir) return null;
+    const p = path.join(dir, crypto.createHash('sha256').update(sessionId).digest('hex') + '.json');
+    const loaded = readDedupFile(p);
+    if (loaded.unsafe) return null;
+    let state = loaded.state;
+    if (!state || state.session !== sessionId || !state.tools || typeof state.tools !== 'object') {
+      state = { session: sessionId, tools: {} };
+    }
     const hash = crypto.createHash('sha256').update(text).digest('hex');
-    // A second hook invocation for the SAME tool call is not the model seeing
-    // the output twice. That happens whenever this hook is registered more than
-    // once (plugin manifest + a leftover settings.json entry), because both
-    // copies share this state file: copy A stores the hash, copy B matches it
-    // and reports first-seen output as a duplicate of itself. Old string-valued
-    // entries read through `rec`, so an existing state file needs no migration,
-    // and a payload with no tool_use_id keeps today's exact behaviour.
     const prev = state.tools[toolName];
     const rec = (prev && typeof prev === 'object') ? prev : { hash: prev, id: null };
     const sameCall = !!(toolUseId && rec.id && rec.id === toolUseId);
     const dup = rec.hash === hash && !sameCall;
     state.tools[toolName] = { hash, id: toolUseId || rec.id || null };
-    fs.mkdirSync(dir, { recursive: true });
-    const tmp = p + '.' + process.pid + '.tmp';
-    fs.writeFileSync(tmp, JSON.stringify(state), { mode: 0o600 });
-    fs.renameSync(tmp, p);
+    writeDedupState(p, state);
+    pruneDedupSessions(dir);
     return dup ? duplicateMarker(toolName, text) : null;
   } catch (e) { return null; }
 }
@@ -336,9 +486,9 @@ function compress(text, limits, spillPath) {
     const keep = Math.floor(maxChars / 2);
     const elided = text.length - 2 * keep;
     if (elided <= 0) return null;
-    return text.slice(0, keep) +
+    return safePrefix(text, keep) +
       '\n... [chisle: elided ' + elided.toLocaleString('en-US') + ' chars from the middle.' + recover + '] ...\n' +
-      text.slice(-keep);
+      safeSuffix(text, keep);
   }
 
   const head = lines.slice(0, headLines);
@@ -348,7 +498,8 @@ function compress(text, limits, spillPath) {
   const salvaged = [];
   for (const line of middle) {
     if (salvaged.length >= MAX_SALVAGED) break;
-    if (SALVAGE_RE.test(line)) salvaged.push(line.length > MAX_SALVAGE_LINE ? line.slice(0, MAX_SALVAGE_LINE) + '…' : line);
+    const candidate = salvageLine(line);
+    if (candidate) salvaged.push(candidate);
   }
 
   const marker = '... [chisle: elided ' + middle.length.toLocaleString('en-US') +
@@ -513,5 +664,6 @@ module.exports = {
   isCopilotPayload, copilotToolAllowed, SAFE_TOOLS_COPILOT, NEVER_COMPRESS_COPILOT,
   // OpenCode-specific additions (plugin uses tool.execute.after +
   // experimental.chat.messages.transform):
-  opencodeToolAllowed, compressForOpencode, SAFE_TOOLS_OPENCODE,
+  opencodeToolAllowed, compressForOpencode, SAFE_TOOLS_OPENCODE, UNSAFE_TOOLS_OPENCODE,
+  boundForOpencode, recordSavings,
 };
