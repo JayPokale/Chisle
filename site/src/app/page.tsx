@@ -1,5 +1,7 @@
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
+import GetStarted from "@/components/GetStarted";
+import Agents from "@/components/Agents";
 import Stats from "@/components/Stats";
 import Axes from "@/components/Axes";
 import Pipeline from "@/components/Pipeline";
@@ -17,6 +19,8 @@ export default function Page() {
       <Nav />
       <Hero />
       <Stats />
+      <GetStarted />
+      <Agents />
       <Axes />
       <Pipeline />
       <Terminal />
