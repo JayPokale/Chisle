@@ -119,14 +119,15 @@ export default function Hero() {
             className="flex flex-col items-center gap-5 text-center"
           >
             <h1 className="text-4xl font-semibold leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl">
-              Less than half the tokens.
+              Half the words.
               <br />
               <span className="text-gradient">Same answers.</span>
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-fg/85 sm:text-lg">
               One command. Eleven agents. Three levers.
               <br className="hidden sm:block" />{" "}
-              On coding work it bills 44% of a bare model, with receipts in the repo.
+              Answers bill 52% of a bare model on 20 live tasks. Agent loops gain less, and the repo
+              publishes both.
             </p>
           </motion.div>
 
