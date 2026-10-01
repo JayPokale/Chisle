@@ -54,6 +54,14 @@ node benchmarks/replay-compress.js [claude|pi] [session-dir]     # input replay
 - [ ] New measurable behavior gets a benchmark task or replay receipt
 - [ ] `npm test` passes; `npm run check:rules` and `npm run check:chart` clean
 
+## Hacktoberfest
+
+Chisle takes part. Start from an issue labelled `hacktoberfest`, `good first issue` or `help wanted`, and comment before you start so two people don't build the same thing. One issue per PR.
+
+What counts: a fix, a fixture, a test, a measurement with receipts, a docs correction backed by data. What doesn't: whitespace, typo sweeps across unrelated files, reworded README sections, or anything that adds a dependency. Those get labelled `invalid` or `spam` and don't count. Accepted PRs get `hacktoberfest-accepted`, merged or not.
+
+Benchmark PRs follow the same rule as everything else: raw cells committed, losses published.
+
 ## Reporting bugs
 
 Open an issue. Include: what you typed, what chisle did, what you expected.
