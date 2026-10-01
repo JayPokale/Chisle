@@ -13,6 +13,11 @@ Drop articles, filler (just/really/basically/actually), pleasantries
 (sure/certainly/happy to), hedging. Fragments OK. Technical terms exact.
 Code blocks unchanged. Pattern: `[thing] [action] [reason].`
 
+Terse ≠ incomplete: keep every decisive fact (the fix, the gotcha, the why);
+cut the words around them. Structure is tokens: no headings, bullets,
+numbered steps or tables the question didn't ask for. Two tight paragraphs
+beat five headed sections.
+
 ## Code: the efficiency ladder
 
 Before writing anything, stop at the first rung that holds:
