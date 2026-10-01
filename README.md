@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <strong>44% of a bare model's output tokens on coding prompts &middot; 11 agents &middot; zero dependencies &middot; one command</strong>
+  <strong>83% of a bare model's output, where caveman and ponytail land above 100% &middot; 11 agents &middot; zero dependencies &middot; one command</strong>
 </p>
 
 <p align="center">
@@ -234,7 +234,21 @@ node benchmarks/replay-compress.js pi    # Pi; marginal over Pi's native truncat
 
 Nothing here is estimated. Every figure below is recomputed from committed raw data; the 2026-07-07 [verification writeup](benchmarks/results/2026-07-07-verify-rerun.md) re-derived the old claims from scratch, re-ran the whole suite against the competitors' **installed plugins**, and retired the one claim that didn't survive.
 
-### Output axis: vs caveman & ponytail, 20 live tasks
+### Output axis, re-measured 2026-10-01 (current)
+
+Re-run with the shipped ruleset, Claude Code 2.1.285 and the rivals' current plugins (caveman `ef6050c5e184`, ponytail 4.8.3): 13 live prompts × 2 seeds = 26 cells per arm on Haiku 4.5, billed output tokens vs the no-tool baseline ([writeup + raw cells](benchmarks/results/2026-10-01-live-rerun.md)):
+
+| | total bill | 95% CI | visible answer | worst cell | backfires |
+|---|--:|--:|--:|--:|--:|
+| caveman | 102% | 79–128% | 105% | 305% | 15 / 26 |
+| ponytail | 105% | 86–129% | 97% | 493% | 16 / 26 |
+| **Chisle** | **83%** | **69–95%** | **76%** | **170%** | **11 / 26** |
+
+Chisle is the only arm measurably below a bare model, by about a third of what the June table below claimed. It pays on long answers (77%) and coding prompts (76%); on short answers it breaks even (106%), on explanation prompts ponytail is leaner (86% vs 91%), and reasoning tokens are not cut (107%). Single cells swing hard between seeds (57% → 135% on one prompt), so read totals.
+
+**Why the June headline was retired.** Its 52% leaned on one cell: the June bare `cache` answer billed 4,910 tokens, while every later run of the same prompt billed 375–813. The ruleset also carried examples matching `cache` (from June 18) and `auth-bug` (from June 27), so four cells may have been primed; without them the June total was 70%. The tables below stay as what they were.
+
+### Output axis, June–July 2026 (superseded): vs caveman & ponytail, 20 live tasks
 
 **What this suite measures, and what it does not.** Every figure below is *billed output tokens on single-turn prompts with no tools available*. That isolates the ruleset's effect on how the model writes, which is what it was built to measure. It is not whole-session cost: a real agentic session is dominated by tool output and cached input, so a tool can win here and still fail to pay for itself end to end. The input axis below is measured separately, and against its own baseline.
 
@@ -326,10 +340,10 @@ SUITE=large bash benchmarks/run-live.sh <model> benchmarks/results/raw-large
 
 |  | prose | code judgment | input/context | worst-case guard | publishes failures |
 |---|:---:|:---:|:---:|:---:|:---:|
-| caveman | ✅ | ❌ | ❌ | ❌ 424% | ❌ |
-| ponytail | ❌ | ✅ | ❌ | ❌ 227% | ❌ |
+| caveman | ✅ | ❌ | ❌ | ❌ 305% | ❌ |
+| ponytail | ❌ | ✅ | ❌ | ❌ 493% | ❌ |
 | headroom | ❌ | ❌ | ✅ proxy | n/a | ❌ |
-| **Chisle** | ✅ | ✅ | ✅ hook | **173%, 1/20** | ✅ |
+| **Chisle** | ✅ | ✅ | ✅ hook | **170%** | ✅ |
 
 The row that matters is the last one. Every tool here looks good on its best day; the numbers above are the only ones in this class published alongside the run that went wrong. [Full comparison →](docs/comparison.md)
 

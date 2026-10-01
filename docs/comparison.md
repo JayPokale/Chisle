@@ -2,23 +2,25 @@
 
 ## Why not just use caveman or ponytail?
 
-Use them. They're great, and we tested against them honestly. But each has a failure mode, and Chisle doesn't.
+Use them if they fit. We test against them honestly, and the latest numbers are less flattering to everyone, Chisle included.
 
-Across **20 tasks** in two suites (June 14-task matrix + July re-verification run; code, prose, and vague "judgment" requests; Haiku + Sonnet), billed output tokens as % of the no-tool baseline:
+Re-measured 2026-10-01: 13 live prompts × 2 seeds on Haiku 4.5, each tool's current version, billed output tokens as % of the no-tool baseline ([writeup + raw cells](../benchmarks/results/2026-10-01-live-rerun.md)):
 
-| | total bill | average task | worst case | times worse than no tool | code judgment |
+| | total bill | 95% CI | worst cell | times worse than no tool | code judgment |
 |---|--:|--:|--:|--:|:--:|
-| caveman | 80% | 98% | **424%** | 6 / 20 | ❌ no ladder |
-| ponytail | 68% | 91% | 227% | **8 / 20** | ✅ |
-| **Chisle** | **52%** | **69%** | **173%** | **1 / 20** | ✅ |
+| caveman | 102% | 79–128% | 305% | 15 / 26 | ❌ no ladder |
+| ponytail | 105% | 86–129% | **493%** | **16 / 26** | ✅ |
+| **Chisle** | **83%** | **69–95%** | **170%** | **11 / 26** | ✅ |
 
-Chisle's single backfire (a comparison prompt answered with headed bullet walls) was root-caused, fixed in the ruleset, and re-validated live at 93% of baseline. Receipts in the [verification writeup](../benchmarks/results/2026-07-07-verify-rerun.md).
+Chisle is the only one of the three measurably below a bare model. None is immune to backfiring: every arm wrote more than no tool at all on at least 11 of 26 cells, mostly short prompts with nothing to cut.
+
+The June–July run (20 tasks) put Chisle at 52% with one backfire. That headline leaned on a single outlier baseline and on cells an old ruleset example may have primed, and is superseded. The examples below are from that run.
 
 **caveman** is a superb prose compressor, a hair leaner than Chisle on pure-prose prompts, but it has no engineering judgment. Asked to *"add caching,"* it dumped three implementations (330 tokens) where Chisle gave one `@cache` + an upgrade line (151).
 
 **ponytail** has the engineering judgment but pads prose so hard it backfires. On a "retry logic" prompt it ran **227%** of the no-tool baseline. Yes: a "write less" tool, writing more than twice as much. Receipts: [`reliability writeup`](../benchmarks/results/2026-06-29-reliability.md).
 
-**Chisle backfired once in 20 tasks**, and that once got root-caused and fixed. It's not always the single tersest answer; it's the one with the smallest, rarest downside.
+**Chisle's June backfire** (a comparison prompt answered with headed bullet walls) was root-caused and fixed in the ruleset. The October run shows short prompts still backfire for every tool, Chisle included; its edge is the smallest worst case, not immunity.
 
 Installing *both* specialists to cover both axes gets you two plugins that fight over prose style and double per-session overhead, and on one task they did *worse* stacked (605t) than Chisle alone (595t). Full data: [reliability](../benchmarks/results/2026-06-29-reliability.md) · [Sonnet cross-check](../benchmarks/results/2026-06-29-sonnet-cross-check.md).
 
