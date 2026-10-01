@@ -20,7 +20,7 @@ function CodeBlock({ children }: { children: React.ReactNode }) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="group relative">
-      <pre className="pane-scroll my-2 overflow-x-auto rounded border border-line bg-paper/70 p-2.5">
+      <pre className="pane-scroll my-2 overflow-x-auto rounded border border-line bg-bg/70 p-2.5">
         {children}
       </pre>
       <button
@@ -30,7 +30,7 @@ function CodeBlock({ children }: { children: React.ReactNode }) {
           setCopied(true);
           setTimeout(() => setCopied(false), 1400);
         }}
-        className="absolute right-1.5 top-3.5 rounded border border-line bg-panel px-1.5 py-0.5 font-mono text-[9.5px] text-dim opacity-0 transition-opacity hover:text-amber focus:opacity-100 group-hover:opacity-100"
+        className="absolute right-1.5 top-3.5 rounded border border-line bg-surface px-1.5 py-0.5 font-mono text-[9.5px] text-dim opacity-0 transition-opacity hover:text-accent focus:opacity-100 group-hover:opacity-100"
         aria-label="Copy code"
       >
         {copied ? "copied" : "copy"}
@@ -50,14 +50,14 @@ export default function Markdown({ children }: { children: string }) {
           h3: (p) => <h6 className="mt-3 mb-1 text-[12px] font-semibold first:mt-0" {...p} />,
           h4: (p) => <h6 className="mt-3 mb-1 text-[12px] font-semibold first:mt-0" {...p} />,
           p: (p) => <p className="my-2 first:mt-0 last:mb-0" {...p} />,
-          ul: (p) => <ul className="my-2 list-disc space-y-0.5 pl-5 marker:text-amber" {...p} />,
-          ol: (p) => <ol className="my-2 list-decimal space-y-0.5 pl-5 marker:text-amber" {...p} />,
+          ul: (p) => <ul className="my-2 list-disc space-y-0.5 pl-5 marker:text-accent" {...p} />,
+          ol: (p) => <ol className="my-2 list-decimal space-y-0.5 pl-5 marker:text-accent" {...p} />,
           li: (p) => <li className="pl-0.5" {...p} />,
-          strong: (p) => <strong className="font-semibold text-ink" {...p} />,
+          strong: (p) => <strong className="font-semibold text-fg" {...p} />,
           em: (p) => <em className="italic" {...p} />,
           hr: () => <hr className="my-3 border-line" />,
           a: (p) => (
-            <a className="text-amber underline-offset-2 hover:underline" target="_blank" rel="noreferrer" {...p} />
+            <a className="text-accent underline-offset-2 hover:underline" target="_blank" rel="noreferrer" {...p} />
           ),
           blockquote: (p) => (
             <blockquote className="my-2 border-l-2 border-line pl-3 text-dim" {...p} />
@@ -75,7 +75,7 @@ export default function Markdown({ children }: { children: string }) {
             }
             return (
               <code
-                className="rounded border border-line bg-amber-soft/60 px-1 py-px font-mono text-[10.5px] text-amber"
+                className="rounded border border-line bg-accent-soft/60 px-1 py-px font-mono text-[10.5px] text-accent"
                 {...rest}
               >
                 {children}

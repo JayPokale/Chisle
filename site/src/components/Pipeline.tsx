@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Reveal from "./Reveal";
+import SectionHead from "./SectionHead";
 
 // Where each axis attaches to a session: the SVG twin of the README mermaid
 // diagram. Inline SVG rather than a diagram library: see the note in Ladder.tsx.
@@ -38,7 +39,7 @@ export default function Pipeline() {
   const [hook, setHook] = useState<HookId | null>(null);
 
   // Hovering lifts the element itself rather than dimming its neighbours:
-  // a thicker amber stroke and a soft ring, so attention is added, not removed.
+  // a thicker accent stroke and a soft ring, so attention is added, not removed.
   const box = (id: HookId) => ({
     onMouseEnter: () => setHook(id),
     onMouseLeave: () => setHook(null),
@@ -47,17 +48,12 @@ export default function Pipeline() {
   const on = (id: HookId) => hook === id;
 
   return (
-    <section className="border-y border-line bg-panel/60 py-24">
-      <div className="mx-auto max-w-5xl px-5">
-        <Reveal>
-          <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-4xl">
-            Three hooks, one session
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-sm text-dim">
-            Two hooks shape what the model writes. The third shrinks what it reads, and that one
-            is a loop.
-          </p>
-        </Reveal>
+    <section className="border-y border-line bg-surface py-28">
+      <div className="mx-auto max-w-6xl px-5">
+        <SectionHead eyebrow="How it works" title="Three hooks, one session" center>
+          Two hooks shape what the model writes. The third shrinks what it reads, and that one
+          is a loop.
+        </SectionHead>
 
         <Reveal delay={0.08}>
           <div className="mt-10 overflow-x-auto">
@@ -72,7 +68,7 @@ export default function Pipeline() {
                   <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-dim)" />
                 </marker>
                 <marker id="ar-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-amber)" />
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--color-accent)" />
                 </marker>
                 <style>{`
                   .hook rect { transition: stroke 0.2s, stroke-width 0.2s; }
@@ -85,12 +81,12 @@ export default function Pipeline() {
                 <rect
                   className="ring"
                   x="4" y="30" width="196" height="60" rx="9"
-                  fill="none" stroke="var(--color-amber)"
+                  fill="none" stroke="var(--color-accent)"
                   opacity={on("session") ? 0.35 : 0}
                   transform={on("session") ? "scale(1.04)" : "scale(0.98)"}
                 />
-                <rect x="8" y="34" width="188" height="52" rx="6" fill="var(--color-amber-soft)"
-                  stroke={on("session") ? "var(--color-amber)" : "var(--color-line)"}
+                <rect x="8" y="34" width="188" height="52" rx="6" fill="var(--color-accent-soft)"
+                  stroke={on("session") ? "var(--color-accent)" : "var(--color-line)"}
                   strokeWidth={on("session") ? 1.8 : 1} />
                 <text x="102" y="55" textAnchor="middle" fontSize="11" fontWeight="600" fill="currentColor">SessionStart</text>
                 <text x="102" y="72" textAnchor="middle" fontSize="11" fill="var(--color-dim)">~1.6k tok · new sessions only</text>
@@ -101,33 +97,33 @@ export default function Pipeline() {
                 <rect
                   className="ring"
                   x="4" y="102" width="196" height="60" rx="9"
-                  fill="none" stroke="var(--color-amber)"
+                  fill="none" stroke="var(--color-accent)"
                   opacity={on("prompt") ? 0.35 : 0}
                   transform={on("prompt") ? "scale(1.04)" : "scale(0.98)"}
                 />
-                <rect x="8" y="106" width="188" height="52" rx="6" fill="var(--color-amber-soft)"
-                  stroke={on("prompt") ? "var(--color-amber)" : "var(--color-line)"}
+                <rect x="8" y="106" width="188" height="52" rx="6" fill="var(--color-accent-soft)"
+                  stroke={on("prompt") ? "var(--color-accent)" : "var(--color-line)"}
                   strokeWidth={on("prompt") ? 1.8 : 1} />
                 <text x="102" y="127" textAnchor="middle" fontSize="11" fontWeight="600" fill="currentColor">UserPromptSubmit</text>
                 <text x="102" y="144" textAnchor="middle" fontSize="11" fill="var(--color-dim)">~50 tok · every turn</text>
               </g>
 
               {/* model */}
-              <rect x="286" y="58" width="132" height="76" rx="38" fill="var(--color-panel)" stroke="var(--color-amber)" strokeWidth="1.5" />
+              <rect x="286" y="58" width="132" height="76" rx="38" fill="var(--color-raised)" stroke="var(--color-accent)" strokeWidth="1.5" />
               <text x="352" y="102" textAnchor="middle" fontSize="15" fontWeight="700" fill="currentColor">model</text>
 
-              <path d="M 196 60 L 282 88" stroke={on("session") ? "var(--color-amber)" : "var(--color-dim)"} fill="none" markerEnd={on("session") ? "url(#ar-amber)" : "url(#ar)"} />
-              <path d="M 196 132 L 282 106" stroke={on("prompt") ? "var(--color-amber)" : "var(--color-dim)"} fill="none" markerEnd={on("prompt") ? "url(#ar-amber)" : "url(#ar)"} />
+              <path d="M 196 60 L 282 88" stroke={on("session") ? "var(--color-accent)" : "var(--color-dim)"} fill="none" markerEnd={on("session") ? "url(#ar-amber)" : "url(#ar)"} />
+              <path d="M 196 132 L 282 106" stroke={on("prompt") ? "var(--color-accent)" : "var(--color-dim)"} fill="none" markerEnd={on("prompt") ? "url(#ar-amber)" : "url(#ar)"} />
 
               {/* output */}
-              <rect x="508" y="46" width="200" height="60" rx="6" fill="var(--color-panel)" stroke="var(--color-amber)" />
+              <rect x="508" y="46" width="200" height="60" rx="6" fill="var(--color-raised)" stroke="var(--color-accent)" />
               <text x="608" y="70" textAnchor="middle" fontSize="12" fontWeight="600" fill="currentColor">terser prose</text>
               <text x="608" y="88" textAnchor="middle" fontSize="12" fontWeight="600" fill="currentColor">YAGNI-first code</text>
-              <path d="M 418 82 L 504 76" stroke="var(--color-amber)" fill="none" markerEnd="url(#ar-amber)" />
+              <path d="M 418 82 L 504 76" stroke="var(--color-accent)" fill="none" markerEnd="url(#ar-amber)" />
               <text x="461" y="66" textAnchor="middle" fontSize="10" fill="var(--color-dim)">writes</text>
 
               {/* tool call */}
-              <rect x="508" y="150" width="200" height="46" rx="6" fill="var(--color-panel)" stroke="var(--color-line)" />
+              <rect x="508" y="150" width="200" height="46" rx="6" fill="var(--color-raised)" stroke="var(--color-line)" />
               <text x="608" y="178" textAnchor="middle" fontSize="11.5" fill="currentColor">Bash · Grep · WebFetch · mcp__*</text>
               <path d="M 400 134 L 504 166" stroke="var(--color-dim)" fill="none" markerEnd="url(#ar)" />
               <text x="446" y="163" textAnchor="middle" fontSize="10" fill="var(--color-dim)">calls</text>
@@ -137,12 +133,12 @@ export default function Pipeline() {
                 <rect
                   className="ring"
                   x="504" y="218" width="208" height="66" rx="9"
-                  fill="none" stroke="var(--color-amber)"
+                  fill="none" stroke="var(--color-accent)"
                   opacity={on("post") ? 0.35 : 0}
                   transform={on("post") ? "scale(1.03)" : "scale(0.98)"}
                 />
-                <rect x="508" y="222" width="200" height="58" rx="6" fill="var(--color-amber-soft)"
-                  stroke="var(--color-amber)" strokeWidth={on("post") ? 2.4 : 1.5} />
+                <rect x="508" y="222" width="200" height="58" rx="6" fill="var(--color-accent-soft)"
+                  stroke="var(--color-accent)" strokeWidth={on("post") ? 2.4 : 1.5} />
                 <text x="608" y="244" textAnchor="middle" fontSize="12" fontWeight="700" fill="currentColor">PostToolUse</text>
                 <text x="608" y="262" textAnchor="middle" fontSize="11" fill="var(--color-dim)">scrub → elide → dedup</text>
               </g>
@@ -151,7 +147,7 @@ export default function Pipeline() {
               {/* the loop back, the whole point of the picture */}
               <path
                 d="M 508 251 L 352 251 L 352 138"
-                stroke="var(--color-amber)" fill="none"
+                stroke="var(--color-accent)" fill="none"
                 strokeWidth={on("post") ? 2.4 : 1.5}
                 markerEnd="url(#ar-amber)"
                 strokeDasharray={on("post") ? "6 4" : undefined}
@@ -160,7 +156,7 @@ export default function Pipeline() {
                   <animate attributeName="stroke-dashoffset" from="20" to="0" dur="0.8s" repeatCount="indefinite" />
                 )}
               </path>
-              <text x="430" y="243" textAnchor="middle" fontSize="10" fill="var(--color-amber)">compressed, in the tool&apos;s own shape</text>
+              <text x="430" y="243" textAnchor="middle" fontSize="10" fill="var(--color-accent)">compressed, in the tool&apos;s own shape</text>
 
               {/* excluded */}
               <rect x="8" y="222" width="188" height="58" rx="6" fill="none" stroke="var(--color-line)" strokeDasharray="4 3" />
@@ -182,8 +178,8 @@ export default function Pipeline() {
               aria-pressed={hook === h.id}
               className={`rounded border px-3 py-1 font-mono text-[11px] transition-all ${
                 hook === h.id
-                  ? "-translate-y-0.5 border-amber bg-amber-soft text-amber shadow-sm"
-                  : "border-line text-dim hover:border-amber/50 hover:text-ink"
+                  ? "-translate-y-0.5 border-brand-hover bg-accent-soft text-accent shadow-sm"
+                  : "border-line text-dim hover:border-brand-hover/50 hover:text-fg"
               }`}
             >
               {h.label}

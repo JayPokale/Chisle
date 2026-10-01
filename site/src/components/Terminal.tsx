@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "motion/react";
 import Reveal from "./Reveal";
+import SectionHead from "./SectionHead";
 
 // The one dark element on the page: the product doing its job.
 const HEAD = [
@@ -41,16 +42,11 @@ export default function Terminal() {
   }, [inView]);
 
   return (
-    <section className="mx-auto max-w-5xl px-5 py-24">
-      <Reveal>
-        <h2 className="text-2xl font-semibold tracking-tight sm:text-4xl">
-          400 lines of output. Two matter.
-        </h2>
-        <p className="mt-3 max-w-xl text-sm text-dim">
-          Tool results re-bill on every later turn. The compressor keeps the head, the tail, and
-          the error lines. The rest never reaches the model.
-        </p>
-      </Reveal>
+    <section className="mx-auto max-w-6xl px-5 py-28">
+      <SectionHead eyebrow="The compressor, live" title="400 lines of output. Two matter.">
+        Tool results re-bill on every later turn. The compressor keeps the head, the tail, and
+        the error lines. The rest never reaches the model.
+      </SectionHead>
 
       <Reveal delay={0.1}>
         <div
@@ -60,7 +56,7 @@ export default function Terminal() {
         >
           <div className="flex items-center border-b border-term-line px-4 py-2.5">
             <span className="text-xs text-term-dim">PostToolUse · Bash</span>
-            <span className="ml-auto rounded bg-term-amber/15 px-1.5 py-0.5 text-xs text-term-amber">
+            <span className="ml-auto rounded bg-term-accent/15 px-1.5 py-0.5 text-xs text-term-accent">
               [CHISLE]{phase === "done" ? " ⇣9k tok" : ""}
             </span>
           </div>
@@ -78,14 +74,14 @@ export default function Terminal() {
             )}
             {phase === "done" && (
               <>
-                <div className="my-2 w-fit rounded border border-dashed border-term-amber/50 px-3 py-1.5 text-term-amber">
+                <div className="my-2 w-fit rounded border border-dashed border-term-accent/50 px-3 py-1.5 text-term-accent">
                   ⋯ 412 lines elided — kept head, tail, 2 error lines ⋯
                 </div>
                 {SALVAGED.map((l) => (
                   <div key={l} className="text-[#e5484d]">{l}</div>
                 ))}
                 {TAIL.map((l) => (
-                  <div key={l} className="text-term-paper">{l}</div>
+                  <div key={l} className="text-term-fg">{l}</div>
                 ))}
                 <div className="mt-2 text-[#86c06c]">✓ 34,120 chars → 612 · billed once, saved every turn after</div>
               </>
