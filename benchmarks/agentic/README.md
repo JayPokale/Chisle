@@ -15,6 +15,18 @@ node benchmarks/agentic/score.js                            # tables to stdout
 node benchmarks/agentic/score.js --json                     # per-cell rows
 ```
 
+Both take `ARMS` (default `vanilla,chisle`) and `RAW_DIR` (default `./raw`).
+Arms: `vanilla` (bare agent), `chisle` (ruleset appended as a system prompt),
+`chisle-hook` (ruleset plus the shipped PostToolUse compressor, wired from
+`plugin.json`, with chars elided recorded per cell). Point `RAW_DIR` at a fresh
+directory whenever the ruleset changes: the runner skips any cell that already
+has a result, so old cells would otherwise be scored as new.
+
+```bash
+ARMS=vanilla,chisle,chisle-hook RAW_DIR=benchmarks/agentic/raw-2 node benchmarks/agentic/run.js claude-haiku-4-5-20251001 12
+ARMS=vanilla,chisle,chisle-hook RAW_DIR=benchmarks/agentic/raw-2 node benchmarks/agentic/score.js
+```
+
 ## The fixtures
 
 | fixture | the trap | what the hidden test catches |
@@ -24,6 +36,11 @@ node benchmarks/agentic/score.js --json                     # per-cell rows
 | `dupepaths` | The money format is inlined in two of three render paths rather than going through `money.js` | Fixing only `money.js` leaves receipts and statements printing `$-4.50` |
 | `yagni` | A one-line "read it from an env var" ask that invites a config framework | Behaviour must hold for unset, `"5"`, and `"0"` — the last one catches `||` instead of a null check |
 | `stdlib` | Order-preserving dedupe, which invites a dependency | Behaviour, plus `deps added` in the score table |
+| `noisylog` | `npm test` prints 401 results (17k chars) with one half-cent rounding failure mid-log | A fix that only special-cases the visible failure misses `1005 @ 50%` and `1 @ 50%`; editing the test instead of `price.js` fails outright |
+
+`noisylog` was added on 2026-10-01, before any run that includes it, to give
+the `chisle-hook` arm something to compress: the other five repos produce
+almost no shell output. The results below predate it and cover five fixtures.
 
 ## Metrics
 
@@ -39,7 +56,9 @@ node benchmarks/agentic/score.js --json                     # per-cell rows
 ## Results
 
 Regenerated from the committed `raw/` by `score.js` — deterministic, no tokens
-spent. 5 fixtures x 12 seeds = 60 cells per arm.
+spent. 5 fixtures x 12 seeds = 60 cells per arm. Run on 2026-09-14 with the
+ruleset as it was then (~1.8k tokens); it has since been trimmed to ~900
+because of the cost row below, and these cells have not been re-run yet.
 
 | arm | n | passed | pass rate | new files | net LOC | deps added | out tokens | context tokens | $ / run |
 |-----|--:|-------:|----------:|----------:|--------:|-----------:|-----------:|---------------:|--------:|
