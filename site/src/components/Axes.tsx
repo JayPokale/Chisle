@@ -2,16 +2,7 @@
 
 import { useState } from "react";
 import Reveal from "./Reveal";
-
-// Small stroke icons, drawn inline: one per card, no icon library.
-const ICONS: Record<string, React.ReactNode> = {
-  persona: <path d="M4 6h16M4 12h10M4 18h6" />,
-  compress: <path d="M4 4h16v4H4zM8 12h8M10 16h4M12 20h0" />,
-  diet: <path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5" />,
-  status: <path d="M3 12h4l3-8 4 16 3-8h4" />,
-  tested: <path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7zM8.5 12l2.5 2.5 4.5-5" />,
-  off: <path d="M12 3v9M6.3 6.3a8 8 0 1 0 11.4 0" />,
-};
+import { Glyph } from "./icons";
 
 const AXES = [
   {
@@ -58,9 +49,7 @@ const EXTRAS = [
 function Icon({ name }: { name: string }) {
   return (
     <span className="grid h-10 w-10 place-items-center rounded-lg border border-brand-hover/40 bg-accent-soft text-accent">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        {ICONS[name]}
-      </svg>
+      <Glyph name={name} />
     </span>
   );
 }
