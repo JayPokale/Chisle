@@ -98,7 +98,7 @@ export default function Ladder() {
               <h3 className="mt-4 text-lg font-semibold leading-snug">{r.q}</h3>
               <p className="mt-1 text-sm text-accent">→ {r.a}</p>
               <p className="mt-4 font-mono text-[10px] uppercase tracking-wider text-dim">instead of</p>
-              <pre className="pane-scroll mt-1.5 overflow-x-auto rounded-lg border border-line bg-bg p-3 font-mono text-[11px] leading-relaxed text-dim line-through decoration-waste/40">
+              <pre className="pane-scroll mt-1.5 overflow-x-auto rounded-lg border border-line bg-bg p-3 font-mono text-[11px] leading-relaxed text-dim">
                 {r.before}
               </pre>
               <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-accent">chisle</p>
