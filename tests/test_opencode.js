@@ -30,15 +30,7 @@ function recoveryPath(output) {
 }
 
 function hasUnpairedSurrogate(value) {
-  for (let i = 0; i < value.length; i++) {
-    const code = value.charCodeAt(i);
-    if (code >= 0xD800 && code <= 0xDBFF) {
-      const next = value.charCodeAt(i + 1);
-      if (next < 0xDC00 || next > 0xDFFF) return true;
-      i++;
-    } else if (code >= 0xDC00 && code <= 0xDFFF) return true;
-  }
-  return false;
+  return /[\uD800-\uDFFF]/u.test(value);
 }
 
 function sessionStateFile(stateDir, sessionId) {
@@ -161,6 +153,43 @@ test('maxChars remains exact at its smallest valid value', () => {
   process.env.CHISLE_COMPRESS_MAX_CHARS = '1';
   try {
     assert.equal(compressForOpencode('bash', 'x'.repeat(5000), { mode: 'on' }).length, 1);
+  } finally {
+    if (previous === undefined) delete process.env.CHISLE_COMPRESS_MAX_CHARS;
+    else process.env.CHISLE_COMPRESS_MAX_CHARS = previous;
+  }
+});
+
+test('maxChars bounds short output and duplicate markers', () => {
+  const previous = process.env.CHISLE_COMPRESS_MAX_CHARS;
+  const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-small-bound-'));
+  try {
+    process.env.CHISLE_COMPRESS_MAX_CHARS = '1';
+    assert.equal(compressForOpencode('bash', 'x'.repeat(100), { mode: 'on', stateDir }).length, 1);
+    process.env.CHISLE_COMPRESS_MAX_CHARS = '1000';
+    const text = Array(5).fill('x'.repeat(300)).join('\n') + '\n' + 'y'.repeat(3000);
+    const opts = { mode: 'on', stateDir, sessionId: 'bounded-dedup' };
+    compressForOpencode('bash', text, { ...opts, callId: 'first' });
+    const duplicate = compressForOpencode('bash', text, { ...opts, callId: 'second' });
+    assert.ok(duplicate.length <= 1000);
+    assert.match(duplicate, /byte-identical/);
+  } finally {
+    if (previous === undefined) delete process.env.CHISLE_COMPRESS_MAX_CHARS;
+    else process.env.CHISLE_COMPRESS_MAX_CHARS = previous;
+    fs.rmSync(stateDir, { recursive: true, force: true });
+  }
+});
+
+test('small bounds retain late diagnostics and head/tail context', () => {
+  const previous = process.env.CHISLE_COMPRESS_MAX_CHARS;
+  process.env.CHISLE_COMPRESS_MAX_CHARS = '1000';
+  try {
+    const text = `BEGIN ${'a'.repeat(5000)} FATAL LATE_ERROR ${'b'.repeat(5000)} END`;
+    const out = compressForOpencode('bash', text, { mode: 'on' });
+    assert.ok(out.length <= 1000);
+    assert.match(out, /BEGIN/);
+    assert.match(out, /FATAL LATE_ERROR/);
+    assert.match(out, /END/);
+    assert.equal(fs.readFileSync(recoveryPath(out), 'utf8'), text);
   } finally {
     if (previous === undefined) delete process.env.CHISLE_COMPRESS_MAX_CHARS;
     else process.env.CHISLE_COMPRESS_MAX_CHARS = previous;

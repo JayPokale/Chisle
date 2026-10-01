@@ -85,8 +85,8 @@ const SAFE_TOOLS_COPILOT = ['bash', 'powershell', 'grep', 'glob', 'web_fetch', '
 const NEVER_COMPRESS_COPILOT = ['view', 'create', 'edit', 'str_replace', 'insert'];
 
 const SALVAGE_RE = /\b(error|err!|fail(ed|ure|ing)?|exception|traceback|panic|fatal|denied|refused|timed?[ _-]?out|assert(ion)?|segfault|npe|undefined reference|cannot find|not found|warning)\b/i;
-const MAX_SALVAGED = 12;
-const MAX_SALVAGE_LINE = 300;
+const MAX_SALVAGED = 12;      // error lines rescued from the elided middle
+const MAX_SALVAGE_LINE = 300; // per-line char cap on salvaged lines
 
 function splitsSurrogatePair(text, index) {
   if (index <= 0 || index >= text.length) return false;
@@ -147,6 +147,11 @@ function copilotToolAllowed(name) {
   return list.includes(name);
 }
 
+// OpenCode runtime tool names are lowercase (bash, grep, glob, webfetch, ...).
+// MCP tools use `server_tool`, not Claude's mcp__ prefix; their names do not
+// establish read-only safety, so they require explicit allowlisting.
+// read/edit/write/patch are excluded on purpose: their output feeds exact-match
+// edits, exactly as SAFE_TOOLS omits Read/Edit/Write.
 const SAFE_TOOLS_OPENCODE = ['bash', 'grep', 'glob', 'webfetch', 'websearch', 'list'];
 const UNSAFE_TOOLS_OPENCODE = [
   'read', 'edit', 'write', 'patch', 'apply_patch', 'multiedit',
@@ -157,6 +162,9 @@ const UNSAFE_TOOLS_OPENCODE = [
 function opencodeToolAllowed(name) {
   if (!name || typeof name !== 'string') return false;
   const lower = name.toLowerCase();
+  // Source-bearing and mutating tools are never compressed, even via
+  // CHISLE_COMPRESS_TOOLS: their output feeds exact-match edits, an invariant
+  // INSTALL.md promises rather than an overridable default.
   if (UNSAFE_TOOLS_OPENCODE.includes(lower)) return false;
   if (process.env.CHISLE_COMPRESS_TOOLS) {
     return process.env.CHISLE_COMPRESS_TOOLS
@@ -174,11 +182,13 @@ function boundForOpencode(text, spillPath, maxChars) {
     outputLimit.toLocaleString('en-US') + ' chars.' + recover + '] ...';
   if (marker.length > outputLimit - 2) marker = safePrefix(marker, outputLimit - 7) + '] ...';
   const middle = [marker];
+  // Keep head/tail context without excluding diagnostics under small bounds.
+  const contextReserve = Math.min(2050, Math.floor(outputLimit / 4));
   for (const line of text.split('\n')) {
     if (middle.length > MAX_SALVAGED) break;
     const candidate = salvageLine(line);
     if (!candidate) continue;
-    if (middle.join('\n').length + candidate.length + 1 > outputLimit - 2050) break;
+    if (middle.join('\n').length + candidate.length + 1 > outputLimit - contextReserve) break;
     if (!middle.includes(candidate)) middle.push(candidate);
   }
   const center = middle.join('\n');
@@ -205,19 +215,15 @@ function compressForOpencode(toolName, text, opts) {
   if (!opencodeToolAllowed(toolName)) return null;
   if (typeof text !== 'string' || !text) return null;
   const stateDir = opts.stateDir || process.env.CHISLE_STATE_DIR || getOpencodeDir();
-  const dup = dedupCheck(toolName, text, opts.sessionId, opts.callId, stateDir, true);
-  if (dup != null && dup.length < text.length) return dup;
-  if (text.length <= SCRUB_MIN) return null;
   const limits = limitsFor();
+  const dup = dedupCheck(toolName, text, opts.sessionId, opts.callId, stateDir, true);
+  if (dup != null && dup.length < text.length) return boundForOpencode(dup, null, limits.maxChars);
+  if (text.length <= SCRUB_MIN && text.length <= limits.maxChars) return null;
   const spillPath = text.length > limits.maxChars && toolName ? spill(text, toolName, stateDir) : null;
   let updated = process.env.CHISLE_COMPRESS_SCRUB === '0' ? text : scrub(text);
-  if (updated.length > limits.maxChars) {
-    if (updated.split('\n').length <= limits.headLines + limits.tailLines) {
-      updated = boundForOpencode(updated, spillPath, limits.maxChars);
-    } else {
-      const elided = compress(updated, limits, spillPath);
-      if (elided != null) updated = elided;
-    }
+  if (updated.length > limits.maxChars && updated.split('\n').length > limits.headLines + limits.tailLines) {
+    const elided = compress(updated, limits, spillPath);
+    if (elided != null) updated = elided;
   }
   updated = boundForOpencode(updated, spillPath, limits.maxChars);
   if (text.length > limits.maxChars) return updated;
@@ -386,48 +392,52 @@ function pruneDedupSessions(dir) {
   } catch (e) {}
 }
 
+// `stateDir` defaults to getClaudeDir() so existing Claude/Pi callers keep
+// their prior storage path. Copilot passes getCopilotDir(); OpenCode passes
+// getOpencodeDir() and opts into per-session files for interleaved sessions.
 function dedupCheck(toolName, text, sessionId, toolUseId, stateDir, perSession) {
   if (process.env.CHISLE_COMPRESS_DEDUP === '0') return null;
   if (!sessionId || typeof sessionId !== 'string') return null;
   if (text.length < DEDUP_MIN) return null;
   try {
-    if (!perSession) {
-      const dir = stateDir || getClaudeDir();
-      const p = path.join(dir, '.chisle-compress-last.json');
-      try { if (fs.lstatSync(p).isSymbolicLink()) return null; } catch (e) { if (e.code !== 'ENOENT') return null; }
-      let state = {};
-      try { state = JSON.parse(fs.readFileSync(p, 'utf8')) || {}; } catch (e) {}
-      if (state.session !== sessionId) state = { session: sessionId, tools: {} };
-      if (!state.tools || typeof state.tools !== 'object') state.tools = {};
-      const hash = crypto.createHash('sha256').update(text).digest('hex');
-      const prev = state.tools[toolName];
-      const rec = (prev && typeof prev === 'object') ? prev : { hash: prev, id: null };
-      const sameCall = !!(toolUseId && rec.id && rec.id === toolUseId);
-      const dup = rec.hash === hash && !sameCall;
-      state.tools[toolName] = { hash, id: toolUseId || rec.id || null };
-      fs.mkdirSync(dir, { recursive: true });
-      const tmp = p + '.' + process.pid + '.tmp';
-      fs.writeFileSync(tmp, JSON.stringify(state), { mode: 0o600 });
-      fs.renameSync(tmp, p);
-      return dup ? duplicateMarker(toolName, text) : null;
-    }
-    const dir = dedupStateDir(stateDir);
+    const dir = perSession ? dedupStateDir(stateDir) : stateDir || getClaudeDir();
     if (!dir) return null;
-    const p = path.join(dir, crypto.createHash('sha256').update(sessionId).digest('hex') + '.json');
-    const loaded = readDedupFile(p);
-    if (loaded.unsafe) return null;
-    let state = loaded.state;
-    if (!state || state.session !== sessionId || !state.tools || typeof state.tools !== 'object') {
-      state = { session: sessionId, tools: {} };
+    const p = path.join(dir, perSession
+      ? crypto.createHash('sha256').update(sessionId).digest('hex') + '.json'
+      : '.chisle-compress-last.json');
+    let state;
+    if (perSession) {
+      const loaded = readDedupFile(p);
+      if (loaded.unsafe) return null;
+      state = loaded.state;
+    } else {
+      try { if (fs.lstatSync(p).isSymbolicLink()) return null; } catch (e) { if (e.code !== 'ENOENT') return null; }
+      try { state = JSON.parse(fs.readFileSync(p, 'utf8')) || {}; } catch (e) {}
     }
+    if (!state || state.session !== sessionId) state = { session: sessionId, tools: {} };
+    if (!state.tools || typeof state.tools !== 'object') state.tools = {};
     const hash = crypto.createHash('sha256').update(text).digest('hex');
+    // A second hook invocation for the SAME tool call is not the model seeing
+    // the output twice. That happens whenever this hook is registered more than
+    // once (plugin manifest + a leftover settings.json entry), because both
+    // copies share this state file: copy A stores the hash, copy B matches it
+    // and reports first-seen output as a duplicate of itself. Old string-valued
+    // entries read through `rec`, so an existing state file needs no migration,
+    // and a payload with no tool_use_id keeps today's exact behaviour.
     const prev = state.tools[toolName];
     const rec = (prev && typeof prev === 'object') ? prev : { hash: prev, id: null };
     const sameCall = !!(toolUseId && rec.id && rec.id === toolUseId);
     const dup = rec.hash === hash && !sameCall;
     state.tools[toolName] = { hash, id: toolUseId || rec.id || null };
-    writeDedupState(p, state);
-    pruneDedupSessions(dir);
+    if (perSession) {
+      writeDedupState(p, state);
+      pruneDedupSessions(dir);
+    } else {
+      fs.mkdirSync(dir, { recursive: true });
+      const tmp = p + '.' + process.pid + '.tmp';
+      fs.writeFileSync(tmp, JSON.stringify(state), { mode: 0o600 });
+      fs.renameSync(tmp, p);
+    }
     return dup ? duplicateMarker(toolName, text) : null;
   } catch (e) { return null; }
 }
