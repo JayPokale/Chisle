@@ -109,15 +109,15 @@ export default function GetStarted() {
             </Step>
 
             <Step n={3} title="Update, or switch it off">
-              <div className="grid gap-2 font-mono text-xs sm:grid-cols-3">
+              <div className="grid gap-2 font-mono text-xs">
                 {[
                   ["update", "npx chisle@latest --update"],
                   ["persona off", '"stop chisle"'],
                   ["remove all", "npx chisle --uninstall"],
                 ].map(([k, v]) => (
-                  <div key={k} className="rounded-md border border-line bg-surface px-3 py-2">
+                  <div key={k} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 rounded-md border border-line bg-surface px-3 py-2">
                     <p className="text-[10px] uppercase tracking-wider text-dim">{k}</p>
-                    <p className="mt-1 break-all">{v}</p>
+                    <p>{v}</p>
                   </div>
                 ))}
               </div>
