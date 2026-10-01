@@ -27,8 +27,8 @@ export default function Page() {
       <Compare />
       <Ladder />
       <Benchmarks />
-      <Community />
       <Faq />
+      <Community />
       <Footer />
     </main>
   );
