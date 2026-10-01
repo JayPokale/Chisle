@@ -5,20 +5,27 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [3.6.0] - 2026-10-01
+
 ### Changed
-- **The ruleset costs half as much per request: ~900 tokens, was ~1.8k.** The 2026-09-14 agentic run left Chisle's cost per run above the bare agent: the ruleset rides along on every request (~5 per run), and its own size ate an estimated three quarters of what the behaviour saved. `SKILL.md` was cut from 6,725 to ~3,300 injected chars, measured live at 1,779 → 877 tokens per request. Every rule and safety carve-out stays; the examples section, the destructive-op sample and the repetition went. ([results](benchmarks/results/2026-10-01-ruleset-trim.md))
+- **The ruleset costs half as much per request: ~900 tokens, was ~1.8k.** It rides along on every request, so its size is paid again on each turn of an agent loop. `SKILL.md` was cut from 6,725 to ~3,300 injected chars, measured live at 1,779 → 877 tokens per request. Every rule and safety carve-out stays; the examples section, the destructive-op sample and the repetition went. ([results](benchmarks/results/2026-10-01-ruleset-trim.md))
   - **"Grep every caller before editing" is gone.** Both arms failed the one fixture that tests it 8 times in 12; it changed nothing and cost tokens every turn.
   - **The examples no longer mirror benchmark prompts.** The old ones answered `rest-graphql`, the auth expiry bug and `deadlock` almost verbatim, which taught the ruleset to its own test. The new ones (a timezone bug, a CDN) appear in no suite.
-  - A 5-prompt live check caught the first cut doubling explanation length (28 → 60 lines); restoring "numbered steps" and "two tight paragraphs beat five headed sections" brought it to 39. Output differences at that sample size are within noise and published as such.
-  - **It did not make agent loops cheaper.** Re-run on six fixtures: pass rate ties (28/36 each), context +16%, cost per run +6.8%, 9% more turns. Published on the site and in `benchmarks/agentic/README.md`.
-- The `What it sounds like` heading is gone, so it left the `sections.prose` group.
-- **The headline is re-measured: 83% of a bare model, not 52%.** A fresh 4-arm run (13 prompts × 2 seeds, current harness and rival versions) puts Chisle at 83% (95% CI 69–95%), the only arm below 100%; caveman 102%, ponytail 105%. The June 52% leaned on one outlier baseline (`cache`: 4,910 tokens, later runs 375–813) and on cells an old ruleset example may have primed. Site, README, `llms.txt`, metadata and share image now lead with the re-run; the June tables stay, marked superseded. ([results](benchmarks/results/2026-10-01-live-rerun.md))
+  - A 5-prompt live check caught the first cut doubling explanation length (28 → 60 lines); restoring "numbered steps" and "two tight paragraphs beat five headed sections" brought it to 39.
+  - **Agent loops still cost a little more, not less.** Six fixtures × 6 seeds: pass rate ties (28/36 each), context +16%, cost +6.8%. Per-request logs split that: the ruleset adds ~0.9k tokens to every request (about 4% on these small repos), and the rest is turn count, which flipped direction between batches. ([agentic results](benchmarks/agentic/README.md))
+  - The `What it sounds like` heading is gone, so it left the `sections.prose` group.
+- **Every always-on ruleset now carries the structure rules.** The five generated rule files gain "numbered steps" and "two tight paragraphs beat five headed sections"; `AGENTS.md` and `GEMINI.md` (Codex, OpenCode, Hermes, Gemini) had no structure rule or terse-is-not-incomplete guard at all, and now have both.
+- **The headline is re-measured: 83% of a bare model, not 52%.** A fresh 4-arm run (13 prompts × 2 seeds, current harness and rival versions) puts Chisle at 83% (95% CI 69–95%), the only arm below 100%; caveman 102%, ponytail 105%. It pays on long answers (77%) and breaks even on short ones (106%). The June 52% leaned on one outlier baseline (`cache`: 4,910 tokens, later runs 375–813) and on cells an old ruleset example may have primed. Site, README, `llms.txt`, metadata and share image now lead with the re-run; the June tables stay, marked superseded. ([results](benchmarks/results/2026-10-01-live-rerun.md))
 
 ### Fixed
 - **The compressor never reached failing commands, and the docs implied it did.** Claude Code sends a failed call (a non-zero `Bash` exit included) to `PostToolUseFailure`, whose output schema allows only `additionalContext` (checked on 2.1.285), so no hook can shrink a failing test run. The site demo showed exactly that case, with a `34,120 → 612` figure head + tail could never produce; it now shows a successful 411-line build log with the real hook's numbers (37,745 → 8,756 chars, both mid-log warnings salvaged). The replay no longer counts failed results as savings; on today's corpus that moved 163 outputs to 162, so the per-output numbers stand.
+- `run-live.sh` finds caveman's skill in its newer plugin-cache layout.
+- The site's structured data no longer claims version 1.2.1.
 
 ### Added
-- **Agentic benchmark: a compressor arm and a fixture for it.** `ARMS=vanilla,chisle,chisle-hook` adds the shipped PostToolUse hook, wired from `plugin.json`, with chars elided recorded per cell; `RAW_DIR` keeps a re-run from reusing stale cells. The new `noisylog` fixture prints 401 test results (17k chars) with one failure mid-log; since the run fails, no hook can compress it (see Fixed), so it measures whether the agent filters the log itself.
+- **Agentic benchmark instrumentation.** `ARMS` (with a `chisle-hook` arm wiring the shipped PostToolUse hook from `plugin.json`), `FIXTURES` and `RAW_DIR` select what runs where; each cell now records its tool calls and every request's prompt size. A new `noisylog` fixture prints 401 test results (17k chars) with one failure mid-log; since the run fails, no hook can compress it, so it measures whether the agent filters the log itself.
+- **The long-answer suite has run.** `SUITE=large` (7 prompts) existed but had never been measured; it is half of the re-measured headline.
+- **Tested and rejected: writing the ruleset in shorthand.** Telegraphic and near-unreadable variants cut characters 27% and 52% but tokens only 21% and 34%, broke the no-headings rule and grew visible answers 27%. ([results](benchmarks/results/2026-10-01-prompt-compression.md))
 
 ## [3.5.0] - 2026-09-19
 
