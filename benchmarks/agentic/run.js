@@ -115,9 +115,12 @@ function runCell(c) {
       } else {
         let d = {};
         const calls = [];
+        const prompts = new Map(); // API request id -> its prompt size in tokens
         for (const line of stdout.split('\n')) {
           let e; try { e = JSON.parse(line); } catch (_) { continue; }
           if (e.type === 'result') d = e;
+          const u = e.type === 'assistant' && e.message && e.message.usage;
+          if (u) prompts.set(e.message.id, (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) + (u.cache_read_input_tokens || 0));
           const blocks = (e.message && Array.isArray(e.message.content)) ? e.message.content : [];
           for (const b of blocks) {
             if (b.type === 'tool_use') calls.push({ tool: b.name, input: summarize(b.input || {}) });
@@ -134,6 +137,7 @@ function runCell(c) {
         rec.turns = d.num_turns || 0;
         rec.answer = (d.result || '').trim();
         rec.tool_calls = calls;
+        rec.request_prompts = [...prompts.values()];
         if (c.arm === 'chisle-hook') {
           let stats = {};
           try { stats = JSON.parse(fs.readFileSync(path.join(cfg, '.chisle-compress-stats.json'), 'utf8')); } catch (_) {}
