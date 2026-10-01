@@ -69,7 +69,6 @@ const jsonLd = {
     "Plugin that cuts your coding agent's token usage on three axes: terse dev persona, tool-output compression hook, and context-diet rules.",
   url: SITE_URL,
   downloadUrl: "https://www.npmjs.com/package/chisle",
-  softwareVersion: "1.2.1",
   license: "https://opensource.org/licenses/MIT",
   author: { "@type": "Person", name: "Jay Pokale", url: "https://github.com/JayPokale" },
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
