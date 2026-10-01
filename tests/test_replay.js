@@ -56,3 +56,20 @@ test('Pi replay reads toolResult messages and reports marginal post-truncation s
 
   fs.rmSync(dir, { recursive: true, force: true });
 });
+
+test('Claude replay never counts a failed tool call as compressible', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-claude-replay-'));
+  const use = (id) => ({ message: { role: 'assistant', content: [{ type: 'tool_use', id, name: 'Bash', input: {} }] } });
+  const result = (id, isError) => ({ message: { role: 'user', content: [
+    { type: 'tool_result', tool_use_id: id, is_error: isError, content: output(500) },
+  ] } });
+  fs.writeFileSync(path.join(dir, 'session.jsonl'),
+    [use('ok'), result('ok', false), use('bad'), result('bad', true)].map(JSON.stringify).join('\n'));
+
+  const out = execFileSync(process.execPath, [REPLAY, 'claude', dir], { encoding: 'utf8' });
+  assert.match(out, /tool_results scanned:\s+2/);
+  assert.match(out, /scrubbed\/elided outputs:\s+1 /);
+  assert.match(out, /big failed outputs, unreachable: 1 /);
+
+  fs.rmSync(dir, { recursive: true, force: true });
+});

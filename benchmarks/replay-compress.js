@@ -27,7 +27,7 @@ const allowed = harness === 'pi' ? piToolAllowed : toolAllowed;
 let sessionChars = 0;
 const totals = {
   results: 0, chars: 0, eligible: 0, before: 0, after: 0, salvaged: 0,
-  dedup: 0, dedupChars: 0,
+  dedup: 0, dedupChars: 0, failedBig: 0, failedBigChars: 0,
 };
 const skippedByTool = {};
 
@@ -47,12 +47,19 @@ function contentChars(content) {
   return content.reduce((sum, block) => sum + (block && block.type === 'text' ? (block.text || '').length : 0), 0);
 }
 
-function account(name, text, lastHash, allowDedup) {
+function account(name, text, lastHash, allowDedup, failed) {
   const size = text ? text.length : 0;
   sessionChars += size;
   totals.results++;
   totals.chars += size;
   if (!text) return;
+  // Claude Code hands a failed call (a Bash exit code != 0 included) to
+  // PostToolUseFailure, whose output can only add context, never replace the
+  // error text. No hook can shrink these, so they are not savings.
+  if (failed) {
+    if (allowed(name) && size > limits.maxChars) { totals.failedBig++; totals.failedBigChars += size; }
+    return;
+  }
   if (!allowed(name)) {
     if (size > limits.maxChars) skippedByTool[name] = (skippedByTool[name] || 0) + size;
     return;
@@ -98,7 +105,7 @@ function scanClaude(lines) {
       if (block.type === 'text') sessionChars += (block.text || '').length;
       else if (block.type === 'tool_use') idName[block.id] = block.name;
       else if (block.type === 'tool_result') {
-        account(idName[block.tool_use_id] || '?', extractText(block.content), lastHash, true);
+        account(idName[block.tool_use_id] || '?', extractText(block.content), lastHash, true, block.is_error === true);
       }
     }
   }
@@ -143,6 +150,10 @@ console.log(`deduped repeat outputs:      ${totals.dedup.toLocaleString('en-US')
 console.log(`saved:                       ${saved.toLocaleString('en-US')} chars (~${Math.round(saved / 4).toLocaleString('en-US')} tokens)`);
 console.log(`  = ${pct(saved, totals.chars)} of all tool output, ${pct(saved, sessionChars)} of all session content`);
 console.log(`outputs with error lines salvaged from the cut: ${totals.salvaged}`);
+if (totals.failedBig) {
+  console.log(`big failed outputs, unreachable: ${totals.failedBig.toLocaleString('en-US')}  (${totals.failedBigChars.toLocaleString('en-US')} chars; `
+    + 'failed calls go to PostToolUseFailure, which cannot rewrite output)');
+}
 const skipped = Object.entries(skippedByTool).sort((a, b) => b[1] - a[1]);
 if (skipped.length) {
   console.log('\nbig outputs NOT touched (correctness allowlist):');
