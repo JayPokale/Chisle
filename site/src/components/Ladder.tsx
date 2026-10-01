@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
 import Reveal from "./Reveal";
+import SectionHead from "./SectionHead";
 
 // The YAGNI ladder, mirroring the mermaid diagram in the README.
 //
@@ -10,7 +9,7 @@ import Reveal from "./Reveal";
 // a handful of runtime dependencies, to draw boxes and arrows. Rung 1 of this
 // very ladder says don't.
 //
-// Each rung expands to a real before/after. The `after` strings for cache and
+// Each rung card shows a real before/after. The `after` strings for cache and
 // debounce are the committed benchmark answers; the rest are drawn from the
 // skill's own worked examples. Nothing here is invented for the page.
 const RUNGS = [
@@ -73,96 +72,52 @@ const RUNGS = [
 ];
 
 export default function Ladder() {
-  const [open, setOpen] = useState<number | null>(0);
-
   return (
-    <section id="ladder" className="py-24">
-      <div className="mx-auto max-w-5xl px-5">
-        <Reveal>
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-4xl">
-            The ladder, before a line gets written
-          </h2>
-          <p className="mt-3 max-w-xl text-sm text-dim">
-            The agent stops at the <strong className="text-ink">first</strong> rung that holds, and
-            the ladder runs after reading the problem, never instead of it.{" "}
-            <span className="text-amber">Open a rung</span> to see it applied.
-          </p>
-        </Reveal>
+    <section id="ladder" className="py-28">
+      <div className="mx-auto max-w-6xl px-5">
+        <SectionHead eyebrow="The efficiency ladder" title="Seven rungs, before a line gets written">
+          The agent stops at the <strong className="text-fg">first</strong> rung that holds, and
+          the ladder runs after reading the problem, never instead of it. Scroll the rungs →
+        </SectionHead>
+      </div>
 
-        <ol className="mt-10 space-y-px">
-          {RUNGS.map((r, i) => {
-            const isOpen = open === i;
-            return (
-              <Reveal key={r.tag} delay={0.03 * i}>
-                <li className="border-l-2 border-line bg-panel/40 transition-colors data-[open=true]:border-amber" data-open={isOpen}>
-                  <button
-                    onClick={() => setOpen(isOpen ? null : i)}
-                    aria-expanded={isOpen}
-                    className="group flex w-full flex-col gap-1 py-4 pl-6 pr-4 text-left sm:flex-row sm:items-center sm:gap-6"
-                  >
-                    <span className="w-8 shrink-0 font-mono text-xs text-dim">{i + 1}</span>
-                    <span className="flex-1 text-sm font-medium">{r.q}</span>
-                    <span className="flex-1 text-sm text-dim">→ {r.a}</span>
-                    <span
-                      className={`shrink-0 rounded px-2 py-0.5 font-mono text-[11px] transition-colors ${
-                        isOpen ? "bg-amber text-paper" : "bg-amber-soft text-amber"
-                      }`}
-                    >
-                      {r.tag}
-                    </span>
-                    <span
-                      aria-hidden
-                      className={`shrink-0 font-mono text-xs text-dim transition-transform ${isOpen ? "rotate-90 text-amber" : "group-hover:text-amber"}`}
-                    >
-                      ›
-                    </span>
-                  </button>
-
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.22, ease: "easeOut" }}
-                        className="overflow-hidden"
-                      >
-                        <div className="grid gap-3 px-6 pb-5 pt-1 sm:grid-cols-2 sm:pl-14">
-                          <div>
-                            <p className="mb-1.5 font-mono text-[10px] uppercase tracking-wide text-dim">
-                              instead of
-                            </p>
-                            <pre className="pane-scroll overflow-x-auto rounded border border-line bg-paper/70 p-2.5 font-mono text-[11px] leading-relaxed text-dim">
-                              {r.before}
-                            </pre>
-                          </div>
-                          <div>
-                            <p className="mb-1.5 font-mono text-[10px] uppercase tracking-wide text-amber">
-                              chisle
-                            </p>
-                            <pre className="pane-scroll overflow-x-auto rounded border border-amber/40 bg-amber-soft/40 p-2.5 font-mono text-[11px] leading-relaxed">
-                              {r.after}
-                            </pre>
-                          </div>
-                          <p className="text-xs text-dim sm:col-span-2">{r.why}</p>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </li>
-              </Reveal>
-            );
-          })}
+      <Reveal delay={0.08}>
+        <ol
+          className="pane-scroll mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 [scroll-padding-inline:1.25rem] xl:px-[calc((100vw-72rem)/2+1.25rem)] xl:[scroll-padding-inline:calc((100vw-72rem)/2+1.25rem)]"
+          aria-label="Ladder rungs"
+        >
+          {RUNGS.map((r, i) => (
+            <li
+              key={r.tag}
+              className="lift flex w-[85vw] max-w-[22rem] shrink-0 snap-start flex-col rounded-xl border border-line bg-surface p-5"
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs text-dim">rung {i + 1}/7</span>
+                <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-[11px] text-accent">{r.tag}</span>
+              </div>
+              <h3 className="mt-4 text-lg font-semibold leading-snug">{r.q}</h3>
+              <p className="mt-1 text-sm text-accent">→ {r.a}</p>
+              <p className="mt-4 font-mono text-[10px] uppercase tracking-wider text-dim">instead of</p>
+              <pre className="pane-scroll mt-1.5 overflow-x-auto rounded-lg border border-line bg-bg p-3 font-mono text-[11px] leading-relaxed text-dim line-through decoration-waste/40">
+                {r.before}
+              </pre>
+              <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-accent">chisle</p>
+              <pre className="pane-scroll mt-1.5 overflow-x-auto rounded-lg border border-brand-hover/40 bg-accent-soft p-3 font-mono text-[11px] leading-relaxed">
+                {r.after}
+              </pre>
+              <p className="mt-4 flex-1 text-xs leading-relaxed text-dim">{r.why}</p>
+            </li>
+          ))}
         </ol>
+      </Reveal>
 
-        <Reveal delay={0.1}>
-          <p className="mt-8 max-w-xl text-xs text-dim">
-            Every rung exits the same way: ship it, then say what was skipped and when to add it,
-            so &ldquo;later&rdquo; doesn&apos;t quietly become &ldquo;never&rdquo;. Lazy about the
-            solution, never about the reading. Trust-boundary validation, data-loss handling,
-            security and accessibility are never on the chopping block.
-          </p>
-        </Reveal>
+      <div className="mx-auto max-w-6xl px-5">
+        <p className="mt-8 max-w-2xl text-sm text-dim">
+          Every rung exits the same way: ship it, then say what was skipped and when to add it,
+          so &ldquo;later&rdquo; doesn&apos;t quietly become &ldquo;never&rdquo;. Lazy about the
+          solution, never about the reading. Trust-boundary validation, data-loss handling,
+          security and accessibility are never on the chopping block.
+        </p>
       </div>
     </section>
   );
