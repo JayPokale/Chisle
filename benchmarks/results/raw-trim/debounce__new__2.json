@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "new",
+ "seed": 2,
+ "out_tokens": 778,
+ "input_tokens": 21800,
+ "cache_creation": 9372,
+ "cost_usd": 0.0238858,
+ "answer_lines": 63,
+ "answer": "Here's a minimal debounce utility and two examples:\n\n```javascript\n// debounce.js\nfunction debounce(fn, delay) {\n  let timeout;\n  return function(...args) {\n    clearTimeout(timeout);\n    timeout = setTimeout(() => fn(...args), delay);\n  };\n}\n```\n\n**Vanilla JavaScript:**\n```javascript\nconst searchInput = document.querySelector('input[type=\"search\"]');\nconst debouncedSearch = debounce(async (query) => {\n  const response = await fetch(`/api/search?q=${query}`);\n  const results = await response.json();\n  updateResults(results);\n}, 300);\n\nsearchInput.addEventListener('input', (e) => {\n  debouncedSearch(e.target.value);\n});\n```\n\n**React:**\n```javascript\nimport { useState } from 'react';\n\nfunction SearchInput() {\n  const [results, setResults] = useState([]);\n\n  const debouncedSearch = debounce(async (query) => {\n    if (!query) return;\n    const response = await fetch(`/api/search?q=${query}`);\n    const data = await response.json();\n    setResults(data);\n  }, 300);\n\n  return (\n    <>\n      <input \n        type=\"search\"\n        onChange={(e) => debouncedSearch(e.target.value)}\n        placeholder=\"Search...\"\n      />\n      <ul>\n        {results.map(r => <li key={r.id}>{r.name}</li>)}\n      </ul>\n    </>\n  );\n}\n```\n\n**Key points:**\n- `300ms` delay typical for search; adjust as needed\n- Previous timeout clears on each keystroke\n- Vanilla: fire after keystroke stops\n- React: works with event handlers; use `useEffect` + `useRef` if you need cleanup on unmount\n\nShow me your existing code if you want me to integrate it directly."
+}

@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "new2",
+ "seed": 2,
+ "out_tokens": 723,
+ "input_tokens": 44065,
+ "cache_creation": 9767,
+ "cost_usd": 0.026595,
+ "answer_lines": 52,
+ "answer": "No files in the current directory. Here's a debounced search input (vanilla JS):\n\n```javascript\nconst searchInput = document.querySelector('input[type=\"search\"]');\nlet debounceTimer;\n\nsearchInput.addEventListener('input', (e) => {\n  clearTimeout(debounceTimer);\n  debounceTimer = setTimeout(() => {\n    fetch(`/api/search?q=${encodeURIComponent(e.target.value)}`)\n      .then(r => r.json())\n      .then(results => console.log(results));\n  }, 300);\n});\n```\n\nReact version:\n\n```javascript\nimport { useState, useEffect } from 'react';\n\nexport function SearchInput() {\n  const [query, setQuery] = useState('');\n  const [results, setResults] = useState([]);\n\n  useEffect(() => {\n    const timer = setTimeout(() => {\n      if (query) {\n        fetch(`/api/search?q=${encodeURIComponent(query)}`)\n          .then(r => r.json())\n          .then(setResults);\n      }\n    }, 300);\n\n    return () => clearTimeout(timer);\n  }, [query]);\n\n  return (\n    <>\n      <input\n        type=\"search\"\n        value={query}\n        onChange={(e) => setQuery(e.target.value)}\n        placeholder=\"Search...\"\n      />\n      {results.map(r => <div key={r.id}>{r.name}</div>)}\n    </>\n  );\n}\n```\n\n300ms delay: skips API calls while user types, fires once they pause. Adjust the timeout to match your UX needs."
+}

@@ -1,0 +1,11 @@
+{
+ "id": "auth-bug",
+ "arm": "old",
+ "seed": 2,
+ "out_tokens": 1361,
+ "input_tokens": 94142,
+ "cache_creation": 11549,
+ "cost_usd": 0.0381929,
+ "answer_lines": 3,
+ "answer": "The working directory is empty. Do you want me to create an example auth middleware with the bug to demonstrate, or can you share the codebase/files with the issue?\n\nIf you're describing a general issue: the root cause is likely `currentTime >= expiry` (not `>`). Using `>=` rejects tokens at the exact expiry moment; it should be `currentTime > expiry` to allow tokens valid through their expiry time."
+}

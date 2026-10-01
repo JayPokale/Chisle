@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "old",
+ "seed": 1,
+ "out_tokens": 572,
+ "input_tokens": 22763,
+ "cache_creation": 10335,
+ "cost_usd": 0.0247818,
+ "answer_lines": 15,
+ "answer": "Connection pooling maintains a set of open database connections, reusing them instead of creating fresh ones per request.\n\n**The problem it solves:** Creating a DB connection is expensive — TCP handshake, TLS negotiation, authentication, schema setup. Doing this for every query kills latency and burns through OS file descriptors. Without pooling, 1000 concurrent requests = 1000 simultaneous connections.\n\n**How it works:** Pool keeps N connections alive (e.g., 10–100). When a request needs the DB, it borrows an idle connection from the pool, uses it, returns it. If no connection is free, the request either waits (bounded queue) or gets rejected; new connections can be created up to a limit if demand spikes.\n\n**Why it helps:**\n\n- **Latency:** Reusing warm connections is ~100x faster than new ones.\n- **Resource limits:** Apps can handle 10K requests with 50 pooled connections; 1 connection per request would max OS limits or require huge infrastructure.\n- **Throughput:** Idle connections are cheap; the pool amortizes connection costs across many queries.\n- **Connection leaks:** Explicit return-to-pool prevents zombies; a timeout auto-recycles hung connections.\n- **Server stability:** DB servers bound by max connections; pooling caps them regardless of client count.\n\n**Trade-off:** Pool size must be tuned. Too small → requests queue, latency climbs. Too large → wastes memory, idle connections still cost. Most apps tune by load-testing; rule of thumb is (CPU cores × 2) to (CPU cores × 4)."
+}

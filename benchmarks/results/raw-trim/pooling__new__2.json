@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "new",
+ "seed": 2,
+ "out_tokens": 585,
+ "input_tokens": 21788,
+ "cache_creation": 9360,
+ "cost_usd": 0.022896800000000002,
+ "answer_lines": 23,
+ "answer": "**Connection pooling** maintains a cache of open database connections reused across requests, instead of opening/closing one per query.\n\n## How it works\n\n1. **Initialization**: Pool creates N connections upfront (configurable: min/max sizes). Connections authenticate once, remain ready.\n2. **Request arrives**: Instead of opening a new connection, the app borrows one from the pool.\n3. **Query executes**: Connection runs the SQL.\n4. **Release**: Connection returns to the pool, not closed. Next request reuses it.\n5. **Overflow**: If all connections busy, request waits (queue) or times out. Excess connections close when unused.\n\n## Why it helps\n\n**Latency** — Opening a connection involves TCP handshake, authentication, and resource allocation (~10–100ms). Reusing existing connections eliminates this per-request overhead.\n\n**Resource efficiency** — Opening connections consumes OS sockets, memory, and database worker threads. Pooling bounds these to a fixed number (e.g., 10 connections) instead of unlimited spike connections during traffic surges.\n\n**Throughput** — Many concurrent requests can share a smaller pool. Connection 1 finishes query → request 2 uses it immediately. Without pooling, the DB would exhaust worker capacity or the OS would exhaust file descriptors.\n\n**Prevent connection storms** — Each new connection consumes DB resources. A single traffic spike could spawn 1000s of connections, overwhelming the server. A pool caps this.\n\n**Example trade-off**: Pool of 10 connections handles 10,000 requests/sec (if each query ≤10ms). Without pooling, you'd need 10,000 concurrent connections open — likely crashing the database or OS.\n\nMost frameworks (Node.js/Postgres, Django, Java/Spring) include pooling built-in. Configure pool size based on expected concurrency: too small → requests queue; too large → waste memory and DB resources."
+}

@@ -1,0 +1,11 @@
+{
+ "id": "cache",
+ "arm": "new",
+ "seed": 1,
+ "out_tokens": 331,
+ "input_tokens": 21788,
+ "cache_creation": 9360,
+ "cost_usd": 0.0216268,
+ "answer_lines": 7,
+ "answer": "I need context to write code that fits your project. What's your tech stack?\n\n- **Language/framework**: Node.js, Python (Django/FastAPI), Go, Java, etc.?\n- **Caching layer**: Redis, in-memory, Memcached, something else?\n- **Existing code**: Do you have a `users` or `profiles` endpoint I should integrate with?\n\nPaste the endpoint or show me a file path, and I'll add the cache."
+}

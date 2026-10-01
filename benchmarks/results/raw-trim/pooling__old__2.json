@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "old",
+ "seed": 2,
+ "out_tokens": 485,
+ "input_tokens": 22765,
+ "cache_creation": 10337,
+ "cost_usd": 0.024350800000000002,
+ "answer_lines": 7,
+ "answer": "**What it is:** Connection pooling maintains a pre-created set of reusable database connections. Instead of your app creating a new connection for every query (expensive), it asks the pool for an idle one, uses it, then returns it for the next request to reuse.\n\n**Why it helps:** Creating a DB connection is slow—TCP handshake, authentication, initialization. A pooled connection skips that. Under load, the pool satisfies hundreds of requests without grinding on connection setup. It also caps resource usage: a pool of 20 connections won't spawn 1,000, protecting both your app and the database from overload. Latency drops because queries start immediately instead of waiting for a new connection to establish.\n\n**How it works:** The pool maintains a minimum size (e.g., 5 idle connections) and a maximum (e.g., 50). Requests check out connections on demand; when peak load drops, idle connections stay around until a timeout removes them. If all connections are checked out, new requests either wait or fail fast, depending on config. This throttles backpressure instead of letting it cascade.\n\nCommon tradeoff: if a connection is long-held or buggy (doesn't properly close), it clogs the pool. Monitoring pool saturation (how many active vs. idle) is cheap and catches these."
+}

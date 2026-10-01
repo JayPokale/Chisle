@@ -1,0 +1,11 @@
+{
+ "id": "cache",
+ "arm": "old",
+ "seed": 2,
+ "out_tokens": 218,
+ "input_tokens": 22767,
+ "cache_creation": 10339,
+ "cost_usd": 0.0230198,
+ "answer_lines": 3,
+ "answer": "No code to work with yet. What's your stack, and where's the API? (Language, framework, file path or repo link?)\n\nOr start fresh — I can build a minimal example (Node/Express, Python/Flask, etc.) showing cache patterns for profile endpoints."
+}

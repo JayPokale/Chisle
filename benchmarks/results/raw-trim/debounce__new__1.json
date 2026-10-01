@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "new",
+ "seed": 1,
+ "out_tokens": 921,
+ "input_tokens": 43840,
+ "cache_creation": 11182,
+ "cost_usd": 0.030251,
+ "answer_lines": 60,
+ "answer": "No existing codebase found. Here's how to debounce a search input:\n\n**React (most common):**\n```jsx\nimport { useState, useEffect } from 'react';\n\nfunction SearchInput() {\n  const [query, setQuery] = useState('');\n  const [results, setResults] = useState([]);\n\n  useEffect(() => {\n    const timer = setTimeout(() => {\n      if (query.trim()) {\n        // API call here\n        fetch(`/api/search?q=${query}`)\n          .then(res => res.json())\n          .then(data => setResults(data));\n      }\n    }, 300); // 300ms delay\n\n    return () => clearTimeout(timer); // cleanup\n  }, [query]);\n\n  return (\n    <div>\n      <input \n        type=\"text\" \n        value={query} \n        onChange={(e) => setQuery(e.target.value)}\n        placeholder=\"Search...\"\n      />\n      {results.map(item => <div key={item.id}>{item.name}</div>)}\n    </div>\n  );\n}\n```\n\n**Vanilla JS with reusable debounce utility:**\n```javascript\nfunction debounce(func, delay) {\n  let timeoutId;\n  return function(...args) {\n    clearTimeout(timeoutId);\n    timeoutId = setTimeout(() => func(...args), delay);\n  };\n}\n\nconst searchInput = document.getElementById('search');\nconst performSearch = debounce((query) => {\n  fetch(`/api/search?q=${query}`)\n    .then(res => res.json())\n    .then(data => console.log(data));\n}, 300);\n\nsearchInput.addEventListener('input', (e) => {\n  performSearch(e.target.value);\n});\n```\n\nKey points: timeout clears on each keystroke, only the final one triggers API after 300ms silence. Adjust delay as needed (150-500ms typical)."
+}

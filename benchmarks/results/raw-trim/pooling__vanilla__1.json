@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "vanilla",
+ "seed": 1,
+ "out_tokens": 527,
+ "input_tokens": 20987,
+ "cache_creation": 8564,
+ "cost_usd": 0.0210143,
+ "answer_lines": 34,
+ "answer": "## How Database Connection Pooling Works\n\nA **connection pool** is a cache of database connections that are kept open and ready to reuse. Instead of creating a fresh connection for each request, your application borrows an idle connection from the pool, uses it, then returns it for another request to reuse.\n\n### The Flow\n\n1. **Application requests a connection** → pool checks for an idle one\n2. **If available** → connection is borrowed immediately\n3. **If none available** → pool either creates a new one (up to a max limit) or queues the request\n4. **After query completes** → connection is returned to the pool, not closed\n5. **Process repeats** with the next request\n\n### Why It Helps\n\n**Performance & Speed**\n- Opening a database connection is expensive (TCP handshake, authentication, memory overhead). Reusing connections skips this cost entirely.\n- Eliminates the delay of \"connect → query → disconnect\" for every request.\n\n**Resource Efficiency**\n- Limited pool size prevents your application from exhausting system file descriptors or overwhelming the database.\n- The database maintains fewer long-lived connections than it would with connection-per-request.\n- Memory and CPU aren't wasted on constant connection setup/teardown.\n\n**Scalability**\n- Hundreds of concurrent requests can share a small pool (typically 10–50 connections) because most queries finish quickly.\n- Without pooling, you'd need hundreds of connections open simultaneously, which degrades both app and database performance.\n\n**Connection Lifecycle**\n- Connections are validated before reuse (stale ones are pruned).\n- Database can be restarted without orphaning the pool; stale connections are recycled.\n\n### Common Implementations\n\nMost frameworks handle this transparently: `sqlalchemy` (Python), `HikariCP` (Java), Node.js drivers, Rails, Django all use connection pooling by default."
+}

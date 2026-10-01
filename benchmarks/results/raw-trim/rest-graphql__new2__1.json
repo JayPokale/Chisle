@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "new2",
+ "seed": 1,
+ "out_tokens": 873,
+ "input_tokens": 21869,
+ "cache_creation": 9441,
+ "cost_usd": 0.0244988,
+ "answer_lines": 5,
+ "answer": "**REST**: Simple, proven, cacheable at HTTP level, no learning curve. Good for stable, well-defined data models. Costs over-fetching (clients get fields they don't need) and under-fetching (need multiple requests to assemble related data).\n\n**GraphQL**: Single request fetches exactly what the client asks for—no wasted data. Strongly typed schema catches errors early; easier to add fields without versioning pain. Trade-offs: HTTP caching is harder (queries are POST, varied by content), N+1 query risk without careful resolver design, steeper complexity on the server side, and overkill for simple CRUD APIs.\n\n**Verdict**: REST for straightforward domain models with clear resource boundaries and stable requirements. GraphQL for complex, interconnected data where clients need varying subsets (mobile vs web, different feature tiers), or when you want schema-driven discovery and fewer breaking changes."
+}

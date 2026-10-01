@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "new2",
+ "seed": 1,
+ "out_tokens": 487,
+ "input_tokens": 21862,
+ "cache_creation": 9434,
+ "cost_usd": 0.0225548,
+ "answer_lines": 14,
+ "answer": "**Connection pooling**: a cache of open database connections reused across requests instead of opening/closing one per query.\n\n**Why it helps:**\n\nOpening a connection is expensive—handshake, auth, memory allocation. At scale, this overhead dominates query time. A pool keeps N connections ready (typically 5–20 for small apps, 50+ for high-traffic ones). When a request needs the database, it grabs an idle connection from the pool, runs the query, returns it. No handshake, no auth re-negotiation.\n\n**Concrete gains:**\n- **Latency**: Query goes from 50ms (25ms connect + 25ms query) to 25ms (0ms connect + 25ms query).\n- **Resource limits**: DB servers limit concurrent connections; a pool bounds them. Without pooling, 10k requests → 10k connections (crashes the server); with pooling, 10k requests → 20 connections (stays stable).\n- **Memory**: Fewer open connections = less RAM on both client and server.\n\n**Tradeoff**: Pools add complexity (connection validation, idle timeouts, deadlock if all connections are stuck waiting). Most frameworks handle this transparently (Node's `pg`, Python's `psycopg2`, Go's `database/sql`, Spring's HikariCP).\n\n**Pool sizing**: Too small = requests wait for a free connection; too large = idle connections waste memory and hit DB limits. Typical rule: `threads + queue_size` for synchronous workloads, or much smaller (2–4) for async (Go goroutines, Node async/await)."
+}

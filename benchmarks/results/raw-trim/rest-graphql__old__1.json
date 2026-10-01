@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "old",
+ "seed": 1,
+ "out_tokens": 354,
+ "input_tokens": 22768,
+ "cache_creation": 10340,
+ "cost_usd": 0.023701800000000002,
+ "answer_lines": 3,
+ "answer": "GraphQL: one round trip, client picks fields → fewer over-fetches, harder caching + N+1 risk. REST: dumb caching that works, more round trips. \n\n**For a new API with unknown clients:** REST. GraphQL wins when you have diverse clients with incompatible data needs (mobile/web/third-party all want different shapes). Until a client actually needs field selection, REST's simplicity + HTTP caching payoff outweigh GraphQL's complexity."
+}

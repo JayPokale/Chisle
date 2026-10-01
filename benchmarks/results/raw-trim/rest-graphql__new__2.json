@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "new",
+ "seed": 2,
+ "out_tokens": 520,
+ "input_tokens": 21793,
+ "cache_creation": 9365,
+ "cost_usd": 0.0225818,
+ "answer_lines": 9,
+ "answer": "**REST:** Simple contracts, cache-friendly, HTTP semantics built-in (status codes, methods, conditional requests). Trade-offs: clients over-fetch or under-fetch (multiple requests), versioning creates friction (v1/v2 endpoints), tight coupling to resource shape.\n\n**GraphQL:** Client picks exact fields, single endpoint, nested fetches in one query. Trade-offs: HTTP caching harder (all POSTs), query complexity open-ended (n+1 risks, runaway queries need rate-limiting), steeper ops/security story, overkill for simple CRUD.\n\n**Pick REST if:** API is CRUD-heavy, clients are homogeneous (web + mobile sharing shape), caching matters, team is small. Low operational friction.\n\n**Pick GraphQL if:** clients need different shapes (web asks for A+B, mobile for A+C+D), you're building a platform multiple teams consume, query flexibility saves roundtrips. Budget ops complexity.\n\nFor **new APIs**, default REST unless you have heterogeneous clients or know you'll spend cycles managing over-fetching. GraphQL pays off at scale; early, it's yak-shaving."
+}

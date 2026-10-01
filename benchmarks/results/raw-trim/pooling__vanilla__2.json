@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "vanilla",
+ "seed": 2,
+ "out_tokens": 525,
+ "input_tokens": 20985,
+ "cache_creation": 8562,
+ "cost_usd": 0.0210003,
+ "answer_lines": 32,
+ "answer": "# Database Connection Pooling\n\n**What it is**: Connection pooling maintains a reusable set of database connections rather than creating a new connection for each request.\n\n## How it works\n\n1. **Initialization**: A pool starts with N connections (configured minimum), established and ready to use\n2. **Request handling**: When an application needs a database connection, it requests one from the pool instead of creating new\n3. **Reuse**: After the query completes, the connection returns to the pool rather than closing\n4. **Scaling**: If all connections are in use, the pool can create new ones up to a maximum limit\n5. **Cleanup**: Idle connections may be closed after a timeout to free resources\n\n## Why it helps\n\n**Performance**\n- Creating a database connection is expensive (authentication, handshaking, resource allocation)\n- Reusing connections eliminates this overhead for most requests\n- Results in dramatically faster query execution\n\n**Resource efficiency**\n- Limits the total number of database connections (database has finite connection limits)\n- Prevents connection exhaustion that crashes the database\n- Reduces memory usage on both application and database servers\n\n**Stability**\n- Provides backpressure: if all connections are busy, requests queue instead of failing\n- Prevents runaway connection creation during traffic spikes\n- Allows graceful degradation under load\n\n**Example**: Without pooling, 1000 concurrent requests means 1000 new connections created (expensive). With a pool of 20 connections, all 1000 requests efficiently share and reuse those 20 connections.\n\nMost frameworks (Node's `pg` pool, Python's `SQLAlchemy`, Java's `HikariCP`, etc.) include pooling built-in or as a configurable layer."
+}

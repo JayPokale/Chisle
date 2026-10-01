@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "old",
+ "seed": 2,
+ "out_tokens": 978,
+ "input_tokens": 69183,
+ "cache_creation": 10903,
+ "cost_usd": 0.0325474,
+ "answer_lines": 62,
+ "answer": "Since you don't have existing code in the directory, here's a debounce solution for a search input:\n\n**React (with custom hook):**\n\n```javascript\nimport { useCallback, useRef } from 'react';\n\nfunction useDebounce(callback, delay) {\n  const timeoutRef = useRef(null);\n  \n  return useCallback((...args) => {\n    clearTimeout(timeoutRef.current);\n    timeoutRef.current = setTimeout(() => callback(...args), delay);\n  }, [callback, delay]);\n}\n\nexport default function SearchInput() {\n  const handleSearch = useDebounce(async (query) => {\n    if (!query.trim()) return;\n    const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);\n    const data = await res.json();\n    console.log(data);\n  }, 500);\n\n  return (\n    <input\n      type=\"text\"\n      placeholder=\"Search...\"\n      onChange={(e) => handleSearch(e.target.value)}\n    />\n  );\n}\n```\n\n**Vanilla JavaScript:**\n\n```javascript\nfunction debounce(fn, delay) {\n  let timeoutId;\n  return function(...args) {\n    clearTimeout(timeoutId);\n    timeoutId = setTimeout(() => fn(...args), delay);\n  };\n}\n\nconst searchInput = document.querySelector('input[type=\"text\"]');\nconst handleSearch = debounce(async (query) => {\n  if (!query.trim()) return;\n  const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);\n  const data = await res.json();\n  console.log(data);\n}, 500);\n\nsearchInput.addEventListener('input', (e) => handleSearch(e.target.value));\n```\n\n**Key points:**\n- 500ms delay waits after keystroke stops before firing the API call\n- Multiple rapid keystrokes cancel the previous timeout\n- Change `delay` to adjust responsiveness\n\nWhich framework/library are you using? I can tailor it further."
+}

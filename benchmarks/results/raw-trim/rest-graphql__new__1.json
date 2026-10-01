@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "new",
+ "seed": 1,
+ "out_tokens": 524,
+ "input_tokens": 21793,
+ "cache_creation": 9365,
+ "cost_usd": 0.022601800000000002,
+ "answer_lines": 9,
+ "answer": "**REST** → Simple, cacheable, familiar. HTTP semantics (GET, POST, PATCH, DELETE) map directly to operations. CDN/cache-friendly. Costs: over/underfetch (requests for data you don't need, or multiple round-trips when one query lacks fields), versioning friction as APIs evolve.\n\n**GraphQL** → Query exactly what you need in one request. Introspectable schema, excellent dev tooling. Costs: harder to cache (POST, complex queries bypass HTTP caching), implementation complexity (N+1 queries without batching, circular refs), steeper learning curve, overkill for simple/read-heavy APIs.\n\n**Pick REST if:** API is straightforward (CRUD over simple resources), caching matters, team prefers convention, client diversity is low.\n\n**Pick GraphQL if:** Clients vary wildly (mobile vs web vs backend), rapid schema iteration needed, or eliminating over/underfetch saves significant bandwidth.\n\nMany teams run both: GraphQL over a cacheable REST backend, or REST with a GraphQL facade. Start REST—migration to GraphQL is forward-compatible."
+}

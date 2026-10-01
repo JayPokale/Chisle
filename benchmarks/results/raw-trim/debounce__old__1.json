@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "old",
+ "seed": 1,
+ "out_tokens": 772,
+ "input_tokens": 21205,
+ "cache_creation": 8777,
+ "cost_usd": 0.0226658,
+ "answer_lines": 63,
+ "answer": "I don't see an existing search component in your current directory. Here are the most common patterns you can adapt:\n\n**React (using `useCallback` + `useRef`):**\n```jsx\nimport { useState, useCallback, useRef } from 'react';\n\nfunction SearchInput() {\n  const [results, setResults] = useState([]);\n  const timeoutRef = useRef(null);\n\n  const handleSearch = useCallback((query) => {\n    clearTimeout(timeoutRef.current);\n    timeoutRef.current = setTimeout(async () => {\n      const res = await fetch(`/api/search?q=${query}`);\n      const data = await res.json();\n      setResults(data);\n    }, 300); // 300ms debounce\n  }, []);\n\n  return (\n    <input\n      type=\"text\"\n      onChange={(e) => handleSearch(e.target.value)}\n      placeholder=\"Search...\"\n    />\n  );\n}\n```\n\n**React with a custom hook:**\n```jsx\nfunction useDebounce(callback, delay) {\n  const timeoutRef = useRef(null);\n  return useCallback((...args) => {\n    clearTimeout(timeoutRef.current);\n    timeoutRef.current = setTimeout(() => callback(...args), delay);\n  }, [callback, delay]);\n}\n\n// Use it:\nconst debouncedSearch = useDebounce(async (query) => {\n  const res = await fetch(`/api/search?q=${query}`);\n  setResults(await res.json());\n}, 300);\n\n<input onChange={(e) => debouncedSearch(e.target.value)} />\n```\n\n**Vanilla JS:**\n```js\nlet timeoutId;\nconst searchInput = document.querySelector('input');\n\nsearchInput.addEventListener('input', (e) => {\n  clearTimeout(timeoutId);\n  timeoutId = setTimeout(async () => {\n    const res = await fetch(`/api/search?q=${e.target.value}`);\n    // handle results\n  }, 300);\n});\n```\n\nShow me the file you're editing and I'll apply it directly."
+}

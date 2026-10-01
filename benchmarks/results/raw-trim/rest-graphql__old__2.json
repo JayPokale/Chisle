@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "old",
+ "seed": 2,
+ "out_tokens": 516,
+ "input_tokens": 22772,
+ "cache_creation": 10344,
+ "cost_usd": 0.0245198,
+ "answer_lines": 3,
+ "answer": "GraphQL: single request fetches exactly what the client asks for → fewer round trips, no over-fetching. Harder to cache (HTTP caching doesn't apply; need query-level caching) and easier to write N+1 queries if you're not careful. REST: dumb HTTP caching that works out of the box, simpler to build, but clients either overfetch (get unused fields) or make multiple requests.\n\n**For a new API:** Start with REST unless you know diverse clients will ask for wildly different data shapes (multiple frontends, third-party integrations). REST's caching advantage and simplicity usually win until you feel the pain of over-fetching. If you're building a backend serving one or two known client shapes, REST is boring and faster to ship. If multiple teams depend on your API and they want different subsets of data, GraphQL pays for itself."
+}

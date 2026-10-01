@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "new2",
+ "seed": 2,
+ "out_tokens": 544,
+ "input_tokens": 21864,
+ "cache_creation": 9436,
+ "cost_usd": 0.0228438,
+ "answer_lines": 15,
+ "answer": "**How it works:** Connection pooling maintains a set of pre-opened database connections in memory. When your app needs one, it grabs an idle connection from the pool instead of establishing a fresh connection (which involves TCP handshake, authentication, protocol negotiation). When done, the connection goes back to the pool rather than closing, ready for the next request.\n\n**Why it helps:**\n\n*Latency:* Opening a connection takes ~100ms+ (network round-trips, auth). Reusing a pooled connection is ~1ms. For high-traffic apps, this compounds massively.\n\n*Resource efficiency:* Each DB connection consumes server memory and file descriptors. A pool with 20 connections serving 1000 requests beats 1000 open connections. The DB isn't crushed by connection overhead.\n\n*Throughput:* Pooling bounds the load on the database. Without it, a spike of 10k requests tries to open 10k connections simultaneously → the DB hits limits and starts rejecting connections or timing out.\n\n*Queuing:* When the pool is full, new requests wait briefly for a connection to free up instead of failing or piling on the DB.\n\n**Trade-off:** Connection pools consume memory (each idle connection is a resource). You tune pool size based on expected concurrent requests — too small = waiting, too large = wasted RAM. Typical range: 5–20 for small apps, up to 100+ for high-traffic services.\n\nMost frameworks (Django, Node's `pg` pool, Java's HikariCP, Go's `database/sql`) have pooling built in with sensible defaults."
+}

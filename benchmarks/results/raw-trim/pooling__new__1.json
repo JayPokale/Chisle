@@ -1,0 +1,11 @@
+{
+ "id": "pooling",
+ "arm": "new",
+ "seed": 1,
+ "out_tokens": 601,
+ "input_tokens": 21790,
+ "cache_creation": 9362,
+ "cost_usd": 0.022980800000000003,
+ "answer_lines": 19,
+ "answer": "**Connection pooling** maintains a cache of ready-to-use database connections. Instead of creating a fresh connection for each request (expensive), the client grabs an idle connection from the pool, uses it, then returns it.\n\n**How it works:**\n\n1. **Initialize**: Pool spawns N connections at startup (or lazily), keeps them open.\n2. **Acquire**: Client requests a connection → pool hands over an idle one (or waits if none free).\n3. **Use**: Client runs queries.\n4. **Release**: Client closes the connection → pool recycles it, marks as idle.\n5. **Evict**: Pool periodically closes stale/unused connections to save resources.\n\n**Why it helps:**\n\n- **Connection overhead is brutal.** Opening a TCP socket, TLS handshake, auth, initializing session state takes 10–100ms per connection. Creating a new one per request kills throughput.\n- **OS resource limits.** Systems have max file descriptors (often ~1024). Pooling stays under that ceiling; without it, load spikes exhaust the limit → connection refused.\n- **Database overhead.** Each connection consumes server memory, a slot in `max_connections`. Pooling reduces the active connection count dramatically.\n- **Latency improvement.** Reusing an open connection is microseconds; creating one is milliseconds. Median latency drops on high-concurrency workloads.\n- **Throughput scaling.** A pool of 10 connections can serve 1000s of requests by queueing them; without pooling, you'd need 1000 connections open simultaneously.\n\n**Trade-offs:** Pool must be sized right—too small chokes throughput, too large wastes memory. Connection state (temp tables, session vars) can bleed across requests if not reset properly. Most frameworks (Django, Node/pg, Java Hikari) handle pooling transparently; pick reasonable defaults and tune from metrics."
+}

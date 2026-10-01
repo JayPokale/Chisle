@@ -1,0 +1,11 @@
+{
+ "id": "debounce",
+ "arm": "new2",
+ "seed": 1,
+ "out_tokens": 812,
+ "input_tokens": 20306,
+ "cache_creation": 7878,
+ "cost_usd": 0.021067799999999998,
+ "answer_lines": 61,
+ "answer": "I need to see the existing code to modify it. What framework/setup are you using (React, Vue, vanilla JS) and can you share the current search input code?\n\nAlternatively, I can show you a debounce pattern for your framework:\n\n**React:**\n```jsx\nimport { useState, useCallback } from 'react';\n\nfunction SearchInput() {\n  const [query, setQuery] = useState('');\n  const [results, setResults] = useState([]);\n\n  const debouncedSearch = useCallback(\n    debounce((searchTerm) => {\n      if (searchTerm.trim()) {\n        fetch(`/api/search?q=${encodeURIComponent(searchTerm)}`)\n          .then(r => r.json())\n          .then(setResults);\n      }\n    }, 300),\n    []\n  );\n\n  const handleChange = (e) => {\n    setQuery(e.target.value);\n    debouncedSearch(e.target.value);\n  };\n\n  return <input onChange={handleChange} value={query} />;\n}\n\nfunction debounce(fn, delay) {\n  let timeoutId;\n  return function (...args) {\n    clearTimeout(timeoutId);\n    timeoutId = setTimeout(() => fn(...args), delay);\n  };\n}\n```\n\n**Vanilla JS:**\n```js\nfunction debounce(fn, delay) {\n  let timeoutId;\n  return function (...args) {\n    clearTimeout(timeoutId);\n    timeoutId = setTimeout(() => fn(...args), delay);\n  };\n}\n\nconst searchInput = document.querySelector('input[type=\"search\"]');\nconst debouncedSearch = debounce((query) => {\n  fetch(`/api/search?q=${encodeURIComponent(query)}`)\n    .then(r => r.json())\n    .then(console.log);\n}, 300);\n\nsearchInput.addEventListener('input', (e) => debouncedSearch(e.target.value));\n```\n\nPass your current code and I'll adapt it to your setup."
+}

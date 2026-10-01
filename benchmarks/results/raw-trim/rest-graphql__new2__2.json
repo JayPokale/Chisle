@@ -1,0 +1,11 @@
+{
+ "id": "rest-graphql",
+ "arm": "new2",
+ "seed": 2,
+ "out_tokens": 600,
+ "input_tokens": 20302,
+ "cache_creation": 7874,
+ "cost_usd": 0.0199998,
+ "answer_lines": 5,
+ "answer": "**REST:** Simple, stateless, cacheable at every layer (HTTP proxies, CDNs). Each resource → separate endpoint; clients fetch multiple endpoints (over-fetching when you want one field from five resources) or combine them (under-fetching). Mature tooling, easy monitoring, built-in auth/rate-limiting leverages HTTP semantics. Trade: rigid schema contract, versioning headache.\n\n**GraphQL:** Single endpoint, client specifies exact fields needed, nested queries in one round trip. Introspection gives you free API docs. Trade: harder to cache (you can't rely on HTTP caching; need query-level or client-side), steeper learning curve, server-side complexity (need a resolver for every field), harder to rate-limit fairly (same request cost varies wildly). Also: cold-start is slower (schema compilation, query validation).\n\n**Verdict:** REST if your data is shallow and endpoints map to resources (typical CRUD apps, public APIs). GraphQL if clients need wildly different data shapes (mobile vs web vs dashboard) or deeply nested graphs, and you control both client and server. Hybrid is viable: REST for simple public APIs, GraphQL for internal/complex clients."
+}

@@ -1,0 +1,11 @@
+{
+ "id": "auth-bug",
+ "arm": "new2",
+ "seed": 2,
+ "out_tokens": 694,
+ "input_tokens": 89171,
+ "cache_creation": 10280,
+ "cost_usd": 0.0319497,
+ "answer_lines": 3,
+ "answer": "The working directory is empty—no auth middleware code found. Do you have existing code to share, or would you like me to create a minimal example showing the bug and fix?\n\nThe issue is straightforward: `currentTime > expiry` rejects tokens *at* the exact expiry moment, when they should still be valid. The fix is `currentTime >= expiry` (reject only *after* expiry has passed)."
+}
