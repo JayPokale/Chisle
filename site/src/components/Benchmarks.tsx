@@ -32,6 +32,15 @@ const PI_ROWS = [
   { label: "visible answer", vanilla: 100, caveman: 56, ponytail: 49, chisle: 37 },
   { label: "answer lines", vanilla: 100, caveman: 75, ponytail: 38, chisle: 37 },
 ];
+// Agent loop: 5 fixture repos x 12 seeds per arm, Haiku 4.5, hidden tests, hooks
+// off. From benchmarks/results/2026-09-14-quality-and-agentic.md. Measured with
+// the pre-trim ruleset; it is the reason the ruleset was cut.
+const LOOP_ROWS = [
+  { label: "hidden tests passed", bare: "49/60", chisle: "48/60", delta: "noise (p = 1.0)" },
+  { label: "output tokens / run", bare: "1,171", chisle: "1,083", delta: "−7.5%" },
+  { label: "context tokens / run", bare: "67,832", chisle: "64,695", delta: "−4.6%" },
+  { label: "cost / run", bare: "$0.0269", chisle: "$0.0276", delta: "+2.6%" },
+];
 
 
 export default function Benchmarks() {
@@ -188,6 +197,45 @@ export default function Benchmarks() {
                       </tr>
                     );
                   })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </Reveal>
+        <Reveal>
+          <div className="mt-20 border-t border-line pt-12">
+            <h3 className="text-xl font-semibold tracking-tight sm:text-2xl">
+              In an agent loop, the gain mostly vanished
+            </h3>
+            <p className="mt-3 max-w-2xl text-sm text-dim">
+              Five real repos, 12 seeds per arm, hidden tests, hooks off. Output and context
+              barely moved and cost per run came out higher: the ~1.7k-token ruleset rides along
+              on every request, about 5 per run, which ate an estimated three quarters of what the
+              behaviour saved. So the ruleset was cut to ~750 tokens. These rows are the old
+              ruleset; the re-run is pending.
+            </p>
+
+            <div className="pane-scroll mt-6 overflow-x-auto rounded-xl border border-line bg-bg px-5 py-2">
+              <table className="w-full text-left text-sm">
+                <thead className="text-xs uppercase tracking-wide text-dim">
+                  <tr>
+                    <th className="py-2 pr-4 font-medium">metric</th>
+                    <th className="py-2 pr-4 text-right font-medium">bare</th>
+                    <th className="py-2 pr-4 text-right font-medium text-accent">chisle</th>
+                    <th className="py-2 text-right font-medium">change</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line">
+                  {LOOP_ROWS.map((r) => (
+                    <tr key={r.label} className="transition-colors hover:bg-accent-soft/40">
+                      <td className="py-2 pr-4">{r.label}</td>
+                      <td className="py-2 pr-4 text-right text-dim tabular-nums">{r.bare}</td>
+                      <td className="py-2 pr-4 text-right font-semibold text-accent tabular-nums">{r.chisle}</td>
+                      <td className={`py-2 text-right tabular-nums ${r.delta.startsWith("+") ? "text-waste" : ""}`}>
+                        {r.delta}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
