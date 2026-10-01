@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import SectionHead from "./SectionHead";
 
 const QA = [
   {
@@ -37,19 +38,19 @@ const QA = [
 export default function Faq() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section id="faq" className="border-t border-line py-24">
-      <div className="mx-auto max-w-2xl px-5">
-        <h2 className="text-center text-2xl font-semibold tracking-tight sm:text-4xl">FAQ</h2>
-        <div className="mt-10 divide-y divide-line border-y border-line">
+    <section id="faq" className="py-28">
+      <div className="mx-auto max-w-3xl px-5">
+        <SectionHead eyebrow="FAQ" title="Questions, answered tersely" center />
+        <div className="mt-12 space-y-3">
           {QA.map((item, i) => (
-            <div key={i}>
+            <div key={i} className="rounded-xl border border-line bg-surface px-5 transition-colors has-[[aria-expanded=true]]:border-brand-hover/60">
               <button
                 onClick={() => setOpen(open === i ? null : i)}
-                className="flex w-full items-center justify-between gap-4 py-4 text-left text-sm font-medium transition-colors hover:text-amber"
+                className="flex w-full items-center justify-between gap-4 py-4 text-left font-medium transition-colors hover:text-accent"
                 aria-expanded={open === i}
               >
                 <span>{item.q}</span>
-                <span className={`text-amber transition-transform ${open === i ? "rotate-45" : ""}`}>+</span>
+                <span aria-hidden className={`grid h-6 w-6 shrink-0 place-items-center rounded-md bg-accent-soft text-accent transition-transform ${open === i ? "rotate-45" : ""}`}>+</span>
               </button>
               <AnimatePresence initial={false}>
                 {open === i && (

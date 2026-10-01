@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Reveal from "./Reveal";
+import SectionHead from "./SectionHead";
 import Markdown from "./Markdown";
 import samples from "@/data/samples.json";
 
@@ -34,18 +35,13 @@ export default function Compare() {
   const share = pct(cur.tokens, base.tokens);
 
   return (
-    <section id="compare" className="py-24">
-      <div className="mx-auto max-w-5xl px-5">
-        <Reveal>
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-4xl">
-            Same prompt. Same model. Real transcripts.
-          </h2>
-          <p className="mt-3 max-w-2xl text-sm text-dim">
-            Pick a task and an arm. Both panels are the{" "}
-            <strong className="text-ink">verbatim committed output</strong> from the benchmark run,
-            not a mock-up written for this page. The arms differ only in the injected system prompt.
-          </p>
-        </Reveal>
+    <section id="compare" className="py-28">
+      <div className="mx-auto max-w-6xl px-5">
+        <SectionHead eyebrow="Compare" title="Same prompt. Same model. Real transcripts.">
+          Pick a task and an arm. Both panels are the{" "}
+          <strong className="text-fg">verbatim committed output</strong> from the benchmark run,
+          not a mock-up written for this page. The arms differ only in the injected system prompt.
+        </SectionHead>
 
         <Reveal delay={0.06}>
           <div className="mt-8 flex flex-wrap gap-2">
@@ -54,10 +50,10 @@ export default function Compare() {
                 key={t.id}
                 onClick={() => setTaskId(t.id)}
                 aria-pressed={t.id === taskId}
-                className={`rounded border px-3 py-1.5 font-mono text-xs transition-colors ${
+                className={`rounded-md border px-3 py-1.5 font-mono text-xs transition-colors ${
                   t.id === taskId
-                    ? "border-amber bg-amber-soft text-amber"
-                    : "border-line text-dim hover:border-amber/50 hover:text-ink"
+                    ? "border-brand-hover bg-accent-soft text-accent"
+                    : "border-line text-dim hover:border-brand-hover/50 hover:text-fg"
                 }`}
               >
                 {t.id}
@@ -74,7 +70,7 @@ export default function Compare() {
         <Reveal delay={0.1}>
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
             {/* baseline */}
-            <div className="flex flex-col rounded-lg border border-line bg-panel/40">
+            <div className="flex flex-col rounded-xl border border-line bg-surface">
               <header className="flex items-baseline justify-between border-b border-line px-4 py-3">
                 <span className="text-sm font-semibold">bare model</span>
                 <span className="font-mono text-xs text-dim">
@@ -92,7 +88,7 @@ export default function Compare() {
             </div>
 
             {/* selected arm */}
-            <div className="flex flex-col rounded-lg border border-amber/60 bg-panel/40">
+            <div className="flex flex-col rounded-xl border border-brand-hover/60 bg-surface shadow-[0_0_40px_-12px_#631bff]">
               <header className="flex items-baseline justify-between gap-3 border-b border-line px-4 py-3">
                 <div className="flex gap-1.5">
                   {RIVALS.filter((r) => task.arms[r.key]).map((r) => (
@@ -102,8 +98,8 @@ export default function Compare() {
                       aria-pressed={r.key === arm}
                       className={`rounded px-2 py-0.5 font-mono text-xs transition-colors ${
                         r.key === arm
-                          ? "bg-amber-soft text-amber"
-                          : "text-dim hover:text-ink"
+                          ? "bg-accent-soft text-accent"
+                          : "text-dim hover:text-fg"
                       }`}
                     >
                       {r.label}
@@ -111,7 +107,7 @@ export default function Compare() {
                   ))}
                 </div>
                 <span className="shrink-0 font-mono text-xs">
-                  <span className={share > 100 ? "text-waste" : "text-amber"}>{share}%</span>
+                  <span className={share > 100 ? "text-waste" : "text-accent"}>{share}%</span>
                   <span className="text-dim">
                     {" "}
                     · {cur.tokens.toLocaleString()} tok · {cur.lines} lines
@@ -132,14 +128,14 @@ export default function Compare() {
 
         <Reveal delay={0.14}>
           <p className="mt-5 max-w-3xl text-xs text-dim">
-            <span className="mr-2 rounded bg-amber-soft px-1.5 py-0.5 font-mono text-[10px] text-amber">
+            <span className="mr-2 rounded bg-accent-soft px-1.5 py-0.5 font-mono text-[10px] text-accent">
               basis: measured
             </span>
             {samples.suite} Percentages are billed output tokens against that task&apos;s own
             baseline.{" "}
             {task.id === "cache" && (
               <>
-                <strong className="text-ink">Read this one carefully:</strong> the prompt shipped
+                <strong className="text-fg">Read this one carefully:</strong> the prompt shipped
                 with no codebase attached. The bare model invented a 150-line class for a project it
                 never saw; chisle&apos;s 7 lines are a request for the language and framework, not a
                 cache. The saving is real, but it comes from refusing to guess.{" "}
@@ -147,7 +143,7 @@ export default function Compare() {
             )}
             Browse every cell in{" "}
             <a
-              className="text-amber underline-offset-4 hover:underline"
+              className="text-accent underline-offset-4 hover:underline"
               href="https://github.com/JayPokale/Chisle/tree/main/benchmarks/results/raw"
             >
               benchmarks/results/raw
