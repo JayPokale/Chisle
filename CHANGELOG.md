@@ -5,6 +5,17 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+- **The ruleset costs half as much per request: ~900 tokens, was ~1.8k.** The 2026-09-14 agentic run left Chisle's cost per run above the bare agent: the ruleset rides along on every request (~5 per run), and its own size ate an estimated three quarters of what the behaviour saved. `SKILL.md` was cut from 6,725 to ~3,300 injected chars, measured live at 1,779 → 877 tokens per request. Every rule and safety carve-out stays; the examples section, the destructive-op sample and the repetition went. ([results](benchmarks/results/2026-10-01-ruleset-trim.md))
+  - **"Grep every caller before editing" is gone.** Both arms failed the one fixture that tests it 8 times in 12; it changed nothing and cost tokens every turn.
+  - **The examples no longer mirror benchmark prompts.** The old ones answered `rest-graphql`, the auth expiry bug and `deadlock` almost verbatim, which taught the ruleset to its own test. The new ones (a timezone bug, a CDN) appear in no suite.
+  - A 5-prompt live check caught the first cut doubling explanation length (28 → 60 lines); restoring "numbered steps" and "two tight paragraphs beat five headed sections" brought it to 39. Output differences at that sample size are within noise and published as such.
+- The `What it sounds like` heading is gone, so it left the `sections.prose` group.
+- **The site's headline is scoped to what was measured.** "Less than half the tokens" became "Half the words", with the agent-loop result (output −7.5%, context −4.6%, cost +2.6%) published alongside the 20-task numbers.
+
+### Added
+- **Agentic benchmark: a compressor arm and a fixture for it.** `ARMS=vanilla,chisle,chisle-hook` adds the shipped PostToolUse hook, wired from `plugin.json`, with chars elided recorded per cell; `RAW_DIR` keeps a re-run from reusing stale cells. The new `noisylog` fixture prints 401 test results (17k chars) with one failure mid-log, so the arm measures both the context saved and whether the agent still finds the bug. Not run yet.
+
 ## [3.5.0] - 2026-09-19
 
 ### Added
