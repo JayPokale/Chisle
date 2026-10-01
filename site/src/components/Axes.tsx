@@ -3,8 +3,19 @@
 import { useState } from "react";
 import Reveal from "./Reveal";
 
+// Small stroke icons, drawn inline: one per card, no icon library.
+const ICONS: Record<string, React.ReactNode> = {
+  persona: <path d="M4 6h16M4 12h10M4 18h6" />,
+  compress: <path d="M4 4h16v4H4zM8 12h8M10 16h4M12 20h0" />,
+  diet: <path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5" />,
+  status: <path d="M3 12h4l3-8 4 16 3-8h4" />,
+  tested: <path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7zM8.5 12l2.5 2.5 4.5-5" />,
+  off: <path d="M12 3v9M6.3 6.3a8 8 0 1 0 11.4 0" />,
+};
+
 const AXES = [
   {
+    icon: "persona",
     name: "Terse persona",
     what: "How the model writes",
     body: "Senior-dev voice: fragments over sentences, YAGNI-first code, reuse before new code. One mode, no dials. Commits and security warnings stay verbose on purpose.",
@@ -15,6 +26,7 @@ const AXES = [
     ],
   },
   {
+    icon: "compress",
     name: "Output compressor",
     what: "What survives into context",
     body: "A post-tool hook shrinks tool results before the model reads them: ANSI scrub, head + tail elide with error-line salvage, same-session dedup. Never touches Read, Edit, or Write. Runs on Claude Code, Pi, and OpenCode.",
@@ -25,6 +37,7 @@ const AXES = [
     ],
   },
   {
+    icon: "diet",
     name: "Context diet",
     what: "What gets read at all",
     body: "Rules that teach the model to fetch the slice, not the file: grep first, sliced reads, filter at the source, never re-read what's already in context.",
@@ -37,59 +50,70 @@ const AXES = [
 ];
 
 const EXTRAS = [
-  { name: "Live savings statusline", body: "A ⇣9k tok badge showing chars actually elided. Before v2.0.0 it counted compressions the harness went on to reject. That is fixed, and it now records only what is really applied." },
-  { name: "Works beyond Claude Code", body: "Pi and OpenCode get both axes; Pi adds live toggling. Hermes gets the skills as /chisle commands. Generated rulesets for Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot ship in the same install." },
-  { name: "Tested where it matters", body: "The compressor is where a bug corrupts files, so it's covered by the test suite, with a hard allowlist." },
-  { name: "Easy off-switch", body: "\"stop chisle\" for the persona, CHISLE_COMPRESS=0 for the hook, npx chisle --uninstall for everything." },
+  { icon: "status", name: "Live savings statusline", body: "A ⇣9k tok badge showing chars actually elided. Before v2.0.0 it counted compressions the harness went on to reject. That is fixed, and it now records only what is really applied." },
+  { icon: "tested", name: "Tested where it matters", body: "The compressor is where a bug corrupts files, so it's covered by the test suite, with a hard allowlist." },
+  { icon: "off", name: "Easy off-switch", body: "\"stop chisle\" for the persona, CHISLE_COMPRESS=0 for the hook, npx chisle --uninstall for everything." },
 ];
+
+function Icon({ name }: { name: string }) {
+  return (
+    <span className="grid h-10 w-10 place-items-center rounded-lg border border-brand-hover/40 bg-accent-soft text-accent">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        {ICONS[name]}
+      </svg>
+    </span>
+  );
+}
 
 export default function Axes() {
   const [open, setOpen] = useState<number | null>(null);
   return (
-    <section id="features" className="mx-auto max-w-5xl px-5 py-24">
+    <section id="features" className="mx-auto max-w-6xl px-5 py-28">
       <Reveal>
-        <h2 className="text-2xl font-semibold tracking-tight sm:text-4xl">
-          One plugin, three levers
-        </h2>
-        <p className="mt-3 max-w-xl text-sm text-dim">
-          Other token savers only make the model write less. Tool output is the bigger bill,
-          67.5% of a session, and it re-bills every turn.
-        </p>
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-sm font-medium text-accent">Features</p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-5xl">One plugin, three levers</h2>
+          <p className="mt-4 text-dim">
+            Other token savers only make the model write less. Tool output is the bigger bill,
+            67.5% of a session, and it re-bills every turn.
+          </p>
+        </div>
       </Reveal>
-      <div className="mt-12 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-3">
+
+      <div className="mt-14 grid gap-4 md:grid-cols-3">
         {AXES.map((a, i) => (
           <Reveal key={a.name} delay={i * 0.08}>
-            <button
-              onClick={() => setOpen(open === i ? null : i)}
-              aria-expanded={open === i}
-              className="lift h-full w-full border border-transparent bg-paper p-6 text-left hover:bg-panel/50"
-            >
-              <p className="text-xs text-amber">{a.what}</p>
-              <h3 className="mt-2 text-lg font-semibold">{a.name}</h3>
-              <p className="mt-2.5 text-sm leading-relaxed text-dim">{a.body}</p>
-              <p className="mt-3 font-mono text-[10.5px] text-amber">
-                {open === i ? "− hide" : "+ show it"}
-              </p>
+            <div className="lift flex h-full flex-col rounded-xl border border-line bg-surface p-6">
+              <Icon name={a.icon} />
+              <p className="mt-5 text-xs font-medium uppercase tracking-wider text-accent">{a.what}</p>
+              <h3 className="mt-1.5 text-xl font-semibold">{a.name}</h3>
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-dim">{a.body}</p>
+              <button
+                onClick={() => setOpen(open === i ? null : i)}
+                aria-expanded={open === i}
+                className="mt-5 w-fit text-sm font-medium text-accent hover:underline underline-offset-4"
+              >
+                {open === i ? "Hide example" : "See it applied →"}
+              </button>
               {open === i && (
-                <dl className="mt-3 space-y-2 border-t border-line pt-3">
+                <dl className="mt-4 space-y-2.5 rounded-lg border border-line bg-bg p-3">
                   {a.demo.map(([k, v]) => (
                     <div key={k}>
-                      <dt className="font-mono text-[10px] uppercase tracking-wide text-dim">{k}</dt>
-                      <dd className="mt-0.5 font-mono text-[11px] leading-relaxed">{v}</dd>
+                      <dt className="font-mono text-[10px] uppercase tracking-wider text-dim">{k}</dt>
+                      <dd className="mt-0.5 font-mono text-[11.5px] leading-relaxed">{v}</dd>
                     </div>
                   ))}
                 </dl>
               )}
-            </button>
+            </div>
           </Reveal>
         ))}
-      </div>
-      <div className="mt-5 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
         {EXTRAS.map((e, i) => (
-          <Reveal key={e.name} delay={i * 0.06}>
-            <div className="h-full bg-paper p-5">
-              <h3 className="text-sm font-semibold">{e.name}</h3>
-              <p className="mt-2 text-xs leading-relaxed text-dim">{e.body}</p>
+          <Reveal key={e.name} delay={0.2 + i * 0.06}>
+            <div className="lift h-full rounded-xl border border-line bg-surface p-6">
+              <Icon name={e.icon} />
+              <h3 className="mt-5 text-base font-semibold">{e.name}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-dim">{e.body}</p>
             </div>
           </Reveal>
         ))}
