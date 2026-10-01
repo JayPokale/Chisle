@@ -7,6 +7,10 @@
 // sees the test: test.js is copied in AFTER the run and decides pass/fail.
 //
 // Usage: node benchmarks/agentic/run.js [model] [seeds] [parallel]
+//   ARMS=vanilla,chisle,chisle-hook  arms to run (default: vanilla,chisle)
+//   RAW_DIR=path                     where cells go (default: ./raw); use a fresh
+//                                    dir when the ruleset changes, or old cells
+//                                    are reused as if they were new
 // Resumable: a cell whose result JSON already exists is skipped.
 
 const fs = require('fs');
@@ -19,9 +23,15 @@ const MODEL = process.argv[2] || 'claude-haiku-4-5-20251001';
 const SEEDS = Number(process.argv[3] || 3);
 const PAR = Number(process.argv[4] || 5);
 
+const KNOWN_ARMS = ['vanilla', 'chisle', 'chisle-hook'];
+const ARMS = (process.env.ARMS || 'vanilla,chisle').split(',').map((a) => a.trim()).filter(Boolean);
+const unknown = ARMS.filter((a) => !KNOWN_ARMS.includes(a));
+if (unknown.length) { console.error(`unknown arm(s): ${unknown.join(', ')}; known: ${KNOWN_ARMS.join(', ')}`); process.exit(1); }
+
 const HERE = __dirname;
+const ROOT = path.join(HERE, '..', '..');
 const FIX = path.join(HERE, 'fixtures');
-const RAW = path.join(HERE, 'raw');
+const RAW = process.env.RAW_DIR ? path.resolve(process.env.RAW_DIR) : path.join(HERE, 'raw');
 fs.mkdirSync(RAW, { recursive: true });
 
 const ISO = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-agentic-'));
@@ -31,6 +41,12 @@ const body = skill.split(/^---\s*$/m).slice(2).join('---').trim();
 if (!body) { console.error('empty chisle system prompt'); process.exit(1); }
 fs.writeFileSync(path.join(ISO, 'chisle.txt'), body + '\n');
 process.on('exit', () => fs.rmSync(ISO, { recursive: true, force: true }));
+
+// chisle-hook arm: the ruleset plus the shipped PostToolUse compressor, taken
+// verbatim from plugin.json so the arm cannot drift from what users install.
+const plugin = JSON.parse(fs.readFileSync(path.join(ROOT, '.claude-plugin', 'plugin.json'), 'utf8'));
+const HOOK_SETTINGS = JSON.stringify({ hooks: { PostToolUse: plugin.hooks.PostToolUse } })
+  .split('${CLAUDE_PLUGIN_ROOT}').join(ROOT);
 
 const fixtures = fs.readdirSync(FIX).filter((f) => fs.existsSync(path.join(FIX, f, 'task.txt')));
 
@@ -49,7 +65,7 @@ const stat = (p) => {
 const snapshot = (root) => Object.fromEntries(walk(root).map((f) => [f, stat(path.join(root, f))]));
 
 const cells = [];
-for (const arm of ['vanilla', 'chisle']) {
+for (const arm of ARMS) {
   for (let seed = 1; seed <= SEEDS; seed++) {
     for (const fx of fixtures) cells.push({ fx, arm, seed });
   }
@@ -68,13 +84,23 @@ function runCell(c) {
     const task = fs.readFileSync(path.join(FIX, c.fx, 'task.txt'), 'utf8').trim();
 
     const args = ['-p', task, '--model', MODEL, '--output-format', 'json', '--dangerously-skip-permissions'];
-    if (c.arm === 'chisle') args.push('--append-system-prompt-file', path.join(ISO, 'chisle.txt'));
+    if (c.arm !== 'vanilla') args.push('--append-system-prompt-file', path.join(ISO, 'chisle.txt'));
+    let cfg = ISO;
+    if (c.arm === 'chisle-hook') {
+      // Own config dir per cell: the hook keeps its on/off flag, savings ledger
+      // and spill files there, and parallel cells must not share them.
+      cfg = path.join(work, 'cfg');
+      fs.mkdirSync(cfg);
+      fs.copyFileSync(path.join(ISO, '.credentials.json'), path.join(cfg, '.credentials.json'));
+      fs.writeFileSync(path.join(cfg, '.chisle-active'), 'on');
+      args.push('--settings', HOOK_SETTINGS);
+    }
 
     execFile('claude', args, {
       cwd: repo,
       timeout: 300000,
       maxBuffer: 32 * 1024 * 1024,
-      env: { ...process.env, HOME: work, CLAUDE_CONFIG_DIR: ISO },
+      env: { ...process.env, HOME: work, CLAUDE_CONFIG_DIR: cfg },
     }, (err, stdout) => {
       const rec = { fixture: c.fx, arm: c.arm, seed: c.seed };
       if (err && !stdout) {
@@ -87,6 +113,12 @@ function runCell(c) {
         rec.cost_usd = d.total_cost_usd || 0;
         rec.turns = d.num_turns || 0;
         rec.answer = (d.result || '').trim();
+        if (c.arm === 'chisle-hook') {
+          let stats = {};
+          try { stats = JSON.parse(fs.readFileSync(path.join(cfg, '.chisle-compress-stats.json'), 'utf8')); } catch (_) {}
+          rec.compressed_chars = stats.savedChars || 0;
+          rec.compress_events = stats.events || 0;
+        }
 
         // A usage-limit refusal is not a measurement. Writing it would score as
         // "the agent changed nothing", which is exactly how a limit hit
