@@ -56,6 +56,22 @@ test('compress returns null when no win', () => {
   assert.equal(compress('short', FULL), null);
 });
 
+test('shared compressor never splits surrogate pairs at head/tail cuts', () => {
+  const text = 'a'.repeat(3999) + '😀' + 'b'.repeat(5000) + '😀' + 'c'.repeat(3999);
+  const out = compress(text, FULL);
+  assert.ok(out.startsWith('a'.repeat(3999) + '\n'));
+  assert.ok(out.endsWith('\n' + 'c'.repeat(3999)));
+  assert.doesNotMatch(out, /[\uD800-\uDFFF]/u);
+});
+
+test('shared compressor windows long diagnostics around the match', () => {
+  const lines = bigOutput(500).split('\n');
+  lines[250] = '😀'.repeat(1000) + ' FATAL LATE_ERROR ' + '😀'.repeat(1000);
+  const out = compress(lines.join('\n'), FULL);
+  assert.match(out, /FATAL LATE_ERROR/);
+  assert.doesNotMatch(out, /[\uD800-\uDFFF]/u);
+});
+
 // ── scrub (lossless tier) ────────────────────────────────────────────────────
 
 test('scrub strips ANSI escapes', () => {

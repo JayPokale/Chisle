@@ -709,7 +709,7 @@ function uninstall(ctx) {
       const dst = path.join(ocPlugins, rel);
       if (fs.existsSync(dst)) { if (!opts.dryRun) fs.rmSync(dst, { recursive: true, force: true }); note('  removed ' + dst); touched++; }
     }
-    for (const f of ['chisle-spill', '.chisle-compress-stats.json', '.chisle-compress-last.json']) {
+    for (const f of ['chisle-spill', 'chisle-dedup', '.chisle-compress-stats.json', '.chisle-compress-last.json']) {
       const p = path.join(homeDir(), '.config', 'opencode', f);
       if (fs.existsSync(p)) { if (!opts.dryRun) fs.rmSync(p, { recursive: true, force: true }); note('  removed ' + p); touched++; }
     }
