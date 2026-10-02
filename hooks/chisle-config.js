@@ -41,11 +41,18 @@ function getClaudeDir() {
 // OpenCode's global config dir. The compressor plugin keeps its spill/dedup/
 // stats here (as Copilot uses getCopilotDir), so recovery files sit beside
 // OpenCode's own config instead of leaking into ~/.claude.
-function getOpencodeDir() {
-  if (process.env.XDG_CONFIG_HOME) {
-    return path.join(process.env.XDG_CONFIG_HOME, 'opencode');
-  }
-  return path.join(os.homedir(), '.config', 'opencode');
+function getOpencodeDir(opts) {
+  const options = opts || {};
+  const env = options.env || process.env;
+  const home = options.home || os.homedir();
+  if (env.OPENCODE_CONFIG_DIR) return env.OPENCODE_CONFIG_DIR;
+  if (env.XDG_CONFIG_HOME) return path.join(env.XDG_CONFIG_HOME, 'opencode');
+  return path.join(home, '.config', 'opencode');
+}
+
+function getOpencodeStateDir(opts) {
+  const env = (opts && opts.env) || process.env;
+  return env.CHISLE_STATE_DIR || getOpencodeDir(opts);
 }
 
 // GitHub Copilot CLI's own user-level state directory (mirrors the
@@ -350,7 +357,7 @@ function readFlag(flagPath) {
 }
 
 module.exports = {
-  LEGACY_MODES, legacySetting, getDefaultMode, getClaudeDir, getCopilotDir, getOpencodeDir,
+  LEGACY_MODES, legacySetting, getDefaultMode, getClaudeDir, getCopilotDir, getOpencodeDir, getOpencodeStateDir,
   VALID_MODES, safeWriteFlag, readFlag,
   PROSE_HEADINGS, CODE_HEADINGS, getSections, filterSections,
   getActiveOutputStyle, explicitSections, resolveSections,

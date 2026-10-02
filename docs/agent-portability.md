@@ -22,7 +22,7 @@ to every agent that supports a rules/context file. One source, many targets.
 | Cline | `.clinerules/chisle.md` | plain markdown |
 | Kiro | `.kiro/steering/chisle.md` | `inclusion: always` |
 | GitHub Copilot | `.github/copilot-instructions.md` | plain markdown |
-| OpenCode | `~/.config/opencode/AGENTS.md` (fenced block) + `~/.config/opencode/skills/` + `~/.config/opencode/plugins/chisle.js` | global ruleset + Agent Skills + compression plugin |
+| OpenCode | `<config root>/AGENTS.md` (fenced block) + `<config root>/skills/` + `<config root>/plugins/chisle.js` | global ruleset + Agent Skills + compression plugin |
 | Hermes Agent | `~/.hermes/skills/` | Agent Skills (`/chisle` commands) |
 
 ## Pi discovery and always-on delivery
@@ -36,13 +36,15 @@ Verified against Pi 0.85.1:
 
 ## OpenCode delivery
 
-Verified against OpenCode 1.18.x docs (rules + Agent Skills pages):
+Verified against OpenCode 1.18.x docs (rules + Agent Skills pages) and OpenCode 1.18.31 live:
 
-- OpenCode loads the global `~/.config/opencode/AGENTS.md` on every session alongside project `AGENTS.md`; the installer appends one fenced `<!-- chisle-begin -->` … `<!-- chisle-end -->` block after existing user content and refreshes only that block under `--force`/`--update`.
-- The bundled `skills/` copy into `~/.config/opencode/skills/` verbatim, discovered on demand through the native `skill` tool. The global skills dir is scanned by default, so `skills.paths` needs no edit and no `instructions` entry is added — no second system message, existing instructions preserved.
+- OpenCode's root resolves as `OPENCODE_CONFIG_DIR`, then `$XDG_CONFIG_HOME/opencode`, then `~/.config/opencode`. Install, detection, update, uninstall, plugin state, and `--stats --only opencode` share that resolution. `CHISLE_HOME` remains the installer's fallback-home override, and `CHISLE_STATE_DIR` remains the runtime-state override.
+- OpenCode loads the global `AGENTS.md` under that root on every session alongside project `AGENTS.md`; the installer appends one fenced `<!-- chisle-begin -->` … `<!-- chisle-end -->` block after existing user content and refreshes only that block under `--force`/`--update`.
+- The bundled `skills/` copy into the config root's `skills/` directory verbatim, discovered on demand through the native `skill` tool. The global skills dir is scanned by default, so `skills.paths` needs no edit and no `instructions` entry is added — no second system message, existing instructions preserved.
 - OpenCode does not expose a Chisle mode-toggle lifecycle. The global ruleset is always on, and `/chisle` loads the skill rather than toggling those instructions. Compression reads `CHISLE_DEFAULT_MODE` or the shared config on every hook call; `off` disables compression only.
-- Tool-result compression, which static-rule hosts normally cannot get, ships to OpenCode as a native plugin. The installer writes `~/.config/opencode/plugins/chisle.js` plus the zero-dep compressor core in `chisle-hooks/`, where OpenCode auto-discovers `*.js`/`*.ts` plugins at startup.
+- Tool-result compression, which static-rule hosts normally cannot get, ships to OpenCode as a native plugin. The installer writes `plugins/chisle.js` plus the zero-dep compressor core in `plugins/chisle-hooks/` under the config root, where OpenCode auto-discovers `*.js`/`*.ts` plugins at startup.
 - OpenCode applies its configured `tool_output` line/byte truncation before `tool.execute.after`. Chisle therefore compresses the retained preview and preserves OpenCode's full-output recovery hint; output below that native limit reaches the hook in full. The hook rewrites oversized `output.output` in place and OpenCode persists the mutation onto the tool part. `experimental.chat.messages.transform` runs after MCP normalization and before conversion to model messages and compaction, providing a request-time safety pass for stored full output. Only the persisted after-hook replacement records savings, so the safety pass does not count the same result twice.
+- A live OpenCode 1.18.31 smoke test ran one Bash command that emitted 15,537 characters and exited 23. OpenCode delivered it to `tool.execute.after` as a completed tool part with `metadata.exit: 23`; Chisle reduced the model-visible output to 7,092 characters, retained the first line and final `FATAL_FAILED_SMOKE exit=23` diagnostic, preserved the exit metadata, wrote a byte-identical 0600 recovery spill, and recorded one 8,445-character savings event. Failed Bash output is therefore supported in this tested version.
 - Both hooks reuse the Claude/Pi compressor core. Eligible output has a final character bound, Unicode-safe head/tail cuts, bounded error windows, and a byte-identical pre-scrub recovery spill. Per-session dedup uses OpenCode's session and call IDs. A bounded output already carrying `[chisle:` is skipped; an oversized source string containing that text is still bounded. Non-string output shapes are skipped.
 - The default allowlist contains only known read-heavy OpenCode built-ins. MCP names are never inferred safe from underscores; add known read-only tools with `CHISLE_COMPRESS_TOOLS`. Source-bearing and mutating tools remain excluded even when configured. Disable compression with `CHISLE_COMPRESS=0` or `CHISLE_DEFAULT_MODE=off`. Measured on gpt-5.5, a 30 KB `cat` output kept full by OpenCode dropped the tool-ingestion step from 13,382 to 1,747 fresh input tokens (-87%) with an identical, correct answer.
 
@@ -73,6 +75,6 @@ and `git clone` installs work without a build step.
 | Tool-result compression | ✅ | ✅ | ✅ (plugin) | ❌ |
 | `/chisle` on-demand skill | ✅ | ✅ | ✅ (skills) | ❌ (static ruleset only) |
 | `/chisle` + natural-language toggle | ✅ | ✅ | ❌ (env/config) | ❌ |
-| Status badge + measured savings | ✅ | ✅ | ❌ | ❌ |
+| Status badge + measured savings | ✅ | ✅ | ✅ (`--stats`) | ❌ |
 
 Pi's `tool_result` event enables the second input-axis implementation. It patches `content` only, preserving tool-specific `details`, `isError`, and `usage`. `read`, `edit`, and `write` remain excluded. Project-local Pi resources require project trust and extensions run with full user permissions; see [installation](../INSTALL.md#manual-pi-package).

@@ -14,7 +14,7 @@ Detects supported agents and installs Chisle for each:
 | Pi | package containing extension + skill | global |
 | Gemini CLI | Gemini extension | global |
 | Codex | fenced ruleset in `~/.codex/AGENTS.md` | global |
-| OpenCode | fenced ruleset in `~/.config/opencode/AGENTS.md` + skills in `~/.config/opencode/skills` + compression plugin in `~/.config/opencode/plugins` | global |
+| OpenCode | fenced ruleset + skills + compression plugin under the configured OpenCode root | global |
 | Hermes Agent | skills in `~/.hermes/skills` (Agent Skills standard, `/chisle` commands) | global |
 | Cursor / Windsurf / Cline / Kiro / Copilot | rule file in current project | project |
 
@@ -72,15 +72,16 @@ writes `.pi/settings.json` and loads only after Pi trusts that project.
 npx chisle --only opencode
 ```
 
-Writes the fenced Chisle ruleset into the global `~/.config/opencode/AGENTS.md`
+Writes the fenced Chisle ruleset into the global OpenCode config root
 (appended after your existing instructions, never replacing them) and copies the
-bundled skills into `~/.config/opencode/skills/` for on-demand loading through
-OpenCode's native `skill` tool. No `instructions` entry is added, so nothing
-loads twice. The ruleset is always on; `/chisle` loads the skill but does not
-toggle the global instructions.
+bundled skills into its `skills/` directory for on-demand loading through
+OpenCode's native `skill` tool. The root follows `OPENCODE_CONFIG_DIR`, then
+`$XDG_CONFIG_HOME/opencode`, then `~/.config/opencode`. No `instructions` entry
+is added, so nothing loads twice. The ruleset is always on; `/chisle` loads the
+skill but does not toggle the global instructions.
 
-It also installs the tool-output compression plugin into
-`~/.config/opencode/plugins/` (`chisle.js` plus its zero-dep compressor core in
+It also installs the tool-output compression plugin into that root's `plugins/`
+(`chisle.js` plus its zero-dep compressor core in
 `chisle-hooks/`, pinned to CommonJS so the config dir's `type: module` does not
 propagate into it). OpenCode loads it at startup. It hooks `tool.execute.after`
 (mutating `output.output`, which persists onto the stored tool part) and
@@ -128,7 +129,7 @@ Add `--only <id>` to update one agent. The native command is listed where the ag
 | Pi | `npx chisle@latest --update --only pi`<br>or `pi install npm:chisle` | Needs `pi` on `PATH`, or Chisle reports it as not installed. |
 | Gemini CLI | `npx chisle@latest --update --only gemini`<br>or `gemini extensions install https://github.com/JayPokale/Chisle` | Needs `gemini` on `PATH`. |
 | Codex | `npx chisle@latest --update --only codex` | Refreshes the fenced block in `~/.codex/AGENTS.md`, leaving your own instructions alone. |
-| OpenCode | `npx chisle@latest --update --only opencode` | Refreshes the ruleset, the skills, **and the compression plugin** in `~/.config/opencode/plugins/`. |
+| OpenCode | `npx chisle@latest --update --only opencode` | Refreshes the ruleset, skills, and compression plugin under the configured OpenCode root. |
 | Hermes Agent | `npx chisle@latest --update --only hermes` | Refreshes the skills in `~/.hermes/skills/`. |
 | Cursor | `npx chisle@latest --update --only cursor` | **Run inside the project.** |
 | Windsurf | `npx chisle@latest --update --only windsurf` | **Run inside the project.** |
@@ -148,7 +149,7 @@ From 2.x to 3.x, replace legacy `lite` / `full` / `ultra` config with `on` / `of
 
 Claude Code: start a session and run `/chisle off`, then `/chisle`.
 
-OpenCode: `~/.config/opencode/AGENTS.md` contains the fenced block and `/chisle` resolves as a skill. `~/.config/opencode/plugins/chisle.js` exists and oversized bash/grep/webfetch output is elided in transcripts.
+OpenCode: the configured root's `AGENTS.md` contains the fenced block and `/chisle` resolves as a skill. Its `plugins/chisle.js` exists and oversized bash/grep/webfetch output is elided in transcripts.
 
 Hermes: `~/.hermes/skills/chisle/SKILL.md` exists and `/chisle` loads the skill.
 

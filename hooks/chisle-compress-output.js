@@ -55,7 +55,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { getClaudeDir, getCopilotDir, getOpencodeDir, readFlag } = require('./chisle-config');
+const { getClaudeDir, getCopilotDir, getOpencodeStateDir, readFlag } = require('./chisle-config');
 
 // One threshold. Env overrides all.
 // These are the values the old 'full' level used — the default,
@@ -214,7 +214,7 @@ function compressForOpencode(toolName, text, opts) {
   if (process.env.CHISLE_COMPRESS === '0') return null;
   if (!opencodeToolAllowed(toolName)) return null;
   if (typeof text !== 'string' || !text) return null;
-  const stateDir = opts.stateDir || process.env.CHISLE_STATE_DIR || getOpencodeDir();
+  const stateDir = opts.stateDir || getOpencodeStateDir();
   const limits = limitsFor();
   const dup = dedupCheck(toolName, text, opts.sessionId, opts.callId, stateDir, true);
   if (dup != null && dup.length < text.length) return boundForOpencode(dup, null, limits.maxChars);
@@ -327,6 +327,66 @@ function duplicateMarker(toolName, text, reference = 'previous') {
 const DEDUP_SESSION_KEEP = 20;
 const DEDUP_DIR = 'chisle-dedup';
 
+function secureDirectory(dir) {
+  try {
+    fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
+    const st = fs.lstatSync(dir);
+    return st.isDirectory() && !st.isSymbolicLink();
+  } catch (e) { return false; }
+}
+
+function safeReadText(p) {
+  let st;
+  try { st = fs.lstatSync(p); }
+  catch (e) { return { text: null, unsafe: e.code !== 'ENOENT' }; }
+  if (st.isSymbolicLink() || !st.isFile()) return { text: null, unsafe: true };
+  const noFollow = typeof fs.constants.O_NOFOLLOW === 'number' ? fs.constants.O_NOFOLLOW : 0;
+  let fd;
+  try {
+    fd = fs.openSync(p, fs.constants.O_RDONLY | noFollow);
+    return { text: fs.readFileSync(fd, 'utf8'), unsafe: false };
+  } catch (e) {
+    return { text: null, unsafe: true };
+  } finally {
+    if (fd !== undefined) { try { fs.closeSync(fd); } catch (e) {} }
+  }
+}
+
+function safeAtomicWrite(p, content) {
+  const dir = path.dirname(p);
+  if (!secureDirectory(dir)) return false;
+  try {
+    const st = fs.lstatSync(p);
+    if (st.isSymbolicLink() || !st.isFile()) return false;
+  } catch (e) {
+    if (e.code !== 'ENOENT') return false;
+  }
+  const tmp = p + '.' + process.pid + '.' + crypto.randomBytes(6).toString('hex') + '.tmp';
+  const noFollow = typeof fs.constants.O_NOFOLLOW === 'number' ? fs.constants.O_NOFOLLOW : 0;
+  const flags = fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | noFollow;
+  let fd;
+  try {
+    fd = fs.openSync(tmp, flags, 0o600);
+    fs.writeFileSync(fd, content);
+    try { fs.fchmodSync(fd, 0o600); } catch (e) {}
+    fs.closeSync(fd);
+    fd = undefined;
+    try {
+      const st = fs.lstatSync(p);
+      if (st.isSymbolicLink() || !st.isFile()) return false;
+    } catch (e) {
+      if (e.code !== 'ENOENT') return false;
+    }
+    fs.renameSync(tmp, p);
+    return true;
+  } catch (e) {
+    return false;
+  } finally {
+    if (fd !== undefined) { try { fs.closeSync(fd); } catch (e) {} }
+    try { fs.unlinkSync(tmp); } catch (e) {}
+  }
+}
+
 function readDedupFile(p) {
   let st;
   try { st = fs.lstatSync(p); }
@@ -349,30 +409,11 @@ function readDedupFile(p) {
 
 function dedupStateDir(stateDir) {
   const dir = path.join(stateDir || getClaudeDir(), DEDUP_DIR);
-  try { fs.mkdirSync(dir, { recursive: true, mode: 0o700 }); } catch (e) { return null; }
-  try {
-    const st = fs.lstatSync(dir);
-    return st.isDirectory() && !st.isSymbolicLink() ? dir : null;
-  } catch (e) { return null; }
+  return secureDirectory(dir) ? dir : null;
 }
 
 function writeDedupState(p, state) {
-  const tmp = p + '.' + process.pid + '.' + crypto.randomBytes(6).toString('hex') + '.tmp';
-  const noFollow = typeof fs.constants.O_NOFOLLOW === 'number' ? fs.constants.O_NOFOLLOW : 0;
-  const flags = fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | noFollow;
-  let fd;
-  try {
-    fd = fs.openSync(tmp, flags, 0o600);
-    fs.writeFileSync(fd, JSON.stringify(state));
-    try { fs.fchmodSync(fd, 0o600); } catch (e) {}
-    fs.closeSync(fd);
-    fd = undefined;
-    fs.renameSync(tmp, p);
-  } catch (e) {
-    if (fd !== undefined) { try { fs.closeSync(fd); } catch (closeError) {} }
-    try { fs.unlinkSync(tmp); } catch (unlinkError) {}
-    throw e;
-  }
+  if (!safeAtomicWrite(p, JSON.stringify(state))) throw new Error('unsafe dedup state path');
 }
 
 function pruneDedupSessions(dir) {
@@ -394,7 +435,7 @@ function pruneDedupSessions(dir) {
 
 // `stateDir` defaults to getClaudeDir() so existing Claude/Pi callers keep
 // their prior storage path. Copilot passes getCopilotDir(); OpenCode passes
-// getOpencodeDir() and opts into per-session files for interleaved sessions.
+// getOpencodeStateDir() and opts into per-session files for interleaved sessions.
 function dedupCheck(toolName, text, sessionId, toolUseId, stateDir, perSession) {
   if (process.env.CHISLE_COMPRESS_DEDUP === '0') return null;
   if (!sessionId || typeof sessionId !== 'string') return null;
@@ -466,7 +507,12 @@ function pruneSpill(dir) {
   try {
     const files = fs.readdirSync(dir)
       .filter(f => f.endsWith('.txt'))
-      .map(f => { const p = path.join(dir, f); return { p, t: fs.statSync(p).mtimeMs }; })
+      .map(f => {
+        const p = path.join(dir, f);
+        const st = fs.lstatSync(p);
+        return st.isFile() && !st.isSymbolicLink() ? { p, t: st.mtimeMs } : null;
+      })
+      .filter(Boolean)
       .sort((a, b) => b.t - a.t);
     for (const f of files.slice(SPILL_KEEP)) { try { fs.unlinkSync(f.p); } catch (e) {} }
   } catch (e) {}
@@ -476,11 +522,13 @@ function spill(text, toolName, stateDir) {
   if (process.env.CHISLE_COMPRESS_SPILL === '0') return null;
   try {
     const dir = spillDir(stateDir);
-    fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
+    if (!secureDirectory(dir)) return null;
     const hash = crypto.createHash('sha256').update(text).digest('hex').slice(0, 12);
     const safeTool = String(toolName || 'tool').replace(/[^A-Za-z0-9_-]/g, '') || 'tool';
     const file = path.join(dir, `${safeTool}-${hash}.txt`);
-    if (!fs.existsSync(file)) fs.writeFileSync(file, text, { mode: 0o600 });
+    const existing = safeReadText(file);
+    if (existing.unsafe || (existing.text != null && existing.text !== text)) return null;
+    if (existing.text == null && !safeAtomicWrite(file, text)) return null;
     pruneSpill(dir);
     return file;
   } catch (e) { return null; }
@@ -526,19 +574,18 @@ function compress(text, limits, spillPath) {
 function recordSavings(saved, stateDir) {
   try {
     const dir = stateDir || getClaudeDir();
+    if (!secureDirectory(dir)) return;
     const p = path.join(dir, '.chisle-compress-stats.json');
-    try { if (fs.lstatSync(p).isSymbolicLink()) return; } catch (e) { if (e.code !== 'ENOENT') return; }
+    const current = safeReadText(p);
+    if (current.unsafe) return;
     let stats = { savedChars: 0, events: 0 };
     try {
-      const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+      const parsed = JSON.parse(current.text);
       if (parsed && Number.isFinite(parsed.savedChars) && Number.isFinite(parsed.events)) stats = parsed;
     } catch (e) {}
     stats.savedChars += saved;
     stats.events += 1;
-    fs.mkdirSync(dir, { recursive: true });
-    const tmp = p + '.' + process.pid + '.tmp';
-    fs.writeFileSync(tmp, JSON.stringify(stats), { mode: 0o600 });
-    fs.renameSync(tmp, p);
+    safeAtomicWrite(p, JSON.stringify(stats));
   } catch (e) {}
 }
 
