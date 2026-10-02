@@ -7,7 +7,8 @@
 # holding only credentials, so the only variable is the arm.
 #
 # Measures real usage.output_tokens + visible answer size per (arm, task).
-# Resumable: skips a cell whose raw JSON already exists.
+# Resumable: skips a cell whose raw JSON already exists. A failed or killed call
+# leaves no JSON, so the next run retries it.
 #
 # Usage: bash benchmarks/run-live.sh [model] [raw-dir]
 #        HARNESS=pi bash benchmarks/run-live.sh [model] [raw-dir]
@@ -99,6 +100,9 @@ fi
 run_cell() {
   local arm="$1" task_id="$2" prompt="$3"
   local out="$RAW/${task_id}__${arm}.json"
+  # Write to a temp file and rename only on success, so a failed or killed call
+  # never leaves an empty/partial $out that the check below treats as cached.
+  local tmp="$out.part"
   [ -f "$out" ] && { echo "  skip $task_id/$arm (cached)"; return; }
   echo "  run  $task_id/$arm"
 
@@ -108,14 +112,16 @@ run_cell() {
     [ "$arm" != "vanilla" ] && args+=(--append-system-prompt "$ISO/${arm}.txt")
     args+=(-- "$prompt")
     ( cd /tmp && run_timed env HOME=/tmp PI_CODING_AGENT_DIR="$ISO" PI_OFFLINE=1 pi "${args[@]}" </dev/null ) > "$events" 2>/dev/null \
-      && node "$HERE/normalize-pi.js" "$events" > "$out" \
-      || echo "    (call failed for $task_id/$arm)"
+      && node "$HERE/normalize-pi.js" "$events" > "$tmp" \
+      && mv -f "$tmp" "$out" \
+      || { rm -f "$tmp"; echo "    (call failed for $task_id/$arm)"; }
   else
     local args=(-p "$prompt" --model "$MODEL" --output-format json)
     [ "$arm" != "vanilla" ] && args+=(--append-system-prompt-file "$ISO/${arm}.txt")
     # </dev/null is critical: otherwise the CLI consumes the task heredoc.
-    ( cd /tmp && run_timed env HOME=/tmp CLAUDE_CONFIG_DIR="$ISO" claude "${args[@]}" </dev/null ) > "$out" 2>/dev/null \
-      || echo "    (call failed for $task_id/$arm)"
+    ( cd /tmp && run_timed env HOME=/tmp CLAUDE_CONFIG_DIR="$ISO" claude "${args[@]}" </dev/null ) > "$tmp" 2>/dev/null \
+      && mv -f "$tmp" "$out" \
+      || { rm -f "$tmp"; echo "    (call failed for $task_id/$arm)"; }
   fi
 }
 
