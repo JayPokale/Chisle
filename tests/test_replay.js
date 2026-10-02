@@ -51,12 +51,14 @@ test('Pi replay reads toolResult messages and reports marginal post-truncation s
   assert.match(result, /replay \(pi\)/);
   assert.match(result, /marginal savings/);
   assert.match(result, /tool_results scanned:\s+2/);
-  assert.match(result, /per-tool breakdown:/);
+  assert.match(result, /per-tool breakdown \(incl\. dedup\):/);
   assert.match(result, /bash\s+\d+ outputs\s+[\d,]+ → [\d,]+ chars\s+saved [\d,]+ chars/);
   assert.doesNotMatch(
-    result.match(/per-tool breakdown:\n([\s\S]*?)(?:\noutputs with error lines salvaged|$)/)?.[1] || '',
+    result.match(/per-tool breakdown \(incl\. dedup\):\n([\s\S]*?)(?:\n\nbig outputs NOT touched|$)/)?.[1] || '',
     /read/
   );
+  assert.match(result, /read\s+[\d,]+ chars/);
+  assert.doesNotMatch(result, /saved:\s+0 chars/);
 
   fs.rmSync(dir, { recursive: true, force: true });
 });
@@ -113,7 +115,7 @@ test('Claude replay reports per-tool compression savings', () => {
     { encoding: 'utf8' }
   );
 
-  assert.match(out, /per-tool breakdown:/);
+  assert.match(out, /per-tool breakdown \(incl\. dedup\):/);
   assert.match(out, /Bash\s+\d+ outputs\s+[\d,]+ → [\d,]+ chars\s+saved [\d,]+ chars/);
   assert.match(out, /Grep\s+\d+ outputs\s+[\d,]+ → [\d,]+ chars\s+saved [\d,]+ chars/);
 
