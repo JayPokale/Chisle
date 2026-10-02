@@ -5,6 +5,15 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [3.6.1] - 2026-10-02
+
+### Changed
+- **OpenCode no longer compresses MCP tools unless you allowlist them.** It used to guess that a `server_tool` name was a read-only MCP tool. That name shows nothing about safety, so MCP tools now need `CHISLE_COMPRESS_TOOLS`. Tools that return source or change files (`read`, `edit`, `write`, `patch`, `apply_patch`, `multiedit`, notebook tools) are never compressed, even when that variable lists them. (#19, [@lextiz](https://github.com/lextiz))
+
+### Fixed
+- **OpenCode output now stays within `CHISLE_COMPRESS_MAX_CHARS`.** The final bound covers duplicate markers and short inputs, and an output that already carries a Chisle marker but is still over the limit is compressed again. Each elided output saves the full original to a spill file. Repeat-output detection is tracked per session, so concurrent sessions no longer overwrite each other's state. Saved characters are counted in the stats file. `--uninstall` removes the new `chisle-dedup` state. (#19)
+- **Long error lines keep the part that matched.** A salvaged diagnostic line over the length cap is now windowed around the match instead of cut from the start. Every cut also avoids splitting a surrogate pair, so emoji and other non-BMP characters can't become broken text. This shared core runs for Claude Code, Pi and Copilot too; a 411-line ASCII build log replays byte-identical. ([receipt](benchmarks/results/2026-10-01-opencode-hardening.md))
+
 ## [3.6.0] - 2026-10-01
 
 ### Changed
