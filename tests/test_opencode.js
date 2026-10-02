@@ -613,7 +613,10 @@ test('installed plugin still compresses when the config dir is type:module', asy
     const cli = path.join(__dirname, '..', 'bin', 'install.js');
     const r = spawnSync(process.execPath, [cli, '--only', 'opencode'], {
       encoding: 'utf8',
-      env: Object.assign({}, process.env, { HOME: home, USERPROFILE: home }),
+      env: Object.assign({}, process.env, {
+        HOME: home, USERPROFILE: home, CHISLE_HOME: home,
+        XDG_CONFIG_HOME: '', OPENCODE_CONFIG_DIR: '',
+      }),
     });
     assert.equal(r.status, 0, r.stderr);
 

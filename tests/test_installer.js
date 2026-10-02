@@ -363,7 +363,7 @@ test('--help and --list advertise opencode + hermes', () => {
 
 test('opencode install appends fenced ruleset, preserves user content, copies skills', () => {
   const home = mkHome();
-  const env = { CHISLE_HOME: home };
+  const env = isolatedOpencodeEnv(home);
   const agents = path.join(home, '.config', 'opencode', 'AGENTS.md');
   const skills = path.join(home, '.config', 'opencode', 'skills');
   fs.mkdirSync(path.dirname(agents), { recursive: true });
@@ -498,7 +498,7 @@ test('hermes install copies skills verbatim, uninstall prunes only owned', () =>
 
 test('opencode+hermes dry-run changes nothing on disk', () => {
   const home = mkHome();
-  const env = { CHISLE_HOME: home };
+  const env = isolatedOpencodeEnv(home);
   runCLI(['--only', 'opencode', '--only', 'hermes', '--dry-run'], { env });
   assert.deepEqual(fs.readdirSync(home), [], 'dry-run wrote into CHISLE_HOME');
   fs.rmSync(home, { recursive: true, force: true });
@@ -510,7 +510,7 @@ test('a fence missing its end marker is left alone, not truncated', () => {
   // uninstall must refuse. Slicing to the end marker unconditionally would eat
   // the rest of the user's global instructions.
   const home = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-fence-'));
-  const env = { CHISLE_HOME: home };
+  const env = isolatedOpencodeEnv(home);
   const body = 'my rules\n\n<!-- chisle-begin -->\nstale\n\nKEEP THIS\n';
 
   for (const [id, rel] of [['codex', ['.codex', 'AGENTS.md']], ['opencode', ['.config', 'opencode', 'AGENTS.md']]]) {
