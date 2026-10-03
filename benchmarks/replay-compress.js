@@ -66,8 +66,6 @@ function account(name, text, lastHash, allowDedup, failed) {
     return;
   }
 
-  const t = byTool[name] ??= { outputs: 0, before: 0, after: 0 };
-
   if (allowDedup && process.env.CHISLE_COMPRESS_DEDUP !== '0' && size >= 2048) {
     const hash = crypto.createHash('sha256').update(text).digest('hex');
     if (lastHash[name] === hash) {
@@ -75,6 +73,7 @@ function account(name, text, lastHash, allowDedup, failed) {
       totals.dedup++;
       totals.dedupChars += size - marker.length;
 
+      const t = byTool[name] ??= { outputs: 0, before: 0, after: 0 };
       t.outputs++;
       t.before += size;
       t.after += marker.length;
@@ -90,6 +89,7 @@ function account(name, text, lastHash, allowDedup, failed) {
   totals.before += size;
   totals.after += output.length;
 
+  const t = byTool[name] ??= { outputs: 0, before: 0, after: 0 };
   t.outputs++;
   t.before += size;
   t.after += output.length;
