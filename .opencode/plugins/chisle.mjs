@@ -1,7 +1,7 @@
 // chisle — OpenCode plugin: tool-output compression (the input axis).
 //
-// Prompt-side rules (the fenced ruleset the installer writes into
-// ~/.config/opencode/AGENTS.md) shrink what the model WRITES. This plugin
+// Prompt-side rules (the fenced ruleset the installer writes into the global
+// OpenCode config root's AGENTS.md) shrink what the model WRITES. This plugin
 // shrinks what it READS: oversized tool results (bash dumps, subagent reports,
 // web fetches, MCP payloads) get their repetitive middle elided — head kept,
 // tail kept, error lines salvaged — before the model sees them. Deterministic,
@@ -16,7 +16,7 @@
 // before this plugin was installed). Neither needs a schema rebuild.
 //
 // Load it by installing via `npx chisle --only opencode`, which drops this file
-// and the shared compressor core into ~/.config/opencode/plugins/. OpenCode
+// and the shared compressor core into the configured OpenCode plugins dir. OpenCode
 // loads every file in that dir at startup.
 //
 // Tunables (shared with the Claude/Pi/Copilot compressor, see chisle-config):
@@ -54,7 +54,7 @@ const config = loadFrom([
 const compressForOpencode = core && core.compressForOpencode;
 const recordSavings = core && core.recordSavings;
 const getDefaultMode = config.getDefaultMode || (() => 'on');
-const getOpencodeDir = config.getOpencodeDir || (() => path.dirname(__dirname));
+const getOpencodeStateDir = config.getOpencodeStateDir || config.getOpencodeDir || (() => path.dirname(__dirname));
 
 // Already compressed: our elision marker. Skip such text so a second pass
 // (messages.transform after tool.execute.after already ran) never nests a
@@ -89,8 +89,7 @@ export default async () => {
         if (updated != null && updated.length < original.length) {
           output.output = updated;
           if (recordSavings) {
-            recordSavings(original.length - updated.length,
-              process.env.CHISLE_STATE_DIR || getOpencodeDir());
+            recordSavings(original.length - updated.length, getOpencodeStateDir());
           }
         }
       } catch (e) { /* keep the original output */ }
