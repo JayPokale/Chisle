@@ -27,7 +27,9 @@ const RERUN_RAW_DIRS = [
   path.join(ROOT, 'benchmarks', 'results', 'raw-oct', 'large-s1'),
   path.join(ROOT, 'benchmarks', 'results', 'raw-oct', 'large-s2'),
 ];
+const PI_RAW_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw-pi');
 const SVG_OUT = path.join(ROOT, 'assets', 'benchmark.svg');
+const PI_SVG_OUT = path.join(ROOT, 'assets', 'benchmark-pi.svg');
 const RERUN_SVG_OUT = path.join(ROOT, 'assets', 'benchmark-rerun.svg');
 const TASK_SVG_OUT = path.join(ROOT, 'assets', 'per-task.svg');
 const SIZE_SVG_OUT = path.join(ROOT, 'assets', 'by-size.svg');
@@ -35,7 +37,7 @@ const KIND_SVG_OUT = path.join(ROOT, 'assets', 'by-kind.svg');
 // Per-task chart uses the June suite alone: it is the one run where all four
 // arms answered the same six prompts, so the bars are directly comparable.
 const TASK_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw');
-const { KIND } = require('../benchmarks/aggregate');
+const { KIND, estTok } = require('../benchmarks/aggregate');
 // Short labels for the per-task chart; kinds themselves come from KIND.
 const KIND_LABEL = { coding: 'code', noncoding: 'prose' };
 
@@ -172,6 +174,75 @@ function buildSvg(stat, taskCount) {
 <text x="${W / 2}" y="34" font-size="17" font-weight="700" fill="#c9d1d9" text-anchor="middle">The ${taskCount}-task bill — % of a bare model (lower = cheaper)</text>
 <text x="${W / 2}" y="54" font-size="11.5" fill="#8b949e" text-anchor="middle">total billed output vs using no tool at all (Haiku + Sonnet, two suites; code, prose &amp; judgment prompts)</text>
 ${body}${fixNote}</svg>
+`;
+}
+
+// Pi run (raw-pi/): each arm's visible answer and billed output, summed over
+// the tasks where both it and vanilla answered, as % of vanilla. Both bars,
+// because the two disagree: Chisle has the shortest answers, ponytail the
+// smallest bill.
+function collectPi() {
+  const cells = {};
+  let files = [];
+  try { files = fs.readdirSync(PI_RAW_DIR); } catch (_) {}
+  for (const f of files) {
+    const m = f.match(/^(.+)__([a-z]+)\.json$/);
+    if (!m) continue;
+    let d;
+    try { d = JSON.parse(fs.readFileSync(path.join(PI_RAW_DIR, f), 'utf8')); } catch (_) { continue; }
+    if (!d || d.is_error || !d.usage) continue;
+    (cells[m[1]] ||= {})[m[2]] = { ans: estTok(d.result), out: d.usage.output_tokens };
+  }
+  const stat = {};
+  for (const a of ARMS) {
+    const sum = { ans: 0, out: 0, baseAns: 0, baseOut: 0, n: 0 };
+    for (const c of Object.values(cells)) {
+      if (!c.vanilla || !c[a.key]) continue;
+      sum.ans += c[a.key].ans; sum.out += c[a.key].out;
+      sum.baseAns += c.vanilla.ans; sum.baseOut += c.vanilla.out; sum.n++;
+    }
+    stat[a.key] = {
+      ans: sum.baseAns ? Math.round(100 * sum.ans / sum.baseAns) : 0,
+      out: sum.baseOut ? Math.round(100 * sum.out / sum.baseOut) : 0,
+      n: sum.n,
+    };
+  }
+  return stat;
+}
+
+function buildPiSvg(stat) {
+  const W = 860, H = 316;
+  const left = 150, top = 92, rowH = 72, plotW = 620;
+  const px = plotW / 120;
+  const line100 = left + 100 * px;
+  const n = stat[SELF].n;
+
+  let body =
+    `<line x1="${line100}" y1="${top - 14}" x2="${line100}" y2="${top + ARMS.length * rowH - 10}" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4 3"/>` +
+    `<text x="${line100}" y="${top - 20}" font-size="11" fill="#8b949e" text-anchor="middle">100% = no ruleset</text>`;
+
+  ARMS.forEach((a, i) => {
+    const s = stat[a.key];
+    const y = top + i * rowH;
+    const bold = a.key === SELF ? ' font-weight="700"' : '';
+    const wa = Math.max(2, s.ans * px), wo = Math.max(2, s.out * px);
+    body +=
+      `<text x="${left - 12}" y="${y + 27}" font-size="14" fill="#c9d1d9" text-anchor="end"${bold}>${a.label}</text>` +
+      `<rect x="${left}" y="${y + 2}" width="${wa}" height="24" rx="4" fill="${a.color}"/>` +
+      `<text x="${left + wa + 9}" y="${y + 19}" font-size="13" fill="#c9d1d9"${bold}>${s.ans}% answer length</text>` +
+      `<rect x="${left}" y="${y + 30}" width="${wo}" height="14" rx="3" fill="${a.color}" opacity="0.4"/>` +
+      `<text x="${left + wo + 9}" y="${y + 42}" font-size="11.5" fill="#8b949e">${s.out}% billed tokens</text>`;
+  });
+
+  const aria =
+    `Pi benchmark, ${n} tasks on GPT-5.5, as percent of no ruleset. ` +
+    ARMS.map(a => `${a.label}: answer length ${stat[a.key].ans}%, billed tokens ${stat[a.key].out}%`).join('; ') + '.';
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}">
+<rect width="${W}" height="${H}" rx="10" fill="#0d1117"/>
+<text x="${W / 2}" y="34" font-size="17" font-weight="700" fill="#c9d1d9" text-anchor="middle">Pi + GPT-5.5 — % of the same model with no ruleset</text>
+<text x="${W / 2}" y="54" font-size="11.5" fill="#8b949e" text-anchor="middle">${n} tasks, one run; solid = answer length the user reads, faint = billed tokens; lower = leaner</text>
+${body}</svg>
 `;
 }
 
@@ -415,6 +486,7 @@ ${body}${legend}</svg>
 function main() {
   const { stat, taskCount } = collect();
   const rerunStat = collectRerun();
+  const piStat = collectPi();
   const taskRows = collectPerTask();
   const sizeRows = collectAllCells();
   if (process.argv.includes('--json')) { console.log(JSON.stringify({ stat, taskCount, taskRows, sizeRows }, null, 2)); return; }
@@ -422,6 +494,7 @@ function main() {
   const outputs = [
     [SVG_OUT, buildSvg(stat, taskCount)],
     [RERUN_SVG_OUT, buildRerunSvg(rerunStat.stat, rerunStat.taskCount)],
+    [PI_SVG_OUT, buildPiSvg(piStat)],
     [TASK_SVG_OUT, buildTaskSvg(taskRows)],
     [SIZE_SVG_OUT, buildSizeSvg(sizeRows)],
     [KIND_SVG_OUT, buildKindSvg(sizeRows)],

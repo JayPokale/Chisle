@@ -22,12 +22,16 @@
 </p>
 
 <p align="center">
-  <strong>83% of a bare model's output, where caveman and ponytail land above 100% &middot; 11 agents &middot; zero dependencies &middot; one command</strong>
+  <strong>On Pi + GPT-5.5, answers 37% the length of the same model with no ruleset (caveman 56%, ponytail 49%) &middot; 11 agents &middot; zero dependencies &middot; one command</strong>
 </p>
 
+Chisle is a ruleset and hook pack that makes AI coding agents cheaper to run. It cuts what the model writes (no filler, no hedging, no speculative abstractions: the smallest code that works) and what it reads (oversized tool output is trimmed before it re-enters the context window). One `npx chisle` wires it into Claude Code, Pi, Cursor, Codex, Gemini, Copilot, OpenCode and four more agents. Every number below comes from committed raw transcripts, including the runs where it lost.
+
 <p align="center">
-  <a href="https://chisle.jaypokale.me"><strong>chisle.jaypokale.me</strong></a> is the site version of this README, with fewer words
+  <img src="assets/benchmark-pi.svg" width="820" alt="Pi benchmark, 6 tasks on GPT-5.5, as percent of the same model with no ruleset. Answer length: caveman 56%, ponytail 49%, Chisle 37%. Billed tokens: caveman 72%, ponytail 59%, Chisle 61%.">
 </p>
+
+<p align="center"><sub>Pi 0.85.1 + GPT-5.5, 6 tasks, one run. Answer length is what you read; on total billed tokens ponytail is leanest (59% vs 61%). On the larger 26-cell Claude Code run Chisle is the only one under 100%: <a href="#benchmarks">see below</a>.</sub></p>
 
 ---
 
@@ -73,7 +77,7 @@ Then two lines on why it works, and *"use `lodash.debounce` if already installed
 
 Not golfed, **boring**. Same behaviour, one less abstraction, no second file, and it names the dependency you might already have instead of reinventing it.
 
-Most efficiency tools compress one thing. Chisle compresses **three**:
+## What it compresses
 
 | axis | what | how |
 |---|---|---|
@@ -112,12 +116,6 @@ flowchart LR
 
 The loop on the right is the input axis: tool output is billed again on *every* later request in the session, so shrinking it once pays repeatedly. `Read`, `Edit`, and `Write` are deliberately outside it.
 
-<p align="center">
-  <img src="assets/thumbnail.png" width="820" alt="Chisle: less tokens, same results. Four parts: output compressor (compress noisy tool outputs), context diet (read only what's actually relevant), terse persona (short, focused, YAGNI-first), YAGNI ladder (do less, reuse more, build only when needed).">
-</p>
-
-Every "be concise" tool has a worst day, the day it makes the model write *more* than no tool at all. Across 20 measured tasks over two suites, the specialists had that day **6** and **8** times, blowing up to **424%** of the baseline. Chisle had it **once**, capped at 173%, and that one failure was root-caused, fixed in the ruleset, and re-validated live at 93%, with the whole investigation [committed to the repo](benchmarks/results/2026-07-07-verify-rerun.md). Think of it as downside insurance for your token bill: not always the single cheapest answer, always the smallest worst case, from the only tool in this class that publishes its own failures. [Why not caveman or ponytail? →](docs/comparison.md)
-
 ---
 
 ## Install
@@ -140,103 +138,13 @@ irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
 
 Preview first with `npx chisle --dry-run`, scope with `--only claude` or `--only pi`, see everything with `npx chisle --help`. Remove with `npx chisle --uninstall`.
 
-**Requirements:** Node ≥18 (installer / `npx`) · Claude Code or Pi for `/chisle` toggling and input-side compression. The always-on ruleset still ships to every other agent.
-
-### Upgrading
-
-```bash
-npx chisle@latest --update
-```
-
-That refreshes every agent that already has Chisle and installs it into none that don't. Two details it exists to handle:
-
-- **Plain `npx chisle` does not upgrade.** Every install path skips what is already present, so an upgrade run reports success and changes nothing. `--update` pairs the refresh with that check.
-- **`@latest` matters.** `npx chisle` can serve a cached copy of the package from a previous run, so the pin is what guarantees you get the new one.
-
-Update one agent at a time with `--only`:
-
-```bash
-npx chisle@latest --update --only claude     # or: claude plugin update chisle@chisle
-npx chisle@latest --update --only pi         # or: pi install npm:chisle
-npx chisle@latest --update --only gemini     # or: gemini extensions install https://github.com/JayPokale/Chisle
-npx chisle@latest --update --only codex
-npx chisle@latest --update --only opencode   # ruleset + skills + the compression plugin
-npx chisle@latest --update --only hermes
-```
-
-Cursor, Windsurf, Cline, Kiro and Copilot keep their rule file **inside the repo**, because that is how those agents load rules:
-
-```bash
-cd ~/code/my-project
-npx chisle@latest --update --only cursor
-```
-
-`--update` looks for that file in the current directory, so running it from `~` reports "Nothing to update" even when the project is set up correctly. Run it once per repo that has one. Full table, including what each agent's update actually refreshes: [INSTALL.md](./INSTALL.md#per-agent).
-
-Not sure what you are running? `npx chisle --list` prints the agents it detects, and `claude plugin list` shows the installed plugin and its version.
-
-Chisle checks npm on session start and mentions it once when a **major** version is out (cached 3 days, `CHISLE_UPDATE_CHECK=0` to silence). Minor and patch releases stay quiet on purpose.
-
-Upgrading to 3.0.0 from 2.x needs nothing: a `lite`/`full`/`ultra` value in `CHISLE_DEFAULT_MODE` or `config.json` is no longer meaningful, falls through to the default, and Chisle stays active. It says so once so the setting is not ignored silently. Replace it with `on`/`off` or delete it.
-
-### Claude Code plugin (marketplace)
-
-```bash
-claude plugin marketplace add JayPokale/Chisle   # register the marketplace
-claude plugin install chisle@chisle              # enable the plugin
-```
-
-### Pi package
-
-```bash
-pi install npm:chisle
-```
-
-The package loads the zero-dependency extension and `chisle` skill globally. Pi extensions run with your user permissions; review the source before installation. Project-local installs (`pi install -l npm:chisle`) load only after you trust that project.
-
-### Where the savings show up
-
-Two places, both measured rather than estimated:
-
-```bash
-npx chisle --stats      # what the compressor has saved, cumulative
-```
-
-```text
-chisle: tool-output savings
-
-  saved:      88,967 chars  (~22,241 tokens)
-  outputs:    18 compressed, 4,943 chars each on average
-```
-
-In Claude Code the statusline badge carries the same number live: `[CHISLE] ⇣22k tok`. Pi shows it in the footer for the current session.
-
-This is the **input axis only**, and deliberately so. Chars elided have a real baseline, since the hook knows exactly what it cut. The output axis has none: there is no way to know what the model would have written without the ruleset, which is why that half is measured with A/B benchmark arms instead of a counter. A number that blended the two would be inventing the interesting half.
-
-### See what it would do, before it does it
-
-```bash
-npx chisle --dry-run    # prints every file it would touch, changes nothing
-npx chisle --stats      # prints what it has saved, changes nothing
-```
-
-Want the savings measured on your own work rather than ours? Clone the repo and replay the compressor over local transcripts. It reads them locally, writes nothing, and reports the input the hook would have stripped:
-
-```bash
-git clone https://github.com/JayPokale/Chisle && cd Chisle
-node benchmarks/replay-compress.js       # Claude Code
-node benchmarks/replay-compress.js pi    # Pi; marginal over Pi's native truncation
-```
+Upgrading, per-agent setup, `--stats` and config: [docs/usage.md](docs/usage.md).
 
 ---
 
-## Numbers
+## Benchmarks
 
-Nothing here is estimated. Every figure below is recomputed from committed raw data; the 2026-07-07 [verification writeup](benchmarks/results/2026-07-07-verify-rerun.md) re-derived the old claims from scratch, re-ran the whole suite against the competitors' **installed plugins**, and retired the one claim that didn't survive.
-
-### Output axis, re-measured 2026-10-01 (current)
-
-Re-run with the shipped ruleset, Claude Code 2.1.285 and the rivals' current plugins (caveman `ef6050c5e184`, ponytail 4.8.3): 13 live prompts × 2 seeds = 26 cells per arm on Haiku 4.5, billed output tokens vs the no-tool baseline ([writeup + raw cells](benchmarks/results/2026-10-01-live-rerun.md)):
+Claude Code 2.1.285 on Haiku 4.5, 13 live prompts × 2 seeds = 26 cells per arm, billed output tokens vs the same model with no ruleset ([writeup + raw cells](benchmarks/results/2026-10-01-live-rerun.md)):
 
 <p align="center">
   <img src="assets/benchmark-rerun.svg" width="820" alt="2026-10-01 live rerun: total billed output as percent of the bare model. caveman 102%, ponytail 105%, Chisle 83%.">
@@ -248,99 +156,9 @@ Re-run with the shipped ruleset, Claude Code 2.1.285 and the rivals' current plu
 | ponytail | 105% | 86–129% | 97% | 493% | 16 / 26 |
 | **Chisle** | **83%** | **69–95%** | **76%** | **170%** | **11 / 26** |
 
-Chisle is the only arm measurably below a bare model, by about a third of what the June table below claimed. It pays on long answers (77%) and coding prompts (76%); on short answers it breaks even (106%), on explanation prompts ponytail is leaner (86% vs 91%), and reasoning tokens are not cut (107%). Single cells swing hard between seeds (57% → 135% on one prompt), and the bare model "backfires" against itself on 13 of 26 cells, so read totals, not backfire counts ([control](benchmarks/results/2026-10-01-backfires.md)).
+Chisle is the only arm below a bare model. It pays on long answers (77%) and coding prompts (76%); on short answers it breaks even (106%).
 
-**Why the June headline was retired.** Its 52% leaned on one cell: the June bare `cache` answer billed 4,910 tokens, while every later run of the same prompt billed 375–813. The ruleset also carried examples matching `cache` (from June 18) and `auth-bug` (from June 27), so four cells may have been primed; without them the June total was 70%. The tables below stay as what they were.
-
-### Output axis, June–July 2026 (superseded): vs caveman & ponytail, 20 live tasks
-
-**What this suite measures, and what it does not.** Every figure below is *billed output tokens on single-turn prompts with no tools available*. That isolates the ruleset's effect on how the model writes, which is what it was built to measure. It is not whole-session cost: a real agentic session is dominated by tool output and cached input, so a tool can win here and still fail to pay for itself end to end. The input axis below is measured separately, and against its own baseline.
-
-**59+ live model runs** across two suites (June 4-arm matrix on Haiku + Sonnet sweep; July re-verification run). Arms differ only in the injected system prompt. Billed output tokens vs the no-tool baseline:
-
-| | total bill (all 20 tasks) | average task | worst case | backfires |
-|---|--:|--:|--:|--:|
-| caveman | 80% | 98% | **424%** | 6 / 20 |
-| ponytail | 68% | 91% | 227% | 8 / 20 |
-| **Chisle** | **52%** | **69%** | **173%** | **1 / 20** |
-
-Chisle wins all four columns: it cut the total 20-task bill **nearly in half** while the specialists managed 20–32%, and it did so with the smallest worst day and a twentieth the backfire rate.
-
-<p align="center">
-  <img src="assets/benchmark.svg" width="820" alt="Total billed output across 20 tasks as percent of the no-tool baseline. caveman 80% (worst day 424%, backfired 6), ponytail 68% (worst day 227%, backfired 8), Chisle 52% (worst day 173%, backfired 1, root-caused and fixed).">
-</p>
-
-The bar is the whole 20-task bill; the badge is each tool's worst single day. caveman's worst day cost **4.2×** a bare model; ponytail's, a tool whose entire job is writing less, **2.3×**. Chisle's worst day was 1.7×, it happened once, and the fix is measured and merged.
-
-In the July run all 24 answers, every arm, **graded correct**: nobody here buys token savings with wrong answers.
-
-#### Code vs. explanation
-
-Across all 20 cells, split by what the prompt actually asks for:
-
-| | n | caveman | ponytail | **Chisle** |
-|---|--:|--:|--:|--:|
-| **coding** (wants working code) | 12 | 74% | 59% | **44%** |
-| **non-coding** (wants an explanation) | 8 | 103% | 104% | **87%** |
-
-Code is where the YAGNI ladder has something to bite on: an abstraction to skip, a stdlib call to reach for, a file not to create. Chisle bills **44%** of a bare model there, a third less than ponytail, which is the closest thing to a dedicated lazy-code tool.
-
-On explanation-only prompts the picture is worse for everyone. Both specialists land **above 100%**: a tool whose job is writing less made the model write *more* than using nothing at all. Chisle is the only arm that stays under water (87%), which is a smaller win than the coding number and worth saying plainly.
-
-This does revise a claim the earlier Sonnet writeup made. On that suite's three prose prompts caveman was leaner (44% vs 52%), and that still holds *for those cells*. Pooled across all eight non-coding cells it does not: caveman is at 103%. The prose win was suite-specific, not general.
-
-#### Task by task
-
-Averages hide the interesting part, so here is every cell of the June suite, same six prompts, every arm, no cherry-picking:
-
-<p align="center">
-  <img src="assets/per-task.svg" width="820" alt="Billed output per task as a percent of the no-tool baseline across the six-task June suite: Chisle is leanest on five of six, caveman wins the cache task at 8% versus Chisle's 12%.">
-</p>
-
-Chisle is leanest on **5 of 6**. caveman takes `cache` (8% vs our 12%) by answering in prose where we still emit working code, which is the trade you would want on a task that asked for code. Note the two prose rows where ponytail lands **above** 100%: a tool built to write less made the model write *more* than using no tool at all. That is the failure mode the worst-case column above is really about.
-
-#### The headline average is hiding the good part
-
-Split the same 20 cells at their median baseline, short answers below and long answers above, and the tools separate sharply:
-
-<p align="center">
-  <img src="assets/by-size.svg" width="820" alt="Total billed output split by answer size. On short answers caveman and Chisle are level at about 84% of baseline and ponytail is above 100%. On long answers Chisle drops to about 45% while caveman is 79% and ponytail 59%.">
-</p>
-
-On **short** answers Chisle and caveman are level (84% each), because there is not much to cut in a three-line reply, and the ruleset overhead is proportionally at its worst. On **long** answers Chisle drops to **45%** while caveman only reaches 79%. The 52% headline is the blend of the two, so it understates the case where it matters and overstates the case where it doesn't.
-
-The effect is not driven by one lucky cell. Dropping the `cache` outlier (the row where the baseline invented 150 lines against a codebase it never saw) *widens* the gap on long answers: caveman degrades to **116%**, worse than using no tool, while Chisle holds at **65%**.
-
-Two honest limits. Per-task rank correlation between baseline size and leanness is weak (Spearman ρ = −0.15), so this is a difference between aggregate bills, not a tidy per-task law. With n=10 a side, treat it as a strong signal rather than a settled result. And much of the widening gap comes from the specialists getting *worse* on long answers, not only from Chisle getting better.
-
-#### Size or kind? Both, and they're tangled
-
-Coding prompts average ~1129 baseline tokens against ~393 for explanation prompts, so "long" and "code" largely describe the same cells. Crossing the two separates them as far as 20 tasks allow:
-
-| | n | caveman | ponytail | **Chisle** |
-|---|--:|--:|--:|--:|
-| coding · short | 5 | **62%** | 116% | 70% |
-| coding · long | 7 | 76% | 52% | **41%** |
-| non-coding · short | 5 | 104% | 98% | **96%** |
-| non-coding · long | 3 | 103% | 111% | **77%** |
-
-<p align="center">
-  <img src="assets/by-kind.svg" width="820" alt="Billed output by task kind crossed with answer size. Code and short: caveman 62%, ponytail 116%, Chisle 70%. Code and long: caveman 76%, ponytail 52%, Chisle 41%. Explanation and short: caveman 104%, ponytail 98%, Chisle 96%. Explanation and long: caveman 103%, ponytail 111%, Chisle 77%.">
-</p>
-
-Size matters *within* each kind: coding goes 70% → 41% and non-coding 96% → 77%, so it isn't merely code in disguise. But the cells are thin, and the non-coding "long" bucket spans only 522–542 tokens, which is barely long at all.
-
-The one row Chisle loses is **short coding**, where caveman takes it 62% to 70%. That is the honest shape of it: on a small code question there is little to skip, and the ruleset costs more than the ladder saves. The tool earns its keep on the long ones.
-
-`SUITE=large` exists to fill the thin cells, see [below](#see-what-it-would-do-before-it-does-it).
-
-These prompts were never designed to test this, which is the real caveat. To probe it directly:
-
-```bash
-SUITE=large bash benchmarks/run-live.sh <model> benchmarks/results/raw-large
-```
-
-#### Where each tool actually helps
+**Input side:** tool output is 67.5% of context in 171 measured Claude Code sessions, and it is re-billed on every later request. The compressor cut ~46% off every eligible output there, and 27.4% of tool output on top of Pi's own truncation ([receipts](benchmarks/results/2026-07-07-input-axis.md)).
 
 |  | prose | code judgment | input/context | worst-case guard | publishes failures |
 |---|:---:|:---:|:---:|:---:|:---:|
@@ -349,75 +167,7 @@ SUITE=large bash benchmarks/run-live.sh <model> benchmarks/results/raw-large
 | headroom | ❌ | ❌ | ✅ proxy | n/a | ❌ |
 | **Chisle** | ✅ | ✅ | ✅ hook | **170%** | ✅ |
 
-The row that matters is the last one. Every tool here looks good on its best day; the numbers above are the only ones in this class published alongside the run that went wrong. [Full comparison →](docs/comparison.md)
-
-### Input axis: tool-output compression (Claude Code + Pi)
-
-Measured over 171 real sessions ([receipts](benchmarks/results/2026-07-07-input-axis.md)): tool output is **67.5%** of context content, and every byte of it is re-billed on *every subsequent request* in the session (median: 171 requests). A `PostToolUse` hook shrinks it before the model reads it: deterministic, zero LLM, zero network:
-
-| tier | what it does | loss |
-|---|---|---|
-| **scrub** | strips ANSI escapes, collapses blank runs and `line repeated N×` | none |
-| **elide** | oversized output → head + tail, error-like lines salvaged from the cut | bounded, guarded |
-| **dedup** | byte-identical repeat of a tool's previous output (same session) → one-line marker | none, the copy is already in context |
-
-Replayed over the same 171 Claude Code sessions: **~61k tokens** saved one-shot, ~46% off every eligible output: a floor, not an estimate, since each saved byte also stops being re-sent on every later request. Correctness rules: allowlist only (`Bash`, `Agent`, `WebFetch`, `WebSearch`, `Grep`, `Glob`, `mcp__*`), never `Read`/`Edit`, whose exact bytes feed later edits. Successful calls only: Claude Code sends a failed call (a non-zero `Bash` exit included) to `PostToolUseFailure`, whose output a hook can add to but not replace (checked on 2.1.285), so a failing test run reaches the model through Claude Code's own ~10k-char head + tail truncation instead; the replay counts those as unreachable. Honest ledger: dedup scored **0 hits** on this corpus (rtk-filtered at source); it's kept for the test-rerun case, kill-switchable, and labeled speculative until it earns a number.
-
-Pi already truncates built-in output at 50KB/2,000 lines. Replay over 8,044 persisted Pi results measured the compressor's **marginal** saving after that truncation: **27.4% of tool-output chars** ([receipt + raw live Pi arm](benchmarks/results/2026-09-11-pi.md)). Pi compresses `bash`, `powershell`, `grep`, `find`, `ls`, MCP, and explicitly allowlisted extension-tool results; `read`/`edit`/`write` remain untouched. `CHISLE_COMPRESS_TOOLS` supplies the same explicit override for runtime and replay. Runtime dedup only compares earlier turns, so concurrently completed sibling calls cannot dedup one another.
-
-```bash
-node benchmarks/replay-compress.js       # Claude Code
-node benchmarks/replay-compress.js pi    # Pi
-```
-
-Outputs over 8k chars are elided, and the elided original spills to `<config>/chisle-spill/` so the dropped middle stays reachable. The marker carries the path, so recovering one line is a targeted grep rather than a re-run of the command, which matters most when the command is not idempotent: a test run, a build, a `git log` at a moment in time. The newest 40 spills are kept, owner-readable only. `stop chisle`, `CHISLE_COMPRESS=0`, `CHISLE_COMPRESS_SCRUB=0`, `CHISLE_COMPRESS_DEDUP=0`, `CHISLE_COMPRESS_SPILL=0`. Every tier has an off switch.
-
-### Pi arm: where the output axis lost
-
-Six tasks, Pi 0.85.1 on `openai-codex/gpt-5.5`, as % of the vanilla no-tool baseline. Lower is better, bold is the winner of the row:
-
-| segment | vanilla | caveman | ponytail | **Chisle** |
-|---|--:|--:|--:|--:|
-| coding billed tokens | 100% | 87% | **49%** | 73% |
-| non-coding billed tokens | 100% | 43% | 76% | **39%** |
-| **all billed tokens** | 100% | 72% | **59%** | 61% |
-| all visible-answer tokens | 100% | 56% | 49% | **37%** |
-| all answer lines | 100% | 75% | 38% | **37%** |
-| tasks correct | 5/6 | 5/6 | 5/6 | 5/6 |
-
-**Chisle lost billed output here.** ponytail used 63 fewer tokens over the six tasks. Publishing that is the point of this section.
-
-The coding gap is one task. Chisle leads 4 of 6 tasks outright; `auth-bug` alone accounts for 283 of the 337-token coding gap. On that task Chisle produced the shortest answer of any arm (377 chars to ponytail's 632) and was the only arm to find the real defect: ponytail flipped `>` to `>=`, while Chisle identified the seconds-versus-milliseconds unit mismatch behind it. The grader scored every arm as failing regardless, which says more about that task than about the tools.
-
-Six tasks, one model, one run. Raw events and per-task cells: [`benchmarks/results/raw-pi/`](benchmarks/results/raw-pi/).
-
-### Prevention: the context diet
-
-The biggest context whale (whole-file `Read`s, 5.6M chars in the measured corpus) can't be compressed without breaking later edits. So the ruleset attacks it upstream, in every agent: grep for the symbol first, read only the matching region, narrow at the source (`ls dir` not `ls -R`, pipe long output through `tail`/`grep`), never re-read what's already in context.
-
----
-
-## What the output sounds like
-
-**"Why does this React component re-render?"**
-> New object ref each render. Inline object prop = new ref = re-render. `useMemo`.
-
-**"Add a cache for API responses."**
-> `@lru_cache(maxsize=1000)` on the fetch fn. Skipped a custom cache class; add one when `lru_cache` measurably falls short.
-
----
-
-## Usage
-
-| Command | Effect |
-|---------|--------|
-| *(nothing)* | On automatically every session after install |
-| `/chisle` | Re-activate if you'd stopped it |
-| `/chisle off` | Deactivate |
-| `stop chisle` | Deactivate (ruleset *and* input-side compression) |
-| `normal mode` | Deactivate |
-
-Natural language works too: "activate chisle", "chisle mode", "chislify this". Code symbols, function/API names, and error strings stay verbatim, so only the noise around them compresses.
+Every table, chart and caveat, including the June suite and the Pi run in full: [docs/benchmarks.md](docs/benchmarks.md). Head to head: [docs/comparison.md](docs/comparison.md).
 
 ---
 
@@ -460,109 +210,23 @@ Mark deliberate simplifications so "later" doesn't quietly become "never":
 // chisle: O(n) scan, index this when table exceeds ~10k rows
 ```
 
----
+## Usage
 
-## Config
+| Command | Effect |
+|---------|--------|
+| *(nothing)* | On automatically every session after install |
+| `/chisle` | Re-activate if you'd stopped it |
+| `/chisle off` | Deactivate |
+| `stop chisle` | Deactivate (ruleset *and* input-side compression) |
+| `normal mode` | Deactivate |
 
-**On by default.** After install, Chisle activates automatically every session, with no `/chisle` needed. Set `off` to stay dormant until you type `/chisle`:
-
-```bash
-# env var (highest priority)
-export CHISLE_DEFAULT_MODE=off
-
-# config file (persists across shells)
-~/.config/chisle/config.json → { "defaultMode": "off" }
-```
-
-Resolution: env var → config file → `on`. Valid: `off`, `on`.
-
-**Output styles are detected automatically.** Claude Code's output-style mechanism also governs
-prose structure, so an active style and Chisle's prose section give directly conflicting
-instructions — the style mandates tables and bullets for comparisons, Chisle's prose section forbids
-manufactured tables and bullets the question didn't ask for. Chisle now reads the active style and
-steps its prose rules aside on its own. Nothing to configure: run `/output-style Explanatory` and the
-prose section stops shipping; switch back to `default` and it returns.
-
-The code rules, the ladder, the context diet and the compressor are all unaffected — output styles
-govern prose, so only the prose section yields.
-
-Detection reads the `outputStyle` key across Claude Code's own settings precedence
-(`.claude/settings.local.json`, where `/output-style` writes, then `.claude/settings.json`, then
-`~/.claude/settings.json`). Claude Code only — Pi and OpenCode have no output-style mechanism, so
-there is nothing to detect and nothing changes for them.
-
-**Suppress a rule group manually.** The same `sections` key gives explicit control, and it always
-beats detection — set `prose: true` to keep Chisle's prose rules even with a style active:
-
-```json
-{ "sections": { "prose": false } }
-```
-
-`sections.prose: false` suppresses the prose rules; `sections.code: false` suppresses the code
-rules. Config file only, no env override. Anything absent, malformed, or non-boolean falls back to
-enabled, which is also what lets automatic detection apply — only an explicitly written boolean
-overrides it. With no style active and nothing configured, the emitted ruleset is byte-identical to
-before either feature existed. The always-on sections
-(Persistence, Thinking Is Billed Too, Auto-Clarity, When NOT to be lazy, Boundaries) ship regardless
-of either setting.
-
-Scope: this only affects the runtime-hook agents that read `skills/chisle/SKILL.md` live — Claude
-Code and Pi. The seven static-rule agents built by `scripts/build-rules.js` (Cursor, Windsurf,
-Cline, Kiro, Codex, Gemini, Copilot) get flat files baked at build time with no runtime config to
-read, so they can't honor this key.
-
----
-
-## Prior art & what stacks with it
-
-Chisle borrows the best published token-saving techniques and implements the ones that fit a zero-dep hook; the rest stack cleanly alongside it:
-
-| technique | source | in Chisle? |
-|---|---|---|
-| Prose compression persona | [caveman](https://github.com/JuliusBrussee/caveman) | ✅ + code judgment it lacks |
-| YAGNI/lazy-code ruleset | [ponytail](https://github.com/dietrichgebert/ponytail) | ✅ + prose discipline it lacks |
-| Tool-output elision (head/tail) | [headroom](https://github.com/headroomlabs-ai/headroom)-style, proxy-free | ✅ hook, no proxy, works on subscription OAuth |
-| ANSI strip / log crush / dedup | headroom transforms | ✅ scrub + dedup tiers |
-| Command rewriting at the source | RTK-style `PreToolUse` ([writeup](https://andrewpatterson.dev/posts/token-savings-rtk-headroom/)) | ❌ stacks; RTK shrinks at source, Chisle catches what it can't reach (subagents, MCP, web) |
-| MCP/codebase-graph indexing | context-mode, [token-optimizer-mcp](https://github.com/ooples/token-optimizer-mcp) | ❌ stacks, orthogonal layer |
-| CLAUDE.md dieting | [community guides](https://www.firecrawl.dev/blog/claude-code-token-efficiency) | ✅ `/chisle-audit` flags bloated docs/config prose |
-
-## Multi-agent
-
-Ships to eleven agents: Claude Code and Pi get both axes, live `/chisle` toggling, and a status badge; OpenCode gets both axes too — the global fenced ruleset, on-demand skills, and a native compression plugin — but no live toggle; Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot get the always-on ruleset; Hermes gets the skills as `/chisle` commands. Per-agent static copies come from `scripts/build-rules.js`; Pi uses its package extension plus the Agent Skills standard. See [`docs/agent-portability.md`](./docs/agent-portability.md).
-
-## FAQ
-
-**Doesn't injecting a persona every turn cost tokens?**
-Claude Code uses a ruleset at session start (~900 tokens) plus a ~50-token reminder per turn. Pi injects one persistent rules message only when project `AGENTS.md` does not already provide it; resume/reload does not duplicate it, and compaction restores it only if removed.
-
-Worth reading the dissent before you take that on faith: [@enc0ded](https://github.com/enc0ded) measured 173 of their own sessions ([#2](https://github.com/JayPokale/Chisle/issues/2)) and found the injection overhead roughly cancelling the compressor's savings, because the ruleset was being re-sent on every resume and clear, not just at startup. That re-injection is fixed, which removes most of the overhead they measured, but their wider point stands: prose is only ~25% of what the model emits, so the ceiling on the output axis is lower than the headline suggests, and on a one-line throwaway prompt the overhead still exceeds the saving.
-
-**Will it golf my code into clever one-liners?**
-No. Boring over clever. Deletion beats addition; obfuscation isn't deletion.
-
-**Does it cut corners on safety?**
-Never. Input validation, data-loss handling, security, and accessibility are off the table. Lazy about solutions, not about reading the problem.
-
-**Can the output compressor eat a line I needed?**
-Designed not to: allowlist keeps `Read`/`Edit` exact, error-looking lines are salvaged from any elided region, dedup only fires on byte-identical same-session repeats, and every tier has a kill switch. If it still bites you, file an issue. That's a bug, not the design.
-
-**Should the star count worry me?**
-Everyone starts at zero. Run `npx chisle --dry-run`, see what it'd do, decide. And if the receipts convinced you, [a star](https://github.com/JayPokale/Chisle/stargazers) is how the next person finds them, and it's also the only payment a zero-dep MIT tool will ever ask for.
-
-→ [More FAQ and competitor comparison](docs/comparison.md)
+Natural language works too: "activate chisle", "chisle mode", "chislify this". Code symbols, function/API names, and error strings stay verbatim, so only the noise around them compresses.
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Edit the skill (`skills/chisle/SKILL.md`) **and** the condensed rule body in `scripts/build-rules.js`, regenerate copies and chart, run the tests. CI enforces all three.
-
-Built by [Jay Pokale](https://github.com/JayPokale) with [Claude](https://claude.com/claude-code), [Antigravity](https://antigravity.google), and [Codex](https://openai.com/blog/openai-codex/) as co-engineers: the input-compression hook, the benchmark verification, and several of the bug hunts documented in the changelog were pair-work.
-
-```bash
-npm test    # 67 tests: flag safety, tracker, settings merge, installer, compressor
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md). Built by [Jay Pokale](https://github.com/JayPokale) with [Claude](https://claude.com/claude-code), [Antigravity](https://antigravity.google), and [Codex](https://openai.com/blog/openai-codex/) as co-engineers.
 
 ## Star History
 
