@@ -56,15 +56,17 @@ for (const fx of fixtures) {
 }
 
 console.log('\n## Overall\n');
-console.log('| arm | n | passed | pass rate | new files | net LOC | deps added | out tokens | context tokens | $ / run |');
-console.log('|-----|--:|-------:|----------:|----------:|--------:|-----------:|-----------:|---------------:|--------:|');
+console.log('| arm | n | passed | pass rate | new files | net LOC | deps added | out tokens | context tokens | turns | $ / run |');
+console.log('|-----|--:|-------:|----------:|----------:|--------:|-----------:|-----------:|---------------:|------:|--------:|');
 for (const arm of ARMS) {
   const c = ok.filter((r) => r.arm === arm);
   if (!c.length) continue;
   console.log(`| ${arm} | ${c.length} | ${c.filter((r) => r.pass).length} | ${fmt(100 * c.filter((r) => r.pass).length / c.length, 1)}% | `
     + `${fmt(mean(c.map((r) => (r.files_created || []).length)), 2)} | ${fmt(mean(c.map((r) => r.loc_delta || 0)), 1)} | `
     + `${fmt(mean(c.map((r) => (r.deps_added || []).length)), 2)} | ${fmt(mean(c.map((r) => r.out_tokens || 0)))} | `
-    + `${fmt(mean(c.map((r) => r.input_tokens || 0)))} | ${fmt(mean(c.map((r) => r.cost_usd || 0)), 4)} |`);
+    + `${fmt(mean(c.map((r) => r.input_tokens || 0)))} | `
+    + `${fmt(mean(c.map((r) => r.turns || 0)), 2)} | `
+    + `${fmt(mean(c.map((r) => r.cost_usd || 0)), 4)} |`);
 }
 
 const hook = ok.filter((r) => r.arm === 'chisle-hook');
