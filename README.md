@@ -238,6 +238,10 @@ Nothing here is estimated. Every figure below is recomputed from committed raw d
 
 Re-run with the shipped ruleset, Claude Code 2.1.285 and the rivals' current plugins (caveman `ef6050c5e184`, ponytail 4.8.3): 13 live prompts × 2 seeds = 26 cells per arm on Haiku 4.5, billed output tokens vs the no-tool baseline ([writeup + raw cells](benchmarks/results/2026-10-01-live-rerun.md)):
 
+<p align="center">
+  <img src="assets/benchmark-rerun.svg" width="820" alt="2026-10-01 live rerun: total billed output as percent of the bare model. caveman 102%, ponytail 105%, Chisle 83%.">
+</p>
+
 | | total bill | 95% CI | visible answer | worst cell | backfires |
 |---|--:|--:|--:|--:|--:|
 | caveman | 102% | 79–128% | 105% | 305% | 15 / 26 |
