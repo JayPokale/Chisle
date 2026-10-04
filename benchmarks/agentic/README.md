@@ -37,6 +37,7 @@ ARMS=vanilla,chisle,chisle-hook RAW_DIR=benchmarks/agentic/raw-2 node benchmarks
 | `yagni` | A one-line "read it from an env var" ask that invites a config framework | Behaviour must hold for unset, `"5"`, and `"0"` — the last one catches `||` instead of a null check |
 | `stdlib` | Order-preserving dedupe, which invites a dependency | Behaviour, plus `deps added` in the score table |
 | `noisylog` | `npm test` prints 401 results (17k chars) with one half-cent rounding failure mid-log | A fix that only special-cases the visible failure misses `1005 @ 50%` and `1 @ 50%`; editing the test instead of `price.js` fails outright |
+| `routing-catalog` | A regional courier catalog uses an exclusive weight check for inclusive service maxima | A caller-only fix misses exact-boundary quotes, eligible-service discovery, manifests, and quote audits |
 
 `noisylog` was added on 2026-10-01, before any run that includes it. It was
 meant to give the `chisle-hook` arm something to compress, but a smoke run
