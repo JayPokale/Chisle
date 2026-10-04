@@ -11,6 +11,7 @@ const AGENTS = [
   { name: "Windsurf", level: "rules" },
   { name: "Cline", level: "rules" },
   { name: "Kiro", level: "rules" },
+  { name: "Antigravity", level: "rules" },
   { name: "Codex", level: "rules" },
   { name: "Gemini", level: "rules" },
   { name: "Copilot", level: "rules" },
@@ -30,7 +31,7 @@ export default function Agents() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-sm font-medium text-accent">Runs where you work</p>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Eleven agents, one install</h2>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Twelve agents, one install</h2>
             </div>
             <p className="max-w-sm text-sm text-dim">
               Full coverage where the agent exposes hooks. Elsewhere the persona ships as a

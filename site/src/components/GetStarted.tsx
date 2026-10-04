@@ -7,7 +7,7 @@ import CopyCmd from "./CopyCmd";
 // Every install path the project documents. Kept in sync with the README's
 // Install section. If a command changes there, it changes here.
 const INSTALLS = [
-  { id: "npx", label: "npx", cmd: "npx chisle", note: "Auto-detects all 11 agents." },
+  { id: "npx", label: "npx", cmd: "npx chisle", note: "Auto-detects all 12 agents." },
   {
     id: "plugin",
     label: "Claude Code",

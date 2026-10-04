@@ -9,7 +9,7 @@
 //   - Codex        → fenced ruleset appended to ~/.codex/AGENTS.md
 //   - OpenCode     → fenced ruleset in ~/.config/opencode/AGENTS.md + skills copy
 //   - Hermes       → skills copy in ~/.hermes/skills (Agent Skills standard)
-//   - Cursor/Windsurf/Cline/Kiro/Copilot → project rule file dropped into CWD
+//   - Cursor/Windsurf/Cline/Kiro/Copilot/Antigravity → project rule file dropped into CWD
 //
 // Usage:
 //   npx chisle                 auto-detect + install
@@ -57,6 +57,10 @@ const PROVIDERS = [
     rule: '.kiro/steering/chisle.md' },
   { id: 'copilot',  label: 'GitHub Copilot',scope: 'project', detect: 'vscode-ext:github.copilot||vscode-ext:github.copilot-chat',
     rule: '.github/copilot-instructions.md' },
+  // Antigravity IDE (`antigravity`) and its CLI (`agy`, antigravity-cli) both
+  // load workspace rules from .agents/rules/*.md.
+  { id: 'antigravity', label: 'Antigravity', scope: 'project', detect: 'cmd:antigravity||cmd:agy||dir:~/.antigravity',
+    rule: '.agents/rules/chisle.md' },
 ];
 
 // ── argv ────────────────────────────────────────────────────────────────────
@@ -597,7 +601,7 @@ function installHermes(ctx) {
   process.stdout.write('\n');
 }
 
-// ── Project-scoped rule agents (Cursor/Windsurf/Cline/Kiro/Copilot) ─────────
+// ── Project-scoped rule agents (Cursor/Windsurf/Cline/Kiro/Copilot/Antigravity)
 function installProjectRule(ctx, prov) {
   const { say, note, warn, opts, results } = ctx;
   results.detected++;
@@ -723,7 +727,7 @@ function uninstall(ctx) {
 
   if (!opts.only.length || opts.only.some(id => PROVIDERS.find(p => p.id === id).scope === 'project')) {
     note('');
-    note('Project-scoped rule files (.cursor/, .windsurf/, .clinerules/, .kiro/, .github/copilot-instructions.md)');
+    note('Project-scoped rule files (.cursor/, .windsurf/, .clinerules/, .kiro/, .agents/rules/, .github/copilot-instructions.md)');
     note('live in your project repos, so remove them per-project with git if you added them there.');
   }
   say(touched ? c.green(`\nUninstalled. ${touched} item(s) cleaned.`) : c.yellow('\nNothing to uninstall.'));
@@ -836,7 +840,7 @@ function main() {
     if (opts.update) {
       warn('Nothing to update: Chisle is not installed for any detected agent.');
       note('Run `npx chisle` to install it, or `npx chisle --list` to see what we look for.');
-      note('Project-scoped agents (Cursor, Windsurf, Cline, Kiro, Copilot) are per-repo:');
+      note('Project-scoped agents (Cursor, Windsurf, Cline, Kiro, Copilot, Antigravity) are per-repo:');
       note('run this from the project that has the rule file.');
       return;
     }

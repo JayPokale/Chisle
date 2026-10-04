@@ -24,7 +24,7 @@ npx chisle@latest --update --only opencode   # ruleset + skills + the compressio
 npx chisle@latest --update --only hermes
 ```
 
-Cursor, Windsurf, Cline, Kiro and Copilot keep their rule file **inside the repo**, because that is how those agents load rules:
+Cursor, Windsurf, Cline, Kiro, Copilot and Antigravity keep their rule file **inside the repo**, because that is how those agents load rules:
 
 ```bash
 cd ~/code/my-project
@@ -145,9 +145,13 @@ before either feature existed. The always-on sections
 of either setting.
 
 Scope: this only affects the runtime-hook agents that read `skills/chisle/SKILL.md` live — Claude
-Code and Pi. The seven static-rule agents built by `scripts/build-rules.js` (Cursor, Windsurf,
-Cline, Kiro, Codex, Gemini, Copilot) get flat files baked at build time with no runtime config to
+Code and Pi. The eight static-rule agents built by `scripts/build-rules.js` (Cursor, Windsurf,
+Cline, Kiro, Antigravity, Codex, Gemini, Copilot) get flat files baked at build time with no runtime config to
 read, so they can't honor this key.
+
+## Multi-agent
+
+Ships to twelve agents: Claude Code and Pi get both axes, live `/chisle` toggling, and a status badge; OpenCode gets both axes too — the global fenced ruleset, on-demand skills, and a native compression plugin — but no live toggle; Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and Copilot get the always-on ruleset; Hermes gets the skills as `/chisle` commands. Per-agent static copies come from `scripts/build-rules.js`; Pi uses its package extension plus the Agent Skills standard. See [agent portability](agent-portability.md).
 
 ## Prior art & what stacks with it
 

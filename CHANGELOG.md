@@ -5,6 +5,9 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+- **Antigravity support (agent twelve).** `npx chisle --only antigravity` writes the ruleset to `.agents/rules/chisle.md` in the current project with `trigger: always_on`, which Antigravity requires before it loads a workspace rule ([rules docs](https://antigravity.google/docs/rules)). Detected by the `antigravity` or `agy` (Antigravity CLI) command, or `~/.antigravity`. Project-scoped like Cursor and Kiro: run it once per repo, and `--update` refreshes it in place.
+
 ## [3.6.1] - 2026-10-02
 
 ### Changed

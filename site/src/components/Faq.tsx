@@ -19,7 +19,7 @@ const QA = [
   },
   {
     q: "Does it work outside Claude Code?",
-    a: "Eleven agents in total. Pi runs both axes with live toggling and a savings badge, the same as Claude Code. OpenCode runs both axes too, via a native plugin that compresses tool output plus the fenced ruleset and on-demand skills, but has no live toggle. Hermes gets the skills as /chisle commands. The ruleset alone ships to Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and Copilot via generated rule files; there the persona is always on and the compressor does not apply.",
+    a: "Twelve agents in total. Pi runs both axes with live toggling and a savings badge, the same as Claude Code. OpenCode runs both axes too, via a native plugin that compresses tool output plus the fenced ruleset and on-demand skills, but has no live toggle. Hermes gets the skills as /chisle commands. The ruleset alone ships to Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and Copilot via generated rule files; there the persona is always on and the compressor does not apply.",
   },
   {
     q: "Does it fight with my Claude Code output style?",

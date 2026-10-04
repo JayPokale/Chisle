@@ -26,7 +26,7 @@ function runCLI(args, { cwd, env } = {}) {
 
 test('--help lists all agents', () => {
   const { out } = runCLI(['--help']);
-  for (const id of ['claude', 'pi', 'gemini', 'codex', 'cursor', 'windsurf', 'cline', 'kiro', 'copilot']) {
+  for (const id of ['claude', 'pi', 'gemini', 'codex', 'cursor', 'windsurf', 'cline', 'kiro', 'copilot', 'antigravity']) {
     assert.match(out, new RegExp(id));
   }
 });
@@ -66,6 +66,16 @@ test('project rule install writes into CWD, is idempotent, --force overwrites', 
   r = runCLI(['--only', 'cursor', '--force'], { cwd: proj });
   assert.notEqual(fs.readFileSync(ruleFile, 'utf8'), 'TAMPERED');
 
+  fs.rmSync(proj, { recursive: true, force: true });
+});
+
+test('Antigravity rule lands in .agents/rules as an always-on workspace rule', () => {
+  const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-proj-'));
+  const r = runCLI(['--only', 'antigravity'], { cwd: proj });
+  const ruleFile = path.join(proj, '.agents', 'rules', 'chisle.md');
+  assert.match(r.out, /installed:/);
+  // Antigravity ignores a workspace rule without a `trigger` in its frontmatter.
+  assert.match(fs.readFileSync(ruleFile, 'utf8'), /^---\ntrigger: always_on\n/);
   fs.rmSync(proj, { recursive: true, force: true });
 });
 

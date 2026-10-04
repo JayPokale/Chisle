@@ -14,7 +14,7 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/chisle"><img src="https://img.shields.io/npm/v/chisle?style=flat-square&color=d78a3c" alt="npm version"></a>
-  <img src="https://img.shields.io/badge/works%20with-11%20agents-d78a3c?style=flat-square" alt="Works with 11 agents">
+  <img src="https://img.shields.io/badge/works%20with-12%20agents-d78a3c?style=flat-square" alt="Works with 12 agents">
   <a href="https://github.com/JayPokale/Chisle/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/JayPokale/Chisle/test.yml?style=flat-square&label=CI" alt="CI"></a>
   <img src="https://img.shields.io/badge/deps-0-2da44e?style=flat-square" alt="Zero deps">
   <img src="https://img.shields.io/badge/license-MIT-d78a3c?style=flat-square" alt="MIT">
@@ -22,10 +22,10 @@
 </p>
 
 <p align="center">
-  <strong>On Pi + GPT-5.5, answers 37% the length of the same model with no ruleset (caveman 56%, ponytail 49%) &middot; 11 agents &middot; zero dependencies &middot; one command</strong>
+  <strong>On Pi + GPT-5.5, answers 37% the length of the same model with no ruleset (caveman 56%, ponytail 49%) &middot; 12 agents &middot; zero dependencies &middot; one command</strong>
 </p>
 
-Chisle is a ruleset and hook pack that makes AI coding agents cheaper to run. It cuts what the model writes (no filler, no hedging, no speculative abstractions: the smallest code that works) and what it reads (oversized tool output is trimmed before it re-enters the context window). One `npx chisle` wires it into Claude Code, Pi, Cursor, Codex, Gemini, Copilot, OpenCode and four more agents. Every number below comes from committed raw transcripts, including the runs where it lost.
+Chisle is a ruleset and hook pack that makes AI coding agents cheaper to run. It cuts what the model writes (no filler, no hedging, no speculative abstractions: the smallest code that works) and what it reads (oversized tool output is trimmed before it re-enters the context window). One `npx chisle` wires it into Claude Code, Pi, Cursor, Codex, Gemini, Copilot, OpenCode, Antigravity and four more agents. Every number below comes from committed raw transcripts, including the runs where it lost.
 
 <p align="center">
   <img src="assets/benchmark-pi.svg" width="820" alt="Pi benchmark, 6 tasks on GPT-5.5, as percent of the same model with no ruleset. Answer length: caveman 56%, ponytail 49%, Chisle 37%. Billed tokens: caveman 72%, ponytail 59%, Chisle 61%.">
@@ -120,7 +120,7 @@ The loop on the right is the input axis: tool output is billed again on *every* 
 
 ## Install
 
-One command. Auto-detects your agents (Claude Code, Pi, Cursor, Windsurf, Cline, Kiro, Codex, Gemini, Copilot, OpenCode, Hermes) and wires each one. `--uninstall` puts everything back.
+One command. Auto-detects your agents (Claude Code, Pi, Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, Copilot, OpenCode, Hermes) and wires each one. `--uninstall` puts everything back.
 
 ```bash
 npx chisle
