@@ -30,6 +30,7 @@ const totals = {
   dedup: 0, dedupChars: 0, failedBig: 0, failedBigChars: 0,
 };
 const skippedByTool = {};
+const byTool = {};
 
 function walk(dir) {
   let entries;
@@ -71,6 +72,12 @@ function account(name, text, lastHash, allowDedup, failed) {
       const marker = duplicateMarker(name, text);
       totals.dedup++;
       totals.dedupChars += size - marker.length;
+
+      const t = byTool[name] ??= { outputs: 0, before: 0, after: 0 };
+      t.outputs++;
+      t.before += size;
+      t.after += marker.length;
+
       return;
     }
     lastHash[name] = hash;
@@ -81,6 +88,12 @@ function account(name, text, lastHash, allowDedup, failed) {
   totals.eligible++;
   totals.before += size;
   totals.after += output.length;
+
+  const t = byTool[name] ??= { outputs: 0, before: 0, after: 0 };
+  t.outputs++;
+  t.before += size;
+  t.after += output.length;
+
   if (output.includes('error-like line(s) below')) totals.salvaged++;
 }
 
@@ -153,6 +166,16 @@ console.log(`outputs with error lines salvaged from the cut: ${totals.salvaged}`
 if (totals.failedBig) {
   console.log(`big failed outputs, unreachable: ${totals.failedBig.toLocaleString('en-US')}  (${totals.failedBigChars.toLocaleString('en-US')} chars; `
     + 'failed calls go to PostToolUseFailure, which cannot rewrite output)');
+}
+console.log('\nper-tool breakdown (incl. dedup):');
+for (const [name, stats] of Object.entries(byTool)
+  .sort((a, b) => (b[1].before - b[1].after) - (a[1].before - a[1].after))) {
+  const toolSaved = stats.before - stats.after;
+  console.log(
+    `  ${name.padEnd(20)} ${stats.outputs.toLocaleString('en-US')} outputs  `
+    + `${stats.before.toLocaleString('en-US')} → ${stats.after.toLocaleString('en-US')} chars  `
+    + `saved ${toolSaved.toLocaleString('en-US')} chars`
+  );
 }
 const skipped = Object.entries(skippedByTool).sort((a, b) => b[1] - a[1]);
 if (skipped.length) {

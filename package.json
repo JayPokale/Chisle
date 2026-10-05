@@ -1,6 +1,6 @@
 {
   "name": "chisle",
-  "version": "3.6.1",
+  "version": "3.7.0",
   "description": "Maximum-efficiency dev mode for AI coding agents. Zero-fluff prose, YAGNI-first code, and safe tool-output compression.",
   "keywords": [
     "claude-code",
@@ -17,6 +17,7 @@
     "cursor",
     "codex",
     "copilot",
+    "antigravity",
     "opencode",
     "hermes-agent",
     "hermes",
@@ -93,6 +94,7 @@
     ".windsurf/",
     ".clinerules/",
     ".kiro/",
+    ".agents/",
     ".github/copilot-instructions.md",
     ".claude-plugin/",
     ".opencode/",

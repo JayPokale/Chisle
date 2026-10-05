@@ -1,0 +1,1 @@
+CI is red on `npm test`. Find the courier rate bug and fix the source, not the test. The catalog is large because this module serves many regional lanes; preserve its public API and validation behavior.

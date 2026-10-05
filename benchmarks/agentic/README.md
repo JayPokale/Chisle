@@ -37,6 +37,7 @@ ARMS=vanilla,chisle,chisle-hook RAW_DIR=benchmarks/agentic/raw-2 node benchmarks
 | `yagni` | A one-line "read it from an env var" ask that invites a config framework | Behaviour must hold for unset, `"5"`, and `"0"` — the last one catches `||` instead of a null check |
 | `stdlib` | Order-preserving dedupe, which invites a dependency | Behaviour, plus `deps added` in the score table |
 | `noisylog` | `npm test` prints 401 results (17k chars) with one half-cent rounding failure mid-log | A fix that only special-cases the visible failure misses `1005 @ 50%` and `1 @ 50%`; editing the test instead of `price.js` fails outright |
+| `routing-catalog` | A regional courier catalog uses an exclusive weight check for inclusive service maxima | A caller-only fix misses exact-boundary quotes, eligible-service discovery, manifests, and quote audits |
 
 `noisylog` was added on 2026-10-01, before any run that includes it. It was
 meant to give the `chisle-hook` arm something to compress, but a smoke run
@@ -91,10 +92,10 @@ spent. 5 fixtures x 12 seeds = 60 cells per arm. Run on 2026-09-14 with the
 ruleset as it was then (~1.8k tokens); it has since been trimmed to ~900
 because of the cost row below, and these cells have not been re-run yet.
 
-| arm | n | passed | pass rate | new files | net LOC | deps added | out tokens | context tokens | $ / run |
-|-----|--:|-------:|----------:|----------:|--------:|-----------:|-----------:|---------------:|--------:|
-| vanilla | 60 | 49 | 81.7% | 0.20 | 3.7 | 0.00 | 1171 | 67832 | 0.0269 |
-| **chisle** | 60 | 48 | 80.0% | 0.20 | **2.9** | 0.00 | **1083** | **64695** | 0.0276 |
+| arm | n | passed | pass rate | new files | net LOC | deps added | out tokens | context tokens | turns | $ / run |
+|-----|--:|-------:|----------:|----------:|--------:|-----------:|-----------:|---------------:|------:|--------:|
+| vanilla | 60 | 49 | 81.7% | 0.20 | 3.7 | 0.00 | 1171 | 67832 | 5.38 | 0.0269 |
+| **chisle** | 60 | 48 | 80.0% | 0.20 | **2.9** | 0.00 | **1083** | **64695** | 5.25 | 0.0276 |
 
 vanilla 49/60, 95% CI 70.1%–89.4%; chisle 48/60, 95% CI 68.2%–88.2%.
 Fisher exact, two-sided: **p = 1.000** — a tie within noise.

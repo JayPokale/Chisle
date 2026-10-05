@@ -8,6 +8,24 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 ### Fixed
 - **A symlinked state root no longer stops Chisle recording.** `~/.claude`, `CLAUDE_CONFIG_DIR` or `~/.config/opencode` managed as a symlink (e.g. via GNU stow) made the atomic writer refuse every write, so savings, spill recovery and per-session dedup silently stopped. The root itself is now resolved with `stat` while every subdirectory Chisle creates and the target file are still verified with `lstat` and must not be links. (#33)
 
+## [3.7.0] - 2026-10-04
+
+Minor: a new agent. Also ships the contributor benchmark work merged since 3.6.1.
+
+### Added
+- **Antigravity support (agent twelve).** `npx chisle --only antigravity` writes the ruleset to `.agents/rules/chisle.md` in the current project with `trigger: always_on`, which Antigravity requires before it loads a workspace rule ([rules docs](https://antigravity.google/docs/rules)). Detected by the `antigravity` or `agy` (Antigravity CLI) command, or `~/.antigravity`. Project-scoped like Cursor and Kiro: run it once per repo, and `--update` refreshes it in place.
+- **Replay breaks savings down by tool.** `benchmarks/replay-compress.js` prints outputs, chars before → after and chars saved per tool, for both Claude Code and Pi transcripts. (#30, [@anshlakhera048](https://github.com/anshlakhera048))
+- **Agentic score reports turns.** `benchmarks/agentic/score.js` adds mean turns per run to the Overall table; the README tables now come from the script (5.42 vs 5.92 on the October cells). (#35, [@anshlakhera048](https://github.com/anshlakhera048))
+- **A large-file agentic fixture.** `routing-catalog` plants a boundary bug in a 1,447-line courier module, to measure whether the context-diet rules pay off where files are big. Not yet run. (#36, [@Sinkleberg](https://github.com/Sinkleberg))
+- **Charts for the October re-run and the Pi run**, generated from the raw cells and covered by `npm run check:chart`. (#34, [@anshlakhera048](https://github.com/anshlakhera048))
+
+### Changed
+- **The README is cut from 600 to ~260 lines.** It leads with the Pi chart, showing answer length and billed tokens side by side, since ponytail wins the bill. Every removed section moved verbatim to `docs/benchmarks.md` or `docs/usage.md`.
+- **The site's Compare section shows the October transcripts**, not the June ones, with their real token counts. (#32, [@ZeroElemental](https://github.com/ZeroElemental))
+
+### Fixed
+- **`run-live.sh` retries failed cells.** A failed or killed call used to leave a partial `<task>__<arm>.json` that later runs skipped as cached; calls now write to a temp file and move it into place only on success. (#31, [@ZeroElemental](https://github.com/ZeroElemental))
+
 ## [3.6.1] - 2026-10-02
 
 ### Changed

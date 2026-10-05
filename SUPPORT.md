@@ -18,7 +18,7 @@ Three places, depending on what you have:
   steps ("did it actually install?").
 - [`docs/`](docs/) for agent portability, Windows notes, and releasing.
 
-Chisle wires eleven agents with different config layouts, so most "it isn't
+Chisle wires twelve agents with different config layouts, so most "it isn't
 working" reports come down to *which* agent and *where* it installed. Running
 `npx chisle --list` and pasting the output answers that in one step.
 

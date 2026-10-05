@@ -1,6 +1,6 @@
 # Chisle
 
-> Chisle is a token-efficiency plugin for AI coding agents that cuts LLM token usage on three axes: (1) a terse senior-dev persona that writes maximum-signal prose and YAGNI-first code, (2) a post-tool hook that compresses tool output (ANSI scrub, head+tail elide with error-line salvage, same-session dedup) before it enters the context window, and (3) context-diet rules that teach the model to read less (grep before Read, slice reads, filter at source). Claude Code and Pi run all three axes plus live /chisle toggling and a savings badge; Cursor, Windsurf, Cline, Kiro, Codex, Gemini, and GitHub Copilot receive the ruleset via generated rule files; OpenCode gets the global fenced ruleset plus on-demand skills; Hermes Agent gets the skills as /chisle commands in ~/.hermes/skills.
+> Chisle is a token-efficiency plugin for AI coding agents that cuts LLM token usage on three axes: (1) a terse senior-dev persona that writes maximum-signal prose and YAGNI-first code, (2) a post-tool hook that compresses tool output (ANSI scrub, head+tail elide with error-line salvage, same-session dedup) before it enters the context window, and (3) context-diet rules that teach the model to read less (grep before Read, slice reads, filter at source). Claude Code and Pi run all three axes plus live /chisle toggling and a savings badge; Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and GitHub Copilot receive the ruleset via generated rule files; OpenCode gets the global fenced ruleset plus on-demand skills; Hermes Agent gets the skills as /chisle commands in ~/.hermes/skills.
 
 Key measured results (re-run 2026-10-01: 13 live prompts x 2 seeds = 26 cells per arm, 4 arms, Haiku 4.5, billed output tokens incl. reasoning, reproducible via benchmarks/ in the repo):
 - Total bill: Chisle 83% of a bare model (95% CI 69-95%); caveman 102%; ponytail 105%. Chisle is the only arm measurably below the bare model.
@@ -15,7 +15,7 @@ Key measured results (re-run 2026-10-01: 13 live prompts x 2 seeds = 26 cells pe
 
 Safety/correctness: the compressor runs behind an allowlist (Claude Code: Bash, Agent, WebFetch, WebSearch, Grep, Glob, mcp__*; Pi: bash, powershell, grep, find, ls, mcp__*) and never modifies Read/Edit/Write results, whose exact bytes feed later edits. Deterministic, zero dependencies, zero network calls, zero LLM calls. One mode, no intensity levels. Kill switches: CHISLE_COMPRESS=0, "stop chisle", /chisle off, npx chisle --uninstall.
 
-Install: `npx chisle` (npm, auto-detects all 11 agents), `claude plugin marketplace add JayPokale/Chisle` then `claude plugin install chisle@chisle` (Claude Code plugin), or `pi install npm:chisle` (Pi package). Requires Node >= 18. MIT license.
+Install: `npx chisle` (npm, auto-detects all 12 agents), `claude plugin marketplace add JayPokale/Chisle` then `claude plugin install chisle@chisle` (Claude Code plugin), or `pi install npm:chisle` (Pi package). Requires Node >= 18. MIT license.
 
 Lineage: descendant of the caveman and ponytail projects (terse-persona axis), both credited in the repository's prior-art table; Chisle adds the tool-output-compression and context-diet axes and publishes live benchmarks against both.
 

@@ -67,6 +67,9 @@ const TARGETS = {
   '.kiro/steering/chisle.md':
     '---\ninclusion: always\n---\n\n',
   '.github/copilot-instructions.md': '',
+  // Antigravity: workspace rules need a `trigger`; legacy .agent/rules also loads.
+  '.agents/rules/chisle.md':
+    '---\ntrigger: always_on\ndescription: Chisle, zero-fluff prose + YAGNI-first code\n---\n\n',
 };
 
 function render(frontmatter) {

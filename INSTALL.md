@@ -16,7 +16,7 @@ Detects supported agents and installs Chisle for each:
 | Codex | fenced ruleset in `~/.codex/AGENTS.md` | global |
 | OpenCode | fenced ruleset + skills + compression plugin under the configured OpenCode root | global |
 | Hermes Agent | skills in `~/.hermes/skills` (Agent Skills standard, `/chisle` commands) | global |
-| Cursor / Windsurf / Cline / Kiro / Copilot | rule file in current project | project |
+| Cursor / Windsurf / Cline / Kiro / Copilot / Antigravity | rule file in current project | project |
 
 ```bash
 npx chisle --list          # detect only
@@ -136,8 +136,9 @@ Add `--only <id>` to update one agent. The native command is listed where the ag
 | Cline | `npx chisle@latest --update --only cline` | **Run inside the project.** |
 | Kiro | `npx chisle@latest --update --only kiro` | **Run inside the project.** |
 | GitHub Copilot | `npx chisle@latest --update --only copilot` | **Run inside the project.** |
+| Antigravity | `npx chisle@latest --update --only antigravity` | **Run inside the project.** Writes `.agents/rules/chisle.md`. |
 
-The last five keep their rule file inside the repo, because that is how those agents load rules. `--update` looks for that file in the current directory, so running it from `~` reports *"Nothing to update"* even when the project is set up correctly. Run it once per repo that has one.
+The last six keep their rule file inside the repo, because that is how those agents load rules. `--update` looks for that file in the current directory, so running it from `~` reports *"Nothing to update"* even when the project is set up correctly. Run it once per repo that has one.
 
 Preview any update without touching disk by adding `--dry-run`.
 

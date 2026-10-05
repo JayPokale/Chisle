@@ -6,7 +6,7 @@ import SectionHead from "./SectionHead";
 import Markdown from "./Markdown";
 import samples from "@/data/samples.json";
 
-// Live before/after built from benchmarks/results/raw/ via scripts/build-samples.js.
+// Live before/after built from benchmarks/results/raw-oct/default-s1/ via scripts/build-samples.js.
 // Every word and number below is the committed transcript. No mock-ups, no
 // hand-written "illustrative" rewrites. That is the whole differentiator, so the
 // basis label stays visible at all times.
@@ -135,20 +135,18 @@ export default function Compare() {
             baseline.{" "}
             {task.id === "cache" && (
               <>
-                <strong className="text-fg">Read this one carefully:</strong> the prompt shipped
-                with no codebase attached. The bare model invented a 150-line class for a project it
-                never saw; chisle&apos;s 7 lines are a request for the language and framework, not a
-                cache. The saving is real, but it comes from refusing to guess, and the ruleset of the
-                time carried an example for almost this exact prompt; later runs of the bare model
-                billed 375–813 tokens here, not 4,910.{" "}
+                <strong className="text-fg">Read this one carefully:</strong> the prompt ships with
+                no codebase attached, so every arm, the bare model included, asks for the stack
+                instead of writing a cache. This cell measures how briefly each one asks, not how
+                much code it writes.{" "}
               </>
             )}
             Browse every cell in{" "}
             <a
               className="text-accent underline-offset-4 hover:underline"
-              href="https://github.com/JayPokale/Chisle/tree/main/benchmarks/results/raw"
+              href="https://github.com/JayPokale/Chisle/tree/main/benchmarks/results/raw-oct/default-s1"
             >
-              benchmarks/results/raw
+              benchmarks/results/raw-oct/default-s1
             </a>
             .
           </p>

@@ -21,14 +21,24 @@ const RAW_DIRS = [
   path.join(ROOT, 'benchmarks', 'results', 'raw-sonnet'),
   path.join(ROOT, 'benchmarks', 'results', 'raw-verify'),
 ];
+const RERUN_RAW_DIRS = [
+  path.join(ROOT, 'benchmarks', 'results', 'raw-oct', 'default-s1'),
+  path.join(ROOT, 'benchmarks', 'results', 'raw-oct', 'default-s2'),
+  path.join(ROOT, 'benchmarks', 'results', 'raw-oct', 'large-s1'),
+  path.join(ROOT, 'benchmarks', 'results', 'raw-oct', 'large-s2'),
+];
+const PI_RAW_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw-pi');
 const SVG_OUT = path.join(ROOT, 'assets', 'benchmark.svg');
+const PI_SVG_OUT = path.join(ROOT, 'assets', 'benchmark-pi.svg');
+const CLAUDE_SVG_OUT = path.join(ROOT, 'assets', 'benchmark-claude.svg');
+const RERUN_SVG_OUT = path.join(ROOT, 'assets', 'benchmark-rerun.svg');
 const TASK_SVG_OUT = path.join(ROOT, 'assets', 'per-task.svg');
 const SIZE_SVG_OUT = path.join(ROOT, 'assets', 'by-size.svg');
 const KIND_SVG_OUT = path.join(ROOT, 'assets', 'by-kind.svg');
 // Per-task chart uses the June suite alone: it is the one run where all four
 // arms answered the same six prompts, so the bars are directly comparable.
 const TASK_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw');
-const { KIND } = require('../benchmarks/aggregate');
+const { KIND, estTok } = require('../benchmarks/aggregate');
 // Short labels for the per-task chart; kinds themselves come from KIND.
 const KIND_LABEL = { coding: 'code', noncoding: 'prose' };
 
@@ -90,6 +100,44 @@ function collect() {
   return { stat, taskCount: tasks.size };
 }
 
+function collectRerun() {
+  const cells = {};
+  for (const dir of RERUN_RAW_DIRS) {
+    let files = [];
+    try { files = fs.readdirSync(dir); } catch (_) { continue; }
+    for (const f of files) {
+      if (!f.endsWith('.json')) continue;
+      const m = f.slice(0, -5).match(/^(.+)__([a-z]+)$/);
+      if (!m) continue;
+      const value = tok(path.join(dir, f));
+      cells[`${dir}|${m[1]}|${m[2]}`] = value;
+    }
+  }
+  const stat = {};
+  for (const a of ARMS) { stat[a.key] = { total: 0, sum: 0, base: 0, n: 0 }; }
+  const tasks = new Set();
+  for (const key of Object.keys(cells)) {
+    const [dir, task, arm] = key.split('|');
+    if (arm === 'vanilla' && cells[key] != null) { tasks.add(`${dir}|${task}`); }
+  }
+  for (const dt of tasks) {
+    const [dir, task] = dt.split('|');
+    const base = cells[`${dir}|${task}|vanilla`];
+    for (const a of ARMS) {
+      const v = cells[`${dir}|${task}|${a.key}`];
+      if (v == null || base == null) continue;
+      stat[a.key].sum += v;
+      stat[a.key].base += base;
+      stat[a.key].n++;
+    }
+  }
+  for (const a of ARMS) {
+    const s = stat[a.key];
+    s.total = s.base ? Math.round((s.sum / s.base) * 100) : 0;
+  }
+  return { stat, taskCount: tasks.size };
+}
+
 function buildSvg(stat, taskCount) {
   const W = 860, H = 340;
   const left = 150, top = 96, rowH = 64, plotW = 620;
@@ -127,6 +175,146 @@ function buildSvg(stat, taskCount) {
 <text x="${W / 2}" y="34" font-size="17" font-weight="700" fill="#c9d1d9" text-anchor="middle">The ${taskCount}-task bill — % of a bare model (lower = cheaper)</text>
 <text x="${W / 2}" y="54" font-size="11.5" fill="#8b949e" text-anchor="middle">total billed output vs using no tool at all (Haiku + Sonnet, two suites; code, prose &amp; judgment prompts)</text>
 ${body}${fixNote}</svg>
+`;
+}
+
+// Pi run (raw-pi/): each arm's visible answer and billed output, summed over
+// the tasks where both it and vanilla answered, as % of vanilla. Both bars,
+// because the two disagree: Chisle has the shortest answers, ponytail the
+// smallest bill.
+function collectPi() {
+  const cells = {};
+  let files = [];
+  try { files = fs.readdirSync(PI_RAW_DIR); } catch (_) {}
+  for (const f of files) {
+    const m = f.match(/^(.+)__([a-z]+)\.json$/);
+    if (!m) continue;
+    let d;
+    try { d = JSON.parse(fs.readFileSync(path.join(PI_RAW_DIR, f), 'utf8')); } catch (_) { continue; }
+    if (!d || d.is_error || !d.usage) continue;
+    (cells[m[1]] ||= {})[m[2]] = { ans: estTok(d.result), out: d.usage.output_tokens };
+  }
+  const stat = {};
+  for (const a of ARMS) {
+    const sum = { ans: 0, out: 0, baseAns: 0, baseOut: 0, n: 0 };
+    for (const c of Object.values(cells)) {
+      if (!c.vanilla || !c[a.key]) continue;
+      sum.ans += c[a.key].ans; sum.out += c[a.key].out;
+      sum.baseAns += c.vanilla.ans; sum.baseOut += c.vanilla.out; sum.n++;
+    }
+    stat[a.key] = {
+      ans: sum.baseAns ? Math.round(100 * sum.ans / sum.baseAns) : 0,
+      out: sum.baseOut ? Math.round(100 * sum.out / sum.baseOut) : 0,
+      n: sum.n,
+    };
+  }
+  return stat;
+}
+
+// Claude Code coding prompts from the October re-run (raw-oct/): visible answer
+// (billed minus reasoning, as the writeup defines it) and billed output, paired
+// per cell against vanilla, as % of vanilla.
+function collectClaudeCoding() {
+  const cells = {};
+  for (const dir of RERUN_RAW_DIRS) {
+    let files = [];
+    try { files = fs.readdirSync(dir); } catch (_) { continue; }
+    for (const f of files) {
+      const m = f.match(/^(.+)__([a-z]+)\.json$/);
+      if (!m || KIND[m[1]] !== 'coding') continue;
+      let d;
+      try { d = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')); } catch (_) { continue; }
+      if (!d || d.is_error || !d.usage) continue;
+      const mu = Object.values(d.modelUsage || {})[0] || {};
+      const out = d.usage.output_tokens;
+      (cells[`${dir}|${m[1]}`] ||= {})[m[2]] = { ans: out - (mu.thinkingTokens || 0), out };
+    }
+  }
+  const stat = {};
+  for (const a of ARMS) {
+    const sum = { ans: 0, out: 0, baseAns: 0, baseOut: 0, n: 0 };
+    for (const c of Object.values(cells)) {
+      if (!c.vanilla || !c[a.key]) continue;
+      sum.ans += c[a.key].ans; sum.out += c[a.key].out;
+      sum.baseAns += c.vanilla.ans; sum.baseOut += c.vanilla.out; sum.n++;
+    }
+    stat[a.key] = {
+      ans: sum.baseAns ? Math.round(100 * sum.ans / sum.baseAns) : 0,
+      out: sum.baseOut ? Math.round(100 * sum.out / sum.baseOut) : 0,
+      n: sum.n,
+    };
+  }
+  return stat;
+}
+
+// Two bars per arm: solid = answer the user reads, faint = billed output.
+function buildPairSvg(stat, title, subtitle, ariaPrefix) {
+  const W = 860, H = 316;
+  const left = 150, top = 92, rowH = 72, plotW = 620;
+  const px = plotW / 130;
+  const line100 = left + 100 * px;
+
+  let body =
+    `<line x1="${line100}" y1="${top - 14}" x2="${line100}" y2="${top + ARMS.length * rowH - 10}" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4 3"/>` +
+    `<text x="${line100}" y="${top - 20}" font-size="11" fill="#8b949e" text-anchor="middle">100% = no ruleset</text>`;
+
+  ARMS.forEach((a, i) => {
+    const s = stat[a.key];
+    const y = top + i * rowH;
+    const bold = a.key === SELF ? ' font-weight="700"' : '';
+    const wa = Math.max(2, s.ans * px), wo = Math.max(2, s.out * px);
+    body +=
+      `<text x="${left - 12}" y="${y + 27}" font-size="14" fill="#c9d1d9" text-anchor="end"${bold}>${a.label}</text>` +
+      `<rect x="${left}" y="${y + 2}" width="${wa}" height="24" rx="4" fill="${a.color}"/>` +
+      `<text x="${left + wa + 9}" y="${y + 19}" font-size="13" fill="#c9d1d9"${bold}>${s.ans}% answer length</text>` +
+      `<rect x="${left}" y="${y + 30}" width="${wo}" height="14" rx="3" fill="${a.color}" opacity="0.4"/>` +
+      `<text x="${left + wo + 9}" y="${y + 42}" font-size="11.5" fill="#8b949e">${s.out}% billed tokens</text>`;
+  });
+
+  const aria = ariaPrefix +
+    ARMS.map(a => `${a.label}: answer length ${stat[a.key].ans}%, billed tokens ${stat[a.key].out}%`).join('; ') + '.';
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}">
+<rect width="${W}" height="${H}" rx="10" fill="#0d1117"/>
+<text x="${W / 2}" y="34" font-size="17" font-weight="700" fill="#c9d1d9" text-anchor="middle">${title}</text>
+<text x="${W / 2}" y="54" font-size="11.5" fill="#8b949e" text-anchor="middle">${subtitle}</text>
+${body}</svg>
+`;
+}
+
+function buildRerunSvg(stat, taskCount) {
+  const W = 860, H = 300;
+  const left = 150, top = 88, rowH = 56, plotW = 620;
+  const maxPct = 120;
+  const px = plotW / maxPct;
+  const line100 = left + 100 * px;
+
+  let body =
+    `<line x1="${line100}" y1="${top - 16}" x2="${line100}" y2="${top + ARMS.length * rowH - 8}" stroke="#8b949e" stroke-width="1.5" stroke-dasharray="4 3"/>` +
+    `<text x="${line100}" y="${top - 22}" font-size="11" fill="#8b949e" text-anchor="middle">100% = bare</text>`;
+
+  ARMS.forEach((a, i) => {
+    const s = stat[a.key];
+    const y = top + i * rowH;
+    const w = Math.max(2, s.total * px);
+    const bold = a.key === SELF ? ' font-weight="700"' : '';
+
+    body +=
+      `<text x="${left - 12}" y="${y + 21}" font-size="14" fill="#c9d1d9" text-anchor="end"${bold}>${a.label}</text>` +
+      `<rect x="${left}" y="${y + 4}" width="${w}" height="30" rx="4" fill="${a.color}"/>` +
+      `<text x="${left + w + 9}" y="${y + 24}" font-size="14" fill="#c9d1d9"${bold}>${s.total}% of bare</text>`;
+  });
+
+  const aria =
+    '2026-10-01 live rerun: total billed output as percent of the bare model. ' +
+    ARMS.map(a => `${a.label} ${stat[a.key].total}%`).join(', ') +
+    '.';
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}">
+<rect width="${W}" height="${H}" rx="10" fill="#0d1117"/>
+<text x="${W / 2}" y="34" font-size="17" font-weight="700" fill="#c9d1d9" text-anchor="middle">2026-10-01 live re-run — % of a bare model</text>
+<text x="${W / 2}" y="54" font-size="11.5" fill="#8b949e" text-anchor="middle">total billed output across ${taskCount} cells per arm; lower = cheaper</text>
+${body}</svg>
 `;
 }
 
@@ -333,12 +521,24 @@ ${body}${legend}</svg>
 
 function main() {
   const { stat, taskCount } = collect();
+  const rerunStat = collectRerun();
+  const piStat = collectPi();
+  const claudeStat = collectClaudeCoding();
   const taskRows = collectPerTask();
   const sizeRows = collectAllCells();
   if (process.argv.includes('--json')) { console.log(JSON.stringify({ stat, taskCount, taskRows, sizeRows }, null, 2)); return; }
 
   const outputs = [
     [SVG_OUT, buildSvg(stat, taskCount)],
+    [RERUN_SVG_OUT, buildRerunSvg(rerunStat.stat, rerunStat.taskCount)],
+    [PI_SVG_OUT, buildPairSvg(piStat,
+      'Pi + GPT-5.5 — % of the same model with no ruleset',
+      `${piStat[SELF].n} tasks, one run; solid = answer length the user reads, faint = billed tokens; lower = leaner`,
+      `Pi benchmark, ${piStat[SELF].n} tasks on GPT-5.5, as percent of no ruleset. `)],
+    [CLAUDE_SVG_OUT, buildPairSvg(claudeStat,
+      'Claude Code, coding prompts — % of the same model with no ruleset',
+      `Haiku 4.5, ${claudeStat[SELF].n} coding cells (7 prompts × 2 seeds); solid = answer you read, faint = billed tokens; lower = leaner`,
+      `Claude Code coding prompts, ${claudeStat[SELF].n} cells on Haiku 4.5, as percent of no ruleset. `)],
     [TASK_SVG_OUT, buildTaskSvg(taskRows)],
     [SIZE_SVG_OUT, buildSizeSvg(sizeRows)],
     [KIND_SVG_OUT, buildKindSvg(sizeRows)],
