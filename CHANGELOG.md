@@ -5,6 +5,9 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+- **A symlinked state root no longer stops Chisle recording.** `~/.claude`, `CLAUDE_CONFIG_DIR` or `~/.config/opencode` managed as a symlink (e.g. via GNU stow) made the atomic writer refuse every write, so savings, spill recovery and per-session dedup silently stopped. The root itself is now resolved with `stat` while every subdirectory Chisle creates and the target file are still verified with `lstat` and must not be links. (#33)
+
 ## [3.6.1] - 2026-10-02
 
 ### Changed

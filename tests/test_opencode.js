@@ -278,7 +278,10 @@ test('spill and stats reject symlinked randomized temporary targets', { skip: pr
   }
 });
 
-test('stats writes are private and reject symlinked directories and files', { skip: process.platform === 'win32' }, () => {
+// Symlinked state ROOT is a supported user layout (dotfiles via GNU stow), so
+// recordSavings must still write there. The files Chisle writes into the root
+// are kept symlink-free.
+test('stats writes are private and reject a symlinked stats file', { skip: process.platform === 'win32' }, () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-stats-safe-'));
   const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-stats-outside-'));
   try {
@@ -287,11 +290,6 @@ test('stats writes are private and reject symlinked directories and files', { sk
     const ledger = path.join(normal, '.chisle-compress-stats.json');
     assert.deepEqual(JSON.parse(fs.readFileSync(ledger, 'utf8')), { savedChars: 12, events: 1 });
     assert.equal(fs.statSync(ledger).mode & 0o777, 0o600);
-
-    const linkedDir = path.join(root, 'linked-dir');
-    fs.symlinkSync(outside, linkedDir);
-    recordSavings(20, linkedDir);
-    assert.equal(fs.existsSync(path.join(outside, '.chisle-compress-stats.json')), false);
 
     const linkedFileDir = path.join(root, 'linked-file');
     fs.mkdirSync(linkedFileDir);
@@ -303,6 +301,55 @@ test('stats writes are private and reject symlinked directories and files', { sk
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
     fs.rmSync(outside, { recursive: true, force: true });
+  }
+});
+
+// A user-owned state ROOT that is itself a symlink (dotfiles via GNU stow)
+// must still record — only the files/subdirs Chisle creates beneath it are
+// kept symlink-free. Regression guard for PR #33 review. Symlink support is
+// probed up front so an environment that can't create links skips cleanly.
+test('recordSavings, spill, and dedup accept a symlinked state root', (t) => {
+  const probe = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-symprobe-'));
+  let linkOk = true;
+  try {
+    fs.symlinkSync(path.join(probe, 'no-target'), path.join(probe, 'link'), 'dir');
+  } catch (e) { linkOk = false; }
+  finally { fs.rmSync(probe, { recursive: true, force: true }); }
+  if (!linkOk) { t.skip('host cannot create symlinks'); return; }
+
+  const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-symroot-'));
+  const victimDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-symroot-victim-'));
+  const root = path.join(path.dirname(outside), path.basename(outside) + '-link');
+  try {
+    fs.symlinkSync(outside, root, 'dir');
+
+    // Stats ledger records through the symlinked root.
+    recordSavings(100, root);
+    const ledger = path.join(outside, '.chisle-compress-stats.json');
+    assert.deepEqual(JSON.parse(fs.readFileSync(ledger, 'utf8')), { savedChars: 100, events: 1 });
+
+    // Spill and per-session dedup state under the symlinked root still write.
+    const text = bigOutput(200, 'rooted');
+    const output = compressForOpencode('bash', text, { mode: 'on', stateDir: root, sessionId: 's1', callId: 'c1' });
+    const recovery = recoveryPath(output);
+    // The hook returns the path as given (the symlink); the file must exist
+    // inside the REAL directory the root points at.
+    assert.equal(path.dirname(recovery), path.join(root, 'chisle-spill'));
+    assert.equal(fs.realpathSync(path.dirname(recovery)), path.join(outside, 'chisle-spill'));
+    assert.deepEqual(fs.readFileSync(recovery), Buffer.from(text));
+    assert.equal(fs.existsSync(path.join(outside, 'chisle-dedup')), true);
+
+    // ...but a symlink planted by Chisle INSIDE the root is still rejected.
+    const victim = path.join(victimDir, 'victim');
+    fs.writeFileSync(victim, 'unchanged');
+    fs.rmSync(ledger); // symlinkSync cannot replace an existing file
+    fs.symlinkSync(victim, ledger);
+    recordSavings(100, root);
+    assert.equal(fs.readFileSync(victim, 'utf8'), 'unchanged');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+    fs.rmSync(outside, { recursive: true, force: true });
+    fs.rmSync(victimDir, { recursive: true, force: true });
   }
 });
 
