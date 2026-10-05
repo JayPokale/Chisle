@@ -17,11 +17,11 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://chisle.jaypokale.m
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Chisle: cut your agent's token bill on three axes",
+    default: "Chisle: a Claude Code plugin that cuts your token bill",
     template: "%s · Chisle",
   },
   description:
-    "Chisle cuts your coding agent's token usage three ways: a terse dev persona, a tool-output compression hook, and context-diet rules. Measured against caveman and ponytail on 26 live cells: 83% of a bare model's output, while both rivals land above 100%. Runs on Claude Code, Pi, OpenCode, and eight more agents.",
+    "Chisle is a Claude Code plugin that cuts token usage three ways: a terse dev persona, a tool-output compression hook, and context-diet rules. On coding prompts Claude's answers come back 33% shorter and 24% cheaper, while caveman and ponytail make them longer. Also runs on Pi, OpenCode, Antigravity and eight more agents.",
   keywords: [
     "claude code plugin",
     "token optimization",
@@ -44,13 +44,13 @@ export const metadata: Metadata = {
     siteName: "Chisle",
     title: "Chisle: write less. ship less. mean more.",
     description:
-      "The coding-agent plugin that bills 83% of a bare model, where caveman and ponytail bill 102–105%. Terse persona + tool-output compressor + context diet.",
+      "The Claude Code plugin that makes coding answers 33% shorter and 24% cheaper, where caveman and ponytail make them longer. Terse persona + tool-output compressor + context diet.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Chisle: cut your agent's token bill on three axes",
+    title: "Chisle: a Claude Code plugin that cuts your token bill",
     description:
-      "Terse persona + tool-output compressor + context diet. Measured, not vibes: 83% of a bare model's bill, losses published.",
+      "Terse persona + tool-output compressor + context diet. Measured, not vibes: Claude's coding answers 33% shorter and 24% cheaper, losses published.",
   },
   robots: {
     index: true,

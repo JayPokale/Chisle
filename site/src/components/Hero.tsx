@@ -124,10 +124,10 @@ export default function Hero() {
               <span className="text-gradient">Keep the facts.</span>
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-fg/85 sm:text-lg">
-              One command. Twelve agents. Three levers.
+              Built for Claude Code. One command, twelve agents.
               <br className="hidden sm:block" />{" "}
-              Answers bill 83% of a bare model, where caveman and ponytail bill 102–105%. Receipts,
-              losses included, in the repo.
+              On coding prompts Claude&apos;s answers come back 33% shorter and 24% cheaper, while
+              caveman and ponytail make them longer. Receipts, losses included, in the repo.
             </p>
           </motion.div>
 

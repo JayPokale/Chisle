@@ -1,9 +1,9 @@
 // Each figure carries where it comes from. The point of the site is that the
 // numbers survive being checked, so the source sits right under the number.
 const STATS = [
-  { v: "83%", k: "of a bare model's output; rivals land at 102–105%", src: "13 live prompts x 2 seeds, Haiku 4.5, 2026-10-01; 95% CI 69–95%, from benchmarks/results/" },
-  { v: "77%", k: "on long answers; short ones break even (106%)", src: "same 26 cells split at the median baseline; little to cut in a three-line reply" },
-  { v: "−51%", k: "ruleset cost per request since the trim", src: "1,779 → 877 input tokens, measured live; it rides along on every request" },
+  { v: "−33%", k: "shorter coding answers in Claude Code; caveman and ponytail run 10% longer", src: "14 coding cells, Claude Code 2.1.285 + Haiku 4.5, 2026-10-01; answer = billed minus reasoning, from benchmarks/results/" },
+  { v: "−24%", k: "Claude's bill on coding prompts; rivals land at 100–120%", src: "same 14 cells; across all 26 prompts Chisle bills 83%, rivals 102–105%" },
+  { v: "−46%", k: "per oversized tool output, before Claude reads it", src: "PostToolUse hook replayed over 171 real Claude Code sessions; Read/Edit never touched" },
   { v: "0", k: "dependencies, network calls, LLM calls", src: "the plugin itself; the marketing site you are reading has its own" },
 ];
 

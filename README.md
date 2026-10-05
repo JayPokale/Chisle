@@ -22,16 +22,16 @@
 </p>
 
 <p align="center">
-  <strong>On Pi + GPT-5.5, answers 37% the length of the same model with no ruleset (caveman 56%, ponytail 49%) &middot; 12 agents &middot; zero dependencies &middot; one command</strong>
+  <strong>Built for Claude Code: coding answers come back 33% shorter and 24% cheaper, while caveman and ponytail make them longer &middot; 12 agents &middot; zero dependencies &middot; one command</strong>
 </p>
 
-Chisle is a ruleset and hook pack that makes AI coding agents cheaper to run. It cuts what the model writes (no filler, no hedging, no speculative abstractions: the smallest code that works) and what it reads (oversized tool output is trimmed before it re-enters the context window). One `npx chisle` wires it into Claude Code, Pi, Cursor, Codex, Gemini, Copilot, OpenCode, Antigravity and four more agents. Every number below comes from committed raw transcripts, including the runs where it lost.
+Chisle is a Claude Code plugin that makes Claude cheaper to run without making it dumber. It cuts what Claude writes: no filler, no hedging, no speculative abstractions, just the smallest code that works. It also cuts what Claude reads: a `PostToolUse` hook trims oversized tool output by ~46% before it re-enters the context window, where it would be re-billed on every later request. In agent-loop tests Claude with Chisle passes the same tasks as Claude without it. One `npx chisle` installs it, and the same ruleset ships to Pi, Cursor, Codex, Gemini, Copilot, OpenCode, Antigravity and four more agents. Every number here comes from committed raw transcripts, including the runs where it lost.
 
 <p align="center">
-  <img src="assets/benchmark-pi.svg" width="820" alt="Pi benchmark, 6 tasks on GPT-5.5, as percent of the same model with no ruleset. Answer length: caveman 56%, ponytail 49%, Chisle 37%. Billed tokens: caveman 72%, ponytail 59%, Chisle 61%.">
+  <img src="assets/benchmark-claude.svg" width="820" alt="Claude Code coding prompts, 14 cells on Haiku 4.5, as percent of the same model with no ruleset. Answer length: caveman 110%, ponytail 110%, Chisle 67%. Billed tokens: caveman 100%, ponytail 120%, Chisle 76%.">
 </p>
 
-<p align="center"><sub>Pi 0.85.1 + GPT-5.5, 6 tasks, one run. Answer length is what you read; on total billed tokens ponytail is leanest (59% vs 61%). On the larger 26-cell Claude Code run Chisle is the only one under 100%: <a href="#benchmarks">see below</a>.</sub></p>
+<p align="center"><sub>Claude Code 2.1.285 on Haiku 4.5, the 14 coding cells of a 26-cell run. Across all 26 prompts Chisle bills 83% where caveman bills 102% and ponytail 105%, the only one under 100%; on short answers it breaks even. <a href="#benchmarks">Full numbers below.</a></sub></p>
 
 ---
 
@@ -157,6 +157,12 @@ Claude Code 2.1.285 on Haiku 4.5, 13 live prompts × 2 seeds = 26 cells per arm,
 | **Chisle** | **83%** | **69–95%** | **76%** | **170%** | **11 / 26** |
 
 Chisle is the only arm below a bare model. It pays on long answers (77%) and coding prompts (76%); on short answers it breaks even (106%).
+
+On Pi + GPT-5.5 Chisle again gives the shortest answers, 37% the length of a bare model's (caveman 56%, ponytail 49%), though on total billed tokens ponytail edges it, 59% to 61%:
+
+<p align="center">
+  <img src="assets/benchmark-pi.svg" width="820" alt="Pi benchmark, 6 tasks on GPT-5.5, as percent of the same model with no ruleset. Answer length: caveman 56%, ponytail 49%, Chisle 37%. Billed tokens: caveman 72%, ponytail 59%, Chisle 61%.">
+</p>
 
 **Input side:** tool output is 67.5% of context in 171 measured Claude Code sessions, and it is re-billed on every later request. The compressor cut ~46% off every eligible output there, and 27.4% of tool output on top of Pi's own truncation ([receipts](benchmarks/results/2026-07-07-input-axis.md)).
 
