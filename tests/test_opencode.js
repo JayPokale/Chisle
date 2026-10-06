@@ -251,6 +251,19 @@ test('spill rejects symlinked directories and final files', { skip: process.plat
   }
 });
 
+test('a repeated spill reuses the existing file even when UTF-8 cannot round-trip it', () => {
+  const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-spill-reuse-'));
+  try {
+    const text = bigOutput(200, 'lone \uD800');
+    const first = compressForOpencode('bash', text, { mode: 'on', stateDir });
+    const second = compressForOpencode('bash', text, { mode: 'on', stateDir });
+    assert.match(first, /Full output:/);
+    assert.match(second, /Full output:/);
+  } finally {
+    fs.rmSync(stateDir, { recursive: true, force: true });
+  }
+});
+
 test('spill and stats reject symlinked randomized temporary targets', { skip: process.platform === 'win32' }, () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-tmp-link-'));
   const core = path.join(__dirname, '..', 'hooks', 'chisle-compress-output.js');

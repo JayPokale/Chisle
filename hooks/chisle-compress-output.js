@@ -528,9 +528,12 @@ function spill(text, toolName, stateDir) {
     const hash = crypto.createHash('sha256').update(text).digest('hex').slice(0, 12);
     const safeTool = String(toolName || 'tool').replace(/[^A-Za-z0-9_-]/g, '') || 'tool';
     const file = path.join(dir, `${safeTool}-${hash}.txt`);
-    const existing = safeReadText(file);
-    if (existing.unsafe || (existing.text != null && existing.text !== text)) return null;
-    if (existing.text == null && !safeAtomicWrite(file, text, root)) return null;
+    // Same hash → same content (atomic writes never leave a partial file), so
+    // an existing regular file is reused. Re-reading to compare would also
+    // fail on lone surrogates, which UTF-8 cannot round-trip.
+    let st = null;
+    try { st = fs.lstatSync(file); } catch (e) { if (e.code !== 'ENOENT') return null; }
+    if (st ? st.isSymbolicLink() || !st.isFile() : !safeAtomicWrite(file, text, root)) return null;
     pruneSpill(dir);
     return file;
   } catch (e) { return null; }
