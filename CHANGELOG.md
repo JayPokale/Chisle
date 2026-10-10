@@ -5,6 +5,13 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+- **OpenCode install follows OpenCode's config root.** Install, detection, update, uninstall, plugin state and `--stats --only opencode` now resolve `OPENCODE_CONFIG_DIR`, then `$XDG_CONFIG_HOME/opencode`, then `~/.config/opencode`. Previously the installer always wrote `~/.config/opencode` while the plugin honored `XDG_CONFIG_HOME`. (#33)
+- **Spill, dedup and stats writes are symlink-safe and atomic** for every agent sharing the compressor core. Subdirectories Chisle creates and the files it writes must not be links; a symlinked state root (e.g. dotfiles via GNU stow) is still accepted. (#33)
+
+### Docs
+- Failed OpenCode Bash calls verified live on OpenCode 1.18.31: they reach `tool.execute.after` and are compressed with exit metadata intact. (#29, #33)
+
 ## [3.7.0] - 2026-10-04
 
 Minor: a new agent. Also ships the contributor benchmark work merged since 3.6.1.

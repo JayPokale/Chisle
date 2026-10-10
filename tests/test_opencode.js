@@ -15,9 +15,10 @@ const { spawn, spawnSync } = require('child_process');
 process.env.CHISLE_STATE_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-'));
 
 const {
-  opencodeToolAllowed, compressForOpencode, boundForOpencode,
+  opencodeToolAllowed, compressForOpencode, boundForOpencode, recordSavings,
   SAFE_TOOLS_OPENCODE, THRESHOLDS,
 } = require('../hooks/chisle-compress-output');
+const { getOpencodeDir, getOpencodeStateDir } = require('../hooks/chisle-config');
 
 function bigOutput(lines, prefix) {
   return Array.from({ length: lines }, (_, i) => `${prefix || 'line'} ${i} ${'x'.repeat(80)}`).join('\n');
@@ -37,6 +38,21 @@ function sessionStateFile(stateDir, sessionId) {
   const name = crypto.createHash('sha256').update(sessionId).digest('hex') + '.json';
   return path.join(stateDir, 'chisle-dedup', name);
 }
+
+// ── config root ──────────────────────────────────────────────────────────────
+
+test('OpenCode root follows host precedence and keeps an injectable home fallback', () => {
+  const home = path.join(os.tmpdir(), 'chisle-home');
+  assert.equal(getOpencodeDir({ env: {}, home }), path.join(home, '.config', 'opencode'));
+  assert.equal(getOpencodeDir({ env: { XDG_CONFIG_HOME: '/xdg' }, home }), path.join('/xdg', 'opencode'));
+  assert.equal(getOpencodeDir({ env: { XDG_CONFIG_HOME: '/xdg', OPENCODE_CONFIG_DIR: '/custom' }, home }), '/custom');
+});
+
+test('OpenCode state uses its config root unless CHISLE_STATE_DIR overrides it', () => {
+  const home = path.join(os.tmpdir(), 'chisle-home');
+  assert.equal(getOpencodeStateDir({ env: { OPENCODE_CONFIG_DIR: '/custom' }, home }), '/custom');
+  assert.equal(getOpencodeStateDir({ env: { OPENCODE_CONFIG_DIR: '/custom', CHISLE_STATE_DIR: '/state' }, home }), '/state');
+});
 
 // ── allowlist ────────────────────────────────────────────────────────────────
 
@@ -201,9 +217,152 @@ test('spill preserves the byte-identical pre-scrub output', () => {
   try {
     const text = `\u001b[31mBEGIN\u001b[0m   \n${bigOutput(200)}\n\n\nEND`;
     const out = compressForOpencode('bash', text, { mode: 'on', stateDir });
-    assert.deepEqual(fs.readFileSync(recoveryPath(out)), Buffer.from(text));
+    const recovery = recoveryPath(out);
+    assert.deepEqual(fs.readFileSync(recovery), Buffer.from(text));
+    assert.equal(fs.statSync(recovery).mode & 0o777, 0o600);
+    assert.deepEqual(fs.readdirSync(path.dirname(recovery)).filter(name => name.endsWith('.tmp')), []);
   } finally {
     fs.rmSync(stateDir, { recursive: true, force: true });
+  }
+});
+
+test('spill rejects symlinked directories and final files', { skip: process.platform === 'win32' }, () => {
+  const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-spill-link-'));
+  const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-spill-outside-'));
+  try {
+    const text = bigOutput(200, 'linked');
+    fs.symlinkSync(outside, path.join(stateDir, 'chisle-spill'));
+    const dirOutput = compressForOpencode('bash', text, { mode: 'on', stateDir });
+    assert.doesNotMatch(dirOutput, /Full output:/);
+    assert.deepEqual(fs.readdirSync(outside), []);
+
+    fs.unlinkSync(path.join(stateDir, 'chisle-spill'));
+    fs.mkdirSync(path.join(stateDir, 'chisle-spill'));
+    const hash = crypto.createHash('sha256').update(text).digest('hex').slice(0, 12);
+    const victim = path.join(outside, 'victim');
+    fs.writeFileSync(victim, 'unchanged');
+    fs.symlinkSync(victim, path.join(stateDir, 'chisle-spill', `bash-${hash}.txt`));
+    const fileOutput = compressForOpencode('bash', text, { mode: 'on', stateDir });
+    assert.doesNotMatch(fileOutput, /Full output:/);
+    assert.equal(fs.readFileSync(victim, 'utf8'), 'unchanged');
+  } finally {
+    fs.rmSync(stateDir, { recursive: true, force: true });
+    fs.rmSync(outside, { recursive: true, force: true });
+  }
+});
+
+test('a repeated spill reuses the existing file even when UTF-8 cannot round-trip it', () => {
+  const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-spill-reuse-'));
+  try {
+    const text = bigOutput(200, 'lone \uD800');
+    const first = compressForOpencode('bash', text, { mode: 'on', stateDir });
+    const second = compressForOpencode('bash', text, { mode: 'on', stateDir });
+    assert.match(first, /Full output:/);
+    assert.match(second, /Full output:/);
+  } finally {
+    fs.rmSync(stateDir, { recursive: true, force: true });
+  }
+});
+
+test('spill and stats reject symlinked randomized temporary targets', { skip: process.platform === 'win32' }, () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-tmp-link-'));
+  const core = path.join(__dirname, '..', 'hooks', 'chisle-compress-output.js');
+  try {
+    const probe = `
+      const fs=require('fs'),path=require('path'),crypto=require('crypto');
+      crypto.randomBytes=()=>Buffer.from('010203040506','hex');
+      const c=require(${JSON.stringify(core)}),root=process.argv[1],victim=path.join(root,'victim');
+      fs.writeFileSync(victim,'unchanged');
+      const text=Array.from({length:200},(_,i)=>'temporary '+i+' '+'x'.repeat(80)).join('\\n');
+      const spillDir=path.join(root,'spill','chisle-spill');fs.mkdirSync(spillDir,{recursive:true});
+      const hash=crypto.createHash('sha256').update(text).digest('hex').slice(0,12);
+      fs.symlinkSync(victim,path.join(spillDir,'bash-'+hash+'.txt.'+process.pid+'.010203040506.tmp'));
+      const out=c.compressForOpencode('bash',text,{mode:'on',stateDir:path.join(root,'spill')});
+      const statsDir=path.join(root,'stats');fs.mkdirSync(statsDir);
+      fs.symlinkSync(victim,path.join(statsDir,'.chisle-compress-stats.json.'+process.pid+'.010203040506.tmp'));
+      c.recordSavings(10,statsDir);
+      process.stdout.write(JSON.stringify({recovery:/Full output:/.test(out),ledger:fs.existsSync(path.join(statsDir,'.chisle-compress-stats.json')),victim:fs.readFileSync(victim,'utf8')}));
+    `;
+    const result = spawnSync(process.execPath, ['-e', probe, root], { encoding: 'utf8' });
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(JSON.parse(result.stdout), { recovery: false, ledger: false, victim: 'unchanged' });
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+// Symlinked state ROOT is a supported user layout (dotfiles via GNU stow), so
+// recordSavings must still write there. The files Chisle writes into the root
+// are kept symlink-free.
+test('stats writes are private and reject a symlinked stats file', { skip: process.platform === 'win32' }, () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-stats-safe-'));
+  const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-stats-outside-'));
+  try {
+    const normal = path.join(root, 'normal');
+    recordSavings(12, normal);
+    const ledger = path.join(normal, '.chisle-compress-stats.json');
+    assert.deepEqual(JSON.parse(fs.readFileSync(ledger, 'utf8')), { savedChars: 12, events: 1 });
+    assert.equal(fs.statSync(ledger).mode & 0o777, 0o600);
+
+    const linkedFileDir = path.join(root, 'linked-file');
+    fs.mkdirSync(linkedFileDir);
+    const victim = path.join(outside, 'victim');
+    fs.writeFileSync(victim, 'unchanged');
+    fs.symlinkSync(victim, path.join(linkedFileDir, '.chisle-compress-stats.json'));
+    recordSavings(30, linkedFileDir);
+    assert.equal(fs.readFileSync(victim, 'utf8'), 'unchanged');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+    fs.rmSync(outside, { recursive: true, force: true });
+  }
+});
+
+// A user-owned state ROOT that is itself a symlink (dotfiles via GNU stow)
+// must still record — only the files/subdirs Chisle creates beneath it are
+// kept symlink-free. Regression guard for PR #33 review. Symlink support is
+// probed up front so an environment that can't create links skips cleanly.
+test('recordSavings, spill, and dedup accept a symlinked state root', (t) => {
+  const probe = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-symprobe-'));
+  let linkOk = true;
+  try {
+    fs.symlinkSync(path.join(probe, 'no-target'), path.join(probe, 'link'), 'dir');
+  } catch (e) { linkOk = false; }
+  finally { fs.rmSync(probe, { recursive: true, force: true }); }
+  if (!linkOk) { t.skip('host cannot create symlinks'); return; }
+
+  const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-symroot-'));
+  const victimDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-symroot-victim-'));
+  const root = path.join(path.dirname(outside), path.basename(outside) + '-link');
+  try {
+    fs.symlinkSync(outside, root, 'dir');
+
+    // Stats ledger records through the symlinked root.
+    recordSavings(100, root);
+    const ledger = path.join(outside, '.chisle-compress-stats.json');
+    assert.deepEqual(JSON.parse(fs.readFileSync(ledger, 'utf8')), { savedChars: 100, events: 1 });
+
+    // Spill and per-session dedup state under the symlinked root still write.
+    const text = bigOutput(200, 'rooted');
+    const output = compressForOpencode('bash', text, { mode: 'on', stateDir: root, sessionId: 's1', callId: 'c1' });
+    const recovery = recoveryPath(output);
+    // The hook returns the path as given (the symlink); the file must exist
+    // inside the REAL directory the root points at.
+    assert.equal(path.dirname(recovery), path.join(root, 'chisle-spill'));
+    assert.equal(fs.realpathSync(path.dirname(recovery)), path.join(outside, 'chisle-spill'));
+    assert.deepEqual(fs.readFileSync(recovery), Buffer.from(text));
+    assert.equal(fs.existsSync(path.join(outside, 'chisle-dedup')), true);
+
+    // ...but a symlink planted by Chisle INSIDE the root is still rejected.
+    const victim = path.join(victimDir, 'victim');
+    fs.writeFileSync(victim, 'unchanged');
+    fs.rmSync(ledger); // symlinkSync cannot replace an existing file
+    fs.symlinkSync(victim, ledger);
+    recordSavings(100, root);
+    assert.equal(fs.readFileSync(victim, 'utf8'), 'unchanged');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+    fs.rmSync(outside, { recursive: true, force: true });
+    fs.rmSync(victimDir, { recursive: true, force: true });
   }
 });
 
@@ -238,6 +397,36 @@ test('plugin tool.execute.after compresses output.output in place', async () => 
   const readOut = { title: 't', output: big, metadata: {} };
   await after({ tool: 'read', sessionID: 's', callID: 'c2', args: {} }, readOut);
   assert.equal(readOut.output, big);
+});
+
+test('failed Bash results are compressed once without changing exit metadata', async () => {
+  const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-failed-'));
+  const previous = process.env.CHISLE_STATE_DIR;
+  process.env.CHISLE_STATE_DIR = stateDir;
+  try {
+    const { default: plugin } = await import('../.opencode/plugins/chisle.mjs');
+    const hooks = await plugin({});
+    const original = `${bigOutput(220, 'failed')}\nFATAL_FAILED_SMOKE exit=23`;
+    const output = { output: original, metadata: { exit: 23, truncated: false } };
+    await hooks['tool.execute.after']({ tool: 'bash', sessionID: 'failed', callID: 'failed-1' }, output);
+
+    assert.ok(output.output.length <= THRESHOLDS.maxChars);
+    assert.match(output.output, /FATAL_FAILED_SMOKE exit=23/);
+    assert.deepEqual(output.metadata, { exit: 23, truncated: false });
+    assert.deepEqual(fs.readFileSync(recoveryPath(output.output)), Buffer.from(original));
+
+    const statsPath = path.join(stateDir, '.chisle-compress-stats.json');
+    const stats = JSON.parse(fs.readFileSync(statsPath, 'utf8'));
+    assert.deepEqual(stats, { savedChars: original.length - output.output.length, events: 1 });
+
+    const messages = [{ parts: [{ type: 'tool', tool: 'bash', state: { status: 'completed', output: output.output } }] }];
+    await hooks['experimental.chat.messages.transform']({}, { messages });
+    assert.deepEqual(JSON.parse(fs.readFileSync(statsPath, 'utf8')), stats);
+  } finally {
+    if (previous === undefined) delete process.env.CHISLE_STATE_DIR;
+    else process.env.CHISLE_STATE_DIR = previous;
+    fs.rmSync(stateDir, { recursive: true, force: true });
+  }
 });
 
 test('plugin hook never throws on odd output shapes', async () => {
@@ -453,6 +642,30 @@ test('only the persisted after-hook replacement records savings', async () => {
 // is parsed as ESM and throws ReferenceError on its first `require` — which
 // loadFrom rethrows, taking the whole plugin down. Bun tolerates it; Node does
 // not. This asserts the installed layout survives the strict runtime.
+test('plugin runtime keeps spill, dedup, and stats under OPENCODE_CONFIG_DIR', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-runtime-root-'));
+  try {
+    const pluginPath = path.join(__dirname, '..', '.opencode', 'plugins', 'chisle.mjs');
+    const probe = `
+      const big = Array.from({length:220},(_,i)=>'line '+i+' '+'x'.repeat(80)).join('\\n');
+      import(${JSON.stringify('file://' + pluginPath)}).then(async (m) => {
+        const hooks = await m.default({});
+        const out = { output: big, metadata: { exit: 23 } };
+        await hooks['tool.execute.after']({ tool: 'bash', sessionID: 'root', callID: 'one' }, out);
+        process.stdout.write(out.output.length < big.length ? 'COMPRESSED' : 'NOOP');
+      });
+    `;
+    const env = { ...process.env, OPENCODE_CONFIG_DIR: root, XDG_CONFIG_HOME: '', CHISLE_STATE_DIR: '' };
+    const result = spawnSync(process.execPath, ['--input-type=module', '-e', probe], { encoding: 'utf8', env });
+    assert.equal(result.stdout, 'COMPRESSED', result.stderr);
+    assert.ok(fs.readdirSync(path.join(root, 'chisle-spill')).some(name => name.endsWith('.txt')));
+    assert.ok(fs.readdirSync(path.join(root, 'chisle-dedup')).some(name => name.endsWith('.json')));
+    assert.ok(fs.existsSync(path.join(root, '.chisle-compress-stats.json')));
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('installed plugin still compresses when the config dir is type:module', async () => {
   const home = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-mod-'));
   try {
@@ -460,7 +673,10 @@ test('installed plugin still compresses when the config dir is type:module', asy
     const cli = path.join(__dirname, '..', 'bin', 'install.js');
     const r = spawnSync(process.execPath, [cli, '--only', 'opencode'], {
       encoding: 'utf8',
-      env: Object.assign({}, process.env, { HOME: home, USERPROFILE: home }),
+      env: Object.assign({}, process.env, {
+        HOME: home, USERPROFILE: home, CHISLE_HOME: home,
+        XDG_CONFIG_HOME: '', OPENCODE_CONFIG_DIR: '',
+      }),
     });
     assert.equal(r.status, 0, r.stderr);
 

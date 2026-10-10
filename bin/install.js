@@ -7,7 +7,7 @@
 //   - Pi           → Pi package (extension + skill)
 //   - Gemini CLI   → gemini extensions install
 //   - Codex        → fenced ruleset appended to ~/.codex/AGENTS.md
-//   - OpenCode     → fenced ruleset in ~/.config/opencode/AGENTS.md + skills copy
+//   - OpenCode     → fenced ruleset + skills + plugin in its global config root
 //   - Hermes       → skills copy in ~/.hermes/skills (Agent Skills standard)
 //   - Cursor/Windsurf/Cline/Kiro/Copilot/Antigravity → project rule file dropped into CWD
 //
@@ -29,6 +29,7 @@ const path = require('path');
 const cp = require('child_process');
 
 const SETTINGS = require('./lib/settings');
+const { getOpencodeDir, getOpencodeStateDir } = require('../hooks/chisle-config');
 
 const REPO = 'JayPokale/Chisle';
 const IS_WIN = process.platform === 'win32';
@@ -45,7 +46,7 @@ const PROVIDERS = [
   { id: 'pi',       label: 'Pi',            scope: 'global',  detect: 'cmd:pi' },
   { id: 'gemini',   label: 'Gemini CLI',    scope: 'global',  detect: 'cmd:gemini' },
   { id: 'codex',    label: 'Codex CLI',     scope: 'global',  detect: 'cmd:codex||dir:~/.codex' },
-  { id: 'opencode', label: 'OpenCode',        scope: 'global',  detect: 'cmd:opencode||dir:~/.config/opencode' },
+  { id: 'opencode', label: 'OpenCode',        scope: 'global',  detect: 'cmd:opencode' },
   { id: 'hermes',   label: 'Hermes Agent',    scope: 'global',  detect: 'cmd:hermes||dir:~/.hermes' },
   { id: 'cursor',   label: 'Cursor',        scope: 'project', detect: 'cmd:cursor||dir:~/.cursor',
     rule: '.cursor/rules/chisle.mdc' },
@@ -150,6 +151,11 @@ function detectMatch(spec) {
   return false;
 }
 
+function providerDetected(provider) {
+  return detectMatch(provider.detect) ||
+    (provider.id === 'opencode' && safeStat(opencodeDir(), 'isDirectory'));
+}
+
 // ── spawn helpers ───────────────────────────────────────────────────────────
 function quoteWin(a) {
   if (!IS_WIN) return a;
@@ -188,6 +194,9 @@ function claudeDir(opts) {
 // (tests, containers); mirrors the CLAUDE_CONFIG_DIR precedent for Claude.
 function homeDir() { return process.env.CHISLE_HOME || os.homedir(); }
 
+function opencodeDir() { return getOpencodeDir({ home: homeDir() }); }
+function opencodeStateDir() { return getOpencodeStateDir({ home: homeDir() }); }
+
 // ── what is already installed ───────────────────────────────────────────────
 // Every install path skips when Chisle is already present, which is right for
 // `npx chisle` and useless for an upgrade: the run reports success and changes
@@ -225,10 +234,10 @@ function installedFor(id, opts) {
       }
       case 'opencode': {
         try {
-          const md = path.join(homeDir(), '.config', 'opencode', 'AGENTS.md');
+          const md = path.join(opencodeDir(), 'AGENTS.md');
           if (fs.existsSync(md) && fs.readFileSync(md, 'utf8').includes(FENCE_BEGIN)) return true;
         } catch (_) {}
-        return fs.existsSync(path.join(homeDir(), '.config', 'opencode', 'skills', 'chisle', 'SKILL.md'));
+        return fs.existsSync(path.join(opencodeDir(), 'skills', 'chisle', 'SKILL.md'));
       }
       case 'hermes':
         return fs.existsSync(path.join(homeDir(), '.hermes', 'skills', 'chisle', 'SKILL.md'));
@@ -510,13 +519,13 @@ function installCodex(ctx) {
 }
 
 // ── OpenCode ─────────────────────────────────────────────────────────────
-// Global ruleset (~/.config/opencode/AGENTS.md) carries the always-on output
-// axis next to existing user instructions; the bundled skills copy into
-// ~/.config/opencode/skills for on-demand loading via the native skill tool
+// Global AGENTS.md carries the always-on output axis next to existing user
+// instructions; the bundled skills copy under the same OpenCode config root
+// for on-demand loading via the native skill tool
 // (the global skills dir is scanned by default, so skills.paths needs no
 // edit and no second system message is added).
 // Copies the OpenCode compression plugin and the shared compressor core it
-// requires into ~/.config/opencode/plugins/. OpenCode auto-discovers any *.js
+// requires into the configured OpenCode plugins directory. It auto-discovers *.js
 // or *.ts file in that dir at startup (not *.mjs), and its config dir is
 // type:module, so the ESM source ships as chisle.js. Returns the number of
 // files written. Never called on a dry run (installOpencode returns early),
@@ -527,8 +536,8 @@ function installCodex(ctx) {
 // dies on its first `require` with a ReferenceError that takes the whole
 // plugin with it (loadFrom only swallows MODULE_NOT_FOUND). Bun is lenient
 // enough not to care; Node is not, so pin it rather than rely on the runtime.
-function copyOpencodePlugin() {
-  const pluginDir = path.join(homeDir(), '.config', 'opencode', 'plugins');
+function copyOpencodePlugin(root) {
+  const pluginDir = path.join(root, 'plugins');
   const hooksDir = path.join(pluginDir, 'chisle-hooks');
   const files = [
     ['.opencode/plugins/chisle.mjs', path.join(pluginDir, 'chisle.js')],
@@ -550,9 +559,10 @@ function installOpencode(ctx) {
   const { say, note, opts, results } = ctx;
   results.detected++;
   say('\u2192 OpenCode detected');
-  const target = path.join(homeDir(), '.config', 'opencode', 'AGENTS.md');
-  const skillsDst = path.join(homeDir(), '.config', 'opencode', 'skills');
-  const pluginDst = path.join(homeDir(), '.config', 'opencode', 'plugins');
+  const root = opencodeDir();
+  const target = path.join(root, 'AGENTS.md');
+  const skillsDst = path.join(root, 'skills');
+  const pluginDst = path.join(root, 'plugins');
 
   if (opts.dryRun) {
     note('  would write chisle ruleset to ' + target);
@@ -567,7 +577,7 @@ function installOpencode(ctx) {
     const st = writeFencedRuleset(target, opts, note);
     const n = copySkills(skillsDst, opts);
     process.stdout.write('  installed: ' + n + ' skill file(s) to ' + skillsDst + '\n');
-    const p = copyOpencodePlugin();
+    const p = copyOpencodePlugin(root);
     process.stdout.write('  installed: ' + p + ' plugin file(s) to ' + pluginDst + '\n');
     if (st === 'installed') results.installed.push('opencode');
     else results.skipped.push(['opencode', 'ruleset already present; skills + plugin refreshed']);
@@ -690,7 +700,9 @@ function uninstall(ctx) {
   }
 
   if (wants('opencode')) {
-    const ocMd = path.join(homeDir(), '.config', 'opencode', 'AGENTS.md');
+    const ocRoot = opencodeDir();
+    const ocState = opencodeStateDir();
+    const ocMd = path.join(ocRoot, 'AGENTS.md');
     if (fs.existsSync(ocMd)) {
       const txt = fs.readFileSync(ocMd, 'utf8');
       const b = txt.indexOf(FENCE_BEGIN);
@@ -704,17 +716,17 @@ function uninstall(ctx) {
         note('  removed chisle block from ' + ocMd); touched++;
       }
     }
-    const ocSkills = path.join(homeDir(), '.config', 'opencode', 'skills');
+    const ocSkills = path.join(ocRoot, 'skills');
     const ocGone = opts.dryRun ? ownedSkillNames().filter(function (nm) { return fs.existsSync(path.join(ocSkills, nm)); }).length : pruneSkills(ocSkills);
     if (ocGone > 0) { note('  removed ' + ocGone + ' chisle skill dir(s) from ' + ocSkills); touched++; }
 
-    const ocPlugins = path.join(homeDir(), '.config', 'opencode', 'plugins');
+    const ocPlugins = path.join(ocRoot, 'plugins');
     for (const rel of ['chisle.js', 'chisle-hooks']) {
       const dst = path.join(ocPlugins, rel);
       if (fs.existsSync(dst)) { if (!opts.dryRun) fs.rmSync(dst, { recursive: true, force: true }); note('  removed ' + dst); touched++; }
     }
     for (const f of ['chisle-spill', 'chisle-dedup', '.chisle-compress-stats.json', '.chisle-compress-last.json']) {
-      const p = path.join(homeDir(), '.config', 'opencode', f);
+      const p = path.join(ocState, f);
       if (fs.existsSync(p)) { if (!opts.dryRun) fs.rmSync(p, { recursive: true, force: true }); note('  removed ' + p); touched++; }
     }
   }
@@ -770,7 +782,9 @@ Examples:
 // without the ruleset, which is what the benchmark arms are for. A counter that
 // blended the two would be inventing the interesting half.
 function printStats(c, opts) {
-  const dir = claudeDir(opts);
+  const dir = opts.only.length === 1 && opts.only[0] === 'opencode'
+    ? opencodeStateDir()
+    : claudeDir(opts);
   const p = path.join(dir, '.chisle-compress-stats.json');
   process.stdout.write(c.orange('chisle') + ': tool-output savings\n\n');
 
@@ -805,7 +819,7 @@ function printStats(c, opts) {
 function printList(c) {
   process.stdout.write(c.orange('chisle') + ': detected agents:\n\n');
   for (const p of PROVIDERS) {
-    const found = detectMatch(p.detect);
+    const found = providerDetected(p);
     const mark = found ? c.green('✓') : c.dim('·');
     const scope = p.scope === 'project' ? c.dim(' (project-scoped)') : '';
     process.stdout.write(`  ${mark} ${p.label}${scope}\n`);
@@ -834,7 +848,7 @@ function main() {
   say(c.dim(opts.dryRun ? '  (dry run, nothing will change)' : '  maximum signal, minimum noise'));
   say('');
 
-  let targets = PROVIDERS.filter(p => opts.only.length ? opts.only.includes(p.id) : detectMatch(p.detect));
+  let targets = PROVIDERS.filter(p => opts.only.length ? opts.only.includes(p.id) : providerDetected(p));
   if (opts.update) targets = targets.filter(p => installedFor(p.id, opts));
   if (targets.length === 0) {
     if (opts.update) {
