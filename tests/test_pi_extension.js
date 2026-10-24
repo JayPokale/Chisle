@@ -34,7 +34,7 @@ function makeEventBus() {
   };
 }
 
-function makeHarness({ entries = [], contextEntries = entries, hasUI = true, tools = [], eventBus = makeEventBus() } = {}) {
+function makeHarness({ entries = [], contextEntries = entries, hasUI = true, tools = [], omp = false, eventBus = makeEventBus() } = {}) {
   const handlers = new Map();
   const commands = new Map();
   const appended = [];
@@ -55,7 +55,7 @@ function makeHarness({ entries = [], contextEntries = entries, hasUI = true, too
       setStatus: (key, value) => statuses.push([key, value]),
       notify: (message, level) => notifications.push([message, level]),
     },
-    sessionManager: {
+    sessionManager: omp ? {} : {
       getBranch: () => entries,
       buildContextEntries: () => contextEntries,
     },
@@ -170,6 +170,46 @@ test('injects rules once, skips an existing AGENTS.md ruleset, and reinjects aft
     ...event,
     systemPromptOptions: { contextFiles: [{ content: '# Chisle\n\n## Prose: zero fluff\n\n## Code: the efficiency ladder' }] },
   }, covered.ctx), undefined);
+});
+
+test('OMP system prompt segments receive rules as a system prompt instead of a trailing message', async () => {
+  process.env.CHISLE_DEFAULT_MODE = 'on';
+  const h = makeHarness({ omp: true });
+  await start(h);
+  const event = { systemPrompt: ['base system prompt'], systemPromptOptions: { contextFiles: [] } };
+  const before = h.handlers.get('before_agent_start');
+  const result = await before(event, h.ctx);
+
+  assert.ok(Array.isArray(result.systemPrompt));
+  assert.match(result.systemPrompt.at(-1), /CHISLE ACTIVE/);
+  assert.equal(result.message, undefined);
+  assert.ok(await before(event, h.ctx), 'rules were not appended to the next OMP turn');
+  assert.equal(await before({ ...event, systemPrompt: result.systemPrompt }, h.ctx), undefined,
+    'rules already present in the prompt were appended twice');
+});
+
+test('OMP array system prompts handle disabled mode without stringifying segments', async () => {
+  process.env.CHISLE_DEFAULT_MODE = 'off';
+  const h = makeHarness({ omp: true });
+  await start(h);
+  const result = await h.handlers.get('before_agent_start')({
+    systemPrompt: ['base system prompt'], systemPromptOptions: { contextFiles: [] },
+  }, h.ctx);
+
+  assert.deepEqual(result.systemPrompt.slice(0, 1), ['base system prompt']);
+  assert.match(result.systemPrompt.at(-1), /CHISLE DISABLED/);
+});
+
+test('OMP active resumed sessions remove legacy trailing rules messages', async () => {
+  process.env.CHISLE_DEFAULT_MODE = 'on';
+  const h = makeHarness({ omp: true });
+  await start(h);
+  const filtered = await h.handlers.get('context')({ messages: [
+    { role: 'custom', customType: 'chisle-rules', content: 'legacy rules' },
+    { role: 'user', content: 'keep' },
+  ] }, h.ctx);
+
+  assert.deepEqual(filtered.messages, [{ role: 'user', content: 'keep' }]);
 });
 
 test('duplicate extension copies coordinate first-turn rules injection', async () => {

@@ -69,12 +69,24 @@ function hasRulesEntry(entries) {
 }
 
 function promptHasRules(event) {
-  const containsRules = text => /^# Chisle\s*$/m.test(text || '') &&
-    (text || '').includes('## Prose: zero fluff') &&
-    (text || '').includes('## Code: the efficiency ladder');
-  if (containsRules(event.systemPrompt)) return true;
+  const containsRules = text => {
+    text = text || '';
+    return /^# Chisle\s*$/m.test(text) &&
+      ((text.includes('## Prose: zero fluff') && text.includes('## Code: the efficiency ladder')) ||
+        (text.includes('## Persistence') && text.includes('## Code:')));
+  };
+  const systemPrompt = Array.isArray(event.systemPrompt)
+    ? event.systemPrompt.join('\n\n')
+    : event.systemPrompt;
+  if (containsRules(systemPrompt)) return true;
   return (event.systemPromptOptions && event.systemPromptOptions.contextFiles || [])
     .some(file => containsRules(file.content));
+}
+
+function appendSystemPrompt(systemPrompt, text) {
+  return Array.isArray(systemPrompt)
+    ? [...systemPrompt, text]
+    : `${systemPrompt || ''}\n\n${text}`;
 }
 
 function piToolAllowed(name) {
@@ -89,6 +101,7 @@ function chisleExtension(pi) {
   const rules = loadRules();
   let active = getDefaultMode() !== 'off';
   let rulesInContext = false;
+  let ompMode = false;
   let savedChars = 0;
   let lastByToolBlock = new Map();
   let dedupBaseline = new Map();
@@ -104,6 +117,7 @@ function chisleExtension(pi) {
   }
 
   function restoreBranch(ctx) {
+    ompMode = !ctx.sessionManager || typeof ctx.sessionManager.buildContextEntries !== 'function';
     active = getDefaultMode() !== 'off';
     savedChars = 0;
     lastByToolBlock = new Map();
@@ -161,8 +175,17 @@ function chisleExtension(pi) {
 
   pi.on('before_agent_start', async event => {
     if (!active) {
-      if (event.systemPrompt.includes('CHISLE DISABLED.')) return;
-      return { systemPrompt: event.systemPrompt + '\n\nCHISLE DISABLED. Ignore only Chisle style and efficiency-ladder instructions.' };
+      const systemPrompt = Array.isArray(event.systemPrompt)
+        ? event.systemPrompt.join('\n\n')
+        : event.systemPrompt || '';
+      if (systemPrompt.includes('CHISLE DISABLED.')) return;
+      const disabled = 'CHISLE DISABLED. Ignore only Chisle style and efficiency-ladder instructions.';
+      return { systemPrompt: appendSystemPrompt(event.systemPrompt, disabled) };
+    }
+    if (Array.isArray(event.systemPrompt)) {
+      ompMode = true;
+      if (promptHasRules(event)) return;
+      return { systemPrompt: appendSystemPrompt(event.systemPrompt, rules) };
     }
     if (rulesInContext || promptHasRules(event)) return;
     rulesInContext = true;
@@ -171,7 +194,7 @@ function chisleExtension(pi) {
   });
 
   pi.on('context', async event => {
-    if (active) return;
+    if (active && !ompMode) return;
     return { messages: event.messages.filter(message =>
       !(message.role === 'custom' && message.customType === RULES_TYPE)) };
   });
