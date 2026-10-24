@@ -76,12 +76,12 @@ function buildSvg(stat) {
       `<text x="${left + w + 9}" y="${y + 21}" font-size="13" fill="#c9d1d9"${bold}>${s.ans}%</text>`;
   });
 
-  const aria = `Pi benchmark, ${stat[SELF].n} tasks on GPT-5.5, answer length as percent of the same model with no ruleset. ` +
+  const aria = `Pi benchmark, ${stat[SELF].n} tasks, answer length as percent of the same model with no ruleset. ` +
     ARMS.map(a => `${a.label} ${stat[a.key].ans}%`).join(', ') + '.';
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}">
 <rect width="${W}" height="${H}" rx="10" fill="#0d1117"/>
-<text x="${W / 2}" y="34" font-size="17" font-weight="700" fill="#c9d1d9" text-anchor="middle">Pi + GPT-5.5 — answer length, % of the same model with no ruleset</text>
+<text x="${W / 2}" y="34" font-size="17" font-weight="700" fill="#c9d1d9" text-anchor="middle">Pi — answer length, % of the same model with no ruleset</text>
 <text x="${W / 2}" y="54" font-size="11.5" fill="#8b949e" text-anchor="middle">${stat[SELF].n} tasks, one run; the answer the user reads; lower = leaner</text>
 ${body}</svg>
 `;
