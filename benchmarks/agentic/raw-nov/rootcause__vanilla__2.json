@@ -1,0 +1,43 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 2,
+ "out_tokens": 947,
+ "input_tokens": 92344,
+ "cost_usd": 0.0325459,
+ "turns": 4,
+ "answer": "Fixed! Changed the comparison from `now > expiresAt` to `now >= expiresAt`. Now a session is properly rejected the instant it reaches its expiration time, not only after that moment has passed.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-Rmx5C4/repo -type f \\( -name \"*.ts\" -o -name \"*.js\" -o -name \"*.tsx\" -o -name",
+   "chars": 201
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  }
+ ],
+ "request_prompts": [
+  21787,
+  23192,
+  23429,
+  23936
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

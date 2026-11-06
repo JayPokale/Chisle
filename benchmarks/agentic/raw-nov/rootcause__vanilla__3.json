@@ -1,0 +1,43 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 3,
+ "out_tokens": 830,
+ "input_tokens": 92147,
+ "cost_usd": 0.031745499999999996,
+ "turns": 4,
+ "answer": "Fixed. The comparison now correctly uses `>=` so that a session is rejected the instant `now` reaches `expiresAt`, matching the documented behavior. The session will no longer be accepted at the exact millisecond it expires.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-XDnARj/repo -type f \\( -name \"*.ts\" -o -name \"*.js\" -o -name \"*.tsx\" -o -name",
+   "chars": 201
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  }
+ ],
+ "request_prompts": [
+  21785,
+  23134,
+  23395,
+  23833
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

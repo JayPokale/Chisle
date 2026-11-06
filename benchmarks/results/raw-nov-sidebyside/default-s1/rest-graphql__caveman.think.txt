@@ -1,0 +1,41 @@
+User asking for tradeoffs between REST and GraphQL. This is a straightforward architectural question.
+
+Caveman mode is ACTIVE. So I should be terse, drop filler, fragments OK.
+
+Let me think about the main tradeoffs:
+- REST: simpler, widely known, caching straightforward, but over/under-fetching
+- GraphQL: precise queries, prevents over/under-fetching, but more complex, caching harder
+
+Keep it tight, no fluff.
+
+Pattern: [thing] [action] [reason]. [next step].
+Drop articles (a/an/the), filler.
+
+Let me write this caveman-style full:
+
+REST pros: mature, caching easy (HTTP cache headers), simple to learn, no N+1 risk if designed right, stateless.
+REST cons: over-fetching (get all fields), under-fetching (need multiple requests), versioning pain.
+
+GraphQL pros: query exactly what you need (no over-fetch), one endpoint, no versioning headache, self-documenting.
+GraphQL cons: complex to build right, caching harder (often POST), batching needed to avoid N+1, more client/server work.
+
+In caveman lite: Keep structure, drop articles/filler, short synonyms
+In caveman full: Fragments OK, drop articles
+
+Actually, looking at the mode setting again - it says "Default: **full**" and I'm in caveman mode which is active by default.
+
+So full caveman mode.
+
+Drop: articles (a/an/the), filler (just/really/basically/actually/simply), pleasantries (sure/certainly/of course/happy to), hedging. Fragments OK. Short synonyms.
+
+Let me draft:
+
+REST: Simple, caching straightforward via HTTP headers, widely known, stateless by design. Downside: over-fetching (return full resources even if client needs 2 fields), under-fetching (multiple requests for related data), versioning requires /v1/v2/ endpoints.
+GraphQL side: exact queries, single endpoint, skip versioning, schema self-docs - trade for harder setup, POST-based caching pain, N+1 risk sans batching, steeper curve.
+
+Decision split: REST wins for simple CRUD, heavy caching, team unfamiliar w/ GraphQL. GraphQL wins for flexible client needs (mobile/web differ), tight bandwidth, complex nested data.
+
+Tightening further - strip extra words, keep core contrast: HTTP caching native (REST) vs versioning pain (/v1,/v2) vs over-fetch (full fields) vs under-fetch (multi calls).
+
+Need a final call since they're building something new. Landing on: CRUD + read-heavy + simple → REST. Complex relationships + varied clients → GraphQL.
+

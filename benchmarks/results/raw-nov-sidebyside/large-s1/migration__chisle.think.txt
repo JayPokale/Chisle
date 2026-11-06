@@ -1,0 +1,35 @@
+The user wants a database migration script that:
+1. Moves a users table from single `full_name` column to `first_name` and `last_name` columns
+2. Backfills existing rows (splits full_name into first/last)
+3. Is safely re-runnable (idempotent)
+
+They want to see the code. No specific database mentioned, so I should pick a common one - SQL-based. I'll use a standard SQL migration pattern (like you'd see in Ruby on Rails, Node migrations, or plain SQL).
+
+The migration needs to:
+- Check if columns already exist (re-runnable)
+- Add first_name and last_name columns if they don't exist
+- Backfill the data by splitting full_name
+- Drop the full_name column (optional, but typical for full migration)
+- Handle NULL values, edge cases
+
+I'll show a SQL migration that's re-runnable. I could use:
+- Plain SQL (most portable)
+- PostgreSQL (common for serious projects)
+- MySQL (also common)
+
+I'll go with PostgreSQL since it's very common and robust, but the pattern works for most SQL databases.
+
+Key considerations for re-runnability:
+- Use `IF NOT EXISTS` or check before adding columns
+- Check before dropping columns
+- Be idempotent: running it twice should be safe
+
+Let me write a robust migration that:
+1. Adds columns if they don't exist
+2. Backfills data (splits on space, handles edge cases)
+3. Can be safely run multiple times
+4. Optionally removes the old column at the end
+
+I'll show both a SQL version and a simple Node.js version since migrations are often run via frameworks.
+
+Chisle mode: code first, minimal explanation. No "Sure!" preamble. Skip unnecessary words.

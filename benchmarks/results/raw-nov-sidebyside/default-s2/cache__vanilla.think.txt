@@ -1,0 +1,9 @@
+The user is asking me to add a cache layer for user profile API responses. However, I don't have context about what project this is or what the current API structure looks like. Let me check what's in the working directory.
+
+I should:
+1. First explore the working directory to understand the project structure
+2. Look for existing API code, particularly user profile endpoints
+3. Understand the current tech stack
+4. Then implement a cache layer appropriate for the project
+
+Let me start by checking what files and structure exist.

@@ -1,0 +1,12 @@
+The user is asking me to add debounce to a search input that's making API calls on every keystroke. This is a fairly common optimization problem.
+
+However, I need to actually see the code first to understand what we're working with. The user said "Show the code" which suggests they want me to implement it and show them the result, but I should first check what exists in the working directory.
+
+Let me check the directory structure to understand what we're working with.
+
+Following Ponytail principles:
+1. Does this need to exist? Yes, debouncing search is a legitimate optimization.
+2. Already in this codebase? Need to check.
+3. What framework/language are we using? Need to see the code.
+
+Let me start by exploring what's in the current directory.

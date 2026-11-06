@@ -1,0 +1,10 @@
+User asks for explanation of regex backreferences with a short example. They want it terse (caveman mode active).
+
+Let me be brief and direct:
+- What it is
+- One example
+- No fluff
+
+Backreferences: let you refer to previously captured groups in the same regex pattern using \1, \2, etc.
+
+Example: matching repeated words or HTML tags.

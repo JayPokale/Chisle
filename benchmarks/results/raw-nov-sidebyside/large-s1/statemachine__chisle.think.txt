@@ -1,0 +1,56 @@
+The user wants me to implement an order state machine with specific states and valid transitions. Let me think about what states are mentioned:
+1. created
+2. paid
+3. shipped
+4. delivered
+5. cancelled
+6. refunded
+
+Now, I need to think about what the legal transitions are:
+- created → paid (order is placed and payment received)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order shipped after payment)
+- paid → refunded (refund without shipping)
+- shipped → delivered (order delivered)
+- shipped → cancelled (cancelled after shipping?)
+- delivered → refunded (refund after delivery)
+
+Actually, let me think about this more carefully. Typical order flow:
+- created (initial state)
+- created → paid (payment received)
+- created → cancelled (cancelled before payment)
+- paid → shipped (order ships)
+- paid → refunded (refund issued - payment reversed)
+- shipped → delivered
+- shipped → cancelled (rare, but cancellation after shipment started)
+- delivered → refunded (customer return/refund after delivery)
+
+Invalid transitions would be things like:
+- paid → created (can't go back)
+- delivered → paid (can't go back)
+- cancelled → anything (terminal)
+- refunded → anything (terminal)
+
+Let me write a clean state machine implementation. The user asked for code, so I should show it directly. I'll use a simple approach with a class or function that manages state transitions.
+
+I'll write this in JavaScript/TypeScript since it's commonly understood and clean. Could also do Python, but JS is fine.
+
+Let me write a simple, clean implementation:
+
+```typescript
+type OrderState = 'created' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+
+const validTransitions: Record<OrderState, OrderState[]> = {
+  created: ['paid', 'cancelled'],
+  paid: ['shipped', 'refunded'],
+  shipped: ['delivered', 'cancelled'],
+  delivered: ['refunded'],
+  cancelled: [],
+  refunded: []
+};
+```
+
+So cancelled and refunded are terminal states with no outgoing transitions. Now I'll build a class wrapping this with a transition method that validates against the map and throws on invalid moves, plus a getter for current state and a canTransition check for pre-validation without throwing.
+
+The transition logic and terminal states look correct - created/paid/shipped all have valid forward paths, invalid jumps like created→shipped get properly rejected. Since the user just wants the code, I'll keep the response terse and minimal.
+

@@ -1,0 +1,13 @@
+The user is asking me to find and fix an auth middleware bug where valid tokens are being rejected at the exact expiry boundary. They mention the issue is that it uses `currentTime > expiry` when checking token expiration.
+
+Let me first explore the working directory to understand the structure and find the auth middleware code.
+
+The issue is clear from the description: the condition `currentTime > expiry` is incorrect. It should be `currentTime >= expiry` to reject tokens that are at or past their expiry time. However, the actual issue is more nuanced - if a token expires at time T, and the current time IS exactly T, the token should be considered expired. Using `>` means the token is only invalid AFTER the expiry time, not AT the expiry time.
+
+Wait, let me think about this more carefully. If a token expires at time T:
+- Using `currentTime > expiry`: the token is rejected only when currentTime is strictly greater than expiry. At exactly T, currentTime == expiry, so the token is NOT rejected.
+- Using `currentTime >= expiry`: the token is rejected when currentTime is greater than or equal to expiry. At exactly T, currentTime == expiry, so the token IS rejected.
+
+So the fix would be to change `>` to `>=`.
+
+But let me first look at the code to confirm where this issue is.

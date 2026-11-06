@@ -1,0 +1,31 @@
+The user is asking me to find and fix an auth middleware issue where valid tokens are rejected at the exact expiry boundary because it uses `currentTime > expiry` instead of the correct comparison.
+
+Let me break down the problem:
+- Current logic: `currentTime > expiry` means a token is valid if currentTime is NOT greater than expiry
+- This means a token expires exactly when `currentTime > expiry` becomes true
+- At the exact boundary (currentTime == expiry), the token should still be valid, but with `>` it might be rejected
+
+Wait, let me think about this more carefully:
+- If the comparison is `currentTime > expiry`, that means "reject if currentTime is greater than expiry"
+- At the boundary where `currentTime == expiry`, this condition is false, so the token should NOT be rejected
+- But the user says valid tokens are rejected at the exact expiry boundary
+
+Hmm, let me reconsider. Maybe the logic is checking if the token is expired:
+- `if (currentTime > expiry) { reject }` - this would reject when currentTime exceeds expiry
+- At boundary: currentTime == expiry, so the condition is false, token is NOT rejected ✓
+- Just before expiry: currentTime < expiry, condition is false, token is NOT rejected ✓
+- Just after expiry: currentTime > expiry, condition is true, token IS rejected ✓
+
+So actually `>` is the correct operator for rejecting at the moment AFTER expiry. But the user says tokens are being rejected AT the boundary.
+
+Wait, maybe I'm misunderstanding. Let me re-read: "rejects valid tokens at the exact expiry boundary (it uses currentTime > expiry)". 
+
+Perhaps the issue is the opposite - maybe they're using `>=` or `>` incorrectly. Or maybe the tokens are set to expire at a specific time, and at that exact second, they're being rejected when they shouldn't be?
+
+Actually, looking at common token expiry patterns:
+A token with `expiry = 1000` should remain valid through time 1000 and only become invalid at 1001. Testing `if (currentTime > expiry) { reject }` against this: at 1000, false, not rejected; at 1001, true, rejected. That actually matches correct behavior. So if the bug report insists rejection happens right at the boundary, maybe the real code uses `>=` somewhere, or there's a units mismatch (seconds vs milliseconds) causing the effective comparison to misfire right at that point.
+
+current code is checking validity rather than rejection, so `if (currentTime > expiry) { valid }` would wrongly exclude the boundary case. The standard fix is rejecting only when `currentTime > expiry` (valid at exact expiry), but if that's already what's used, maybe the actual logic differs from what's described. I should just look at the real code instead of guessing.
+
+I'll explore the directory to find the auth middleware and locate the expiry check. Need to find where `currentTime > expiry` actually lives, confirm the logic, and apply the minimal fix—keeping this efficient since ponytail mode is active.
+

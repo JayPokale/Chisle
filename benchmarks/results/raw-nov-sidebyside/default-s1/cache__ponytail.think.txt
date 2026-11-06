@@ -1,0 +1,14 @@
+The user is asking to add a cache layer for user profile API responses. Let me understand the context:
+
+1. They want to cache API responses for user profiles
+2. They want to see the code
+
+First, I need to understand what's in the working directory - what's the current codebase structure? Let me explore that.
+
+Since ponytail mode is active (default: **full**), I should:
+1. Check if this codebase already has caching patterns
+2. Look for stdlib solutions first (like functools.lru_cache)
+3. Check if there's already an API handler for user profiles
+4. Build the minimum that works
+
+Let me start by exploring the working directory to understand what we're working with.

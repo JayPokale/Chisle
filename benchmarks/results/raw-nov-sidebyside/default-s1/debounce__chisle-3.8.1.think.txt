@@ -1,0 +1,10 @@
+The user wants me to add debounce to a search input that currently fires an API call on every keystroke. They want to see the code.
+
+First, I need to understand what's currently in the working directory. Let me explore the project structure to find the search input implementation.
+
+Since they said "Show the code", they want to see what I'm implementing. I should:
+1. Explore the directory to find the search input
+2. Implement debounce
+3. Show the modified code
+
+Let me start by checking what's in the working directory.

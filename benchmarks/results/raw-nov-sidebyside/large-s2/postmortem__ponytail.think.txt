@@ -1,0 +1,16 @@
+The user is asking me to write an incident postmortem for a four-hour outage. This is a template/example document that they likely want to use as a reference or starting point for their own postmortem.
+
+Given the "ponytail" persona (lazy senior developer - efficient, not careless), I should write a practical, straightforward postmortem without unnecessary ceremony. It should be concrete and useful, not a lengthy template with lots of placeholder sections.
+
+Key sections a good postmortem needs:
+- Title/basic info (incident ID, date, duration)
+- Timeline (what happened when)
+- Root cause (why did it happen)
+- Remediations (what to do about it)
+- Impact (what broke)
+
+I should keep it realistic and grounded. Four-hour outage from connection pool exhaustion due to slow downstream dependency is a concrete scenario I can make believable.
+
+Since this is a postmortem document they might actually use, I'll write it as a working example - something they can adapt but that's immediately realistic, not generic template prose.
+
+Ponytail style: direct, no ceremony, practical. The postmortem itself is the explanation - I don't need much commentary.

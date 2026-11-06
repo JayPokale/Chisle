@@ -1,0 +1,75 @@
+The user is asking me to write an incident postmortem for a four-hour outage caused by connection pool exhaustion due to a slow downstream dependency. This is a structured document task.
+
+Given the caveman mode is active (default full), I should:
+- Keep it terse
+- Drop articles, filler
+- Use fragments
+- Short synonyms
+- But for a formal postmortem, this is a professional document
+
+I need to think about when to drop caveman mode. The rules say:
+"Drop caveman when:
+- Security warnings
+- Irreversible action confirmations
+- Multi-step sequences where fragment order or omitted conjunctions risk misread
+- Compression itself creates technical ambiguity
+- User asks to clarify or repeats question"
+
+A formal incident postmortem is a professional document that will be shared and reviewed. While I could write it in caveman mode, doing so would reduce clarity and professionalism. However, the instruction says "All technical substance stay. Only fluff die" and "Default: **full**. Switch: `/caveman lite|full|ultra`. Off only: "stop caveman" / "normal mode"."
+
+So the mode is active. But I should still apply judgment. The postmortem is technical substance - it's serious documentation. I think I can write it in caveman mode while keeping the formal structure intact. The terse style actually works well for incident reports - they should be clear and actionable.
+
+Let me write a postmortem that:
+1. Has proper structure (timeline, root cause, impact, remediation)
+2. Uses caveman style (no fluff, fragments OK, short words)
+3. Maintains technical accuracy and clarity
+4. Is professional enough for sharing
+
+Actually, wait - postmortems are formal documents that get shared widely. Caveman style might be too extreme here and could undermine credibility. Let me reconsider. The rule says "Compression itself creates technical ambiguity" - that's a trigger to drop caveman. A postmortem that's too compressed could actually reduce clarity.
+No "stop caveman" from user though, mode stays on. I'll keep it terse but readable - full mode, not ultra - structure and content stay clear even if compressed. User can adjust if needed.
+
+Drafting now: title, incident ID, duration, start time, then timeline/root cause/impact/remediation sections, all fragment-style but technically complete.
+
+No change. |
+| 15:30 | Decision: Circuit break Payment API endpoint. Deploy to production. |
+| 15:47 | Deployment applied. Requests circuit breaker → fast fail instead of waiting. Pool recovers within 2 min. |
+| 15:50 | Service healthy. Alerts clear. |
+| 16:00 | Payment API latency returns to normal. |
+| 18:44 | Post-incident investigation complete. Circuit breaker remains in place pending full fix. |
+
+Scaling Payment API didn't help, so I pivot to circuit breaking the endpoint instead, which lets requests fail fast rather than blocking. That resolves the pool exhaustion within minutes. I trace the root cause down to a missing index on the transaction history table causing full table scans.
+
+Root Cause:
+Payment API degradation from an unindexed `user_id` query on a 400k-row table turns into 45s response times. Our service holds connections open waiting (60s timeout), connections pile up in WAITING state, the pool hits its 100-conn cap, and new requests throw `ConnectionPoolExhaustedException` → HTTP 503 across the board for 4 hours.
+
+Why it wasn't caught sooner: we don't monitor Payment API's SLO, pool metrics only alert at full capacity (too late), and no circuit breaker existed.
+
+Fallout: full outage of order processing, ~180k failed requests, ~$47k revenue loss, 23 Twitter complaints, 8 support tickets.
+
+Digging deeper — no retry logic, no fast-fail, no queue limits meant requests just sat until timing out. No SLA with the Payment API team either, so no visibility into their
+
+degradation.
+
+Fix: circuit breaker went live at 15:30 UTC (5 failures or >10s latency triggers fast-fail), pool recovered within 2 minutes. Next 48 hours: Payment team adding an index on `user_id` to cut query latency from 200ms to 50ms, and we're adding alerting for p99 latency >5s routed to Slack.
+
+TA: Deploy by 2026-11-07.
+
+Also shrinking the connection pool timeout from 60s to 10s so calls fail fast instead of hanging, same ETA. Medium-term, backend team will add queue size limits (reject above 50) to handle surges better, targeting 2026-11-20, and engineering needs to formalize an SLA with Payment API — p99 under 500ms, 99.9% uptime, with a clear escalation path.
+
+Longer-term items: multi-region failover for Payment API calls since we currently have no redundancy (infra, 2026-12-06), and QA load-testing the circuit breaker under realistic conditions including full Payment API outage (2026-11-13).
+
+For lessons learned — we lack visibility into upstream dependency health, so we need dashboards for downstream APIs, and our 60s default timeout was clearly too lenient.
+
+| A3 | Downstream latency alerts | Monitoring | 2026-11-07 | P0 |
+| A4 | Reduce timeout to 10s | Backend | 2026-11-07 | P1 |
+| A5 | Connection pool queue limits | Backend | 2026-11-20 | P1 |
+| A6 | Payment API SLA contract | Eng leads | 2026-11-15 | P1 |
+| A7 | Circuit breaker load test | QA | 2026-11-13 | P1 |
+| A8 | Multi-region Payment failover | Infra | 2026-12-06 | P2 |
+
+Now filling in the appendix with the pre-incident connection pool config: max_connections 100, timeout 60s, idle
+
+_timeout 30s, unlimited queue, no circuit breaker. Post-fix config updates timeout to 10s for downstream calls, adds queue limit of 50 (pending), enables circuit breaker at 5 failures or >10s latency. Note the affected endpoint — GET /api/orders calling Payment API's transaction history. Adding sign-off section with placeholders for IC, date, reviewers. Checking against caveman mode rules: fluff dropped, fragments fine, short synonyms used, technical terms kept exact — looks compliant.
+
+Second-guessing the ultra-terse approach though. This is a formal shared document; full compression risks losing context or reading unprofessional. Settling on terse-but-structured — caveman style phrasing within a still-clear professional format. User can always ask for adjustments after.
+

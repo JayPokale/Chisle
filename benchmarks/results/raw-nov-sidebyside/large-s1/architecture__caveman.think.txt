@@ -1,0 +1,33 @@
+User asking about migrating monolith to microservices without big-bang rewrite. Wants coverage of:
+1. Ordering
+2. Data ownership
+3. Keeping it shippable throughout
+
+User has caveman mode enabled ("Respond terse like smart caveman. All technical substance stay. Only fluff die."). This is the default: **full** level.
+
+Let me structure this as tight, fragment-heavy, technical substance only:
+- Pattern: [thing] [action] [reason]. [next step].
+- Drop articles, filler, pleasantries
+- Fragments OK
+- Short synonyms
+
+Let me think through the migration strategy:
+
+**Ordering:**
+- Strangler pattern - wrap old system, extract boundaries gradually
+- Start with leaves: services with few/no dependencies inward
+- Then work toward the core
+
+**Data ownership:**
+- Start with read-only replicas
+- Gradual dual-write (new service writes, old system still writes, reconcile)
+- Eventually old system stops writing that domain
+- Database per service vs shared schema with strangler
+
+**Shippable:**
+- Feature flags for routing traffic
+- Canary deployments
+- Maintain compatibility layer
+- Every PR should be releasable
+
+This is architectural advice, not pseudo code, so caveman should work well - technical, terse.

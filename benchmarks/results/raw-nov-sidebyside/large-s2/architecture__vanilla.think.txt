@@ -1,0 +1,42 @@
+The user is asking for an explanation of how to migrate a monolith to services (microservices architecture) without doing a complete rewrite all at once. This is a request for architectural guidance, not a hands-on coding task in the current directory.
+
+They want coverage of:
+1. Ordering (sequencing the migration)
+2. Data ownership
+3. Keeping the system shippable throughout
+
+This is a strategic/architectural question that deserves a thoughtful response. I should be concise but comprehensive, covering the key patterns and principles.
+
+Let me think about the main approaches:
+
+1. **Ordering/Sequencing:**
+   - Start with the seams in the monolith - identify areas of loose coupling
+   - Usually start with pieces that have few dependencies or are needed by many (domain decomposition)
+   - Often start with cross-cutting concerns or bounded domains that are well-encapsulated
+   - Work outward from stable foundations
+
+2. **Data Ownership:**
+   - Each service owns its own data
+   - The hardest part of the migration - splitting databases
+   - Need to handle the transition period where data might live in multiple places
+   - Foreign key relationships become eventual consistency/events
+
+3. **Keeping it Shippable:**
+   - Use strangler fig pattern - gradually route traffic to new services
+   - Feature flags to toggle between old and new implementations
+   - Dual writes during transition
+   - Incremental deployment and testing
+   - Never remove the old code until you're sure the new service works
+
+Key patterns and approaches:
+- Strangler Fig Pattern
+- Feature flags
+- Adapter/wrapper patterns
+- Database per service
+- Eventual consistency
+- Events/message queue for inter-service communication
+- Contract testing
+
+I should structure this clearly with concrete guidance on HOW to do each part, not just what to do.
+
+This is a good question to answer directly and concisely. The user hasn't asked for memory to be saved, so I won't do that unless it seems relevant to future work. This seems like general architectural knowledge sharing rather than project-specific context.

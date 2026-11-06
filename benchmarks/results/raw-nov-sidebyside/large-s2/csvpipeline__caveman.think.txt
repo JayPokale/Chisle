@@ -1,0 +1,21 @@
+User wants a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully
+
+They want to see the code.
+
+This is a practical scripting task. I should write a complete, working script. Python is good for this - pandas for CSV handling, but I'll write something more explicit to show the validation logic clearly. Could use pandas or just csv module + dict aggregation.
+
+Given the "caveman" mode is active, I should be terse but the code itself should be normal/complete.
+
+Let me write a Python script that:
+- Reads CSV with error handling
+- Validates columns/data
+- Skips/logs bad rows
+- Aggregates by customer
+- Writes report
+
+I'll show working code, not pseudocode.

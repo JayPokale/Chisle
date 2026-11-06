@@ -1,0 +1,17 @@
+User is asking me to design a REST API for a multi-tenant document store with specific requirements: resources, auth model, pagination, versioning, and error format, along with explanations of decisions.
+
+They've set caveman mode to "full" - so I should be terse, drop articles/fillers, use fragments, keep technical substance. But for a design doc, I need clarity. Let me balance this - I'll be concise but clear since this is an architectural design that needs to be understood and explained.
+
+Actually, looking at the caveman rules again - "Auto-Clarity" section says to drop caveman when clarity is critical. A design document with multiple interconnected decisions probably needs clarity. But I can still be concise and tight.
+
+Let me create a comprehensive design doc that's terse but clear.
+
+I should cover:
+1. Resource structure
+2. Authentication/authorization model
+3. Pagination
+4. Versioning strategy
+5. Error format
+6. Explanations for each decision
+
+Let me structure this as a design document with practical examples.

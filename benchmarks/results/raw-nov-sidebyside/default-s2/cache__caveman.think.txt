@@ -1,0 +1,8 @@
+The user wants me to add a cache layer for user profile API responses. However, I need to first understand what project/code they're working with. Let me check the working directory to see what's there.
+
+They're asking for a practical implementation. I should:
+1. First explore the working directory to understand the structure
+2. Find the user profile API code
+3. Add a cache layer
+
+Let me start by checking what's in the directory.

@@ -1,0 +1,5 @@
+The user is asking for an explanation of regular expression backreferences with a simple example. This is a straightforward technical question that doesn't require any tool use.
+
+A backreference in a regular expression refers to a previously captured group within the same pattern. It's denoted by a backslash followed by a number (like \1, \2, etc.) and matches the exact same text that was captured by that numbered group.
+
+Let me provide a clear, concise explanation with a simple example.

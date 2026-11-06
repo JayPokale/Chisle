@@ -1,0 +1,13 @@
+The user is asking me to write an incident postmortem for a specific scenario: a four-hour outage caused by connection pool exhaustion due to a slow downstream dependency. This is a template/example document they want me to create.
+
+This is a straightforward request to generate a postmortem document. I should write a realistic, well-structured postmortem that includes:
+1. Summary/overview
+2. Timeline
+3. Root cause analysis
+4. Remediations (both immediate and long-term)
+5. Prevention measures
+6. Possibly lessons learned
+
+I'll create a realistic scenario and make it practical. I should write this to a file since it's a document they'll likely want to save.
+
+Let me create a comprehensive postmortem template with realistic details.

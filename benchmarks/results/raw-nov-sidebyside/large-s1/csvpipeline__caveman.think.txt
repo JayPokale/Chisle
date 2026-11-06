@@ -1,0 +1,27 @@
+The user wants a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully
+
+They want me to show the code. They're using caveman mode (full intensity based on the system prompt).
+
+I should write a Python script that:
+- Reads CSV efficiently (for large files)
+- Validates rows
+- Skips/logs malformed rows without crashing
+- Aggregates by customer
+- Writes a report
+
+I'll use Python with CSV module (standard lib). For a "large" CSV, I could use pandas, but CSV module is fine and doesn't require extra deps. Let me think about approach:
+
+1. Read CSV line by line (memory efficient)
+2. Validate each row (has required fields, data types correct)
+3. Skip bad rows, log them
+4. Aggregate into dict
+5. Write report
+
+I should show working code, not just explain it. Since caveman mode is active, I'll be terse but keep the code normal and the explanation terse.
+
+Let me write a complete, working script.

@@ -1,0 +1,40 @@
+The user is asking me to design a REST API for a multi-tenant document store. They want:
+1. Resources
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+
+And they want explanations for the decisions.
+
+This is a design task, not a coding task. They want me to explain an API design. I should be concise (chisle mode) but thorough in explaining the decisions. I should structure this clearly but without unnecessary headers/bullets.
+
+Let me think through what makes sense for a multi-tenant document store:
+
+**Resources:**
+- Organizations/Tenants
+- Documents
+- Possibly folders/collections
+- Users
+- Shares/permissions
+
+**Auth:**
+- Multi-tenant → need tenant isolation
+- API key? JWT? OAuth?
+- Need to scope tokens to tenant
+
+**Pagination:**
+- Cursor-based vs offset-based
+- Should support sorting
+
+**Versioning:**
+- Document versioning or API versioning?
+- Probably both
+
+**Error format:**
+- Consistent error responses
+- Include request ID for debugging
+
+I should present this in a clear way that balances being terse with being complete. Let me write this in prose form mostly, with some structured examples where it clarifies.
+
+In chisle mode: fragments, drop articles, exact terms, causality arrows. No unnecessary structure. Code blocks for API specs. Explain why each decision makes sense.

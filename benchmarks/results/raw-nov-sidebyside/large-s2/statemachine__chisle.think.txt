@@ -1,0 +1,46 @@
+The user wants an order state machine with specific states and transitions. Let me think about the valid transitions:
+
+States:
+- created (initial state)
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+Legal transitions:
+- created → paid
+- created → cancelled
+- paid → shipped
+- paid → refunded (if refunded before shipped)
+- shipped → delivered
+- shipped → cancelled (maybe? this is a bit edge-casey)
+- delivered → refunded (refund after delivery)
+- cancelled → (terminal, no transitions out)
+- refunded → (terminal, no transitions out)
+
+Actually, let me think about this more carefully. Typical order flow:
+- created → paid → shipped → delivered (happy path)
+- created → cancelled (cancel before payment)
+- paid → refunded (refund before shipping)
+- paid → cancelled (maybe cancel after payment?)
+- delivered → refunded (refund after delivery)
+
+Let me assume:
+- created → paid
+- created → cancelled
+- paid → shipped
+- paid → refunded
+- paid → cancelled
+- shipped → delivered
+- delivered → refunded
+- cancelled and refunded are terminal states
+
+I'll write a clean state machine implementation. The user wants to see code, so code first. I'll make it language-agnostic but probably go with Python since it's clear and the state machine logic is language-independent.
+
+Let me write a simple, clean implementation with:
+1. A way to define valid transitions
+2. A method to change state that enforces them
+3. Clear rejection of invalid transitions
+
+I'll use a dict mapping (current_state, event) → next_state, or a dict of current_state → list of valid next_states.

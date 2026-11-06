@@ -1,0 +1,19 @@
+The user is asking me to design a REST API for a multi-tenant document store. They want me to cover:
+1. Resources
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+
+And explain the decisions. Given the caveman mode instructions, I need to be terse, drop filler, but keep technical substance intact. However, for a design task like this where I'm explaining multiple decisions, I should probably use "lite" mode to keep it readable - caveman but with professional structure.
+
+Actually, looking at the mode, I'm set to "full" by default. Let me keep it caveman full but readable - fragments OK, drop articles where natural, short synonyms, no filler.
+
+Let me structure this:
+1. Resources - what entities and endpoints
+2. Auth model - how auth works
+3. Pagination - cursor vs offset
+4. Versioning - API versioning strategy
+5. Error format - consistent error responses
+
+I'll explain each decision briefly with reasoning.

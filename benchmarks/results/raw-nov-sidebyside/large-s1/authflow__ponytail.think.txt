@@ -1,0 +1,24 @@
+The user is asking me to implement email-and-password signup and login. This is a fairly standard auth system. Let me think about what's needed:
+
+1. Email validation
+2. Password hashing
+3. Signup endpoint
+4. Login endpoint
+5. Session management
+6. Rate limiting on failed attempts
+
+But wait - the user hasn't given me any context about what framework, language, or existing project this is for. They're in `/tmp/chisle-ablate-work-tuNmEs` which is not a git repo. I need to check what's in this directory first.
+
+Actually, looking at the requirements, I should:
+1. First understand what language/framework we're working with
+2. Check if there's any existing code
+3. Build the laziest possible implementation that covers the requirements
+
+Since no framework is specified, I should ask or check what exists. But actually, the user said "Show the code" which implies they want me to build something. Let me check what's in the working directory first.
+
+Given this is a fresh start and no context is provided, I should:
+- Check the directory
+- Make reasonable assumptions OR ask what framework they want
+- Use the Ponytail approach: stdlib first, minimize dependencies
+
+Actually, I should just check what's there and then decide. Let me start by looking at the directory structure.

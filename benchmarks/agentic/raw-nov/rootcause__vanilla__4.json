@@ -1,0 +1,43 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 4,
+ "out_tokens": 922,
+ "input_tokens": 92230,
+ "cost_usd": 0.0323506,
+ "turns": 4,
+ "answer": "Fixed. Changed the comparison from `now > expiresAt` to `now >= expiresAt` so that sessions become invalid immediately at their expiration time, not one millisecond after.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-2kWPmA/repo -type f \\( -name \"*.ts\" -o -name \"*.js\" -o -name \"*.tsx\" -o -name",
+   "chars": 201
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  }
+ ],
+ "request_prompts": [
+  21787,
+  23137,
+  23401,
+  23905
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

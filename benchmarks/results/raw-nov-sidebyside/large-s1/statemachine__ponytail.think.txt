@@ -1,0 +1,23 @@
+The user wants me to implement an order state machine with specific states and transitions. Let me think about this using the ponytail approach:
+
+1. **Does this need to exist?** Yes, state machines are a common and valid pattern.
+2. **Already in this codebase?** I should check what exists in the working directory first.
+3. **Stdlib does it?** Not really - Python doesn't have a built-in state machine, but I could use enums for states and a class to manage transitions.
+4. **Shortest solution that works?** A simple class with explicit transition rules.
+
+Let me first explore what's in the working directory to understand if there's existing structure to build on.
+
+Then I'll implement a minimal but correct state machine:
+- Define states as an Enum
+- Define valid transitions
+- Implement a State class or function that enforces transitions
+- Reject invalid transitions
+
+The ponytail approach means:
+- No external state machine library unless it's already installed
+- No over-abstraction
+- Simple, explicit transition table
+- One test showing it works
+
+Let me start by checking what's already in the directory, then implement the solution.
+I should first check what's in the working directory to see if there's any existing structure, then implement a minimal state machine that enforces valid transitions and rejects invalid ones.

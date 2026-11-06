@@ -1,0 +1,90 @@
+User wants a database migration script that:
+1. Moves from single full_name column to first_name/last_name
+2. Backfills existing rows
+3. Is safely re-runnable
+
+They said "show the code" so they want to see the actual migration.
+
+I'm in caveman mode. Should write terse, but code blocks stay unchanged. Need to be clear about the actual migration logic though.
+
+Since they didn't specify database, I'll assume PostgreSQL (most common for migrations) but could also show a generic pattern or ask. Actually, let me show PostgreSQL which is standard, and it's reversible and idempotent-safe.
+
+Key requirements for safe, re-runnable migration:
+- Check if columns exist before creating
+- Check if column exists before dropping
+- Handle parsing full_name intelligently (split on space)
+- Backfill data
+- Make re-runnable (idempotent)
+
+Let me write this as a proper migration file. I'll use PostgreSQL + a common migration tool pattern (like Rails or Alembic style).
+
+Actually, I should ask what DB and migration tool, OR just show a generic SQL version that works standalone.
+
+Let me show a SQL version that's database-agnostic enough but clear. I'll do PostgreSQL since that's most common.
+
+Actually - caveman mode says drop filler. "Show the code" is clear. Just write it.
+
+Migration should:
+1. ADD first_name, last_name columns if not exist
+2. Backfill by splitting full_name
+3. DROP full_name if migration already ran
+4. Make it safe - check existence before operations
+
+Here's the approach:
+- Use IF NOT EXISTS / IF EXISTS for idempotency
+- Split full_name on space to get first/last
+- Handle edge cases (names with multiple spaces - take first word as first name, rest as last)
+- Make it re-runnable (idempotent)
+
+Let me write PostgreSQL version since it's most common:
+For idempotency, wrap each ALTER in a DO block checking information_schema.columns first - first_name check, then last_name check, each adding the column only if missing.
+
+Then backfill: split full_name on the first space, using SPLIT_PART for first_name and SUBSTRING with POSITION for the remainder as last_name, trimming both. Only update rows where first_name is still null and full_name exists.
+
+Need to handle names with no space - set last_name to empty string when it's null but full_name isn't.
+
+Finally drop full_name, but again guard with an existence check in a DO block.
+
+Looking back at this, the SUBSTRING logic feels clunky. I switch to a cleaner version using COALESCE so I don't overwrite existing values, and add explicit column-existence checks via DO blocks before adding first_name/last_name. For the split, I check POSITION(' ' IN full_name) > 0 to decide whether to extract a substring or fall back to
+
+i want to keep everything idempotent - skip rows where first_name is already set, guard the DROP COLUMN with an existence check, and make sure the whole migration can be safely re-run without errors.
+
+verification)
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'users' AND column_name = 'full_name') THEN
+    ALTER TABLE users DROP COLUMN full_name;
+  END IF;
+END $$;
+```
+
+The SUBSTRING/POSITION approach feels fragile — switching to regexp_match for a cleaner split instead.
+
+Actually regexp_matches is overkill here. SPLIT_PART is simpler and more readable:
+
+```sql
+UPDATE users 
+SET 
+  first_name = TRIM(SPLIT_PART(full_name, ' ', 1)),
+  last_name = CASE 
+    WHEN full_name LIKE '% %' THEN TRIM(SPLIT_PART(full_name, ' ', 2))
+    ELSE ''
+  END
+WHERE full_name IS NOT NULL AND first_name IS NULL;
+```
+
+But this only grabs the second word, missing middle names or multi-word last names.
+
+For "John Paul Smith" I want first_name='John', last_name='Paul Smith' - everything after the first space:
+
+```sql
+UPDATE users 
+SET 
+  first_name = TRIM(SPLIT_PART(full_name, ' ', 1)),
+  last_name = CASE 
+    WHEN full_name ~ ' ' THEN TRIM(SUBSTRING(full_name, POSITION(' ' IN full_name) + 1))
+    ELSE ''
+  END
+WHERE full_name IS NOT NULL AND first_name IS NULL;
+```
+

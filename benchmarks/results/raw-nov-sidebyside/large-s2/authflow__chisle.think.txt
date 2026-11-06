@@ -1,0 +1,46 @@
+The user wants me to implement a complete email-and-password authentication system with:
+1. Signup
+2. Login
+3. Password hashing
+4. Session issuing
+5. Rate limiting on failed attempts
+
+They want to see the code.
+
+I need to:
+- Determine what tech stack to use (most common default would be Node.js/Express or Python/Flask)
+- Create a working implementation
+- Include all the requested features
+
+Since they didn't specify a tech stack, I should default to Node.js/Express which is a common choice for web apps with these auth requirements.
+
+I need to:
+1. Set up Express server
+2. Database (I'll use SQLite for simplicity, or in-memory for demonstration)
+3. Password hashing (bcrypt)
+4. Session management (JWT or server-side sessions)
+5. Rate limiting (simple in-memory rate limiter or a package)
+
+Let me start by asking what already exists or just implement a complete solution from scratch.
+
+Since the working directory is empty (not a git repo), I should create files.
+
+Tech stack choice: Node.js + Express, bcrypt for hashing, JWT for sessions, simple rate limiting.
+
+Actually, let me be efficient:
+- Express server
+- SQLite database with a users table
+- bcrypt for hashing
+- JWT for sessions
+- Rate limiting middleware
+
+I'll create:
+1. package.json
+2. server.js (main app)
+3. db.js (database setup)
+4. auth.js (auth routes)
+5. middleware.js (rate limiter, auth middleware)
+
+Let me make this complete and working.
+
+Chisle mode: terse, no fluff, code first.

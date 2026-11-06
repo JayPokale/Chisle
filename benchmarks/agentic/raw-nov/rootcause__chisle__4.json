@@ -1,0 +1,43 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 4,
+ "out_tokens": 831,
+ "input_tokens": 90057,
+ "cost_usd": 0.0333731,
+ "turns": 4,
+ "answer": "Changed `now > expiresAt` to `now >= expiresAt`. The boundary condition now correctly rejects sessions at the exact expiration instant, not after.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-EgV4yu/repo -type f -name \"*.ts\" -o -name \"*.js\" -o -name \"*.tsx\" -o -name \"*",
+   "chars": 201
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  }
+ ],
+ "request_prompts": [
+  21999,
+  22386,
+  22617,
+  23055
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

@@ -1,0 +1,22 @@
+The user is asking for an explanation of database connection pooling and its benefits. They have set the caveman mode to active, so I need to respond in a terse, stripped-down style following the caveman rules.
+
+Let me apply the caveman style (full mode):
+- Drop articles (a/an/the)
+- Drop filler (just/really/basically/actually/simply)
+- Drop pleasantries
+- Drop hedging
+- Use fragments OK
+- Use short synonyms
+- Keep technical terms exact
+- Use pattern: [thing] [action] [reason]. [next step]
+
+This is a straightforward explanation, not a security warning or irreversible action, so caveman mode applies fully.
+
+Let me structure it:
+1. What is connection pooling
+2. How it works
+3. Why it helps
+
+Let me think about the ultra vs full version - the user said "full" is active by default and I'm in that mode unless they switch. Full mode: drop articles, fragments OK, short synonyms.
+
+Here's my response:

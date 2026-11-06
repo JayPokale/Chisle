@@ -1,0 +1,14 @@
+The user is asking for an explanation of a regular expression backreference with one short example. This is a straightforward technical question.
+
+In chisle mode, I should:
+- Be terse, drop filler
+- Technical terms exact and verbatim
+- No headings, bullets, unnecessary structure
+- Get to the answer fast
+- One example, kept short
+
+A backreference in regex refers back to a previously captured group. The most common use case is finding duplicated words or patterns.
+
+Example: `(\w+)\s+\1` matches a word followed by the same word (like "hello hello")
+
+Let me keep this super tight.

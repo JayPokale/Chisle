@@ -1,0 +1,33 @@
+The user is asking me to design a REST API for a multi-tenant document store. They want me to cover:
+1. Resources (endpoints)
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+
+And they want explanations of the decisions.
+
+I'm in "chisle" mode, so I need to be terse but complete. I should focus on the decisive facts and trade-offs, not lengthy prose. However, this is a design task where understanding the why matters, so I need to include the rationale.
+
+Let me structure this as:
+1. Resources/endpoints - what the API exposes
+2. Auth model - how to handle multi-tenancy and authorization
+3. Pagination - how to handle large result sets
+4. Versioning - how to evolve the API
+5. Error format - consistent error responses
+
+I should be opinionated and explain the trade-offs. I'll avoid being a generic tutorial - focus on the hard decisions in multi-tenant document stores.
+
+Key decisions for multi-tenant:
+- Tenant isolation (headers vs path vs subdomain)
+- Tenant scoping at endpoint level
+- Resource ownership validation
+- Rate limiting per tenant
+
+For documents:
+- Versioning vs revisions
+- Soft deletes
+- Metadata handling
+- Search capability
+
+Let me design a clean, production-ready API.

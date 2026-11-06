@@ -1,0 +1,38 @@
+The user is reporting a bug in their auth middleware where valid tokens are being rejected at the exact expiry boundary. They mention the issue is that it uses `currentTime > expiry` instead of the correct comparison.
+
+The bug is clear: if a token expires at time T, and the current time is exactly T, then `currentTime > expiry` evaluates to `T > T` which is false, so the token is considered valid. Wait, that's backwards.
+
+Actually, let me think again. If we want to reject expired tokens, we should check if `currentTime >= expiry`. Using `currentTime > expiry` means:
+- At expiry time T: `T > T` = false, token NOT rejected (still valid) ✓
+- After expiry time: `T+1 > T` = true, token rejected ✓
+
+So `currentTime > expiry` actually seems correct for allowing tokens at the boundary.
+
+But the user says it "rejects valid tokens at the exact expiry boundary". So the logic must be the opposite - they're currently using a check that rejects tokens, and at the boundary it incorrectly rejects them.
+
+Let me reconsider. The user says: "it uses currentTime > expiry". If this is checking whether to REJECT:
+```
+if (currentTime > expiry) {
+  reject()
+}
+```
+
+Then at boundary:
+- currentTime = T, expiry = T: `T > T` = false, so don't reject. Token stays valid. ✓
+
+But they say it REJECTS valid tokens at the boundary. So the check might be:
+```
+if (currentTime >= expiry) {
+  reject()
+}
+```
+
+Or maybe they're rejecting with `>` but they have `<=` on the other side somewhere?
+
+Actually, I should just search the codebase for the auth middleware to see what's actually happening. The user wants me to find and fix the root cause. Let me start by exploring the project structure.
+
+Caveman mode is active, so I should be terse. Let me search for auth middleware files.
+
+---
+
+The read command should show me the directory structure. Let me see what files exist.

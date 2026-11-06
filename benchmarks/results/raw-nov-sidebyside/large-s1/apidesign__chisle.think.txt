@@ -1,0 +1,47 @@
+The user is asking me to design a REST API for a multi-tenant document store. They want:
+1. Resources (endpoints)
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+
+They also want explanations of the decisions.
+
+This is an architectural/design question, so I should give a solid design with clear reasoning for each choice. I'll be concise per the Chisle mode (which is active).
+
+Let me think through this systematically:
+
+**Resources:**
+- `/organizations/{org_id}/documents` - the core collection
+- `/organizations/{org_id}/documents/{doc_id}` - individual document
+- `/organizations/{org_id}/documents/{doc_id}/versions` - version history
+- `/organizations/{org_id}/documents/{doc_id}/versions/{version_id}` - specific version
+
+**Auth Model:**
+- Multi-tenant means org isolation is critical
+- API key or Bearer token (JWT) in Authorization header
+- Token contains org_id claim so we can validate access
+- Each request validates: is the requester in the org they're requesting?
+
+**Pagination:**
+- Cursor-based (vs offset) for consistency with large datasets, prevents issues with insertions between requests
+- Or keyset pagination
+- Query params: `?limit=50&cursor=<opaque_token>`
+
+**Versioning (API versioning)**
+- Option 1: Header-based (`Accept: application/vnd.myapi.v1+json`)
+- Option 2: URL path (`/v1/organizations/...`)
+- Option 3: No explicit versioning, evolve via deprecation headers
+- URL path is simpler for clients and explicit
+
+**Document Versioning (document history)**
+- Separate from API versioning
+- Each document update creates a new version
+- Queryable via `GET /org/{id}/documents/{doc_id}/versions`
+
+**Error Format:**
+- Consistent structure: `{ error: string, code: string, details?: object }`
+- HTTP status codes used meaningfully (400, 401, 403, 404, 409, 500)
+
+Writing this up in Chisle mode: fragments, exact code structures, tradeoffs clear, no filler.
+

@@ -1,0 +1,39 @@
+The user wants a database migration script that:
+1. Migrates a users table from a single `full_name` column to `first_name`/`last_name` columns
+2. Backfills existing rows
+3. Is safely re-runnable
+
+This is a pretty standard database migration task. Since they didn't specify a particular database system, I should ask or make a reasonable assumption. Actually, they said "show the code" which means they want me to implement it. Let me provide a migration that's database-agnostic enough but practical.
+
+I'll create a migration script. Since they didn't specify the database, I'll provide a SQL-based approach that's common (PostgreSQL-style) but I could also show a framework-specific approach. Let me do a general SQL migration that's idempotent.
+
+Key requirements:
+- Safe and re-runnable (idempotent)
+- Moves data from full_name to first_name/last_name
+- Backfills existing rows
+- Handles edge cases (NULL, single names, multiple spaces, etc.)
+
+The idempotent approach typically checks for column existence or uses IF NOT EXISTS/IF EXISTS patterns.
+
+Let me write a migration that:
+1. Checks if first_name/last_name columns exist
+2. If not, creates them
+3. Populates them from full_name (splitting on space)
+4. Optionally drops full_name if that's the goal (or make it optional)
+
+I should keep it simple and practical. No framework boilerplate unless needed. Since they didn't specify a framework, I'll provide raw SQL that works with most databases.
+
+Actually, let me think about what's most practical: they likely want either:
+- Raw SQL migration file
+- Python script (common for Django/app migrations)
+- A framework-specific migration (Alembic, etc.)
+
+Without knowing the framework, I'll provide a raw SQL migration first, then mention alternatives.
+
+The split logic:
+- If full_name has two parts: split on first space
+- If one part: use as first_name
+- If more than two parts: first part as first_name, rest as last_name
+
+I'll write this in a clean, idempotent form covering these name-splitting cases.
+

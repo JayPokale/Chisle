@@ -1,0 +1,10 @@
+The user is asking for an explanation of database connection pooling and why it helps. This is a straightforward technical explanation question, not a code task.
+
+Since this is an explanatory question and not a task requiring code changes or tool use, I should give a clear, concise explanation. The Ponytail mode emphasizes efficiency and brevity - no essays, no unnecessary detail.
+
+Let me explain:
+1. What it is (concisely)
+2. How it works (the core mechanism)
+3. Why it helps (the benefits)
+
+I should avoid unnecessary verbosity while being technically accurate.

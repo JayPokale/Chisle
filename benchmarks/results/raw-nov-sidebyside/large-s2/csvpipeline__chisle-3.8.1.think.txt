@@ -1,0 +1,30 @@
+The user wants a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully
+
+This is a fairly straightforward data processing task. I should write a Python script (most common for this type of work) that:
+- Reads CSV efficiently
+- Validates rows (checks for required fields, data types, etc.)
+- Skips or logs malformed rows
+- Aggregates by customer
+- Writes output
+
+I'm in chisle mode, so I should:
+- Be terse, no fluff
+- Show the code upfront
+- Keep it concise but complete
+- Use stdlib where possible
+- Handle the error case properly but not over-engineer
+
+Let me write a practical Python script using csv module (stdlib) that:
+- Reads CSV row by row (handles large files)
+- Validates required fields
+- Validates data types (amount should be numeric)
+- Aggregates transactions by customer_id
+- Logs errors/malformed rows
+- Writes summary report
+
+I'll use defaultdict for aggregation, skip/log bad rows, and write a clean report at the end.

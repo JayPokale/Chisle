@@ -1,0 +1,11 @@
+The user is asking me to add a cache layer for user profile API responses. However, I need to understand what project/codebase I'm working with. The working directory is `/tmp/chisle-ablate-work-tuNmEs`, which doesn't appear to be a git repository.
+
+Let me first explore what's in the working directory to understand the project structure and what kind of API we're dealing with.
+
+I should:
+1. Check what files/folders exist in the working directory
+2. Look for existing API code, particularly user profile endpoints
+3. Understand the tech stack (language, framework, etc.)
+4. Then implement an appropriate cache layer
+
+Let me start by exploring the directory structure.

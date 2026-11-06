@@ -1,0 +1,25 @@
+The user is asking for a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully
+
+This is a straightforward request for a practical script. I should write something robust that can handle real-world CSV issues. I'll use Python since it's practical for this task.
+
+Key considerations:
+- Handle malformed rows without crashing
+- Validate each row
+- Aggregate data efficiently
+- Write a report
+- Handle large files (so maybe use a stream-based approach rather than loading everything into memory)
+
+I'll create a Python script that:
+- Uses csv.DictReader for flexible CSV reading
+- Has validation logic
+- Tracks errors gracefully
+- Uses a dict for aggregation
+- Writes a report at the end
+- Shows error summary
+
+Let me write this script and show it to the user.

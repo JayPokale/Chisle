@@ -1,0 +1,22 @@
+The user is reporting a bug where auth middleware rejects valid tokens at the exact expiry boundary because it uses `currentTime > expiry` instead of `currentTime >= expiry`.
+
+The issue is clear: if a token expires at time T, and the current time is exactly T, the token should be expired. But with `>` instead of `>=`, it only rejects when `currentTime > expiry`, which means at exactly the expiry time, the token is still considered valid. Wait, that's backwards from what the user said.
+
+Actually, let me re-read: "rejects valid tokens at the exact expiry boundary (it uses currentTime > expiry)". So tokens are being rejected. If `currentTime > expiry`, then at the exact boundary where `currentTime == expiry`, the condition is false, so it doesn't reject. That means valid tokens are NOT being rejected at the boundary with `>`.
+
+Hmm, the user says "rejects valid tokens at the exact expiry boundary" and that it "uses currentTime > expiry". This seems contradictory. Let me think about this differently:
+
+- If `currentTime > expiry`, token is expired (reject)
+- At exact boundary: `currentTime == expiry`, so condition is false, token is NOT rejected (accepted)
+- So tokens at the exact expiry time are accepted
+
+But the user says it "rejects valid tokens at the exact expiry boundary". This could mean:
+1. The logic should be `currentTime >= expiry` (reject when current time equals or exceeds expiry)
+2. The bug is that it's using `>` when it should use `>=`
+3. Actually, wait - maybe the bug is the opposite direction?
+
+Let me reconsider. The user says "rejects valid tokens at the exact expiry boundary". If the current logic is `currentTime > expiry`, then at the boundary (currentTime == expiry), the token is NOT rejected (it's still valid). So tokens are being ACCEPTED at the exact expiry boundary.
+There's a contradiction here—either the actual code uses `>=` instead of what was described, or the symptom description doesn't match the stated code. The user explicitly says "it uses currentTime > expiry," yet claims rejection happens at the boundary. A token at exactly its expiry time is a judgment call on validity, so maybe that's where the ambiguity lies.
+
+Rather than speculate further, I should just search the codebase directly—find the auth middleware and inspect the actual expiry check logic myself.
+

@@ -1,0 +1,10 @@
+The user is asking for an explanation of database connection pooling - what it is and why it helps. This is a straightforward technical education question.
+
+Given the chisle mode, I should:
+- Be terse but complete
+- Use causality (arrows)
+- Drop filler and pleasantries
+- Answer at the question's altitude (no unnecessary headings or structure)
+- Keep decisive facts, cut words around them
+
+The user isn't asking for code, they're asking for explanation. So I'll explain it clearly but concisely without unnecessary fluff.

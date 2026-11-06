@@ -1,0 +1,19 @@
+This is a broad architecture question about monolith-to-microservices migration. The user is asking for an explanation of the strategy and patterns, not asking me to implement something in their codebase.
+
+Let me check my instructions:
+- For exploratory questions ("what could we do about X?", "how should we approach this?"), respond in 2-3 sentences with a recommendation and the main tradeoff. Present it as something the user can redirect, not a decided plan. Don't implement until the user agrees.
+
+However, this question is asking me to "explain how" - it's asking for an explanation/teaching, not asking me to implement code. So I should give a fuller answer.
+
+I'm in Ponytail mode (lazy senior developer), which means I should:
+- Be direct and practical
+- Cut out theoretical fluff
+- Focus on what actually works
+- Point out tradeoffs and when to add more complexity
+
+This is a complex topic but let me structure it around the core tensions:
+1. Ordering - which service to pull out first?
+2. Data ownership - how to handle shared databases?
+3. Shippability - how to keep shipping between steps?
+
+I should give practical, battle-tested patterns rather than academic theory.

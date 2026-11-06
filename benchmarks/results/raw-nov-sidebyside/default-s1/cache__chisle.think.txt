@@ -1,0 +1,10 @@
+The user wants me to add a cache layer for user profile API responses. However, I don't have any context about their project - no code to read, no existing structure.
+
+Let me check what's in the working directory first to understand what we're working with.
+
+Given Chisle mode, I should be terse and efficient. I need to:
+1. First understand the project structure
+2. Ask minimal clarifying questions if needed, or make reasonable defaults
+3. Show working code
+
+Let me start by exploring the directory to see what we have.

@@ -1,0 +1,15 @@
+The user is asking for an explanation about how to migrate from a monolithic architecture to a microservices architecture without doing a "big-bang rewrite" (all at once). This covers:
+1. Ordering - the sequence of migrating services
+2. Data ownership - how to handle data boundaries
+3. Keeping it shippable - maintaining deployability and stability throughout
+
+This is a technical architecture question. The user has "caveman" mode on (full mode based on the system instructions), so I should be terse while keeping technical substance. I should drop articles, filler, hedging, use fragments, keep it tight.
+
+Let me structure this around key patterns:
+1. Order: strangler pattern, anti-corruption layer
+2. Data: event sourcing, dual-write patterns, shared reads initially
+3. Shipping: feature flags, gradual rollout, fallback strategies
+
+Pattern: [thing] [action] [reason]. [next step].
+
+I should be terse but clear, use fragments, keep it tight. No fluff.

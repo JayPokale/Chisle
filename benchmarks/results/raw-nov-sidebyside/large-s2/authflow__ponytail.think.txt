@@ -1,0 +1,26 @@
+The user is asking me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They want me to "show the code" - so this is implementation-focused.
+
+First, I need to understand the context:
+- Working directory: /tmp/chisle-ablate-work-vgAXU7
+- It's NOT a git repository
+- Platform: Linux
+
+I should check what's in the working directory to see if there's already a project structure in place. Let me explore first before implementing.
+
+Actually, wait - the user has given a very open-ended request with no project context. I should follow the Ponytail principles:
+
+1. Does this need to exist at all? - Yes, they explicitly asked for it
+2. Already in this codebase? - I need to check what's there
+3. What framework/language? - I don't know yet
+
+But the user said "Show the code" which suggests they want to see an implementation. I should check what's in the working directory first to understand what technology stack we're working with.
+
+Let me check what files exist in the working directory.
+The user is asking for a complete email-and-password authentication system. This is a straightforward request. However, I need to understand what technology stack I'm working with. Let me check what's in the working directory first.
+
+Since this is not a git repo and the path is a temp directory, it's likely a fresh start or a minimal setup. I should check what's there first before building.

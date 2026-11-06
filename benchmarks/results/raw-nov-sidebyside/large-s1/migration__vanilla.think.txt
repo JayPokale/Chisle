@@ -1,0 +1,17 @@
+The user is asking for a database migration script that:
+1. Moves from a single `full_name` column to `first_name`/`last_name` columns
+2. Backfills existing rows
+3. Is safely re-runnable (idempotent)
+
+This is a classic database migration task. I should create a script that handles this. Since no specific database is mentioned, I'll assume a common choice like PostgreSQL or MySQL. I'll show PostgreSQL since it's widely used and has good migration support.
+
+A good migration script should:
+- Check if columns already exist before creating them
+- Parse the full_name into first_name and last_name
+- Handle edge cases (null values, names with multiple parts)
+- Be idempotent (can be run multiple times safely)
+- Maybe drop the old column only after confirming the migration worked
+
+Let me write a migration script that could be used with a migration tool. I'll provide a SQL-based approach that's straightforward and safe.
+
+I should create a file showing the migration script. Let me write this to the working directory.

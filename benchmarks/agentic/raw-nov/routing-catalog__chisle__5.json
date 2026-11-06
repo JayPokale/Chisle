@@ -1,0 +1,68 @@
+{
+ "fixture": "routing-catalog",
+ "arm": "chisle",
+ "seed": 5,
+ "out_tokens": 2199,
+ "input_tokens": 254739,
+ "cost_usd": 0.09287849999999997,
+ "turns": 8,
+ "answer": "Tests pass. The bug was a boundary condition in `weightFits` — line 65 used `<` when it should use `<=` to make the `maxKg` inclusive. The comment explicitly states \"Catalog maxima are inclusive: a 10 kg parcel is valid for a 10 kg rule,\" but the code rejected exact-weight-limit shipments. Now courier rates for boundary shipments like 7kg on SEA-PDX priority (maxKg: 7) correctly match.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "ls -la /tmp/wk-routing-catalog-zdN8Un/repo",
+   "chars": 224
+  },
+  {
+   "tool": "Bash",
+   "input": "ls -la /tmp/wk-routing-catalog-zdN8Un/repo/src && echo \"---\" && ls -la /tmp/wk-routing-catalog-zdN8U",
+   "chars": 291
+  },
+  {
+   "tool": "Read",
+   "input": "run.js",
+   "chars": 1236
+  },
+  {
+   "tool": "Read",
+   "input": "route-planner.js",
+   "chars": 33576
+  },
+  {
+   "tool": "Bash",
+   "input": "npm test",
+   "chars": 868,
+   "error": true
+  },
+  {
+   "tool": "Edit",
+   "input": "route-planner.js",
+   "chars": 162
+  },
+  {
+   "tool": "Bash",
+   "input": "npm test",
+   "chars": 68
+  }
+ ],
+ "request_prompts": [
+  22004,
+  22362,
+  22706,
+  23360,
+  39948,
+  40439,
+  41829,
+  42091
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/route-planner.js"
+ ],
+ "loc_before": 1444,
+ "loc_after": 1444,
+ "loc_delta": 0,
+ "deps_added": []
+}

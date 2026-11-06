@@ -1,0 +1,107 @@
+The user wants a database migration script that:
+1. Moves from `full_name` to `first_name` and `last_name`
+2. Backfills existing rows
+3. Is safely re-runnable (idempotent)
+
+They want to see the code, no explanation needed beyond what's in the code itself.
+
+I'll write a practical migration that:
+- Checks if columns already exist (idempotency)
+- Adds new columns if needed
+- Migrates data (splits full_name)
+- Drops old column if migration is complete
+- Works with standard SQL
+
+I'll make it generic enough to work with most databases. I'll use a common pattern with a status/version check or conditional logic.
+
+Actually, let me write this for a typical scenario. I'll show both the "forward" and "rollback" in comments, and make it idempotent so it can run multiple times safely.
+
+Let me do a SQL migration that's database-agnostic and safe:
+
+```sql
+-- Migration: Split full_name into first_name and last_name
+-- Idempotent: safe to run multiple times
+
+BEGIN;
+
+-- Add new columns if they don't exist
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name='users' AND column_name='first_name'
+  ) THEN
+    ALTER TABLE users ADD COLUMN first_name VARCHAR(255);
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name='users' AND column_name='last_name'
+  ) THEN
+    ALTER TABLE users ADD COLUMN last_name VARCHAR(255);
+  END IF;
+END $$;
+
+-- Backfill: split full_name into first and last name
+-- Only update rows where first_name/last_name are still NULL
+UPDATE users
+SET 
+  first_name = TRIM(SUBSTRING_INDEX(full_name, ' ', 1)),
+  last_name = TRIM(SUBSTRING_INDEX(full_name, ' ', -1))
+WHERE first_name IS NULL AND full_name IS NOT NULL;
+
+-- Drop old column if new columns are populated and non-null
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name='users' AND column_name='full_name'
+  ) THEN
+    ALTER TABLE users DROP COLUMN full_name;
+  END IF;
+END $$;
+
+COMMIT;
+```
+
+This leans heavily on Postgres-only syntax with the DO blocks. I should reconsider what the user actually needs here—they didn't specify which database engine they're using.
+
+I could write generic SQL, pick something popular like PostgreSQL, or show multiple variants. Going with Postgres makes sense since it's common for migrations, but I want this to be portable and not rely on DO blocks so it works across more database engines. I'll rewrite as pure idempotent SQL using `ADD COLUMN IF NOT EXISTS` instead.
+
+Now I need backfill logic. `SUBSTRING_INDEX` is MySQL-specific, but Postgres uses `SPLIT_PART`. I should just commit to Postgres syntax to keep things consistent, wrapping the whole thing in a transaction block with `BEGIN`/`COMMIT` for safety, and keep the old column drop commented out as an optional follow-up step.
+
+NOT EXISTS last_name VARCHAR(255);
+
+UPDATE users
+SET 
+  first_name = (string_to_array(full_name, ' '))[1],
+  last_name = (string_to_array(full_name, ' '))[2]
+WHERE first_name IS NULL AND full_name IS NOT NULL;
+
+UPDATE users SET last_name = first_name 
+WHERE last_name IS NULL AND first_name IS NOT NULL;
+
+COMMIT;
+```
+
+This could also be framed for an ORM migration (Rails, Django, Alembic), but raw SQL is more universal and adaptable. I'll keep it clean and practical, structured as idempotent steps: add columns, backfill names, handle single-name fallback.
+
+PostgreSQL syntax fits best here given `SPLIT_PART`. I'll note that explicitly rather than trying to cover MySQL too, since the user didn't specify a dialect. I should also consider whether they'd want this as a standalone SQL file versus an ORM-style migration script.
+
+Since "migration script" is ambiguous but SQL is the safest universal choice, I'll finalize with idempotent PostgreSQL:
+
+```sql
+BEGIN;
+ALTER TABLE users 
+  ADD COLUMN IF NOT EXISTS first_name VARCHAR(255),
+  ADD COLUMN IF NOT EXISTS last_name VARCHAR(255);
+
+UPDATE users
+SET 
+  first_name = TRIM(SPLIT_PART(full_name, ' ', 1)),
+  last_name = TRIM(SPLIT_PART(full_name, ' ', 2))
+WHERE first_name IS NULL AND full_name IS NOT NULL;
+```
+
+Still need to handle rows with no space in full_name.
+

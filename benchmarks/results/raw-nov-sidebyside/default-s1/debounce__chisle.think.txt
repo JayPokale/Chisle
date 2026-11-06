@@ -1,0 +1,5 @@
+The user wants to add debounce to a search input that's currently firing API calls on every keystroke. They want code shown.
+
+However, I need to understand the current state of the code. I should check what files exist in the working directory to understand what technology stack we're working with (React, Vue, vanilla JS, etc.) and find the search input implementation.
+
+Let me start by exploring the working directory.

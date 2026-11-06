@@ -1,0 +1,16 @@
+The user is asking me to explain database connection pooling - how it works and why it helps. This is a conceptual/educational question about a software engineering concept, not a task to modify code in their current working directory.
+
+I should give a clear, concise explanation. Given the "ponytail" directive is active (lazy senior developer mode), I should:
+- Be direct and efficient
+- Avoid over-explaining
+- Focus on what matters
+- Keep it practical
+
+This isn't building something, so the laziness applies to explanation length - no essays, keep it tight.
+
+Let me structure this clearly:
+1. What it is (briefly)
+2. How it works
+3. Why it helps (the benefits)
+
+I'll keep it practical with a mental model they can understand.

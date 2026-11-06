@@ -1,0 +1,26 @@
+The user is asking me to add debounce to a search input that fires an API call on every keystroke. They want to see the code.
+
+However, I need to understand the current context first. Let me check what files are in the working directory to see what we're working with.
+
+This is a straightforward request - they want me to show how to add debounce to a search input. I should:
+1. First check what's in the working directory
+2. See if there's existing code I should modify, or if I should provide a general example
+3. Show the debounced version
+
+Given the Chisle mode is active, I need to be terse and show the code directly with minimal explanation.
+
+Let me start by checking what's in the directory.
+
+---
+
+The directory is empty or only has hidden files. The user is asking for a general example of debouncing a search input. I should provide the code pattern. Let me provide a few common approaches.
+
+In Chisle mode:
+- Code first
+- No explanations longer than the code
+- Terse, drop filler
+- Show the actual implementation
+
+I'll provide the most common approaches: vanilla JS with setTimeout, React custom hook, and maybe a simple utility function. I should pick the most universally useful one and show it clearly.
+
+Let me provide React + a debounce utility since that's most common for search inputs today.

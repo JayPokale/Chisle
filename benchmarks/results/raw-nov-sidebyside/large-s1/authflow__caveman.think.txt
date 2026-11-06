@@ -1,0 +1,16 @@
+User wants me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They want me to show the code. This is a request to build authentication functionality. No specific framework mentioned, so I should ask or make a reasonable choice. Since they didn't specify, I should ask what tech stack they want this in.
+
+Actually, wait - let me check the working directory context. It says `/tmp/chisle-ablate-work-vgAXU7` and "Is a git repository: false". Let me check what's in there first.
+
+Actually, the user is asking me to implement this, and they said "Show the code" - they want a complete implementation. I should probably check if there's an existing project structure first, or ask about the tech stack.
+
+But given caveman mode is active, I should be very terse. Let me check the working directory first to see what's there.
+
+Wait, I should follow the instruction pattern: Be terse, state what I'm doing in one sentence, check if there's existing code structure.
+
+Let me start by checking what's in the working directory.

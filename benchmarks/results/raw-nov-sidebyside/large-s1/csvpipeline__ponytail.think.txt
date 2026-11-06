@@ -1,0 +1,35 @@
+The user is asking for a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows without dying
+
+I'm in ponytail mode, so I should:
+1. Skip speculative features (YAGNI)
+2. Use stdlib first
+3. Keep it simple
+4. Solve the actual problem with minimal code
+5. Mark any deliberate simplifications
+
+For this task:
+- stdlib `csv` module is perfect - no need for pandas or third-party libs
+- A simple dict for aggregation - no need for a Counter or fancy data structure (well, Counter is stdlib but dict is simpler if we're just doing sum)
+- Basic validation - what makes a row valid? Fields present, amount is numeric - something simple
+- Error handling - log bad rows and keep going
+- Write report - simple output, maybe CSV or text
+
+Let me think about the structure:
+- Read CSV
+- For each row:
+  - Try to validate
+  - If invalid, log and skip
+  - If valid, aggregate to dict keyed by customer_id
+- Write report from aggregated data
+
+The user hasn't specified the CSV schema, so I'll assume something reasonable:
+- customer_id, amount, date, description or similar
+
+I'll write a minimal, working version that handles malformed rows gracefully.
+
+Ponytail: code first, then one line on what's skipped, when to add it.

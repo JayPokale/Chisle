@@ -1,0 +1,19 @@
+The user is asking me to write an incident postmortem for a specific scenario: a four-hour outage caused by connection pool exhaustion triggered by a slow downstream dependency. They want a typical postmortem structure including timeline, root cause, and remediations.
+
+This is a straightforward request to create a document. I should write a realistic, professional incident postmortem that demonstrates:
+1. A clear timeline of events
+2. Root cause analysis
+3. Remediations (both immediate/short-term and long-term)
+4. Impact summary
+5. Possibly contributing factors and action items
+
+Let me structure this realistically. I'll make it detailed enough to be useful but not overly verbose. Given the "chisle" mode is active, I should be direct and concise.
+
+I'll write this in markdown format and should include realistic details:
+- Timeline: start time, detection time, mitigation, resolution
+- Root cause: connection pool exhaustion caused by slow downstream service
+- Impact: users affected, duration, services impacted
+- Remediations: circuit breaker, timeouts, monitoring, capacity planning
+- Action items
+
+Let me write a comprehensive but concise postmortem.
