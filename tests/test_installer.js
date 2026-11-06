@@ -596,3 +596,18 @@ test('--dry-run still reports success for shell-out agents', () => {
     fs.rmSync(home, { recursive: true, force: true });
   }
 });
+
+// `claude plugin install` skips an installed plugin, so --update must use
+// `claude plugin update`, or users stay on the old version.
+test('REGRESSION: --update upgrades an installed Claude plugin via plugin update', { skip: process.platform === 'win32' }, () => {
+  const cfg = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-upd-'));
+  const binDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-fakebin-'));
+  const log = path.join(binDir, 'calls.log');
+  fs.writeFileSync(path.join(binDir, 'claude'), `#!/bin/sh\necho "$@" >> ${JSON.stringify(log)}\necho chisle\nexit 0\n`, { mode: 0o755 });
+  runCLI(['--update', '--only', 'claude', '--config-dir', cfg], { env: { PATH: binDir + path.delimiter + process.env.PATH } });
+  const calls = fs.readFileSync(log, 'utf8');
+  assert.match(calls, /^plugin update chisle@chisle$/m);
+  assert.doesNotMatch(calls, /^plugin install /m);
+  fs.rmSync(cfg, { recursive: true, force: true });
+  fs.rmSync(binDir, { recursive: true, force: true });
+});

@@ -276,8 +276,11 @@ function installClaude(ctx) {
       results.skipped.push(['claude', 'plugin already installed']);
       pluginOK = true;
     } else {
+      // `plugin install` is a no-op for an already-installed plugin, so an
+      // upgrade (--update / --force) has to go through `plugin update`.
+      const present = opts.force && /chisle/i.test(capture('claude', ['plugin', 'list']).stdout || '');
       const r1 = run('claude', ['plugin', 'marketplace', 'add', REPO], opts.dryRun);
-      const r2 = run('claude', ['plugin', 'install', 'chisle@chisle'], opts.dryRun);
+      const r2 = run('claude', ['plugin', present ? 'update' : 'install', 'chisle@chisle'], opts.dryRun);
       if (ranOk(r1) && ranOk(r2)) { results.installed.push('claude'); pluginOK = true; }
       else warn('  claude plugin install failed, falling back to standalone hooks');
     }
