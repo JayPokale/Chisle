@@ -5,8 +5,15 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [3.11.0] - 2026-11-07
+
+Minor: `npx chisle tools` trims skill descriptions as well as tool schemas; README and site show correctness up front.
+
 ### Added
 - **`npx chisle tools` trims skill descriptions too.** Every request carries the skill listing, a description per skill. Skills the model never invoked in the window are set to `skillOverrides: "name-only"`, which keeps them listed and callable by name; your own overrides are never touched, and `tools restore` undoes exactly what trim set. Measured on a fresh session with the maintainer's config: 65 unused skills name-only took the base request from 24,185 to 23,248 tokens; projects that ship more skills save more.
+
+### Docs
+- README and site lead with correctness next to cost: 156/156 vs bare 154/156 on auto-graded maths and coding, 38/42 vs 36/42 on agentic hidden-test repos, both ties (p = 0.498, 0.738). The site's stats show 156/156 in place of the zero-dependencies tile, which the hero already states.
 
 ## [3.10.0] - 2026-11-07
 
