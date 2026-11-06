@@ -161,3 +161,41 @@ test('reinforcement: malformed sections value falls back to enabled, no throw', 
     assert.ok(line.includes('Code: YAGNI ladder'), JSON.stringify(malformed));
   }
 });
+
+// ── resume nudge ─────────────────────────────────────────────────────────────
+
+function runWithTranscript(minutesAgo, context) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-trk-'));
+  fs.writeFileSync(path.join(dir, '.chisle-active'), 'on', { mode: 0o600 });
+  const transcript = path.join(dir, 'session.jsonl');
+  const entry = {
+    type: 'assistant',
+    timestamp: new Date(Date.now() - minutesAgo * 60000).toISOString(),
+    message: { model: 'claude-opus-5-5', usage: { input_tokens: 5, cache_creation_input_tokens: 1000, cache_read_input_tokens: context - 1005, output_tokens: 50 } },
+  };
+  fs.writeFileSync(transcript, JSON.stringify({ type: 'user', message: { content: 'hi' } }) + '\n' + JSON.stringify(entry) + '\n');
+  try {
+    const out = execFileSync(process.execPath, [TRACKER], {
+      input: JSON.stringify({ prompt: 'next task', transcript_path: transcript }),
+      env: { ...process.env, CLAUDE_CONFIG_DIR: dir, CHISLE_DEFAULT_MODE: 'on' },
+      encoding: 'utf8',
+      timeout: 5000,
+    });
+    return JSON.parse(out);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+test('resume nudge: big context after an expired cache warns the user', () => {
+  const out = runWithTranscript(180, 480000);
+  assert.match(out.systemMessage, /3 h idle/);
+  assert.match(out.systemMessage, /~480k-token context/);
+  assert.match(out.systemMessage, /\/compact/);
+  assert.ok(out.hookSpecificOutput.additionalContext.startsWith('CHISLE ACTIVE.'));
+});
+
+test('resume nudge: silent while the cache is warm or the context is small', () => {
+  assert.equal(runWithTranscript(20, 480000).systemMessage, undefined);
+  assert.equal(runWithTranscript(180, 60000).systemMessage, undefined);
+});
