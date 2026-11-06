@@ -3,7 +3,7 @@
 const STATS = [
   { v: "−45%", k: "answer length in Claude Code, shorter than caveman and ponytail", src: "25 live prompts in one run, Claude Code 2.1.285 + Haiku 4.5, tools off; benchmarks/results/raw-nov-sidebyside/" },
   { v: "−43%", k: "billed output tokens on Sonnet 5.5 vs the same model bare", src: "34 live prompts, Claude Code + Sonnet 5.5, tools off; benchmarks/results/raw-nov-sonnet/" },
-  { v: "−46%", k: "per oversized tool output, before Claude reads it", src: "PostToolUse hook replayed over 171 real Claude Code sessions; Read/Edit never touched" },
+  { v: "−48%", k: "per oversized tool output, before Claude reads it", src: "PostToolUse hook replayed over the maintainer's recent Claude Code sessions; Read/Edit never touched" },
   { v: "0", k: "dependencies, network calls, LLM calls", src: "the plugin itself; the marketing site you are reading has its own" },
 ];
 

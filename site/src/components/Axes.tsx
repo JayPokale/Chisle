@@ -22,7 +22,7 @@ const AXES = [
     what: "What survives into context",
     body: "A post-tool hook shrinks tool results before the model reads them: ANSI scrub, head + tail elide with error-line salvage, same-session dedup. Never touches Read, Edit, or Write. Runs on Claude Code, Pi, OpenCode and Copilot CLI, and on the MCP servers of any agent via npx chisle mcp wrap.",
     demo: [
-      ["scrub", "strips ANSI escapes, collapses blank runs and `line repeated N×`, losslessly"],
+      ["scrub", "strips ANSI, minifies pretty JSON, collapses repeated lines and runs of passing tests; failures always kept"],
       ["elide", "oversized output → head + tail, error-like lines salvaged from the cut"],
       ["dedup", "byte-identical repeat of a tool's previous output → one-line marker"],
     ],
@@ -35,7 +35,7 @@ const AXES = [
     demo: [
       ["before", "ls -R  ·  git log  ·  Read(whole file)"],
       ["after", "ls dir  ·  git log --oneline -10  ·  Read(offset, limit)"],
-      ["why", "whole-file reads were 5.6M chars in the measured corpus, and cannot be compressed without breaking later edits"],
+      ["why", "whole-file reads were 22% of tool output in the maintainer's sessions, and cannot be compressed without breaking later edits"],
     ],
   },
 ];

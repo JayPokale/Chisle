@@ -18,6 +18,14 @@ const QA = [
     a: "Thirteen agents in total. Pi runs both axes with live toggling and a savings badge, the same as Claude Code. OpenCode runs both axes too, via a native plugin that compresses tool output plus the fenced ruleset and on-demand skills, but has no live toggle. Copilot CLI runs both axes through its global instructions file and a postToolUse hook, also without a live toggle. Hermes gets the skills as /chisle commands. The ruleset alone ships to Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and Copilot via generated rule files; there the persona is always on, and npx chisle mcp wrap adds compression for MCP tool output.",
   },
   {
+    q: "Why does Chisle tell me to /compact after a break?",
+    a: "The prompt cache lives about an hour. After a longer break, the next request re-sends your whole context at full price and every later turn re-reads it. In Claude Code, on the first prompt after a 60-minute gap with 150k+ tokens of context, Chisle shows one line suggesting /compact or /clear. It never blocks the prompt and the model never sees it. On the maintainer's sessions those re-writes were 14% of spend.",
+  },
+  {
+    q: "What does npx chisle tools do?",
+    a: "Claude Code sends the schema of every loaded tool on every request, used or not. npx chisle tools reports each heavy tool's size against how often you actually called it; npx chisle tools trim denies the unused ones (never core tools), and npx chisle tools restore undoes exactly that. On the agentic suite it cut cost per request by 10%, and no trimmed tool was ever needed.",
+  },
+  {
     q: "Does it fight with my Claude Code output style?",
     a: "No, not since 3.5.0. Output styles also govern prose structure, so an active style and Chisle's prose rules used to issue contradicting instructions with no precedence between them. Chisle now reads the active style and steps its prose rules aside on its own, with nothing to configure. The code rules, the ladder, the context diet, and the compressor all keep running. If you want the prose rules even with a style active, set sections.prose to true in ~/.config/chisle/config.json; explicit config always beats detection.",
   },
