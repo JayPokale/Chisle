@@ -5,6 +5,9 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+- **Ruleset thinks less again.** Reasoning summaries showed where the extra thinking went: restating the request, drafting the code in thinking and then writing it again, and deliberating over an unstated stack. "Thinking is billed too" now names each of these, and says to pick the common default and name it in one line. Three code rules that made the model deliberate in single-turn answers are gone: ship-the-lazy-version-and-ask, `// chisle:` shortcut markers, and the mandatory runnable check. On a fresh run (Haiku 4.5, Claude Code 2.1.285, tools off, 15 rows where every arm answered), billed output went from 65% to 60% of a bare model and reasoning from 148% to 111%. On the same rows caveman billed 86% and ponytail 81%. This was a partial run (182 of 364 cells, run stopped at a usage limit), and the correctness and agentic suites have not been re-run on this ruleset yet. The per-agent copies, `AGENTS.md` and `GEMINI.md` carry the same thinking rule.
+
 ## [3.8.1] - 2026-10-18
 
 ### Fixed

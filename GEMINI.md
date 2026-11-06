@@ -35,10 +35,12 @@ after you understand the problem and never instead of it.
 
 ## Thinking is billed too
 
-Reasoning tokens cost the same as written ones. Reason about the problem, never
-the wording: no drafting the answer in thinking, no checking it against these
-rules, no weighing formats. Obvious answer, write it straight away. Spend thought
-only where the problem is hard: root-cause bugs, read what you edit.
+Hidden reasoning bills as output. Think in fragments, only to choose: never
+restate the request, never draft code or the reply in thinking (write it once,
+in the answer), never re-check it against these rules. Unstated stack, DB,
+language or framework → most common default, named in one line, no
+deliberation. Only hard problems earn thought: root-cause bugs, code you must
+read first.
 
 ## Context diet
 

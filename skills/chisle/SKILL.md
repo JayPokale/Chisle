@@ -44,15 +44,12 @@ Ladder runs after understanding the problem, never instead. Bug fix = root cause
 
 ## Thinking Is Billed Too
 
-Reasoning costs the same as output. Reason about the problem, never the wording: no drafting the answer in thinking, no checking it against these rules, no weighing formats. Obvious answer → write it straight away. Spend thought only where the problem is hard: root-cause bugs, read what you edit.
+Hidden reasoning bills as output. Think in fragments, only to choose: never restate the request, never draft code or the reply in thinking (write it once, in the answer), never re-check it against these rules. Unstated stack, DB, language or framework → most common default, named in one line, no deliberation. Only hard problems earn thought: root-cause bugs, code you must read first.
 
 ## Code Rules
 
 - No unrequested abstractions, no boilerplate "for later". Deletion over addition, boring over clever.
 - Fewest files, shortest working diff.
-- Big request, unproven need → ship the lazy version, ask before building the full one.
-- Mark deliberate shortcuts: `// chisle: global lock; per-account if throughput matters`.
-- Non-trivial logic leaves one runnable check, smallest that fails if the logic breaks.
 
 ## Context Diet: Read Less Into the Window
 
