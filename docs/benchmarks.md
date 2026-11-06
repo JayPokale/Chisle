@@ -55,6 +55,8 @@ The trim takes 3.1k tokens off every request (−14% on the first, −12% per re
 | yagni | 3/6 | 6/6 | 3/6 |
 | other five | 30/30 | 30/30 | 30/30 |
 
+**Skill descriptions.** `tools trim` also lists skills the model never invoked as `skillOverrides: "name-only"`. Base request ("Say OK", Haiku 4.5): with the maintainer's config, 65 unused skills name-only took it from 24,185 to 23,248 tokens (−937). In the isolated benchmark harness, which loads only Claude Code's bundled skills, the saving is ~110 tokens, below that harness's startup variance (it loads 15–31 skills depending on sync timing, about ±1k tokens), so no agentic arm was run for it. Errors cannot rise from it: across all 126 agentic runs no skill was ever invoked, and a name-only skill stays callable.
+
 ## Input axis: tool output and the prompt cache (2026-11-07)
 
 **Compressor.** `node benchmarks/replay-compress.js` replays a session corpus through the shipped compressor, zero LLM calls. On the maintainer's 37 recent sessions (8,698 tool results, 13.7M chars): 150 outputs elided or scrubbed from 1.98M to 1.03M chars (**~48% each**), 7.1% of all session content. `Read`/`Edit`/`Write` are excluded by design; the largest untouched bucket is file views through `sed`/`cat`, which the model asked to see.

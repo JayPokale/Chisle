@@ -23,7 +23,7 @@ const QA = [
   },
   {
     q: "What does npx chisle tools do?",
-    a: "Claude Code sends the schema of every loaded tool on every request, used or not. npx chisle tools reports each heavy tool's size against how often you actually called it; npx chisle tools trim denies the unused ones (never core tools), and npx chisle tools restore undoes exactly that. On the agentic suite it cut cost per request by 10%, and no trimmed tool was ever needed.",
+    a: "Claude Code sends the schema of every loaded tool and a description of every skill on every request, used or not. npx chisle tools reports their size against how often you actually used them; npx chisle tools trim denies the unused tools (never core tools) and lists unused skills name-only, still callable, and npx chisle tools restore undoes exactly that. On the agentic suite the tool trim cut cost per request by 10%, and no trimmed tool or skill was ever needed.",
   },
   {
     q: "Does it fight with my Claude Code output style?",

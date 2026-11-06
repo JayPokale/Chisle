@@ -24,6 +24,13 @@ const ROWS = [
   { label: "answer lines · Claude Code", caveman: "55%", ponytail: "60%", chisle: "45%" },
 ];
 
+// Correctness, Chisle 3.9+ vs bare, Haiku 4.5: benchmarks/quality/raw-nov/ and
+// benchmarks/agentic/raw-nov/.
+const CORRECT = [
+  { label: "maths + coding, 52 problems × 3 seeds", bare: "154 / 156", chisle: "156 / 156" },
+  { label: "real repos, hidden tests, 7 fixtures × 6 seeds", bare: "36 / 42", chisle: "38 / 42" },
+];
+
 export default function Benchmarks() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
@@ -87,6 +94,30 @@ export default function Benchmarks() {
                     <td className="py-2 pr-4">{r.label}</td>
                     <td className="py-2 pr-4 text-right text-dim tabular-nums">{r.caveman}</td>
                     <td className="py-2 pr-4 text-right text-dim tabular-nums">{r.ponytail}</td>
+                    <td className="py-2 text-right font-semibold text-accent tabular-nums">{r.chisle}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <h3 className="mt-16 text-lg font-semibold tracking-tight">Correctness: shorter, not wronger</h3>
+          <p className="mt-2 max-w-xl text-sm text-dim">
+            Auto-graded, no judge model. Neither gap is significant (Fisher p = 0.498, 0.738).
+          </p>
+          <div className="pane-scroll mt-6 overflow-x-auto rounded-xl border border-line bg-bg px-5 py-2">
+            <table className="w-full text-left text-sm">
+              <thead className="text-xs uppercase tracking-wide text-dim">
+                <tr>
+                  <th className="py-2 pr-4 font-medium">suite</th>
+                  <th className="py-2 pr-4 text-right font-medium">bare model</th>
+                  <th className="py-2 text-right font-medium text-accent">chisle</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {CORRECT.map((r) => (
+                  <tr key={r.label} className="transition-colors hover:bg-accent-soft/40">
+                    <td className="py-2 pr-4">{r.label}</td>
+                    <td className="py-2 pr-4 text-right text-dim tabular-nums">{r.bare}</td>
                     <td className="py-2 text-right font-semibold text-accent tabular-nums">{r.chisle}</td>
                   </tr>
                 ))}

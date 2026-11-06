@@ -170,9 +170,16 @@ One run of 25 prompts: gaps of a few points are within run-to-run noise. Interva
 
 **Sonnet 5.5** (34 live prompts, [raw cells](benchmarks/results/raw-nov-sonnet/)): Chisle 3.9 bills **57%** of the bare model's output tokens (95% CI 50–64%) and answers at 54% of the length. Sonnet decides how much to think, and with Chisle it thinks less (84% of bare), so the shorter answers come straight off the bill.
 
-**Accuracy** holds against the bare model on Chisle 3.9: 156/156 vs 154/156 on auto-graded maths and coding (Fisher p = 0.498), 38/42 vs 36/42 on agentic hidden-test repos (p = 0.738). No judge model anywhere.
+**Correctness** holds: shorter answers are not wronger ones. Auto-graded, no judge model ([quality cells](benchmarks/quality/raw-nov/), [agentic cells](benchmarks/agentic/raw-nov/)):
 
-**Tool schemas** (`npx chisle tools trim`), same agentic fixtures: the base request falls from 22.0k to 18.9k tokens and context per request by 12%, cost per request **−10%** ($0.00894 → $0.00801), with no trimmed tool ever needed ([raw cells](benchmarks/agentic/raw-nov/)).
+| | bare model | **Chisle** |
+|---|--:|--:|
+| maths + coding, 52 problems × 3 seeds | 154 / 156 | **156 / 156** |
+| real repos, hidden tests, 7 fixtures × 6 seeds | 36 / 42 | **38 / 42** |
+
+Neither gap is significant (Fisher p = 0.498, 0.738): Chisle ties the bare model on accuracy while writing 12% fewer output tokens on the graded problems.
+
+**Fixed overhead** (`npx chisle tools trim`). Every request carries every loaded tool's schema and every skill's description. On the agentic suite, denying unused tools took the base request from 22.0k to 18.9k tokens and cost per request from $0.00894 to $0.00801 (**−10%**), at 36/42 vs 38/42 passed: the two lost passes are the `yagni` fixture's planted `|| 3` trap, which the bare model hit on 3 of 6 seeds in the same run, and no run ever called a denied tool. Listing unused skills name-only took a further 937 tokens off the maintainer's base request; in 126 agentic runs no skill was ever invoked, and name-only skills stay callable.
 
 **Tool output** is re-billed on every later turn. Replayed over the maintainer's recent sessions, the compressor makes each oversized output **~48%** smaller and removes 7.1% of all session content; `Read`/`Edit`/`Write` are never touched.
 
