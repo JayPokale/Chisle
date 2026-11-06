@@ -1,0 +1,82 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle-trim",
+ "seed": 3,
+ "out_tokens": 631,
+ "input_tokens": 65193,
+ "cost_usd": 0.05732285,
+ "turns": 3,
+ "answer": "Fixed. The `isExpired()` check was using `>` instead of `>=`. At the exact expiration millisecond (now === expiresAt), the old code returned false, keeping the session valid. Changed to `now >= expiresAt` so sessions become invalid the moment they reach expiresAt.",
+ "tool_calls": [
+  {
+   "tool": "Agent",
+   "input": "",
+   "chars": 1055
+  },
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-1G5DQR/repo -type f \\( -name \"*.ts\" -o -name \"*.tsx\" -o -name \"*.js\" -o -name",
+   "chars": 201
+  },
+  {
+   "tool": "Bash",
+   "input": "grep -r \"expiresAt\" /tmp/wk-rootcause-1G5DQR/repo --include=\"*.ts\" --include=\"*.tsx\" --include=\"*.js",
+   "chars": 527
+  },
+  {
+   "tool": "Bash",
+   "input": "grep -r \"session.*valid\\|isValid\\|isExpired\\|expir\" /tmp/wk-rootcause-1G5DQR/repo --include=\"*.ts\" -",
+   "chars": 1047
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Read",
+   "input": "middleware.js",
+   "chars": 330
+  },
+  {
+   "tool": "Read",
+   "input": "refresh.js",
+   "chars": 260
+  },
+  {
+   "tool": "Read",
+   "input": "cleanup.js",
+   "chars": 209
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  }
+ ],
+ "request_prompts": [
+  18918,
+  20479,
+  8901,
+  11179,
+  12155,
+  21394,
+  21728,
+  22071
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

@@ -1,0 +1,96 @@
+{
+ "fixture": "routing-catalog",
+ "arm": "chisle-trim",
+ "seed": 4,
+ "out_tokens": 2438,
+ "input_tokens": 262107,
+ "cost_usd": 0.0710648,
+ "turns": 13,
+ "answer": "Fixed. The bug was in `weightFits()` — it used exclusive comparison (`<`) when maxima are documented as inclusive. A 7kg parcel didn't match the 7kg rule, returning `NO_RATE` instead of the SP-PRI quote. Tests pass now.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "ls -la /tmp/wk-routing-catalog-9B5Qjp/repo",
+   "chars": 224
+  },
+  {
+   "tool": "Bash",
+   "input": "npm test 2>&1 | head -100",
+   "chars": 856
+  },
+  {
+   "tool": "Read",
+   "input": "run.js",
+   "chars": 1236
+  },
+  {
+   "tool": "Read",
+   "input": "package.json",
+   "chars": 127
+  },
+  {
+   "tool": "Read",
+   "input": "src",
+   "chars": 88,
+   "error": true
+  },
+  {
+   "tool": "Bash",
+   "input": "ls -la /tmp/wk-routing-catalog-9B5Qjp/repo/src",
+   "chars": 150
+  },
+  {
+   "tool": "Read",
+   "input": "route-planner.js [1+100]",
+   "chars": 3855
+  },
+  {
+   "tool": "Read",
+   "input": "route-planner.js [99+150]",
+   "chars": 4131
+  },
+  {
+   "tool": "Bash",
+   "input": "grep -n \"SEA-PDX\\|SP-\" /tmp/wk-routing-catalog-9B5Qjp/repo/src/route-planner.js | head -20",
+   "chars": 492
+  },
+  {
+   "tool": "Read",
+   "input": "route-planner.js [336+15]",
+   "chars": 332
+  },
+  {
+   "tool": "Edit",
+   "input": "route-planner.js",
+   "chars": 96
+  },
+  {
+   "tool": "Bash",
+   "input": "npm test",
+   "chars": 68
+  }
+ ],
+ "request_prompts": [
+  18927,
+  20735,
+  21587,
+  21867,
+  22115,
+  23627,
+  25573,
+  26080,
+  26542,
+  27432,
+  27622
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/route-planner.js"
+ ],
+ "loc_before": 1444,
+ "loc_after": 1444,
+ "loc_delta": 0,
+ "deps_added": []
+}

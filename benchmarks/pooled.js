@@ -3,7 +3,7 @@
 // same figures on rows where every arm delivered an answer (non-answers such as
 // "which stack?" or "I need your code" are cheap and flatter any arm).
 // Usage: ARMS=vanilla,caveman,ponytail,chisle node benchmarks/pooled.js <dir>...
-//   e.g. node benchmarks/pooled.js benchmarks/results/raw-oct-notools/*/
+//   e.g. node benchmarks/pooled.js benchmarks/results/raw-nov/*/
 const fs = require('fs'), path = require('path');
 const arms = (process.env.ARMS || 'vanilla,caveman,ponytail,chisle').split(',');
 const coding = new Set(['debounce', 'cache', 'migration', 'statemachine', 'csvpipeline', 'authflow']);

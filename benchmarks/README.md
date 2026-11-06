@@ -1,174 +1,79 @@
 # Benchmarks
 
-## Results at a glance
+Every number below is recomputed from the committed `raw*/` cells by the
+scripts in this directory; no hand-copied figures. Full tables, intervals and
+reading notes: [docs/benchmarks.md](../docs/benchmarks.md). Earlier rounds
+(June–October 2026) are retired and live in the git history.
 
-Every number below is regenerated from the committed `raw*/` data by the
-deterministic graders in this directory — no LLM calls, no hand-copied figures.
-Reproduce with the commands in each section.
+## Results at a glance (Chisle 3.9, November 2026)
 
-| suite | what it answers | headline | verdict |
-|-------|-----------------|----------|---------|
-| [1. Live 4-arm](#1-live-4-arm-head-to-head) | Does the ruleset cut billed output? | Chisle 3.9 bills 57% of bare on Sonnet 5.5; 71–87% on Haiku 4.5, below caveman and ponytail in the same run ([2026-11-06](../docs/benchmarks.md#output-axis-2026-11-06-chisle-39-current)) | **win on cost**, largest on adaptive-thinking models |
-| [2. Input-axis replay](#2-input-axis-replay-deterministic-free) | How much tool output can be safely elided? | ~45–47% per eligible output; 7.1% of session content on the maintainer's November corpus | **real**, grows with tool-heavy sessions |
-| [3. Correctness](#3-correctness-suites-maths--coding-auto-graded) | Does terseness make the model wrong? | 156/156 vs 154/156, Fisher p = 0.498 (Chisle 3.9) | **null result** — no quality cost |
-| [4. Agentic](#4-agentic-suite-real-repos-hidden-tests) | Does it help in a real repo? | 90.5% vs 85.7% pass, Fisher p = 0.738 (Chisle 3.9) | **null result** — tie within noise |
+| suite | what it answers | result |
+|-------|-----------------|--------|
+| [Side by side](#1-side-by-side-and-live-suites) | Does the ruleset cut billed output, against the rivals? | 71% of bare on Haiku 4.5 (3.8.1: 75%, caveman 87%, ponytail 90%); 57% on Sonnet 5.5 |
+| [Correctness](#2-correctness-maths--coding-auto-graded) | Does terseness make the model wrong? | 156/156 vs bare 154/156, Fisher p = 0.498 |
+| [Agentic](#3-agentic-real-repos-hidden-tests) | Does it hold up in a real repo loop? | 38/42 vs bare 36/42, p = 0.738; with `tools trim`, −10% cost per request |
+| [Replay](#4-input-axis-replay-deterministic-free) | How much tool output is safely elided? | ~48% per oversized output, 7.1% of session content |
 
-The two null results are the important ones: Chisle's claim is that it cuts cost
-**without** costing correctness, and a null on quality is exactly what supports
-that. It is not evidence that Chisle makes the model smarter.
+The correctness and agentic results are deliberate null results: the claim is
+that Chisle cuts cost **without** costing correctness, not that it makes the
+model smarter.
 
 ## What we measure
 
-| Metric | Layer | Why |
-|--------|-------|-----|
-| Billed output tokens | live | The headline cost number (includes model reasoning) |
-| Visible answer size / lines | deterministic | What the user reads; YAGNI proxy |
-| Correctness | graded | A short answer that's wrong is not a win |
-| Input chars elided | deterministic | The compressor's measured, baselined savings |
+| Metric | Why |
+|--------|-----|
+| Billed output tokens | the cost number, reasoning included |
+| Answer length / lines | what the user reads |
+| Correctness | a short answer that is wrong scores zero |
+| Context per request | what every turn re-reads; the bulk of real spend |
 
-The correctness gate matters: compression is only a benefit if the answer still
-solves the task. An arm that's 90% shorter but fails the task scores zero.
+## 1. Side-by-side and live suites
 
-## 1. Live 4-arm head-to-head
-
-`run-live.sh` drives authenticated Claude Code or Pi across four arms — vanilla
-(no tool), caveman, ponytail, chisle — over 6 tasks (3 coding, 3 non-coding).
-Each arm differs **only** in the system prompt injected; plugins, tone hooks, and
-personal config are neutralized via an isolated `HOME` + config dir holding only
-credentials. Competitor prompts resolve from a local clone or the installed
-plugin cache. Raw model outputs are committed under `results/raw*/` for audit.
+`run-ablation.js` runs any number of named rulesets in one session, so old and
+new Chisle answer the same prompts beside caveman and ponytail; `run-live.sh`
+is the four-arm runner the prompts come from. Tools are off (`--tools ""`), so
+each cell is one answer. Score with `pooled.js` (pooled ratio of sums vs bare,
+95% bootstrap).
 
 ```bash
-bash benchmarks/run-live.sh [model] [raw-dir]                 # Claude Code
-HARNESS=pi bash benchmarks/run-live.sh [model] [raw-dir]      # Pi; keeps raw JSONL + normalized JSON
-node benchmarks/aggregate.js                                  # comparison tables (RAW_DIR= for a fresh dir)
-node scripts/build-chart.js                        # regenerate assets/benchmark-pi.svg from raw-pi/
+node benchmarks/run-ablation.js <dir> 2 4 vanilla caveman=<SKILL.md> ponytail=<SKILL.md> chisle=skills/chisle/SKILL.md
+MODEL=claude-sonnet-5-5 node benchmarks/run-ablation.js <dir> 2 4 vanilla chisle=skills/chisle/SKILL.md
+bash benchmarks/run-live.sh claude-haiku-4-5-20251001 benchmarks/results/<dir>/default-s1
+ARMS=vanilla,caveman,ponytail,chisle node benchmarks/pooled.js benchmarks/results/raw-nov/*/
 ```
 
-Committed suites: `results/raw/` (June, Haiku), `results/raw-sonnet/` (June,
-Sonnet), `results/raw-verify/` (July re-verification). Combined ledger, per-task
-detail, and the correctness grading live in
-[`results/2026-07-07-verify-rerun.md`](./results/2026-07-07-verify-rerun.md);
-June writeups: [`2026-06-29-live-4arm.md`](./results/2026-06-29-live-4arm.md),
-[`2026-06-29-reliability.md`](./results/2026-06-29-reliability.md). Pi's separate
-harness receipt and raw events: [`2026-09-11-pi.md`](./results/2026-09-11-pi.md).
+Cells: [`results/raw-nov-sidebyside/`](results/raw-nov-sidebyside/),
+[`results/raw-nov-sonnet/`](results/raw-nov-sonnet/),
+[`results/raw-nov/`](results/raw-nov/).
 
-### Results — billed output tokens as % of vanilla (lower = leaner)
+## 2. Correctness (maths + coding, auto-graded)
 
-`node benchmarks/aggregate.js`, over the committed suites.
-
-| segment | vanilla | caveman | ponytail | **chisle** |
-|---------|--------:|--------:|---------:|-----------:|
-| coding | 100% | 36% | 33% | **27%** |
-| non-coding | 100% | 99% | 115% | **73%** |
-| all | 100% | 45% | 45% | **33%** |
-
-Raw totals behind that (billed tokens / answer lines, n cells):
-
-| segment | vanilla | caveman | ponytail | **chisle** |
-|---------|--------:|--------:|---------:|-----------:|
-| coding | 7766t / 298L (n=3) | 2818t / 118L (n=3) | 2592t / 56L (n=3) | **2075t / 43L (n=3)** |
-| non-coding | 1327t / 46L (n=3) | 1310t / 42L (n=3) | 1525t / 75L (n=3) | **966t / 19L (n=3)** |
-| all | 9093t / 344L (n=6) | 4128t / 160L (n=6) | 4117t / 131L (n=6) | **3041t / 62L (n=6)** |
-
-n=6 tasks per arm is small — treat the split between caveman and ponytail as
-noise, and only the vanilla-vs-rest gap as load-bearing.
-
-chisle is leanest on code; on pure prose a dedicated prose compressor wins on a
-good day. The chart and README state this plainly — no cherry-picking.
-
-## 2. Input-axis replay (deterministic, free)
-
-`replay-compress.js` feeds local Claude Code or Pi tool results through the
-same compression core the adapters run. Zero LLM calls. Pi's baseline is stored
-content after its native 50KB/2,000-line cap, so the reported saving is marginal.
-Extension tools require explicit opt-in through `CHISLE_COMPRESS_TOOLS` in both
-runtime and replay.
+32 maths problems graded by exact match, 20 coding problems by hidden unit
+tests, no judge model. Details: [quality/README.md](quality/README.md).
 
 ```bash
-node benchmarks/replay-compress.js                 # Claude Code
-node benchmarks/replay-compress.js pi              # Pi
-node benchmarks/replay-compress.js pi <session-dir>
+RAW_DIR=benchmarks/quality/raw-nov node benchmarks/quality/run.js claude-haiku-4-5-20251001 3 4
+RAW_DIR=benchmarks/quality/raw-nov node benchmarks/quality/grade.js
 ```
 
-### Results — what the compressor actually elides
+## 3. Agentic (real repos, hidden tests)
 
-Measured over the maintainer's own session corpus (19.3M chars). Tool output is
-**67.5%** of all session content, but the outputs big enough to compress are rare:
-
-| mode | outputs touched | chars before → after | saved | % of session content |
-|------|----------------:|---------------------:|------:|---------------------:|
-| full | 53 | 549,432 → 304,182 | 245,250 (~61k tok) | 1.3% |
-| ultra | 106 | 876,738 → 465,068 | 411,670 (~103k tok) | 2.1% |
-
-Per eligible output that is **~45–47% smaller**, but only ~4% of tool results
-clear the 8k threshold, so the session-level number stays low. `Read`/`Edit`
-output dominates the big-output bucket (5.62M chars) and is deliberately
-excluded — eliding it would make the model edit text it never saw.
-
-Receipts from the maintainer's corpus:
-[`results/2026-07-07-input-axis.md`](./results/2026-07-07-input-axis.md).
-
-## 3. Correctness suites (maths + coding, auto-graded)
-
-`quality/` asks the question the cost suites cannot: does the ruleset change how
-often the model is **right**? 32 maths problems graded by exact match, 20 coding
-problems graded by hidden unit tests, no judge model.
+Seven fixture repos with planted traps, driven by the real agent with real
+tools; the test arrives only after the run. Arms: `vanilla`, `chisle`,
+`chisle-hook`, `chisle-trim`, `ponytail`. Details:
+[agentic/README.md](agentic/README.md).
 
 ```bash
-node benchmarks/quality/run.js [model] [seeds] [parallel]
-node benchmarks/quality/grade.js
+ARMS=vanilla,chisle,chisle-trim RAW_DIR=benchmarks/agentic/raw-nov node benchmarks/agentic/run.js claude-haiku-4-5-20251001 6 3
+ARMS=vanilla,chisle,chisle-trim RAW_DIR=benchmarks/agentic/raw-nov node benchmarks/agentic/score.js
 ```
 
-### Results — accuracy (auto-graded, no judge model)
+## 4. Input-axis replay (deterministic, free)
 
-| arm | n | correct | accuracy | mean output tokens | mean answer chars |
-|-----|--:|--------:|---------:|-------------------:|------------------:|
-| vanilla | 156 | 155 | 99.4% | 802 | 480 |
-| **chisle** | 156 | **156** | **100.0%** | **723** | **336** |
-
-Fisher exact, two-sided: **p = 1.000** — not separable from noise at this cell
-count. The single vanilla miss (`code/deepequal`, seed 1) is one cell, not a
-trend. Read this as *no detectable quality cost*, not as an accuracy gain;
-30% fewer answer chars at the same correctness is the actual result.
-
-## 4. Agentic suite (real repos, hidden tests)
-
-`agentic/` drives the real agent with real tools across five fixture repos, each
-with a planted trap (an existing helper that should be reused, a shared bug with
-three call sites, a config ask that invites a framework). The agent never sees
-the test.
+`replay-compress.js` feeds your own local Claude Code or Pi tool results through
+the shipped compressor. Zero LLM calls; your sessions stay on your machine.
 
 ```bash
-node benchmarks/agentic/run.js [model] [seeds] [parallel]
-node benchmarks/agentic/score.js
+node benchmarks/replay-compress.js          # Claude Code
+node benchmarks/replay-compress.js pi       # Pi
 ```
-
-### Results — hidden-test pass rate and cost
-
-| arm | n | passed | pass rate | new files | net LOC | deps | out tokens | context tokens | $ / run |
-|-----|--:|-------:|----------:|----------:|--------:|-----:|-----------:|---------------:|--------:|
-| vanilla | 60 | 49 | 81.7% | 0.20 | 3.7 | 0.00 | 1171 | 67832 | 0.0269 |
-| **chisle** | 60 | 48 | 80.0% | 0.20 | **2.9** | 0.00 | **1083** | **64695** | 0.0276 |
-
-Fisher exact, two-sided: **p = 1.000**. Per fixture:
-
-| fixture | vanilla | chisle | Fisher p |
-|---------|--------:|-------:|---------:|
-| dupepaths | 4/12 | 4/12 | 1.000 |
-| reuse | 12/12 | 12/12 | 1.000 |
-| rootcause | 12/12 | 12/12 | 1.000 |
-| stdlib | 12/12 | 12/12 | 1.000 |
-| yagni | 9/12 | 8/12 | 1.000 |
-
-Chisle loses one net cell (`yagni`), writes a slightly shorter diff, and pulls
-~4.6% less context — and costs marginally **more** per run ($0.0276 vs $0.0269),
-because cheaper output does not offset the ruleset's own prompt tokens at this
-task size. `dupepaths` fails in both arms 8/12 of the time: the fixture is hard
-for the model, not a discriminator between arms.
-
-Both scorers print Fisher exact p-values, Wilson intervals and every failing
-cell. Results:
-[`results/2026-09-14-quality-and-agentic.md`](./results/2026-09-14-quality-and-agentic.md)
-— which reports a **null result** on answer quality and a cost saving that is
-real for prose and negligible for code.

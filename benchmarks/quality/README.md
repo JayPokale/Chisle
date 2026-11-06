@@ -17,37 +17,30 @@ node benchmarks/quality/grade.js --json                     # per-cell rows
 ```
 
 Runs are resumable — a cell whose raw JSON exists is skipped, so a re-run only
-fills gaps. Raw model output is committed under `raw/` for audit.
+fills gaps. Raw model output is committed under `raw-nov/` for audit; point `RAW_DIR` at a fresh directory when the ruleset changes.
 
-## Results
+## Results (Chisle 3.9, 2026-11-06)
 
-Regenerated from the committed `raw/` by `grade.js` — deterministic, no tokens
-spent.
+Regenerated from the committed `raw-nov/` by `RAW_DIR=benchmarks/quality/raw-nov node benchmarks/quality/grade.js`, Haiku 4.5, 3 seeds.
 
 | suite | arm | n | correct | accuracy | format-clean | mean out tokens | mean answer chars |
 |-------|-----|--:|--------:|---------:|-------------:|----------------:|------------------:|
-| math base | vanilla | 60 | 60 | 100.0% | 81.7% | 501 | 444 |
-| math base | chisle | 60 | 60 | 100.0% | 83.3% | 396 | 236 |
-| math hard | vanilla | 36 | 36 | 100.0% | 100.0% | 635 | 562 |
-| math hard | chisle | 36 | 36 | 100.0% | 100.0% | 538 | 345 |
-| code base | vanilla | 36 | 35 | 97.2% | 100.0% | 933 | 447 |
-| code base | chisle | 36 | 36 | 100.0% | 100.0% | 966 | 403 |
-| code hard | vanilla | 24 | 24 | 100.0% | 100.0% | 1610 | 500 |
-| code hard | chisle | 24 | 24 | 100.0% | 100.0% | 1454 | 474 |
-| **all** | vanilla | 156 | 155 | 99.4% | 92.9% | 802 | 480 |
-| **all** | **chisle** | 156 | **156** | **100.0%** | 93.6% | **723** | **336** |
+| math base | vanilla | 60 | 59 | 98.3% | 85.0% | 468 | 403 |
+| math base | chisle | 60 | 60 | 100.0% | 85.0% | 410 | 260 |
+| math hard | vanilla | 36 | 36 | 100.0% | 100.0% | 612 | 509 |
+| math hard | chisle | 36 | 36 | 100.0% | 100.0% | 519 | 341 |
+| code base | vanilla | 36 | 36 | 100.0% | 100.0% | 1100 | 420 |
+| code base | chisle | 36 | 36 | 100.0% | 100.0% | 968 | 408 |
+| code hard | vanilla | 24 | 23 | 95.8% | 100.0% | 1480 | 478 |
+| code hard | chisle | 24 | 24 | 100.0% | 100.0% | 1356 | 472 |
+| **all** | vanilla | 156 | 154 | 98.7% | 94.2% | 803 | 443 |
+| **all** | **chisle** | 156 | **156** | **100.0%** | 94.2% | **709** | **345** |
 
-vanilla 155/156, 95% CI 96.5%–99.9%; chisle 156/156, 95% CI 97.6%–100.0%.
-Fisher exact, two-sided: **p = 1.000**.
+vanilla 154/156, 95% CI 95.4%–99.6%; chisle 156/156, 95% CI 97.6%–100.0%. Fisher exact, two-sided: **p = 0.498**.
 
-**This is a null result on accuracy, and that is the claim.** The one vanilla
-miss is a single cell (`code/deepequal`, seed 1) and does not make Chisle more
-accurate. What does separate the arms is size at equal correctness: 336 vs 480
-mean answer chars (-30%) and 723 vs 802 mean output tokens (-10%).
+**This is a null result on accuracy, and that is the claim.** Two vanilla misses do not make Chisle more accurate. What separates the arms is size at equal correctness: 345 vs 443 mean answer chars (−22%) and 709 vs 803 mean output tokens (−12%).
 
-One asymmetry worth naming: on `math base` the chisle arm is *more*
-format-clean (83.3% vs 81.7%), and on `code base` it is the vanilla arm that
-drops a cell. Both differences are within noise at this n.
+Code items are run inside a `vm` context with their arguments built in that same realm; built outside it, a correct plain-object check (`Object.getPrototypeOf(x) === Object.prototype`) fails, which once marked a right `deepEqual` wrong.
 
 ## What is graded, and how
 

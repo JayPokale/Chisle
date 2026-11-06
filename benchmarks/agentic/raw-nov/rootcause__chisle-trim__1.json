@@ -1,0 +1,49 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle-trim",
+ "seed": 1,
+ "out_tokens": 1135,
+ "input_tokens": 102633,
+ "cost_usd": 0.036917900000000003,
+ "turns": 5,
+ "answer": "Fixed in `/tmp/wk-rootcause-s5v931/repo/src/auth/session.js:3`. Changed comparison from `>` to `>=` so sessions are rejected at the exact expiry instant, not after. The comment already documented this behavior.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-s5v931/repo -type f \\( -name \"*.js\" -o -name \"*.ts\" -o -name \"*.jsx\" -o -name",
+   "chars": 201
+  },
+  {
+   "tool": "Bash",
+   "input": "grep -r \"expiresAt\" /tmp/wk-rootcause-s5v931/repo --include=\"*.js\" --include=\"*.ts\" --include=\"*.jsx",
+   "chars": 517
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  }
+ ],
+ "request_prompts": [
+  18914,
+  20324,
+  20772,
+  21128,
+  21495
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}
