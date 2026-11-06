@@ -2,7 +2,7 @@ import Reveal from "./Reveal";
 
 // Coverage per agent, matching the FAQ and README: "full" runs both axes,
 // "skills" gets /chisle commands, "rules+mcp" gets the ruleset plus MCP output
-// compression via `npx chisle mcp wrap` (bin/lib/mcp.js targets), "rules" the ruleset only.
+// compression via `npx chisle mcp wrap` (bin/lib/mcp.js targets).
 const AGENTS = [
   { name: "Claude Code", level: "full" },
   { name: "Pi", level: "full" },
@@ -13,17 +13,16 @@ const AGENTS = [
   { name: "Windsurf", level: "rules+mcp" },
   { name: "Cline", level: "rules+mcp" },
   { name: "Kiro", level: "rules+mcp" },
-  { name: "Antigravity", level: "rules" },
-  { name: "Codex", level: "rules" },
+  { name: "Antigravity", level: "rules+mcp" },
+  { name: "Codex", level: "rules+mcp" },
   { name: "Gemini", level: "rules+mcp" },
-  { name: "Copilot", level: "rules" },
+  { name: "Copilot", level: "rules+mcp" },
 ] as const;
 
 const LEVEL = {
   full: { label: "persona + compressor", cls: "bg-accent-soft text-accent" },
   skills: { label: "/chisle skills", cls: "bg-raised text-fg" },
   "rules+mcp": { label: "ruleset + MCP compression", cls: "bg-raised text-fg" },
-  rules: { label: "ruleset", cls: "bg-raised text-dim" },
 };
 
 export default function Agents() {

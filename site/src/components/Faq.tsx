@@ -15,7 +15,7 @@ const QA = [
   },
   {
     q: "Does it work outside Claude Code?",
-    a: "Thirteen agents in total. Pi runs both axes with live toggling and a savings badge, the same as Claude Code. OpenCode runs both axes too, via a native plugin that compresses tool output plus the fenced ruleset and on-demand skills, but has no live toggle. Copilot CLI runs both axes through its global instructions file and a postToolUse hook, also without a live toggle. Hermes gets the skills as /chisle commands. The ruleset alone ships to Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and Copilot via generated rule files; there the persona is always on, and npx chisle mcp wrap adds compression for MCP tool output.",
+    a: "Thirteen agents in total. Pi runs both axes with live toggling and a savings badge, the same as Claude Code. OpenCode runs both axes too, via a native plugin that compresses tool output plus the fenced ruleset and on-demand skills, but has no live toggle. Copilot CLI runs both axes through its global instructions file and a postToolUse hook, also without a live toggle. Hermes gets the skills as /chisle commands. Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini and Copilot get the ruleset via generated rule files, with the persona always on, and npx chisle mcp wrap adds compression for their MCP tool output.",
   },
   {
     q: "Why does Chisle tell me to /compact after a break?",

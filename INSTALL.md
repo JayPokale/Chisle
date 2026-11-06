@@ -123,7 +123,7 @@ Oversized `bash`/`grep`/`glob`/web/`task` results are compressed;
 ## MCP output compression (any agent)
 
 Agents whose hooks cannot rewrite a tool result (Cursor, Windsurf, Cline, Kiro,
-Gemini CLI, Qwen Code) still launch stdio MCP servers from a command line.
+Gemini CLI, Qwen Code, Antigravity, Codex, GitHub Copilot in VS Code) still launch stdio MCP servers from a command line.
 `chisle mcp wrap` routes those servers through a small proxy that compresses
 oversized `tools/call` results with the same core and passes every other byte
 through unchanged:
@@ -138,8 +138,10 @@ npx chisle mcp unwrap          # restore original commands
 
 Covers `~/.cursor/mcp.json`, `~/.codeium/windsurf/mcp_config.json`,
 `~/.gemini/settings.json`, `~/.qwen/settings.json`, `~/.kiro/settings/mcp.json`,
-`~/.copilot/mcp-config.json`, and Cline's `cline_mcp_settings.json` in VS Code,
-Cursor and Windsurf. Restart the agent afterwards.
+`~/.copilot/mcp-config.json`, `~/.gemini/config/mcp_config.json` (Antigravity),
+`~/.codex/config.toml` (Codex, honors `CODEX_HOME`), the VS Code user `mcp.json`
+(GitHub Copilot, `servers` key) in Code, Code Insiders and VSCodium, and Cline's
+`cline_mcp_settings.json` in VS Code, Cursor and Windsurf. Restart the agent afterwards.
 
 - Opt-in, never part of plain `npx chisle`. Files with comments are reported and
   left alone; the first write keeps `<file>.chisle-bak`.
@@ -147,7 +149,10 @@ Cursor and Windsurf. Restart the agent afterwards.
 - Tools whose names suggest file content or edits (`read_file`,
   `get_file_contents`, `edit_file`, …) are never compressed.
 - Claude Code is never wrapped: its own hook already compresses `mcp__*` output.
-  Codex keeps TOML config and is not wrapped automatically.
+- Codex: only the `command`/`args` lines of `[mcp_servers.<name>]` tables change;
+  a table with values other than plain strings is skipped. Unwrap restores the
+  values (a multi-line `args` array comes back on one line); the untouched
+  original stays in `config.toml.chisle-bak`.
 - `npx chisle --uninstall` unwraps everything and removes the proxy.
 
 ## Upgrading

@@ -111,7 +111,7 @@ function cli(args, env) {
 function isolated() {
   const home = tmp('chisle-home-');
   const xdg = tmp('chisle-xdg-');
-  return { home, xdg, env: { CHISLE_HOME: home, XDG_CONFIG_HOME: xdg, COPILOT_HOME: '', CLAUDE_CONFIG_DIR: path.join(home, '.claude') } };
+  return { home, xdg, env: { CHISLE_HOME: home, XDG_CONFIG_HOME: xdg, COPILOT_HOME: '', CODEX_HOME: '', CLAUDE_CONFIG_DIR: path.join(home, '.claude') } };
 }
 
 test('mcp wrap routes stdio servers through the proxy; unwrap restores them exactly', () => {
@@ -225,4 +225,72 @@ test('copilot hook follows CHISLE_DEFAULT_MODE=off', () => {
     encoding: 'utf8', env: { ...process.env, CHISLE_DEFAULT_MODE: 'off', COPILOT_HOME: tmp('chisle-cp-') },
   });
   assert.equal(out, '');
+});
+
+test('mcp wrap covers Codex TOML: only command/args lines change, unwrap restores the values', () => {
+  const { home, xdg, env } = isolated();
+  const file = path.join(home, '.codex', 'config.toml');
+  const original = [
+    'model = "gpt-5"  # keep me',
+    '',
+    '[mcp_servers.context7]',
+    'command = "npx"',
+    'args = [',
+    '  "-y",',
+    '  "@upstash/context7-mcp", # pinned',
+    ']',
+    'env = { KEY = "x" }',
+    '',
+    '[mcp_servers."my server"]',
+    "command = 'my-server'",
+    '',
+    '[mcp_servers.remote]',
+    'url = "https://example.com/mcp"',
+    '',
+    '[profiles.fast]',
+    'model = "gpt-5-mini"',
+    '',
+  ].join('\n');
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, original);
+
+  assert.match(cli(['mcp', 'wrap', '--only', 'codex', '--dry-run'], env).out, /would wrap context7, my server/);
+  assert.equal(fs.readFileSync(file, 'utf8'), original, 'dry run wrote');
+
+  cli(['mcp', 'wrap', '--only', 'codex'], env);
+  const proxyPath = path.join(xdg, 'chisle', 'mcp-proxy', 'chisle-mcp-proxy.js');
+  const wrapped = fs.readFileSync(file, 'utf8');
+  assert.ok(wrapped.includes(`command = "node"\nargs = [${JSON.stringify(proxyPath)}, "--", "npx", "-y", "@upstash/context7-mcp"]\nenv = { KEY = "x" }`));
+  assert.ok(wrapped.includes(`args = [${JSON.stringify(proxyPath)}, "--", "my-server"]`));
+  assert.ok(wrapped.includes('url = "https://example.com/mcp"') && wrapped.includes('model = "gpt-5"  # keep me') && wrapped.includes('[profiles.fast]'));
+  assert.match(cli(['mcp', 'status', '--only', 'codex'], env).out, /Codex: 2\/2 stdio server\(s\) wrapped/);
+
+  cli(['mcp', 'unwrap', '--only', 'codex'], env);
+  const restored = fs.readFileSync(file, 'utf8');
+  assert.ok(restored.includes('[mcp_servers.context7]\ncommand = "npx"\nargs = ["-y", "@upstash/context7-mcp"]\nenv = { KEY = "x" }'));
+  assert.ok(restored.includes('[mcp_servers."my server"]\ncommand = "my-server"\n\n[mcp_servers.remote]'));
+  fs.rmSync(home, { recursive: true, force: true });
+  fs.rmSync(xdg, { recursive: true, force: true });
+});
+
+test('mcp wrap covers Antigravity mcp_config.json and VS Code Copilot mcp.json ("servers")', () => {
+  const { home, xdg, env } = isolated();
+  const ag = path.join(home, '.gemini', 'config', 'mcp_config.json');
+  const vs = path.join(xdg, 'Code', 'User', 'mcp.json');
+  const agOrig = { mcpServers: { fs: { command: 'npx', args: ['-y', 'server-fs'] } } };
+  const vsOrig = { servers: { mem: { type: 'stdio', command: 'npx', args: ['-y', 'server-memory'] }, web: { type: 'http', url: 'https://x/mcp' } }, inputs: [] };
+  for (const [f, o] of [[ag, agOrig], [vs, vsOrig]]) { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, JSON.stringify(o, null, 2)); }
+
+  const out = cli(['mcp', 'wrap'], env).out;
+  assert.match(out, /Antigravity: wrapped fs/);
+  assert.match(out, /GitHub Copilot: wrapped mem/);
+  const proxyPath = path.join(xdg, 'chisle', 'mcp-proxy', 'chisle-mcp-proxy.js');
+  assert.deepEqual(JSON.parse(fs.readFileSync(vs, 'utf8')).servers.mem.args, [proxyPath, '--', 'npx', '-y', 'server-memory']);
+  assert.deepEqual(JSON.parse(fs.readFileSync(vs, 'utf8')).servers.web, vsOrig.servers.web, 'http server untouched');
+
+  cli(['mcp', 'unwrap'], env);
+  assert.deepEqual(JSON.parse(fs.readFileSync(ag, 'utf8')), agOrig);
+  assert.deepEqual(JSON.parse(fs.readFileSync(vs, 'utf8')), vsOrig);
+  fs.rmSync(home, { recursive: true, force: true });
+  fs.rmSync(xdg, { recursive: true, force: true });
 });

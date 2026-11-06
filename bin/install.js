@@ -886,7 +886,7 @@ Examples:
   npx chisle --only claude    # just Claude Code
   npx chisle --dry-run        # preview
   npx chisle --stats          # what the compressor has saved
-  npx chisle mcp wrap         # compress MCP tool output in Cursor, Gemini, ...
+  npx chisle mcp wrap         # compress MCP tool output in Cursor, Codex, Gemini, ...
   npx chisle@latest --update  # upgrade what is already installed
 `);
 }
