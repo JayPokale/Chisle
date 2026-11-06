@@ -73,9 +73,9 @@ In Claude Code the statusline badge carries the same number live: `[CHISLE] ⇣2
 
 This is the **input axis only**, and deliberately so. Chars elided have a real baseline, since the hook knows exactly what it cut. The output axis has none: there is no way to know what the model would have written without the ruleset, which is why that half is measured with A/B benchmark arms instead of a counter. A number that blended the two would be inventing the interesting half.
 
-## Trim unused tool schemas (Claude Code)
+## Trim unused tool schemas and skill descriptions (Claude Code)
 
-Every request carries the schema of every loaded tool, whether or not the model ever calls it. `npx chisle tools` reads your own transcripts and shows each heavy tool's schema size next to how often you called it in the last 30 days:
+Every request carries the schema of every loaded tool and a description of every skill, whether or not the model ever uses them. `npx chisle tools` reads your own transcripts and shows each heavy tool's schema size next to how often you called it in the last 30 days:
 
 ```bash
 npx chisle tools                        # report only, changes nothing
@@ -84,7 +84,7 @@ npx chisle tools trim --also Artifact   # also deny a rarely used one you pick
 npx chisle tools restore                # remove exactly what trim added
 ```
 
-`trim` writes whole-tool entries to `permissions.deny` in `settings.json`, which drops those schemas from every request; it never denies core tools (Bash, Read, Edit, Write, Grep, Agent and the like) or MCP tools, and leaves your own deny rules alone. `--days N` changes the window, `--dry-run` previews. `npx chisle --uninstall` also removes what `trim` added. On the agentic suite it cut cost per request by 10% with no trimmed tool ever needed.
+`trim` writes whole-tool entries to `permissions.deny` in `settings.json`, which drops those schemas from every request, and lists skills the model never invoked as `skillOverrides: { name: "name-only" }`, which keeps them listed and callable by name without their descriptions; it never denies core tools (Bash, Read, Edit, Write, Grep, Agent and the like) or MCP tools, and leaves your own deny rules and skill overrides alone. `--days N` changes the window, `--dry-run` previews. `npx chisle --uninstall` also removes what `trim` added. On the agentic suite it cut cost per request by 10% with no trimmed tool ever needed.
 
 ## Resume nudge (Claude Code)
 

@@ -57,3 +57,34 @@ test('tools refuses to deny core tools and changes nothing on --dry-run', () => 
   assert.equal(deny(dir), undefined);
   fs.rmSync(dir, { recursive: true, force: true });
 });
+
+// ── skills ───────────────────────────────────────────────────────────────────
+
+function skillFixture(settings) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-tools-'));
+  const proj = path.join(dir, 'projects', 'p');
+  fs.mkdirSync(proj, { recursive: true });
+  const listing = ['- pptx: ' + 'd'.repeat(600), '- plug:used-skill: ' + 'd'.repeat(600), '- mine: ' + 'd'.repeat(600), '- tiny: short'].join('\n');
+  const lines = [
+    { type: 'attachment', attachment: { type: 'skill_listing', content: listing } },
+    { type: 'assistant', message: { id: 'm1', usage: { input_tokens: 1 }, content: [{ type: 'tool_use', name: 'Skill', input: { skill: 'plug:used-skill' } }] } },
+  ];
+  fs.writeFileSync(path.join(proj, 's.jsonl'), lines.map((l) => JSON.stringify(l)).join('\n') + '\n');
+  if (settings) fs.writeFileSync(path.join(dir, 'settings.json'), JSON.stringify(settings));
+  return dir;
+}
+
+test('tools trim lists unused skills name-only and leaves used and user-set ones alone', () => {
+  const dir = skillFixture({ skillOverrides: { mine: 'off' } });
+  const { skills } = TOOLS.plan(dir, 30);
+  const byName = Object.fromEntries(skills.map((s) => [s.name, s]));
+  assert.equal(byName['plug:used-skill'].trim, false);   // ':' inside a name parses
+  assert.equal(byName.pptx.trim, true);
+  assert.equal(byName.tiny, undefined);                  // too short to matter
+  TOOLS.main(['trim'], dir, () => {});
+  const s = JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8'));
+  assert.deepEqual(s.skillOverrides, { mine: 'off', pptx: 'name-only' });
+  TOOLS.main(['restore'], dir, () => {});
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(dir, 'settings.json'), 'utf8')).skillOverrides, { mine: 'off' });
+  fs.rmSync(dir, { recursive: true, force: true });
+});

@@ -5,6 +5,9 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+- **`npx chisle tools` trims skill descriptions too.** Every request carries the skill listing, a description per skill. Skills the model never invoked in the window are set to `skillOverrides: "name-only"`, which keeps them listed and callable by name; your own overrides are never touched, and `tools restore` undoes exactly what trim set. Measured on a fresh session with the maintainer's config: 65 unused skills name-only took the base request from 24,185 to 23,248 tokens; projects that ship more skills save more.
+
 ## [3.10.0] - 2026-11-07
 
 Minor: `npx chisle tools` trims unused tool schemas, and the benchmarks start over from the 3.9 runs.
