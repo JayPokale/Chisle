@@ -9,6 +9,7 @@
 // Usage: node benchmarks/agentic/run.js [model] [seeds] [parallel]
 //   ARMS=vanilla,chisle,chisle-hook,ponytail  arms to run (default: vanilla,chisle)
 //   PONYTAIL_SKILL=path              ponytail SKILL.md (default: installed plugin cache)
+//   CHISLE_SKILL=path                candidate ruleset for the chisle arms (default: skills/chisle/SKILL.md)
 //   FIXTURES=noisylog,reuse          run only these fixtures (default: all)
 //   RAW_DIR=path                     where cells go (default: ./raw); use a fresh
 //                                    dir when the ruleset changes, or old cells
@@ -38,7 +39,7 @@ fs.mkdirSync(RAW, { recursive: true });
 
 const ISO = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-agentic-'));
 fs.copyFileSync(path.join(os.homedir(), '.claude', '.credentials.json'), path.join(ISO, '.credentials.json'));
-const skill = fs.readFileSync(path.join(HERE, '..', '..', 'skills', 'chisle', 'SKILL.md'), 'utf8');
+const skill = fs.readFileSync(process.env.CHISLE_SKILL || path.join(HERE, '..', '..', 'skills', 'chisle', 'SKILL.md'), 'utf8');
 const body = skill.split(/^---\s*$/m).slice(2).join('---').trim();
 if (!body) { console.error('empty chisle system prompt'); process.exit(1); }
 fs.writeFileSync(path.join(ISO, 'chisle.txt'), body + '\n');
