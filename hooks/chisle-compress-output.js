@@ -28,9 +28,13 @@
 //   - Never throws: a broken hook must not break the tool pipeline.
 //
 // Two tiers, applied in order:
-//   scrub  (output > 1k)  — lossless: strip ANSI escapes, collapse blank-line
-//                           runs, collapse ≥4 identical consecutive lines to
-//                           one + "[repeated N×]". No information lost.
+//   scrub  (output > 1k)  — strip ANSI escapes, minify pretty-printed JSON,
+//                           collapse blank-line runs, collapse ≥4 identical
+//                           consecutive lines to one + "[repeated N×]" (all
+//                           lossless), and collapse ≥6 consecutive passing-test
+//                           or progress lines to first 2 + count + last 1. The
+//                           last drops only which tests passed; failures and
+//                           error-like lines always break a run.
 //   elide  (output > threshold) — head + tail + error salvage, as above.
 // Plus dedup: a tool output byte-identical to that tool's immediately previous
 // output is replaced by a short marker — the content is already in context.
@@ -289,8 +293,33 @@ const SCRUB_MIN = 1024;      // below this, not worth a hook round-trip
 const REPEAT_MIN = 4;        // identical consecutive lines before collapsing
 const MIN_WIN = 64;          // emit updated output only if it saves this much
 
+// Status lines that differ only in names and numbers: passing tests and
+// progress output. Deliberately narrow, since a generic "similar lines" rule
+// would swallow CSV rows or log data the model was asked to read.
+const NOISE_RE = /^\s*(?:[✓✔√]\s|PASS\s|ok \d+\b|\[PASS\])|\sPASSED\b|^\s*(?:Downloading|Downloaded|Fetching|Resolving|Receiving objects|Compiling|Installing|Extracting|Unpacking|Progress)\b/;
+const NOISE_MIN = 6;         // consecutive status lines before collapsing
+
+// Pretty-printed JSON → minified, by dropping whitespace outside strings.
+// Text-level on purpose: JSON.parse + stringify would round big integer IDs.
+function minifyJson(text) {
+  const s = text.trim();
+  if (!/^[[{]/.test(s) || !/\n\s/.test(s)) return text;
+  try { JSON.parse(s); } catch (e) { return text; }
+  let out = '', inStr = false;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (inStr) {
+      out += c;
+      if (c === '\\') out += s[++i];
+      else if (c === '"') inStr = false;
+    } else if (c === '"') { inStr = true; out += c; }
+    else if (c !== ' ' && c !== '\n' && c !== '\r' && c !== '\t') out += c;
+  }
+  return out;
+}
+
 function scrub(text) {
-  let t = text.replace(ANSI_RE, '');
+  let t = minifyJson(text.replace(ANSI_RE, ''));
   t = t.replace(/[ \t]+$/gm, '');            // trailing whitespace
   t = t.replace(/\n{3,}/g, '\n\n');          // blank-line runs → one blank
   // Collapse runs of identical non-empty lines.
@@ -307,7 +336,21 @@ function scrub(text) {
     }
     i = j;
   }
-  return out.join('\n');
+  // Collapse runs of passing-test / progress lines; error-like lines break a run.
+  const noisy = (l) => NOISE_RE.test(l) && !SALVAGE_RE.test(l);
+  const kept = [];
+  for (let i = 0; i < out.length; ) {
+    let j = i;
+    while (j < out.length && noisy(out[j])) j++;
+    if (j - i >= NOISE_MIN) {
+      kept.push(out[i], out[i + 1], `... [chisle: ${j - i - 3} more passing/progress lines like these] ...`, out[j - 1]);
+    } else {
+      j = Math.max(j, i + 1);
+      for (let k = i; k < j; k++) kept.push(out[k]);
+    }
+    i = j;
+  }
+  return kept.join('\n');
 }
 
 // ── Dedup: identical to this tool's previous output ─────────────────────────
