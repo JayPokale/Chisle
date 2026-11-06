@@ -4,7 +4,40 @@ Every result behind the [README](../README.md) headline, in full.
 
 Nothing here is estimated. Every figure below is recomputed from committed raw data; the 2026-07-07 [verification writeup](../benchmarks/results/2026-07-07-verify-rerun.md) re-derived the old claims from scratch, re-ran the whole suite against the competitors' **installed plugins**, and retired the one claim that didn't survive.
 
-## Output axis, re-measured 2026-10-12 with tools off (current)
+## Output axis, 2026-11-06: Chisle 3.9 (current)
+
+**Side by side.** Chisle 3.8.1 and 3.9 ran in the same session as caveman `ef6050c5e184` and ponytail 4.8.3: the 13 `run-live.sh` prompts on Haiku 4.5, Claude Code 2.1.285, tools off, 25 cells per arm where all five arms completed ([raw cells](../benchmarks/results/raw-nov-sidebyside/), runner [`run-ablation.js`](../benchmarks/run-ablation.js)). Percentages are pooled sums vs the bare model, intervals a 95% bootstrap over cells ([`pooled.js`](../benchmarks/pooled.js)).
+
+| | billed | 95% CI | answer length | answer lines | reasoning | backfires |
+|---|--:|--:|--:|--:|--:|--:|
+| caveman | 87% | 65–120% | 59% | 55% | 246% | 9 / 25 |
+| ponytail | 90% | 66–120% | 62% | 60% | 248% | 12 / 25 |
+| Chisle 3.8.1 | 75% | 57–105% | 58% | 55% | 169% | 7 / 25 |
+| **Chisle 3.9** | **71%** | **53–104%** | **55%** | **45%** | **157%** | **7 / 25** |
+
+Chisle 3.9 is leanest on every column (tied with 3.8.1 on backfires), but the gap to 3.8.1 is within noise. On Haiku every ruleset raises hidden reasoning; that tax is why billed savings trail the shorter answers.
+
+**Full suite, repo runner.** `run-live.sh`, all 13 prompts × 2 seeds, 26 cells per arm, current ruleset ([raw cells](../benchmarks/results/raw-nov/)):
+
+| | billed | 95% CI | answer length | answer lines | backfires |
+|---|--:|--:|--:|--:|--:|
+| caveman | 92% | 73–121% | 77% | 80% | 15 / 26 |
+| ponytail | 97% | 76–124% | 55% | 53% | 13 / 26 |
+| **Chisle 3.9** | **87%** | **75–101%** | 58% | 53% | **9 / 26** |
+
+Chisle bills least and backfires least; ponytail's answers are as short (55% vs 58%, overlapping intervals). The same rival versions moved 10–30 points between this run and 2026-10-12 below, so compare arms within a run, never across runs.
+
+**Sonnet 5.5.** Bare vs Chisle 3.9, 34 cells ([raw cells](../benchmarks/results/raw-nov-sonnet/)): billed **57%** (95% CI 50–64%), answer length 54%, lines 55%, reasoning **84%**, backfires 5 / 34. Sonnet chooses how long to think, and with the ruleset it thinks less, so unlike Haiku nothing eats the shorter answers.
+
+**Accuracy on Chisle 3.9.** Maths + coding ([raw](../benchmarks/quality/raw-nov/)): 156/156 vs bare 154/156, Fisher p = 0.498. Agentic, 7 fixtures × 6 seeds ([raw](../benchmarks/agentic/raw-nov/)): 38/42 vs 36/42 passed, p = 0.738, context 144.7k vs 148.5k tokens, $0.0503 vs $0.0506 per run. The coding grader used to mark a correct `deepEqual` wrong: test arguments crossed the `vm` realm boundary and failed a plain-object prototype check. Fixed; the 2026-09-14 cells regrade to 156/156 for both arms.
+
+```bash
+node benchmarks/run-ablation.js <dir> 2 4 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle-3.8.1=<v3.8.1 SKILL.md> chisle=skills/chisle/SKILL.md
+ARMS=vanilla,caveman,ponytail,chisle-3.8.1,chisle node benchmarks/pooled.js <dir>/*/
+MODEL=claude-sonnet-5-5 node benchmarks/run-ablation.js <dir> 2 4 vanilla chisle=skills/chisle/SKILL.md
+```
+
+## Output axis, re-measured 2026-10-12 with tools off (v3.6 ruleset)
 
 Claude Code 2.1.285, caveman `ef6050c5e184`, ponytail 4.8.3: 13 live prompts × 2 seeds = 26 single-turn cells per arm on Haiku 4.5, billed output tokens vs the no-tool baseline ([writeup + raw cells](../benchmarks/results/2026-10-12-tools-off-rerun.md)). The 2026-10-01 run of the same prompts left Claude Code's tools on: in 14 of 26 prompts an arm tried `Write`/`Bash`, was denied and wrote the code again, so it is withdrawn ([#37](https://github.com/JayPokale/Chisle/issues/37), [old writeup](../benchmarks/results/2026-10-01-live-rerun.md)).
 

@@ -33,11 +33,11 @@ Chisle is a Claude Code plugin that makes Claude cheaper to run without making i
   <img src="assets/benchmark-pi.svg" width="820" alt="Pi benchmark, 6 tasks, answer length as percent of the same model with no ruleset. caveman 56%, ponytail 49%, Chisle 37%.">
 </p>
 
-<p align="center"><sub>Pi, 6 tasks: answer length vs the same model with no ruleset. Lower is leaner. <a href="#benchmarks">More below.</a></sub></p>
+<p align="center"><sub>Pi, 6 tasks, v3.1 ruleset: answer length vs the same model with no ruleset. Lower is leaner. <a href="#benchmarks">Current numbers below.</a></sub></p>
 
 ---
 
-"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected." Same model, same prompt, one difference: the injected ruleset. Both answers are the **verbatim committed output** from [`raw-oct-notools/large-s2`](benchmarks/results/raw-oct-notools/large-s2/):
+"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected." Same model, same prompt, one difference: the injected ruleset. Both answers are the **verbatim committed output** from [`raw-oct-notools/large-s2`](benchmarks/results/raw-oct-notools/large-s2/) (v3.6 ruleset):
 
 <table>
 <tr><th align="left" width="50%">bare model: 125 lines, 1,342 answer tokens</th><th align="left" width="50%">Chisle: 54 lines, 450 answer tokens</th></tr>
@@ -97,6 +97,7 @@ Same behaviour, a third of the tokens. caveman wrote 1,140 and ponytail 842 on t
 | **Output: prose** | filler, hedging, manufactured structure | zero-fluff ruleset, injected per session |
 | **Output: code** | speculative abstractions, unrequested boilerplate | YAGNI efficiency ladder |
 | **Input: context** | oversized tool output flooding the window | Claude `PostToolUse`, Pi `tool_result`, OpenCode plugin, Copilot CLI `postToolUse`: scrub, elide, dedup, plus prevention rules |
+| **Input: cache** | a big context re-bought after the prompt cache expires | Claude Code: on the first prompt after an hour-plus break with 150k+ tokens of context, one line suggests `/compact` or `/clear`. On the maintainer's sessions those re-writes were 14% of spend |
 | **Input: MCP** | oversized MCP tool results in any agent | `npx chisle mcp wrap`: a proxy in front of each stdio MCP server (Cursor, Windsurf, Cline, Kiro, Gemini, Qwen Code, Copilot CLI) |
 
 Where each one attaches to a session:
@@ -160,14 +161,19 @@ Upgrading, per-agent setup, `--stats` and config: [docs/usage.md](docs/usage.md)
 
 Same model, same prompts, one difference: the injected ruleset. Lower = leaner. Chisle is the leanest on every row.
 
-**Claude Code** (Haiku 4.5, 26 live prompts, tools off, [raw cells](benchmarks/results/raw-oct-notools/)):
+**Claude Code, side by side** (Haiku 4.5, 25 live prompts in one run, tools off, [raw cells](benchmarks/results/raw-nov-sidebyside/)):
 
-| % of a bare model | caveman | ponytail | **Chisle** |
-|---|--:|--:|--:|
-| answer length | 65% | 58% | **56%** |
-| answer lines | 66% | 54% | **52%** |
+| % of a bare model | caveman | ponytail | Chisle 3.8.1 | **Chisle 3.9** |
+|---|--:|--:|--:|--:|
+| billed tokens | 87% | 90% | 75% | **71%** |
+| answer length | 59% | 62% | 58% | **55%** |
+| answer lines | 55% | 60% | 55% | **45%** |
 
-**Pi** (GPT-5.5, 6 tasks, [raw cells](benchmarks/results/raw-pi/)):
+One run of 25 prompts: gaps of a few points are within run-to-run noise. Intervals and the full 26-prompt suite are in [docs/benchmarks.md](docs/benchmarks.md).
+
+**Sonnet 5.5** (34 live prompts, [raw cells](benchmarks/results/raw-nov-sonnet/)): Chisle 3.9 bills **57%** of the bare model's output tokens (95% CI 50–64%) and answers at 54% of the length. Sonnet decides how much to think, and with Chisle it thinks less (84% of bare), so the shorter answers come straight off the bill.
+
+**Pi** (GPT-5.5, 6 tasks, v3.1 ruleset, [raw cells](benchmarks/results/raw-pi/)):
 
 | % of a bare model | caveman | ponytail | **Chisle** |
 |---|--:|--:|--:|
@@ -175,7 +181,7 @@ Same model, same prompts, one difference: the injected ruleset. Lower = leaner. 
 | answer lines | 75% | 38% | **37%** |
 | billed tokens, explanations | 43% | 76% | **39%** |
 
-**Accuracy** holds against the bare model: 156/156 vs 155/156 on auto-graded maths and coding, 48/60 vs 49/60 on agentic hidden-test repos, Fisher p = 1.000 on both ([writeup](benchmarks/results/2026-09-14-quality-and-agentic.md)). No judge model anywhere.
+**Accuracy** holds against the bare model on Chisle 3.9: 156/156 vs 154/156 on auto-graded maths and coding (Fisher p = 0.498), 38/42 vs 36/42 on agentic hidden-test repos (p = 0.738). No judge model anywhere.
 
 **Tool output** is two thirds of a Claude Code session's context and re-billed every turn. The compressor cuts **~46%** off every oversized output ([171 sessions](benchmarks/results/2026-07-07-input-axis.md)); on OpenCode a 30 KB log dropped **87%** of fresh input tokens.
 
@@ -214,13 +220,6 @@ flowchart TD
 The ladder runs **after** reading, never instead of it. Note the exit: every rung lands on the same obligation: say what you skipped, so "later" doesn't quietly become "never".
 
 The ladder runs *after* reading the code, lazy about the solution and never about understanding. Lazy is not negligent: trust-boundary validation, data-loss handling, security, and accessibility are never on the chopping block.
-
-Mark deliberate simplifications so "later" doesn't quietly become "never":
-
-```js
-// chisle: global lock, per-account locks if throughput matters
-// chisle: O(n) scan, index this when table exceeds ~10k rows
-```
 
 ## Usage
 

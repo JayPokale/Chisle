@@ -8,10 +8,10 @@ Reproduce with the commands in each section.
 
 | suite | what it answers | headline | verdict |
 |-------|-----------------|----------|---------|
-| [1. Live 4-arm](#1-live-4-arm-head-to-head) | Does the ruleset cut billed output? | 33% of vanilla tokens overall (27% coding, 73% non-coding) | **win on cost**, thin on prose |
-| [2. Input-axis replay](#2-input-axis-replay-deterministic-free) | How much tool output can be safely elided? | ~45–47% per eligible output; 1.3–2.1% of session content | **real but small** at session scale |
-| [3. Correctness](#3-correctness-suites-maths--coding-auto-graded) | Does terseness make the model wrong? | 156/156 vs 155/156, Fisher p = 1.000 | **null result** — no quality cost |
-| [4. Agentic](#4-agentic-suite-real-repos-hidden-tests) | Does it help in a real repo? | 80.0% vs 81.7% pass, Fisher p = 1.000 | **null result** — tie within noise |
+| [1. Live 4-arm](#1-live-4-arm-head-to-head) | Does the ruleset cut billed output? | Chisle 3.9 bills 57% of bare on Sonnet 5.5; 71–87% on Haiku 4.5, below caveman and ponytail in the same run ([2026-11-06](../docs/benchmarks.md#output-axis-2026-11-06-chisle-39-current)) | **win on cost**, largest on adaptive-thinking models |
+| [2. Input-axis replay](#2-input-axis-replay-deterministic-free) | How much tool output can be safely elided? | ~45–47% per eligible output; 7.1% of session content on the maintainer's November corpus | **real**, grows with tool-heavy sessions |
+| [3. Correctness](#3-correctness-suites-maths--coding-auto-graded) | Does terseness make the model wrong? | 156/156 vs 154/156, Fisher p = 0.498 (Chisle 3.9) | **null result** — no quality cost |
+| [4. Agentic](#4-agentic-suite-real-repos-hidden-tests) | Does it help in a real repo? | 90.5% vs 85.7% pass, Fisher p = 0.738 (Chisle 3.9) | **null result** — tie within noise |
 
 The two null results are the important ones: Chisle's claim is that it cuts cost
 **without** costing correctness, and a null on quality is exactly what supports

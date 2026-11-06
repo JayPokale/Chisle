@@ -7,7 +7,7 @@ import SectionHead from "./SectionHead";
 const QA = [
   {
     q: "Does terse output mean worse answers?",
-    a: "No. Terse ≠ incomplete. The rules cut words around the facts, never the facts: the fix, the gotcha, the caveat all stay. On 156 auto-graded maths and coding problems Chisle scored 156/156, the bare model 155/156.",
+    a: "No. Terse ≠ incomplete. The rules cut words around the facts, never the facts: the fix, the gotcha, the caveat all stay. On 156 auto-graded maths and coding problems Chisle 3.9 scored 156/156, the bare model 154/156; on 42 agentic repo runs with hidden tests, 38 vs 36.",
   },
   {
     q: "Can the compressor corrupt my files?",

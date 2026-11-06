@@ -5,8 +5,8 @@ import { motion, useInView } from "motion/react";
 import Reveal from "./Reveal";
 import SectionHead from "./SectionHead";
 
-// Visible answer on the Pi suite (6 tasks, Pi 0.85.1 + openai-codex/gpt-5.5),
-// as % of the bare model. Matches assets/benchmark-pi.svg.
+// Visible answer on the Pi suite (6 tasks, Pi 0.85.1 + openai-codex/gpt-5.5,
+// v3.1 ruleset), as % of the bare model. Matches assets/benchmark-pi.svg.
 const ARMS = [
   { name: "chisle", pct: 37, self: true },
   { name: "ponytail", pct: 49 },
@@ -15,11 +15,12 @@ const ARMS = [
 ];
 
 // % of the bare model; Chisle is lowest on every row. Claude Code rows from
-// benchmarks/results/2026-10-12-tools-off-rerun.md (Haiku 4.5, 26 prompts,
-// tools off); Pi rows from benchmarks/results/raw-pi/.
+// benchmarks/results/raw-nov-sidebyside/ (Chisle 3.9, Haiku 4.5, 25 prompts in
+// one run, tools off); Pi rows from benchmarks/results/raw-pi/ (v3.1 ruleset).
 const ROWS = [
-  { label: "answer length · Claude Code", caveman: "65%", ponytail: "58%", chisle: "56%" },
-  { label: "answer lines · Claude Code", caveman: "66%", ponytail: "54%", chisle: "52%" },
+  { label: "billed tokens · Claude Code", caveman: "87%", ponytail: "90%", chisle: "71%" },
+  { label: "answer length · Claude Code", caveman: "59%", ponytail: "62%", chisle: "55%" },
+  { label: "answer lines · Claude Code", caveman: "55%", ponytail: "60%", chisle: "45%" },
   { label: "answer length · Pi", caveman: "56%", ponytail: "49%", chisle: "37%" },
   { label: "answer lines · Pi", caveman: "75%", ponytail: "38%", chisle: "37%" },
   { label: "billed, explanations · Pi", caveman: "43%", ponytail: "76%", chisle: "39%" },
@@ -34,7 +35,7 @@ export default function Benchmarks() {
       <div className="mx-auto max-w-6xl px-5">
         <SectionHead eyebrow="Benchmarks" title="The shortest answers, measured">
           Same model, same prompts, one difference: the injected ruleset. Answer length as a share
-          of the bare model on Pi + GPT-5.5. Raw transcripts and the runner{" "}
+          of the bare model on Pi + GPT-5.5 (v3.1 ruleset). Raw transcripts and the runner{" "}
           <a
             href="https://github.com/JayPokale/Chisle/tree/main/benchmarks"
             className="text-accent underline underline-offset-4"
@@ -69,7 +70,8 @@ export default function Benchmarks() {
         <Reveal delay={0.1}>
           <h3 className="mt-16 text-lg font-semibold tracking-tight">Leanest on every row</h3>
           <p className="mt-2 max-w-xl text-sm text-dim">
-            % of the bare model. Claude Code on Haiku 4.5 across 26 live prompts; Pi on GPT-5.5.
+            % of the bare model. Claude Code: Chisle 3.9 on Haiku 4.5, 25 live prompts in one run.
+            Pi: GPT-5.5, v3.1 ruleset. On Sonnet 5.5, Chisle 3.9 bills 57% of the bare model.
           </p>
           <div className="pane-scroll mt-6 overflow-x-auto rounded-xl border border-line bg-bg px-5 py-2">
             <table className="w-full text-left text-sm">

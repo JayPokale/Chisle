@@ -66,8 +66,8 @@ const RUNGS = [
     q: "Only then",
     a: "The minimum code that works.",
     before: "// interface + factory + registry, one implementation",
-    after: "// the one function, plus a note:\n// chisle: single impl; add the interface at the second one",
-    why: "You still write it, just the smallest version that holds, with the shortcut marked so it can be found later.",
+    after: "// the one function. The reply ends with:\n// skipped: interface, add when a second impl lands",
+    why: "You still write it, just the smallest version that holds, and the reply names what was skipped and when to add it.",
   },
 ];
 
