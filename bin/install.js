@@ -32,6 +32,7 @@ const cp = require('child_process');
 
 const SETTINGS = require('./lib/settings');
 const MCP = require('./lib/mcp');
+const TOOLS = require('./lib/tools');
 const { getOpencodeDir, getOpencodeStateDir } = require('../hooks/chisle-config');
 
 const REPO = 'JayPokale/Chisle';
@@ -705,7 +706,7 @@ function installProjectRule(ctx, prov) {
 
 // ── uninstall ───────────────────────────────────────────────────────────────
 function uninstall(ctx) {
-  const { say, note, opts, c } = ctx;
+  const { say, note, warn, opts, c } = ctx;
   say(c.orange('Chisle uninstall'));
   let touched = 0;
 
@@ -735,6 +736,11 @@ function uninstall(ctx) {
         touched++;
       }
     }
+    // Tool schemas denied by `npx chisle tools trim`: remove exactly those entries.
+    try {
+      const restored = TOOLS.restore(cfg, { dryRun: opts.dryRun });
+      if (restored.length) { note(`  removed tool deny entries added by chisle: ${restored.join(', ')}`); touched++; }
+    } catch (e) { warn('  ' + e.message); }
     for (const d of ['chisle-hooks', 'chisle-spill']) {
       const dst = path.join(cfg, d);
       if (fs.existsSync(dst)) { if (!opts.dryRun) fs.rmSync(dst, { recursive: true, force: true }); note(`  removed ${dst}`); touched++; }
@@ -870,6 +876,11 @@ MCP output compression (opt-in, any agent that launches stdio MCP servers):
   Targets: ${[...new Set(MCP.targets().map(t => t.id))].join(', ')}. Never Claude Code
   (its own hook already compresses MCP output).
 
+Tool schemas (Claude Code; every request carries every loaded tool's schema):
+  npx chisle tools            # schema size vs. your own calls, last 30 days
+  npx chisle tools trim       # deny the heavy tools you have not used [--days N] [--dry-run]
+  npx chisle tools restore    # remove exactly what trim added
+
 Examples:
   npx chisle                  # auto-detect + install
   npx chisle --only claude    # just Claude Code
@@ -936,6 +947,12 @@ function printList(c) {
 // ── main ────────────────────────────────────────────────────────────────────
 function main() {
   if (process.argv[2] === 'mcp') return MCP.main(process.argv.slice(3));
+  if (process.argv[2] === 'tools') {
+    const args = process.argv.slice(3);
+    const i = args.indexOf('--config-dir');
+    const dir = i >= 0 ? expandHome(args.splice(i, 2)[1] || '') : claudeDir({});
+    try { return TOOLS.main(args, dir); } catch (e) { die('error: ' + e.message); }
+  }
   const opts = parseArgs(process.argv.slice(2));
   const c = makeChalk(opts.noColor);
 

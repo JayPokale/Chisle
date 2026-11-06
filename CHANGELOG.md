@@ -5,6 +5,9 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+- **`npx chisle tools`: trim unused tool schemas.** Claude Code sends every loaded tool's schema on every request. The command reads your transcripts and reports each heavy tool's schema size against your own calls over the last 30 days; `tools trim` adds the unused non-core ones to `permissions.deny` (a whole-tool deny drops the schema: five denied tools took a base request from 24.2k to 20.5k tokens), `--also` adds rarely used ones you pick, and `tools restore` or uninstall removes exactly what it added. On the maintainer's 37 sessions: ~5.2k tokens per request, ~15.1k with `--also Artifact`, about 3% of total spend, roughly what the whole ruleset saves on output.
+
 ## [3.9.0] - 2026-11-07
 
 Minor: a leaner ruleset, a resume nudge for expired prompt caches, tighter tool-output compression, and re-measured benchmarks.

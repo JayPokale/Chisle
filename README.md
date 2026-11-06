@@ -98,6 +98,7 @@ Same behaviour, a third of the tokens. caveman wrote 1,140 and ponytail 842 on t
 | **Output: code** | speculative abstractions, unrequested boilerplate | YAGNI efficiency ladder |
 | **Input: context** | oversized tool output flooding the window | Claude `PostToolUse`, Pi `tool_result`, OpenCode plugin, Copilot CLI `postToolUse`: scrub, elide, dedup, plus prevention rules |
 | **Input: cache** | a big context re-bought after the prompt cache expires | Claude Code: on the first prompt after an hour-plus break with 150k+ tokens of context, one line suggests `/compact` or `/clear`. On the maintainer's sessions those re-writes were 14% of spend |
+| **Input: tool schemas** | schemas of tools you never call, re-sent on every request | `npx chisle tools` reports schema size vs. your own calls; `tools trim` denies the unused heavy ones, `tools restore` undoes it. On the maintainer's Claude Code: ~5k tokens per request, ~15k with the rarely used `Artifact` |
 | **Input: MCP** | oversized MCP tool results in any agent | `npx chisle mcp wrap`: a proxy in front of each stdio MCP server (Cursor, Windsurf, Cline, Kiro, Gemini, Qwen Code, Copilot CLI) |
 
 Where each one attaches to a session:
