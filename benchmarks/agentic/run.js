@@ -162,7 +162,9 @@ function runCell(c) {
         // A usage-limit refusal is not a measurement. Writing it would score as
         // "the agent changed nothing", which is exactly how a limit hit
         // mid-suite produced 89 fake failures the first time this was run.
-        if (!rec.out_tokens || /session limit|usage limit|rate limit/i.test(rec.answer)) {
+        // Only a short, error-shaped result is a limit hit: matching "rate limit"
+        // anywhere also dropped valid answers that merely mention rate limiting.
+        if (!rec.out_tokens || (rec.answer.length < 300 && /limit reached|hit your .{0,20}limit|usage limit|session limit|rate_limit_error/i.test(rec.answer))) {
           fs.rmSync(work, { recursive: true, force: true });
           console.log(`  ${c.fx}/${c.arm}/${c.seed} LIMITED — not recorded`);
           limited = true;

@@ -70,7 +70,9 @@ function runCell(c) {
       let parsed = {};
       try { parsed = JSON.parse(stdout); } catch (_) {}
       const text = String(parsed.result || '');
-      if (!(parsed.usage && parsed.usage.output_tokens) || /session limit|usage limit|rate limit/i.test(text)) {
+      // Only a short, error-shaped result is a limit hit: matching "rate limit"
+      // anywhere also dropped valid answers that merely mention rate limiting.
+      if (!(parsed.usage && parsed.usage.output_tokens) || (text.length < 300 && /limit reached|hit your .{0,20}limit|usage limit|session limit|rate_limit_error/i.test(text))) {
         limited = true;
         console.log(`  ${c.suite}/${c.id}/${c.arm}/${c.seed} LIMITED — not recorded`);
         return resolve();
