@@ -5,6 +5,15 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [3.11.1] - 2026-11-07
+
+### Added
+- **`npx chisle mcp wrap` covers Antigravity, Codex and GitHub Copilot in VS Code.** Antigravity: `~/.gemini/config/mcp_config.json`. Copilot: the VS Code user `mcp.json` (Code, Code Insiders, VSCodium), keyed `servers`. Codex: `~/.codex/config.toml` (honors `CODEX_HOME`); only the `command`/`args` lines of `[mcp_servers.<name>]` tables change, tables with non-string values are skipped, and the original stays in `config.toml.chisle-bak`. Every agent Chisle supports now gets MCP output compression or more.
+
+### Fixed
+- An empty MCP config file reads as "no servers" instead of "not strict JSON".
+- Site: the top border of hovered ladder cards is no longer clipped.
+
 ## [3.11.0] - 2026-11-07
 
 Minor: `npx chisle tools` trims skill descriptions as well as tool schemas; README and site show correctness up front.
