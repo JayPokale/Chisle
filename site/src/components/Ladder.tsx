@@ -83,7 +83,7 @@ export default function Ladder() {
 
       <Reveal delay={0.08}>
         <ol
-          className="pane-scroll mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 [scroll-padding-inline:1.25rem] xl:px-[calc((100vw-72rem)/2+1.25rem)] xl:[scroll-padding-inline:calc((100vw-72rem)/2+1.25rem)]"
+          className="pane-scroll mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pt-2 pb-4 [scroll-padding-inline:1.25rem] xl:px-[calc((100vw-72rem)/2+1.25rem)] xl:[scroll-padding-inline:calc((100vw-72rem)/2+1.25rem)]"
           aria-label="Ladder rungs"
         >
           {RUNGS.map((r, i) => (
