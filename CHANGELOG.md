@@ -5,8 +5,24 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [3.9.0] - 2026-11-07
+
+Minor: a leaner ruleset, a resume nudge for expired prompt caches, tighter tool-output compression, and re-measured benchmarks.
+
 ### Changed
-- **Ruleset thinks less again.** Reasoning summaries showed where the extra thinking went: restating the request, drafting the code in thinking and then writing it again, and deliberating over an unstated stack. "Thinking is billed too" now names each of these, and says to pick the common default and name it in one line. Three code rules that made the model deliberate in single-turn answers are gone: ship-the-lazy-version-and-ask, `// chisle:` shortcut markers, and the mandatory runnable check. On a fresh run (Haiku 4.5, Claude Code 2.1.285, tools off, 15 rows where every arm answered), billed output went from 65% to 60% of a bare model and reasoning from 148% to 111%. On the same rows caveman billed 86% and ponytail 81%. This was a partial run (182 of 364 cells, run stopped at a usage limit), and the correctness and agentic suites have not been re-run on this ruleset yet. The per-agent copies, `AGENTS.md` and `GEMINI.md` carry the same thinking rule.
+- **Ruleset reworked around hidden reasoning.** Reasoning summaries showed where extra thinking went: restating the request, drafting code in thinking then writing it again, deliberating over an unstated stack. "Thinking is billed too" now names each and says to pick the common default in one line. Three code rules that invited deliberation are gone: ship-the-lazy-version-and-ask, `// chisle:` shortcut markers, and the mandatory runnable check. In one run beside v3.8.1, caveman and ponytail (Haiku 4.5, 25 prompts) Chisle 3.9 billed 71% of the bare model (3.8.1: 75%, caveman 87%, ponytail 90%) with answer lines at 45% (3.8.1: 55%); the gap to 3.8.1 is within noise. On Sonnet 5.5 it bills 57% (95% CI 50–64%) of the bare model. Per-agent copies, `AGENTS.md` and `GEMINI.md` carry the same thinking rule.
+
+### Added
+- **Resume nudge.** The prompt cache lives about an hour; after a longer break the next request re-writes the whole context. On the first prompt after a 60+ minute gap with 150k+ tokens of context, Claude Code shows one line suggesting `/compact` or `/clear`. Never blocks the prompt; the model never sees it. On the maintainer's 32 sessions such re-writes were 14% of spend, and compacting only at those breaks simulated to 52–56% of total spend.
+- **Compressor: JSON minify and passing-test collapse.** Pretty-printed JSON loses whitespace outside strings (text-level, so big integer IDs survive); runs of 6+ passing-test or progress lines collapse to two, a count and the last, while any error-like line breaks the run. The `noisylog` fixture's test output drops from 16,108 to 1,026 chars with the failure intact.
+- `benchmarks/run-ablation.js` runs any number of named rulesets in one session; `benchmarks/pooled.js` is the scorer behind the README tables.
+
+### Fixed
+- **Correctness grader:** code test arguments crossed the `vm` realm boundary, so a correct `deepEqual` with a plain-object check scored as wrong. The 2026-09-14 cells regrade to 156/156 for both arms; on Chisle 3.9 it is 156/156 vs bare 154/156.
+- **Benchmark runners** no longer drop valid answers that mention "rate limiting" as usage-limit hits; `quality/run.js` and the agentic runner gain `RAW_DIR` / `CHISLE_SKILL`.
+
+### Docs
+- README, site and `docs/benchmarks.md` show the November runs; older Pi and example data are labelled with the ruleset that produced them.
 
 ## [3.8.1] - 2026-10-18
 

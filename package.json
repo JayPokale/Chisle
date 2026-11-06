@@ -1,6 +1,6 @@
 {
   "name": "chisle",
-  "version": "3.8.1",
+  "version": "3.9.0",
   "description": "Fewer tokens than caveman and ponytail, no accuracy lost. Zero-fluff prose, YAGNI-first code, and safe tool-output compression for 13 AI coding agents.",
   "keywords": [
     "claude-code",
