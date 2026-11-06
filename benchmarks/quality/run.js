@@ -8,7 +8,8 @@
 //   code -> hidden unit tests the model never sees
 //
 // Usage: node benchmarks/quality/run.js [model] [seeds] [parallel]
-// Resumable: a cell whose raw JSON already exists is skipped.
+// Resumable: a cell whose raw JSON already exists is skipped, so point
+// RAW_DIR at a fresh directory when the ruleset changes (grade.js reads it too).
 
 const fs = require('fs');
 const os = require('os');
@@ -20,7 +21,7 @@ const SEEDS = Number(process.argv[3] || 3);
 const PAR = Number(process.argv[4] || 8);
 
 const HERE = __dirname;
-const RAW = path.join(HERE, 'raw');
+const RAW = process.env.RAW_DIR ? path.resolve(process.env.RAW_DIR) : path.join(HERE, 'raw');
 fs.mkdirSync(RAW, { recursive: true });
 
 // Isolated config: credentials only, so no personal settings/CLAUDE.md/plugins leak in.

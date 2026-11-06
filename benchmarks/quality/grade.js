@@ -88,7 +88,9 @@ function gradeCode(item, answer) {
   if (typeof fn !== 'function') return { pass: false, why: `no function ${item.fn}` };
   for (const [args, want] of item.cases) {
     let got;
-    try { got = vm.runInContext('__fn', ctx).apply(null, JSON.parse(JSON.stringify(args))); }
+    // Build args inside the context: host-realm objects fail a correct
+    // `Object.getPrototypeOf(x) === Object.prototype` plain-object check.
+    try { got = vm.runInContext(`__fn(...JSON.parse(${JSON.stringify(JSON.stringify(args))}))`, ctx, { timeout: 3000 }); }
     catch (e) { return { pass: false, why: `threw on ${JSON.stringify(args)}: ${e.message}` }; }
     if (JSON.stringify(got) !== JSON.stringify(want)) {
       return { pass: false, why: `${JSON.stringify(args)} -> ${JSON.stringify(got)} want ${JSON.stringify(want)}` };
