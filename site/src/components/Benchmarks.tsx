@@ -8,7 +8,7 @@ import SectionHead from "./SectionHead";
 // Billed output tokens as % of the bare model, every arm in one run (Claude
 // Code + Haiku 4.5, 25 tasks). Matches assets/benchmark.svg and the README.
 const ARMS = [
-  { name: "chisle 3.9", pct: 71, self: true },
+  { name: "chisle", pct: 71, self: true },
   { name: "chisle 3.8.1", pct: 75 },
   { name: "caveman", pct: 87 },
   { name: "ponytail", pct: 90 },
@@ -75,8 +75,8 @@ export default function Benchmarks() {
         <Reveal delay={0.1}>
           <h3 className="mt-16 text-lg font-semibold tracking-tight">Leanest on every row</h3>
           <p className="mt-2 max-w-xl text-sm text-dim">
-            % of the bare model, Chisle 3.9 on Haiku 4.5, 25 live prompts in one run. On Sonnet 5.5,
-            Chisle 3.9 bills 57% of the bare model.
+            % of the bare model, current Chisle (ruleset unchanged since 3.9) on Haiku 4.5, 25 live
+            prompts in one run. On Sonnet 5.5, Chisle bills 57% of the bare model.
           </p>
           <div className="pane-scroll mt-6 overflow-x-auto rounded-xl border border-line bg-bg px-5 py-2">
             <table className="w-full text-left text-sm">

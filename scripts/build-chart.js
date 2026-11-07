@@ -27,7 +27,7 @@ const ARMS = [
   { key: 'caveman', label: 'caveman', color: '#d9822b' },
   { key: 'ponytail', label: 'ponytail', color: '#cf3b3b' },
   { key: 'chisle-3.8.1', label: 'Chisle 3.8.1', color: '#6e7681' },
-  { key: SELF, label: 'Chisle 3.9', color: '#2da44e' },
+  { key: SELF, label: 'Chisle', color: '#2da44e' },
 ];
 
 function collect() {

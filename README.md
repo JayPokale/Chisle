@@ -30,7 +30,7 @@
 Chisle is a Claude Code plugin that makes Claude cheaper to run without making it dumber. It cuts what Claude writes: no filler, no hedging, no speculative abstractions, just the smallest code that works. It also cuts what Claude reads: a `PostToolUse` hook trims oversized tool output by ~48% before it re-enters the context window, where it would be re-billed on every later request. In agent-loop tests Claude with Chisle passes the same tasks as Claude without it. One `npx chisle` installs it, and the same ruleset ships to Pi, Cursor, Codex, Gemini, Copilot, OpenCode, Antigravity and four more agents. Every number here comes from committed raw transcripts, including the runs where it lost.
 
 <p align="center">
-  <img src="assets/benchmark.svg" width="820" alt="Claude Code benchmark, 25 tasks in one run, billed output tokens as percent of the same model with no ruleset. caveman 87%, ponytail 90%, Chisle 3.8.1 75%, Chisle 3.9 71%.">
+  <img src="assets/benchmark.svg" width="820" alt="Claude Code benchmark, 25 tasks in one run, billed output tokens as percent of the same model with no ruleset. caveman 87%, ponytail 90%, Chisle 3.8.1 75%, Chisle 71%.">
 </p>
 
 <p align="center"><sub>Claude Code + Haiku 4.5, 25 tasks, every arm in one run: billed output tokens vs the same model with no ruleset. Lower is cheaper. <a href="#benchmarks">More below.</a></sub></p>
@@ -40,7 +40,7 @@ Chisle is a Claude Code plugin that makes Claude cheaper to run without making i
 "Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected." Same model, same prompt, one difference: the injected ruleset. Both answers are the **verbatim committed output** from [`raw-nov-sidebyside/large-s2`](benchmarks/results/raw-nov-sidebyside/large-s2/):
 
 <table>
-<tr><th align="left" width="50%">bare model: 121 lines, 1,186 answer tokens</th><th align="left" width="50%">Chisle 3.9: 62 lines, 530 answer tokens</th></tr>
+<tr><th align="left" width="50%">bare model: 121 lines, 1,186 answer tokens</th><th align="left" width="50%">Chisle: 62 lines, 530 answer tokens</th></tr>
 <tr valign="top"><td>
 
 A preamble, a custom exception class, docstrings on every method, an extra `can_transition_to` helper:
@@ -160,15 +160,15 @@ Same model, same prompts, one difference: the injected ruleset. Lower = leaner. 
 
 **Claude Code, side by side** (Haiku 4.5, 25 live prompts in one run, tools off, [raw cells](benchmarks/results/raw-nov-sidebyside/)):
 
-| % of a bare model | caveman | ponytail | Chisle 3.8.1 | **Chisle 3.9** |
+| % of a bare model | caveman | ponytail | Chisle 3.8.1 | **Chisle** |
 |---|--:|--:|--:|--:|
 | billed tokens | 87% | 90% | 75% | **71%** |
 | answer length | 59% | 62% | 58% | **55%** |
 | answer lines | 55% | 60% | 55% | **45%** |
 
-One run of 25 prompts: gaps of a few points are within run-to-run noise. Intervals and the full 26-prompt suite are in [docs/benchmarks.md](docs/benchmarks.md).
+"Chisle" is the current ruleset, unchanged since 3.9. One run of 25 prompts: gaps of a few points are within run-to-run noise. Intervals and the full 26-prompt suite are in [docs/benchmarks.md](docs/benchmarks.md).
 
-**Sonnet 5.5** (34 live prompts, [raw cells](benchmarks/results/raw-nov-sonnet/)): Chisle 3.9 bills **57%** of the bare model's output tokens (95% CI 50–64%) and answers at 54% of the length. Sonnet decides how much to think, and with Chisle it thinks less (84% of bare), so the shorter answers come straight off the bill.
+**Sonnet 5.5** (34 live prompts, [raw cells](benchmarks/results/raw-nov-sonnet/)): Chisle bills **57%** of the bare model's output tokens (95% CI 50–64%) and answers at 54% of the length. Sonnet decides how much to think, and with Chisle it thinks less (84% of bare), so the shorter answers come straight off the bill.
 
 **Correctness** holds: shorter answers are not wronger ones. Auto-graded, no judge model ([quality cells](benchmarks/quality/raw-nov/), [agentic cells](benchmarks/agentic/raw-nov/)):
 
