@@ -92,6 +92,32 @@ test('scrub keeps short repeats and blank structure', () => {
   assert.equal(scrub('x\n\n\n\n\ny'), 'x\n\ny');  // blank run → one blank
 });
 
+test('scrub collapses passing-test runs but keeps every failure', () => {
+  const lines = [' FAIL  test/price.test.js'];
+  for (let i = 0; i < 40; i++) lines.push(`    ✓ applyDiscount ${i * 100} at 10% → ${i * 90} (${i % 5} ms)`);
+  lines.push('    ✕ applyDiscount rounds half-cents up: 1995 at 10% → 1796 (3 ms)');
+  for (let i = 0; i < 40; i++) lines.push(`    ✓ slugs "Hello World ${i}" (2 ms)`);
+  lines.push('Tests:       1 failed, 80 passed, 81 total');
+  const out = scrub(lines.join('\n'));
+  assert.ok(out.includes('FAIL  test/price.test.js'));
+  assert.ok(out.includes('✕ applyDiscount rounds half-cents up'));
+  assert.ok(out.includes('1 failed, 80 passed'));
+  assert.ok(out.includes('[chisle: 37 more passing/progress lines like these]'));
+  assert.ok(out.split('\n').length < 15);
+});
+
+test('scrub leaves data rows that merely look alike untouched', () => {
+  const csv = Array.from({ length: 50 }, (_, i) => `2024-01-${String(i % 28 + 1).padStart(2, '0')},cust${i},${i * 13}`).join('\n');
+  assert.equal(scrub(csv), csv);
+});
+
+test('scrub minifies pretty JSON without touching strings or big integers', () => {
+  const src = JSON.stringify([{ id: 'X', n: 1 }], null, 2).replace('"X"', '1234567890123456789').replace('"n"', '"a  b"');
+  const out = scrub(src);
+  assert.equal(out, '[{"id":1234567890123456789,"a  b":1}]');
+  assert.equal(scrub('{ not json\n  at all }'), '{ not json\n  at all }');
+});
+
 test('transform scrubs medium outputs below the elision threshold', () => {
   const noisy = Array(50).fill('\x1b[32m✓\x1b[0m ok').join('\n') + '\n' + 'tail '.repeat(300);
   assert.ok(noisy.length < THRESHOLDS.maxChars);

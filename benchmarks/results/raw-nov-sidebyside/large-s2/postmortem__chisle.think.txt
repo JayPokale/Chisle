@@ -1,0 +1,14 @@
+The user is asking me to write an incident postmortem for a specific outage scenario: four-hour outage caused by connection pool exhaustion from a slow downstream dependency. This is a straightforward request for a template/example document.
+
+Let me write this in "chisle" mode - terse, maximum signal. No fluff, just the essential facts and structure of a postmortem.
+
+Key sections for a postmortem:
+1. Summary/Impact
+2. Timeline
+3. Root Cause Analysis
+4. Remediations
+5. Detection gaps/prevention
+
+I should make it realistic with concrete details (timeframes, metrics, specific technical issues) so it's actually useful as a template or reference.
+
+Let me be concise but complete - every detail serves a purpose.

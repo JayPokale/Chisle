@@ -1,0 +1,49 @@
+This is asking for guidance on strangler fig pattern / gradual migration from monolith to microservices. The user wants to understand:
+1. The ordering/sequencing of what to extract first
+2. Data ownership/boundaries during transition
+3. Keeping it shippable (incremental, not a huge rewrite)
+
+Given chisle mode, I should:
+- Answer at the question's altitude (framework/strategy, not implementation details)
+- No headings/bullets unless necessary
+- Be terse but complete
+- Lead with the key insight
+- Give decisive guidance on tradeoffs
+
+Key points:
+1. Strangler fig pattern - wrap old system, gradually replace
+2. Order by: seams (low-coupling, high-cohesion modules), no circular deps, bounded contexts
+3. Data: dual writes during transition, eventual consistency, then cleanup
+4. Shippable: feature flags, small increments, shadow traffic, rollback paths
+
+Let me think about the actual guidance:
+
+**Ordering:**
+- Start with the module with fewest/weakest dependencies on the rest
+- Extract by business domain boundary (DDD bounded contexts), not random chunks
+- If A depends on B, extract B first
+- Libraries/utilities are usually not good starting points (too many callers)
+- Payment, notifications, reports are often good candidates (leaf modules with clear boundaries)
+
+**Data ownership:**
+- During transition: the new service owns its data, but monolith still writes it (or reads from it via API)
+- This is done via dual writes: monolith writes to both old and new stores, then gradually migrates reads
+- Or: monolith reads from new service, which is the source of truth
+- The transition database write pattern is usually: Service takes ownership, monolith writes to service API, service writes to own DB, eventual sync up
+- This requires idempotency and retry logic
+
+**Keeping it shippable:**
+- Feature flags: feature gated to routes/logic, can toggle in production
+- Dark launches: new service running in shadow mode (receives traffic, processes, discards results), catches bugs before cutover
+- Strangler middleware routes migrated features to the new service, with fallback to old on failure
+- Traffic shifts gradually: 1% → 5% → 25% → 100%
+- Dual-write period can run weeks or months — not a bottleneck, just infrastructure
+- Each extraction ships as its own PR/release, never one big bang
+
+**Gotchas:**
+- Circular deps must be broken first (add an abstraction or invert the dependency)
+- Cross-service transactions can't use XA — need saga pattern or accept eventual consistency
+- Shared data needs a single write path — the owning service, with the old system calling through its API
+
+Performance also matters: service calls add latency compared to in-process calls, so non-critical paths may need caching or async handling.
+

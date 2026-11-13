@@ -1,0 +1,73 @@
+The user is asking for a database migration script that:
+1. Moves from `full_name` column to `first_name` and `last_name` columns
+2. Backfills existing rows with the split data
+3. Is safely re-runnable
+
+I need to understand what database system they're using. They didn't specify, so I should probably make a reasonable assumption. Since they didn't specify, I could:
+- Ask what database system
+- Provide a generic SQL approach that works with most systems
+- Pick a common one (PostgreSQL)
+
+Given the ponytail mode, I should be efficient. Let me just provide a solid migration that works with standard SQL. I'll go with PostgreSQL as it's very common, but the approach generalizes.
+
+For a migration to be "safely re-runnable", it needs to be idempotent:
+- Adding columns that might already exist
+- Only backfilling when needed
+- Handling edge cases
+
+The lazy approach here:
+1. Check if first_name/last_name columns already exist
+2. If not, create them
+3. Backfill data from full_name
+4. Drop full_name column only if we successfully migrated
+
+Actually, for a truly safe re-runnable migration, I should:
+1. Make it transaction-based when possible
+2. Handle already-migrated state (check if columns exist)
+3. Use idempotent operations
+
+Let me write this for PostgreSQL (most common), but keep it simple. I'll use standard SQL patterns.
+
+The migration should:
+- Check if columns exist before creating
+- Split full_name on space (naive but common)
+- Handle NULL values
+- Be wrapped in a transaction
+- Can be run multiple times safely
+
+Let me write a simple, clean migration script:
+
+```sql
+-- Migration: split full_name into first_name and last_name
+-- Safe to run multiple times
+
+BEGIN;
+
+-- Add new columns if they don't exist
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name='users' AND column_name='first_name'
+  ) THEN
+    ALTER TABLE users ADD COLUMN first_name VARCHAR(255);
+  END IF;
+END $$;
+
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name='users' AND column_name='last_name'
+  ) THEN
+    ALTER TABLE users ADD COLUMN last_name VARCHAR(255);
+  END IF;
+END $$;
+```
+
+Each column addition is wrapped in its own existence check so running this twice won't error out. Next I need the backfill logic, scoped to rows where first_name is still empty so already-migrated rows aren't touched again.
+
+But SUBSTRING_INDEX is MySQL-specific — PostgreSQL needs split_part or regex instead. I should commit to one database rather than mixing syntax. Let me write a cleaner Postgres version using `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`, which simplifies the existence checks, then handle the split with `position()` and substring logic to separate first and last names safely.
+
+This approach stays idempotent: adding columns won't error if they already exist, and the update only touches rows where first_name is still NULL, so reruns won't corrupt already-migrated data. Wrapping it in a transaction keeps it atomic, and leaving full_name intact (commented drop) preserves a rollback path.
+
+Given the mode, I'll keep it to just the SQL with a short explanation of why it's safe to rerun — no need for an ORM script or extra scaffolding.
+

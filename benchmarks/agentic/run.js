@@ -7,8 +7,11 @@
 // sees the test: test.js is copied in AFTER the run and decides pass/fail.
 //
 // Usage: node benchmarks/agentic/run.js [model] [seeds] [parallel]
-//   ARMS=vanilla,chisle,chisle-hook,ponytail  arms to run (default: vanilla,chisle)
+//   ARMS=vanilla,chisle,chisle-hook,chisle-trim,ponytail  arms to run (default: vanilla,chisle)
+//   chisle-trim = chisle plus the deny list `npx chisle tools trim` writes for
+//   tools a coding loop never calls (TRIM_TOOLS overrides the list)
 //   PONYTAIL_SKILL=path              ponytail SKILL.md (default: installed plugin cache)
+//   CHISLE_SKILL=path                candidate ruleset for the chisle arms (default: skills/chisle/SKILL.md)
 //   FIXTURES=noisylog,reuse          run only these fixtures (default: all)
 //   RAW_DIR=path                     where cells go (default: ./raw); use a fresh
 //                                    dir when the ruleset changes, or old cells
@@ -25,7 +28,7 @@ const MODEL = process.argv[2] || 'claude-haiku-4-5-20251001';
 const SEEDS = Number(process.argv[3] || 3);
 const PAR = Number(process.argv[4] || 5);
 
-const KNOWN_ARMS = ['vanilla', 'chisle', 'chisle-hook', 'ponytail'];
+const KNOWN_ARMS = ['vanilla', 'chisle', 'chisle-hook', 'chisle-trim', 'ponytail'];
 const ARMS = (process.env.ARMS || 'vanilla,chisle').split(',').map((a) => a.trim()).filter(Boolean);
 const unknown = ARMS.filter((a) => !KNOWN_ARMS.includes(a));
 if (unknown.length) { console.error(`unknown arm(s): ${unknown.join(', ')}; known: ${KNOWN_ARMS.join(', ')}`); process.exit(1); }
@@ -38,7 +41,7 @@ fs.mkdirSync(RAW, { recursive: true });
 
 const ISO = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-agentic-'));
 fs.copyFileSync(path.join(os.homedir(), '.claude', '.credentials.json'), path.join(ISO, '.credentials.json'));
-const skill = fs.readFileSync(path.join(HERE, '..', '..', 'skills', 'chisle', 'SKILL.md'), 'utf8');
+const skill = fs.readFileSync(process.env.CHISLE_SKILL || path.join(HERE, '..', '..', 'skills', 'chisle', 'SKILL.md'), 'utf8');
 const body = skill.split(/^---\s*$/m).slice(2).join('---').trim();
 if (!body) { console.error('empty chisle system prompt'); process.exit(1); }
 fs.writeFileSync(path.join(ISO, 'chisle.txt'), body + '\n');
@@ -60,6 +63,7 @@ process.on('exit', () => fs.rmSync(ISO, { recursive: true, force: true }));
 // chisle-hook arm: the ruleset plus the shipped PostToolUse compressor, taken
 // verbatim from plugin.json so the arm cannot drift from what users install.
 const plugin = JSON.parse(fs.readFileSync(path.join(ROOT, '.claude-plugin', 'plugin.json'), 'utf8'));
+const TRIM_SETTINGS = JSON.stringify({ permissions: { deny: (process.env.TRIM_TOOLS || 'Workflow,ScheduleWakeup,ReportFindings,ShareOnboardingGuide,SendFeedback').split(',') } });
 const HOOK_SETTINGS = JSON.stringify({ hooks: { PostToolUse: plugin.hooks.PostToolUse } })
   .split('${CLAUDE_PLUGIN_ROOT}').join(ROOT);
 
@@ -106,6 +110,7 @@ function runCell(c) {
     // stream-json, so each cell also records the tool calls it made, not only totals.
     const args = ['-p', task, '--model', MODEL, '--output-format', 'stream-json', '--verbose', '--dangerously-skip-permissions'];
     if (c.arm !== 'vanilla') args.push('--append-system-prompt-file', path.join(ISO, c.arm === 'ponytail' ? 'ponytail.txt' : 'chisle.txt'));
+    if (c.arm === 'chisle-trim') args.push('--settings', TRIM_SETTINGS);
     let cfg = ISO;
     if (c.arm === 'chisle-hook') {
       // Own config dir per cell: the hook keeps its on/off flag, savings ledger
@@ -162,7 +167,9 @@ function runCell(c) {
         // A usage-limit refusal is not a measurement. Writing it would score as
         // "the agent changed nothing", which is exactly how a limit hit
         // mid-suite produced 89 fake failures the first time this was run.
-        if (!rec.out_tokens || /session limit|usage limit|rate limit/i.test(rec.answer)) {
+        // Only a short, error-shaped result is a limit hit: matching "rate limit"
+        // anywhere also dropped valid answers that merely mention rate limiting.
+        if (!rec.out_tokens || (rec.answer.length < 300 && /limit reached|hit your .{0,20}limit|usage limit|session limit|rate_limit_error/i.test(rec.answer))) {
           fs.rmSync(work, { recursive: true, force: true });
           console.log(`  ${c.fx}/${c.arm}/${c.seed} LIMITED — not recorded`);
           limited = true;

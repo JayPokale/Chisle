@@ -36,10 +36,13 @@ function vscodeUserDirs() {
   return ['Code', 'Code - Insiders', 'VSCodium', 'Cursor', 'Windsurf'].map(n => path.join(base, n, 'User'));
 }
 
-// Global MCP config files, all `{ "mcpServers": { name: { command, args } } }`.
+// Global MCP config files. JSON ones hold `{ "mcpServers": { name: { command, args } } }`
+// unless the target names another key (VS Code: "servers"); Codex keeps
+// `[mcp_servers.<name>]` tables in TOML.
 function targets() {
   const h = home();
   const copilot = process.env.COPILOT_HOME || path.join(h, '.copilot');
+  const codex = process.env.CODEX_HOME || path.join(h, '.codex');
   const list = [
     ['cursor', 'Cursor', path.join(h, '.cursor', 'mcp.json')],
     ['windsurf', 'Windsurf', path.join(h, '.codeium', 'windsurf', 'mcp_config.json')],
@@ -47,11 +50,15 @@ function targets() {
     ['qwen', 'Qwen Code', path.join(h, '.qwen', 'settings.json')],
     ['kiro', 'Kiro', path.join(h, '.kiro', 'settings', 'mcp.json')],
     ['copilot-cli', 'Copilot CLI', path.join(copilot, 'mcp-config.json')],
+    ['antigravity', 'Antigravity', path.join(h, '.gemini', 'config', 'mcp_config.json')],
+    ['codex', 'Codex', path.join(codex, 'config.toml'), { format: 'toml' }],
   ];
+  // Copilot in VS Code: the user-profile mcp.json, keyed "servers".
+  for (const dir of vscodeUserDirs().slice(0, 3)) list.push(['copilot', 'GitHub Copilot', path.join(dir, 'mcp.json'), { key: 'servers' }]);
   for (const dir of vscodeUserDirs()) {
     list.push(['cline', 'Cline', path.join(dir, 'globalStorage', 'saoudrizwan.claude-dev', 'settings', 'cline_mcp_settings.json')]);
   }
-  return list.map(([id, label, file]) => ({ id, label, file }));
+  return list.map(([id, label, file, extra]) => ({ id, label, file, ...extra }));
 }
 
 function isWrapped(entry) {
@@ -81,6 +88,7 @@ function unwrapEntry(entry) {
 function readConfig(file) {
   let raw;
   try { raw = fs.readFileSync(file, 'utf8'); } catch (e) { return { missing: true }; }
+  if (!raw.trim()) return { data: {}, raw };   // an empty file has no servers yet
   try {
     const data = JSON.parse(raw.replace(/^﻿/, ''));
     if (!data || typeof data !== 'object' || Array.isArray(data)) return { error: 'not a JSON object' };
@@ -89,13 +97,95 @@ function readConfig(file) {
 }
 
 function writeConfig(file, raw, data) {
+  writeText(file, raw, JSON.stringify(data, null, 2) + '\n');
+}
+
+function writeText(file, raw, text) {
   const bak = file + '.chisle-bak';
   if (!fs.existsSync(bak)) fs.writeFileSync(bak, raw, { mode: 0o600 });
   let mode = 0o600;
   try { mode = fs.statSync(file).mode & 0o777; } catch (e) {}
   const tmp = file + '.chisle-tmp-' + process.pid;
-  fs.writeFileSync(tmp, JSON.stringify(data, null, 2) + '\n', { mode });
+  fs.writeFileSync(tmp, text, { mode });
   fs.renameSync(tmp, file);
+}
+
+// ── Codex TOML ──────────────────────────────────────────────────────────────
+// Only the command/args lines of [mcp_servers.<name>] tables are read and
+// rewritten; every other byte of config.toml is left as it was. A table whose
+// values are not plain strings / string arrays is skipped, never guessed at.
+const TOML_TABLE = /^\s*\[\s*mcp_servers\.(?:"((?:[^"\\]|\\.)*)"|([A-Za-z0-9_-]+))\s*\]\s*(?:#.*)?$/;
+
+// Parse TOML strings from text starting at index i: one string, or an array
+// of strings when the text opens with '['. Returns { value, end } or null.
+function tomlValue(text, i) {
+  const str = () => {
+    const q = text[i];
+    if (text.startsWith(q.repeat(3), i)) return null;   // multi-line strings: not handled
+    let j = i + 1;
+    while (j < text.length && text[j] !== q) { if (q === '"' && text[j] === '\\') j++; j++; }
+    if (j >= text.length) return null;
+    const lit = text.slice(i, j + 1);
+    i = j + 1;
+    try { return q === "'" ? lit.slice(1, -1) : JSON.parse(lit); } catch (e) { return null; }
+  };
+  const skip = () => { while (i < text.length) { if (/\s|,/.test(text[i])) i++; else if (text[i] === '#') while (i < text.length && text[i] !== '\n') i++; else break; } };
+  skip();
+  if (text[i] === '"' || text[i] === "'") { const v = str(); return v == null ? null : { value: v, end: i }; }
+  if (text[i] !== '[') return null;
+  i++;
+  const arr = [];
+  for (;;) {
+    skip();
+    if (text[i] === ']') return { value: arr, end: i + 1 };
+    if (text[i] !== '"' && text[i] !== "'") return null;
+    const v = str();
+    if (v == null) return null;
+    arr.push(v);
+  }
+}
+
+function readToml(file) {
+  let raw;
+  try { raw = fs.readFileSync(file, 'utf8'); } catch (e) { return { missing: true }; }
+  const lines = raw.split('\n');
+  const servers = {}, tables = {};
+  let cur = null;
+  for (let n = 0; n < lines.length; n++) {
+    const m = TOML_TABLE.exec(lines[n]);
+    if (m) {
+      const name = m[1] != null ? JSON.parse('"' + m[1] + '"') : m[2];
+      cur = tables[name] = { header: n, entry: {}, ok: true };
+      continue;
+    }
+    if (/^\s*\[/.test(lines[n])) { cur = null; continue; }
+    const kv = cur && /^(\s*)(command|args|url)\s*=\s*/.exec(lines[n]);
+    if (!kv) continue;
+    // An array may run over several lines: parse from here and find its end.
+    const rest = lines.slice(n).join('\n');
+    const v = kv[2] === 'url' ? { value: 'url', end: lines[n].length } : tomlValue(rest, kv[0].length);
+    if (!v || (kv[2] === 'command' && typeof v.value !== 'string') || (kv[2] === 'args' && !Array.isArray(v.value))) { cur.ok = false; continue; }
+    const last = n + (rest.slice(0, v.end).match(/\n/g) || []).length;
+    cur.entry[kv[2]] = v.value;
+    cur[kv[2]] = { start: n, end: last, indent: kv[1] };
+    n = last;
+  }
+  for (const [name, t] of Object.entries(tables)) if (t.ok) servers[name] = t.entry;
+  return { raw, lines, tables, data: { mcp_servers: servers } };
+}
+
+function writeToml(file, cfg, names) {
+  const lines = cfg.lines.slice();
+  const edits = [];
+  for (const name of names) {
+    const t = cfg.tables[name], e = cfg.data.mcp_servers[name];
+    const indent = t.command ? t.command.indent : '';
+    const argsLine = e.args && e.args.length ? [indent + 'args = [' + e.args.map(a => JSON.stringify(a)).join(', ') + ']'] : [];
+    edits.push({ start: t.command.start, end: t.command.end, text: [indent + 'command = ' + JSON.stringify(e.command)].concat(t.args ? [] : argsLine) });
+    if (t.args) edits.push({ start: t.args.start, end: t.args.end, text: argsLine });
+  }
+  for (const ed of edits.sort((a, b) => b.start - a.start)) lines.splice(ed.start, ed.end - ed.start + 1, ...ed.text);
+  writeText(file, cfg.raw, lines.join('\n'));
 }
 
 function installProxy() {
@@ -121,7 +211,7 @@ function parse(argv) {
 }
 
 function selected(o) {
-  if (o.files.length) return o.files.map(file => ({ id: 'file', label: 'custom', file }));
+  if (o.files.length) return o.files.map(file => ({ id: 'file', label: 'custom', file, ...(file.endsWith('.toml') ? { format: 'toml' } : {}) }));
   return targets().filter(t => !o.only.length || o.only.includes(t.id));
 }
 
@@ -133,12 +223,13 @@ function run(argv, out) {
   let changed = 0, found = 0;
 
   for (const t of selected(o)) {
-    const cfg = readConfig(t.file);
+    const cfg = t.format === 'toml' ? readToml(t.file) : readConfig(t.file);
     if (cfg.missing) { if (o.files.length) out('  ' + t.file + ': not found'); continue; }
     found++;
     if (cfg.error) { out('  ' + t.label + ': ' + t.file + ': skipped, ' + cfg.error); continue; }
-    const servers = cfg.data.mcpServers;
-    if (!servers || typeof servers !== 'object') { out('  ' + t.label + ': no mcpServers in ' + t.file); continue; }
+    const key = t.format === 'toml' ? 'mcp_servers' : t.key || (cfg.data.mcpServers ? 'mcpServers' : 'servers');
+    const servers = cfg.data[key];
+    if (!servers || typeof servers !== 'object') { out('  ' + t.label + ': no ' + key + ' in ' + t.file); continue; }
 
     const names = Object.keys(servers);
     const wrapped = names.filter(n => isWrapped(servers[n]));
@@ -153,7 +244,7 @@ function run(argv, out) {
       : wrapped;
     if (!todo.length) { out('  ' + t.label + ': nothing to ' + o.action + '  ' + t.file); continue; }
     for (const n of todo) (o.action === 'wrap' ? wrapEntry(servers[n], proxy) : unwrapEntry(servers[n]));
-    if (!o.dryRun) writeConfig(t.file, cfg.raw, cfg.data);
+    if (!o.dryRun) (t.format === 'toml' ? writeToml(t.file, cfg, todo) : writeConfig(t.file, cfg.raw, cfg.data));
     changed += todo.length;
     out('  ' + t.label + ': ' + (o.dryRun ? 'would ' + o.action : o.action + 'ped') + ' ' + todo.join(', ') + '  ' + t.file);
   }

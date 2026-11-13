@@ -1,0 +1,11 @@
+The user is asking me to write an incident postmortem for a specific scenario: a four-hour outage caused by a connection pool exhausted by a slow downstream dependency. This is a straightforward documentation request.
+
+I should write a realistic, professional postmortem document that includes:
+1. Timeline
+2. Root cause
+3. Remediations (both immediate and long-term)
+4. Standard postmortem sections
+
+I'll make it specific enough to be useful but generic enough that they can adapt it. I should include realistic details about a connection pool exhaustion scenario.
+
+Let me write this as a markdown document that's well-structured and professional.

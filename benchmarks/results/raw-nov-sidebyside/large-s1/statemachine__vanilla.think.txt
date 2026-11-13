@@ -1,0 +1,39 @@
+The user wants me to implement an order state machine with states: created, paid, shipped, delivered, cancelled, refunded. They want legal transitions to be enforced and invalid ones rejected.
+
+This is a straightforward implementation task. I should create a state machine that:
+1. Defines the states
+2. Defines the valid transitions between states
+3. Enforces transitions (rejecting invalid ones)
+4. Provides a clear way to transition between states
+
+Let me think about the legal transitions:
+- created → paid (payment made)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order shipped after payment)
+- paid → cancelled (cancelled after payment, potentially with refund)
+- paid → refunded (refund issued)
+- shipped → delivered (order delivered)
+- shipped → cancelled (unlikely but possible)
+- shipped → refunded (return/refund)
+- delivered → refunded (return period refund)
+- refunded → (terminal state, no transitions)
+- cancelled → (terminal state, no transitions)
+- delivered → (terminal state? or could go to refunded)
+
+Actually, let me think more carefully about valid transitions:
+- created: can go to paid, cancelled
+- paid: can go to shipped, cancelled (with potential refund), refunded
+- shipped: can go to delivered, cancelled (return), refunded (return)
+- delivered: can go to refunded (return within window)
+- refunded: terminal
+- cancelled: terminal
+
+I'll implement this using a clear state machine pattern. I could use:
+1. Python with a simple dict-based approach
+2. Python with an enum and a class
+3. TypeScript with classes
+4. Go with interfaces
+
+Let me go with Python since it's clear and concise. I'll use a class-based approach that's easy to understand.
+
+Since the user just said "show the code", I should create a complete, working implementation. I'll create a file with the state machine implementation.

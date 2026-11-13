@@ -1,0 +1,11 @@
+The user is asking me to add a cache layer for user profile API responses. However, I don't see any existing project structure yet. I need to:
+
+1. Check if there's any existing code in the working directory
+2. Understand the current API structure
+3. Add a cache layer
+
+Let me start by exploring the working directory to see what we're working with.
+
+---
+
+The directory appears to be empty. I need to ask the user for more context about their existing API implementation, or I should create a minimal example. Since they said "our", they likely have existing code. Let me check if there are any hidden files or check the current state more carefully.

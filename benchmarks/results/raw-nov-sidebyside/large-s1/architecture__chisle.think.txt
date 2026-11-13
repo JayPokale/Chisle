@@ -1,0 +1,32 @@
+This is a software architecture question about incremental migration from monolith to microservices. The user wants to understand the strategy for doing this without a complete rewrite - keeping the system shippable throughout the process.
+
+Key concepts to cover:
+1. Ordering - which services to extract first
+2. Data ownership - managing shared data during migration
+3. Keeping things shippable - maintaining system stability during transition
+
+This is a technical architecture question, good scope for chisle mode - signal, no filler.
+
+Let me think through this:
+
+**Ordering:**
+- Don't pick the most critical service first (high blast radius)
+- Don't pick the most tightly coupled (hard to extract)
+- Start with low-coupling, low-risk services to build muscle memory
+- Then move to higher-risk/higher-value services once you have the pattern
+
+**Data ownership:**
+- Dual-write pattern initially
+- Synchronization challenges
+- Event sourcing / changelog capture
+- Gradual traffic shift
+- Eventually remove duplication
+
+**Keeping shippable:**
+- Feature flags for new service paths
+- Strangler fig pattern
+- Rollback always available
+- Both old and new code coexist temporarily
+- Incremental traffic shifting
+
+Chisle mode: fragments, exact technical terms, no preamble. Structure as tight prose, no unnecessary scaffolding.

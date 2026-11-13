@@ -1,0 +1,3 @@
+The user is asking for an explanation of database connection pooling and its benefits. This is a general technical question, not a task related to the working directory. I should provide a clear, concise explanation.
+
+This doesn't require me to access memory, look at files, or run any tools. I'll just explain the concept directly.

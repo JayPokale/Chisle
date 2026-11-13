@@ -1,0 +1,19 @@
+The user wants me to implement email-and-password signup and login with password hashing, session issuing, and rate limiting on failed attempts.
+
+This is a substantial auth system. I should ask for clarification on a few things:
+1. What tech stack? (Node.js/Express, Python/Flask, Go, etc.)
+2. What database? (PostgreSQL, MongoDB, etc.)
+3. What does "session issuing" mean - JWT tokens, server-side sessions with cookies?
+4. What rate limiting strategy? (IP-based, account-based, etc.)
+
+Actually, wait. The user says "Show the code" - they want a working implementation. They haven't specified a tech stack. I should probably ask before building.
+
+But let me think about this in Chisle mode: "Big request, unproven need → ship the lazy version, ask before building the full one."
+
+Actually, the user is being quite clear: they want signup/login with those specific features. But without knowing the tech stack, I can't write code.
+
+Let me ask for clarification on the tech stack and database, then provide a working implementation. I should keep it minimal but complete.
+
+Actually, I should give them the option to choose or suggest a reasonable stack. Let me suggest Node.js/Express with PostgreSQL as it's common and straightforward for this task. Or ask what they prefer.
+
+Let me be direct: ask for tech stack and database, suggest sensible defaults if they want.

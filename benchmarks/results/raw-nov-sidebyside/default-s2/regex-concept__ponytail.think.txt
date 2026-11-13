@@ -1,0 +1,12 @@
+The user is asking for an explanation of regular expression backreferences with one short example. They want it concise ("one short example").
+
+This is a straightforward technical explanation request - not a code task, not a project task, just an explanation. I should keep it terse and concrete.
+
+A backreference is a way to refer back to a previously captured group within the same regex pattern. It's written as `\1`, `\2`, etc. (or `$1`, `$2` in some contexts) and matches the exact same text that was captured by that group.
+
+Simple example: matching repeated words or patterns.
+
+Let me think of a clear, short example:
+- `(word)\s+\1` matches a word followed by whitespace and the same word again. Like "hello hello" or "test test".
+
+That's clear and useful. Let me keep the explanation to 2-3 sentences max.

@@ -1,0 +1,43 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle",
+ "seed": 1,
+ "out_tokens": 793,
+ "input_tokens": 95424,
+ "cost_usd": 0.033381600000000004,
+ "turns": 4,
+ "answer": "Changed `now > expiresAt` → `now >= expiresAt`. Session now becomes invalid at the exact expiry millisecond, not after it.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-tfmLv4/repo -type f -name \"*.js\" -o -name \"*.ts\" -o -name \"*.jsx\" -o -name \"*",
+   "chars": 201
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  }
+ ],
+ "request_prompts": [
+  22623,
+  23961,
+  24216,
+  24624
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

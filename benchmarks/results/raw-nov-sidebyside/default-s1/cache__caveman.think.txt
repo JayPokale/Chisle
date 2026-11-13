@@ -1,0 +1,17 @@
+The user is asking me to add a cache layer for a user profile API. However, there's no context about what codebase they're working with, what language, what framework, etc. I need to first check what's in the working directory to understand the project structure.
+
+Let me read the current working directory to see what we're working with.
+
+Also, the user wants me to be in caveman mode (full by default based on the system prompt). I should keep responses terse, drop articles, drop filler, use short synonyms, and use fragments. But I should NOT abbreviate code blocks or technical terms, and keep code normal.
+
+Let me start by exploring the directory.
+
+---
+
+The directory seems empty or I need to see what files are actually there. Let me check what exists in the current directory.
+
+---
+
+The directory appears to be empty or nearly empty. Since there's no existing codebase, I need to ask the user for details about what stack they want, or I could provide a generic implementation. But the user said "our user profile API" which implies they have an existing API. 
+
+Let me check if there's maybe a package.json, requirements.txt, go.mod, or similar that would indicate the tech stack.

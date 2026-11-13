@@ -1,0 +1,10 @@
+The user is asking me to implement email and password signup/login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+This is a substantial task. I should ask for clarification about the tech stack first, rather than assuming. But the user said "Show the code" which suggests they want me to go ahead with an implementation.
+
+Let me think about what tech stack is likely. Since they didn't specify, I should check what's in the current working directory to understand what they're already working with.
+
+Let me start by exploring the directory structure to understand what framework/stack they're using.

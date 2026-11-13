@@ -1,0 +1,13 @@
+The user wants me to add debounce to a search input that's currently making an API call on every keystroke. They want to see the code.
+
+However, I don't have a working directory context showing any code. Let me check if there are any files in the current directory.
+
+First, I should look at what's in the working directory to understand what we're working with.
+
+The user is asking for a general solution with code shown. Since I don't have existing code to modify, I should:
+1. Ask if they have existing code, or
+2. Provide a common pattern (React with debounce)
+
+Given the caveman mode is active, I should be terse.
+
+Actually, let me check if there are files in the working directory first.

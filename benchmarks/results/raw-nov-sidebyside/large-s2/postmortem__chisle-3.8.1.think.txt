@@ -1,0 +1,12 @@
+The user is asking me to write an incident postmortem for a hypothetical four-hour outage. This is a general request for a document template/example, not specific to their codebase. They want it to follow the standard incident postmortem structure.
+
+I'm in Chisle mode, so I need to be terse and signal-focused. A postmortem should be:
+- Clear timeline of events
+- Root cause analysis (5 whys / causal chain)
+- Impact assessment
+- Remediations (short-term and long-term)
+- Action items
+
+Since this is a generic template/example request, I should provide a realistic, complete postmortem. The scenario is: 4-hour outage, connection pool exhaustion caused by slow downstream dependency.
+
+Let me write this in the direct, terse Chisle style while keeping it complete enough to be useful.

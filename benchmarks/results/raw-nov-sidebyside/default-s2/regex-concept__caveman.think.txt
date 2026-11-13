@@ -1,0 +1,21 @@
+User asking for explanation of regex backreferences with example. They want it concise ("one short example").
+
+Caveman mode is active (default full). I should be terse - drop filler, articles, pleasantries. Keep technical substance. Fragments OK.
+
+Let me structure:
+- What backreference is
+- One short example
+
+Not: "Sure! A regular expression backreference is essentially a feature that allows you to refer back to a previously captured group..."
+
+Yes: "Backreference = refer back to captured group in same pattern. `([a-z])\1` matches doubled letters like 'aa', 'bb'."
+
+Let me keep it even more caveman while being clear:
+
+Backreference refers back to captured group in same regex. Number or name points to group.
+
+Example: `([a-z])\1` matches doubled letters (aa, bb, etc). `\1` = repeat of first group.
+
+Or: `(word)\s\1` matches "word word" - same word repeated with space.
+
+I'll give one very clear example.

@@ -7,7 +7,7 @@ import SectionHead from "./SectionHead";
 const QA = [
   {
     q: "Does terse output mean worse answers?",
-    a: "No. Terse ≠ incomplete. The rules cut words around the facts, never the facts: the fix, the gotcha, the caveat all stay. On 156 auto-graded maths and coding problems Chisle scored 156/156, the bare model 155/156.",
+    a: "No. Terse ≠ incomplete. The rules cut words around the facts, never the facts: the fix, the gotcha, the caveat all stay. On 156 auto-graded maths and coding problems Chisle scored 156/156, the bare model 154/156; on 42 agentic repo runs with hidden tests, 38 vs 36.",
   },
   {
     q: "Can the compressor corrupt my files?",
@@ -15,7 +15,15 @@ const QA = [
   },
   {
     q: "Does it work outside Claude Code?",
-    a: "Thirteen agents in total. Pi runs both axes with live toggling and a savings badge, the same as Claude Code. OpenCode runs both axes too, via a native plugin that compresses tool output plus the fenced ruleset and on-demand skills, but has no live toggle. Copilot CLI runs both axes through its global instructions file and a postToolUse hook, also without a live toggle. Hermes gets the skills as /chisle commands. The ruleset alone ships to Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and Copilot via generated rule files; there the persona is always on, and npx chisle mcp wrap adds compression for MCP tool output.",
+    a: "Thirteen agents in total. Pi runs both axes with live toggling and a savings badge, the same as Claude Code. OpenCode runs both axes too, via a native plugin that compresses tool output plus the fenced ruleset and on-demand skills, but has no live toggle. Copilot CLI runs both axes through its global instructions file and a postToolUse hook, also without a live toggle. Hermes gets the skills as /chisle commands. Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini and Copilot get the ruleset via generated rule files, with the persona always on, and npx chisle mcp wrap adds compression for their MCP tool output.",
+  },
+  {
+    q: "Why does Chisle tell me to /compact after a break?",
+    a: "The prompt cache lives about an hour. After a longer break, the next request re-sends your whole context at full price and every later turn re-reads it. In Claude Code, on the first prompt after a 60-minute gap with 150k+ tokens of context, Chisle shows one line suggesting /compact or /clear. It never blocks the prompt and the model never sees it. On the maintainer's sessions those re-writes were 14% of spend.",
+  },
+  {
+    q: "What does npx chisle tools do?",
+    a: "Claude Code sends the schema of every loaded tool and a description of every skill on every request, used or not. npx chisle tools reports their size against how often you actually used them; npx chisle tools trim denies the unused tools (never core tools) and lists unused skills name-only, still callable, and npx chisle tools restore undoes exactly that. On the agentic suite the tool trim cut cost per request by 10%, and no trimmed tool or skill was ever needed.",
   },
   {
     q: "Does it fight with my Claude Code output style?",

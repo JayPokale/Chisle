@@ -1,0 +1,11 @@
+The user is asking for an explanation of database connection pooling and its benefits. This is a straightforward technical education question.
+
+Chisle mode: I should be terse, use fragments, drop filler, and deliver decisive facts. No headings or unnecessary structure. The user didn't ask for code, so I won't provide any unless it clarifies the concept.
+
+The core points:
+- What it is: reuse of database connections instead of creating/destroying for each query
+- Why: overhead of creating connections (auth, TCP handshake, memory), so pooling amortizes that cost
+- How: a pool of open connections handed out to requests, then returned and reused
+- Benefits: faster response times, lower resource usage, better throughput
+
+Keep it tight, no announcement of the mode, no headings.

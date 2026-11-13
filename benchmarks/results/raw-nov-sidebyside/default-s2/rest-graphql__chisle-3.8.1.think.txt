@@ -1,0 +1,44 @@
+The user is asking for a summary of the main tradeoffs between REST and GraphQL for a new API. This is a straightforward architectural question about API design patterns.
+
+Given the Chisle mode, I should be extremely terse:
+- Drop articles, filler, pleasantries
+- Fragments where they work
+- Decisive facts, clear tradeoffs
+- Two tight paragraphs beats elaborate structure
+- No headings/bullets unless the question asks for them
+- Stop at the question's altitude
+
+The user asked "summarize tradeoffs" - they want the decisive comparison, not a tutorial. No headings needed, no examples unless they're instructive about the tradeoff itself.
+
+Let me think through the actual tradeoffs:
+
+1. Network efficiency:
+   - GraphQL: clients specify exactly what they need → single request, minimal payload overhead
+   - REST: often over-fetching (get more than needed) or under-fetching (multiple round trips)
+   
+2. Caching:
+   - REST: HTTP caching works out of the box (URLs as cache keys)
+   - GraphQL: cache invalidation harder, usually needs app-level caching or custom solutions
+   
+3. Development speed:
+   - GraphQL: powerful tooling (schema, introspection, built-in docs), faster frontend iteration
+   - REST: simpler to implement initially, standard conventions
+   
+4. Complexity:
+   - GraphQL: steeper learning curve, more moving parts, query complexity can cause server load
+   - REST: simpler contracts, easier to reason about
+   
+5. Versioning:
+   - GraphQL: additive-only changes to schema, no breaking versioning needed
+   - REST: often requires /v1, /v2 URLs as schemas evolve
+   
+6. Debugging:
+   - REST: straightforward, tools abundant
+   - GraphQL: requires understanding query/schema, fewer tools, but introspection helps
+
+Main verdict for "new API": it depends on:
+- If you need rapid client iteration and flexible queries → GraphQL
+- If you need simplicity, standard tooling, good caching → REST
+
+I'll write this tightly, giving the decisive tradeoffs without filler.
+

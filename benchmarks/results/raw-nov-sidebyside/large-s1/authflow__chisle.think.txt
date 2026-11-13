@@ -1,0 +1,13 @@
+The user wants me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They want to see the code. But they haven't specified:
+- What framework/language
+- What stack (web framework, database, session store)
+- Whether this is for a new project or integrating into existing code
+
+Given no context from the working directory and no specification, I should check what's in the working directory first to see if there's an existing project. If not, I'll need to ask or make a reasonable assumption.
+
+Let me first check what's in the working directory.

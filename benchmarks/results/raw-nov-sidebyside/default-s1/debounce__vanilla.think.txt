@@ -1,0 +1,11 @@
+The user is asking me to add debounce to a search input that currently fires an API call on every keystroke. They want me to show the code.
+
+First, I need to understand what's in the working directory to see the current implementation. Let me start by exploring the project structure.
+
+The user said "Show the code" which implies they want to see both the problem and the solution. Let me:
+1. Explore the project structure to find the search input code
+2. Identify the current implementation
+3. Add debounce to prevent API calls on every keystroke
+4. Show them the updated code
+
+Let me start by looking at what files are in the working directory.

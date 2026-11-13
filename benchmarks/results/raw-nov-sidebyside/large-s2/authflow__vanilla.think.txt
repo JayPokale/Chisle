@@ -1,0 +1,15 @@
+The user is asking me to implement email-and-password signup and login with several security features:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+This is a significant task. Let me think about what's needed:
+- User registration (signup)
+- User login
+- Password hashing (e.g., bcrypt)
+- Session management
+- Rate limiting for failed login attempts
+
+However, I should first understand the context of the project. Let me check what's in the working directory to understand what framework/language they're using, what already exists, etc.
+
+The user said "show the code" which suggests they want me to implement this. Let me start by exploring the working directory to see what we're working with.

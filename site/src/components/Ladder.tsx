@@ -66,8 +66,8 @@ const RUNGS = [
     q: "Only then",
     a: "The minimum code that works.",
     before: "// interface + factory + registry, one implementation",
-    after: "// the one function, plus a note:\n// chisle: single impl; add the interface at the second one",
-    why: "You still write it, just the smallest version that holds, with the shortcut marked so it can be found later.",
+    after: "// the one function. The reply ends with:\n// skipped: interface, add when a second impl lands",
+    why: "You still write it, just the smallest version that holds, and the reply names what was skipped and when to add it.",
   },
 ];
 
@@ -83,7 +83,7 @@ export default function Ladder() {
 
       <Reveal delay={0.08}>
         <ol
-          className="pane-scroll mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 [scroll-padding-inline:1.25rem] xl:px-[calc((100vw-72rem)/2+1.25rem)] xl:[scroll-padding-inline:calc((100vw-72rem)/2+1.25rem)]"
+          className="pane-scroll mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pt-2 pb-4 [scroll-padding-inline:1.25rem] xl:px-[calc((100vw-72rem)/2+1.25rem)] xl:[scroll-padding-inline:calc((100vw-72rem)/2+1.25rem)]"
           aria-label="Ladder rungs"
         >
           {RUNGS.map((r, i) => (

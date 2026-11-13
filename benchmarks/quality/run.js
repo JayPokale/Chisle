@@ -8,7 +8,8 @@
 //   code -> hidden unit tests the model never sees
 //
 // Usage: node benchmarks/quality/run.js [model] [seeds] [parallel]
-// Resumable: a cell whose raw JSON already exists is skipped.
+// Resumable: a cell whose raw JSON already exists is skipped, so point
+// RAW_DIR at a fresh directory when the ruleset changes (grade.js reads it too).
 
 const fs = require('fs');
 const os = require('os');
@@ -20,7 +21,7 @@ const SEEDS = Number(process.argv[3] || 3);
 const PAR = Number(process.argv[4] || 8);
 
 const HERE = __dirname;
-const RAW = path.join(HERE, 'raw');
+const RAW = process.env.RAW_DIR ? path.resolve(process.env.RAW_DIR) : path.join(HERE, 'raw');
 fs.mkdirSync(RAW, { recursive: true });
 
 // Isolated config: credentials only, so no personal settings/CLAUDE.md/plugins leak in.
@@ -70,7 +71,9 @@ function runCell(c) {
       let parsed = {};
       try { parsed = JSON.parse(stdout); } catch (_) {}
       const text = String(parsed.result || '');
-      if (!(parsed.usage && parsed.usage.output_tokens) || /session limit|usage limit|rate limit/i.test(text)) {
+      // Only a short, error-shaped result is a limit hit: matching "rate limit"
+      // anywhere also dropped valid answers that merely mention rate limiting.
+      if (!(parsed.usage && parsed.usage.output_tokens) || (text.length < 300 && /limit reached|hit your .{0,20}limit|usage limit|session limit|rate_limit_error/i.test(text))) {
         limited = true;
         console.log(`  ${c.suite}/${c.id}/${c.arm}/${c.seed} LIMITED — not recorded`);
         return resolve();

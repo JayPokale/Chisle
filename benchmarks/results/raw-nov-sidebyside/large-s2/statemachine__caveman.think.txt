@@ -1,0 +1,52 @@
+The user wants me to implement an order state machine with specific states:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+And I need to enforce legal transitions and reject invalid ones.
+
+Let me think about the valid transitions:
+- created → paid (normal flow)
+- created → cancelled (cancel before payment)
+- paid → shipped (proceed with order)
+- paid → refunded (refund after payment)
+- shipped → delivered (complete the order)
+- shipped → cancelled (maybe? probably not - already shipped)
+- delivered → refunded (refund after delivery? maybe)
+- cancelled → refunded (refund cancelled order? maybe)
+
+Actually, let me think about this more carefully. Common state machines for orders:
+- created → paid (customer pays)
+- created → cancelled (customer cancels or admin cancels)
+- paid → shipped (order is dispatched)
+- paid → refunded (refund initiated before shipment)
+- shipped → delivered (order arrives)
+- shipped → cancelled (maybe not - already dispatched)
+- delivered → refunded (customer returns/refunds after delivery)
+
+And cancellation probably should prevent other transitions except maybe refund.
+
+Let me implement this as a TypeScript class or Python class. I'll go with TypeScript since it's commonly used and has good type support.
+
+Actually, the user said "Show the code" which means they want me to write it and display it. Let me create a well-structured state machine implementation.
+
+I'll create:
+1. A state machine with valid transition rules
+2. Methods to transition between states
+3. Rejection of invalid transitions with clear error messages
+
+Since the user is using "caveman" mode (from the instructions), I should be terse but keep the code normal. My text should be terse.
+
+Let me implement this in TypeScript as it's clean and type-safe:
+
+```typescript
+type OrderState = 'created' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+```
+
+I build a class holding current state plus a map of allowed next states for each: created→paid/cancelled, paid→shipped/refunded, shipped→delivered, delivered→refunded, cancelled→refunded, refunded→nothing. Add getState and canTransition helpers checking the map, then a transition method that throws on invalid moves.
+
+Need usage examples to show valid vs invalid attempts. TypeScript fits better than Python since user didn't specify - gives type safety for free. Going caveman style on explanations, code stays clean.
+

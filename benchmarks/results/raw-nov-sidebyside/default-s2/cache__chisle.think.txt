@@ -1,0 +1,11 @@
+The user is asking me to add a cache layer for user profile API responses. They want to see the code.
+
+Let me first check what's in the current working directory to understand the project structure.
+
+I need to:
+1. Explore the working directory to understand the project structure
+2. Find the user profile API code
+3. Add a caching layer to it
+4. Show them the code
+
+Let me start by checking what's in the directory.

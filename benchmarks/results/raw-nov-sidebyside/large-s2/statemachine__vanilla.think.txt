@@ -1,0 +1,63 @@
+The user wants me to implement an order state machine with the following states:
+1. created
+2. paid
+3. shipped
+4. delivered
+5. cancelled
+6. refunded
+
+And they want legal transitions enforced and invalid ones rejected.
+
+Let me think about what the valid transitions should be:
+- created → paid (payment received)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order shipped)
+- paid → refunded (refund issued)
+- shipped → delivered (order delivered)
+- shipped → cancelled (cancel shipped order? This might be edge case, but typically you'd refund instead)
+- delivered → refunded (refund after delivery)
+- cancelled → (no further transitions, terminal state)
+- refunded → (no further transitions, terminal state)
+
+Actually, let me reconsider:
+- created: initial state
+  - → paid: payment received
+  - → cancelled: order cancelled before payment
+- paid: payment has been received
+  - → shipped: order has been shipped
+  - → refunded: refund issued for paid order
+  - → cancelled: order cancelled after payment (would refund, but let's allow direct cancel too)
+- shipped: order has been shipped
+  - → delivered: order delivered
+  - → cancelled: cancel shipped order (less common, maybe not allow)
+  - → refunded: refund for shipped order
+- delivered: order delivered
+  - → refunded: refund after delivery
+- cancelled: terminal state
+- refunded: terminal state
+
+I'll implement a state machine in Python as it's clear and straightforward. I could use a simple approach with a class that tracks the state and validates transitions.
+
+Let me create an Order class with a state machine:
+
+```python
+class OrderStateError(Exception):
+    """Raised when an invalid state transition is attempted."""
+    pass
+
+class Order:
+    # Define valid transitions as a mapping of state -> list of allowed next states
+    VALID_TRANSITIONS = {
+        'created': ['paid', 'cancelled'],
+        'paid': ['shipped', 'refunded', 'cancelled'],
+        'shipped': ['delivered', 'refunded'],
+        'delivered': ['refunded'],
+        'cancelled': [],
+        'refunded': [],
+    }
+```
+
+I'll add an `__init__` setting initial state to 'created', plus a `transition_to` method that checks the VALID_TRANSITIONS map and raises OrderStateError on invalid moves.
+
+I should also include a `can_transition_to` helper for checking without raising, and a `__str__` for readability. Then I'll demonstrate usage with a working example.
+

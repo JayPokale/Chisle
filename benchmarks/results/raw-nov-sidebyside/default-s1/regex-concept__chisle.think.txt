@@ -1,0 +1,12 @@
+The user is asking for an explanation of regular expression backreferences with an example. This is a straightforward technical question.
+
+Chisle mode is active, so I need to be terse and maximize signal. The user asked for one short example, so I should keep it concise.
+
+Key points:
+- Backreference refers to a previously captured group in the same regex
+- Denoted by \1, \2, etc. or sometimes $1, $2 in replacement strings
+- Used to match repeated patterns or validate structure
+
+Example: matching repeated words or matching paired delimiters.
+
+Let me write this tersely:

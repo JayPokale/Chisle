@@ -1,0 +1,55 @@
+{
+ "fixture": "routing-catalog",
+ "arm": "chisle-trim",
+ "seed": 2,
+ "out_tokens": 1878,
+ "input_tokens": 176677,
+ "cost_usd": 0.081722,
+ "turns": 6,
+ "answer": "Tests pass. The bug was the weight boundary check: the condition was excluding exact matches at the maximum. Changing from `<` to `<=` makes it inclusive as documented.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "npm test 2>&1 | head -100",
+   "chars": 856
+  },
+  {
+   "tool": "Read",
+   "input": "run.js",
+   "chars": 1236
+  },
+  {
+   "tool": "Read",
+   "input": "route-planner.js",
+   "chars": 33576
+  },
+  {
+   "tool": "Edit",
+   "input": "route-planner.js",
+   "chars": 162
+  },
+  {
+   "tool": "Bash",
+   "input": "npm test",
+   "chars": 68
+  }
+ ],
+ "request_prompts": [
+  18923,
+  20487,
+  21180,
+  37832,
+  39035,
+  39220
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/route-planner.js"
+ ],
+ "loc_before": 1444,
+ "loc_after": 1444,
+ "loc_delta": 0,
+ "deps_added": []
+}

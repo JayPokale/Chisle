@@ -1,0 +1,16 @@
+The user is asking for an explanation of how to migrate a monolith to microservices without a big-bang rewrite. They want coverage of:
+1. Ordering (what to extract first)
+2. Data ownership (how to handle data)
+3. How to keep it shippable throughout
+
+This is a technical question about software architecture and process. Given the Chisle mode is active, I should:
+- Be terse but complete
+- Cut filler and pleasantries
+- Use fragments and arrows for causality
+- Structure by decisions, not steps
+- No unnecessary headings/bullets unless they clarify
+- Keep facts intact, cut words around them
+
+This is architectural guidance, not code. I should give a coherent explanation at the right level of abstraction.
+
+Let me structure this as: extract in order of coupling/value, separate data cleanly, keep monolith and services coexisting and shipping.

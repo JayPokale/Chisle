@@ -1,0 +1,17 @@
+User wants summary of REST vs GraphQL tradeoffs. They've enabled "caveman" mode (full level by default based on the system instructions).
+
+In caveman mode full:
+- Drop articles (a/an/the)
+- Drop filler (just/really/basically/actually/simply)
+- Drop pleasantries 
+- Drop hedging
+- Fragments OK
+- Short synonyms
+- Technical terms exact
+- Code blocks unchanged
+
+This is a straightforward technical comparison. Not a destructive action or security warning, so caveman mode applies.
+
+Pattern: `[thing] [action] [reason]. [next step].`
+
+Let me structure as REST vs GraphQL, showing tradeoffs clearly and tersely.

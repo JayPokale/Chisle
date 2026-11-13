@@ -1,0 +1,53 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle-trim",
+ "seed": 6,
+ "out_tokens": 1334,
+ "input_tokens": 82419,
+ "cost_usd": 0.036420100000000004,
+ "turns": 6,
+ "answer": "Done. The bug was the `>` comparison operator — changed to `>=` so sessions become invalid when `now` reaches `expiresAt`, not after. Sessions that expire at timestamp 1000 are now rejected at time 1000, not 1001.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-KG4Nz5/repo -type f -name \"*.ts\" -o -name \"*.js\" -o -name \"*.tsx\" -o -name \"*",
+   "chars": 201
+  },
+  {
+   "tool": "Bash",
+   "input": "grep -r \"expiresAt\\|expires_at\" /tmp/wk-rootcause-KG4Nz5/repo --include=\"*.ts\" --include=\"*.js\" --in",
+   "chars": 201
+  },
+  {
+   "tool": "Read",
+   "input": "middleware.js",
+   "chars": 330
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  }
+ ],
+ "request_prompts": [
+  18920,
+  20567,
+  21155,
+  21777
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

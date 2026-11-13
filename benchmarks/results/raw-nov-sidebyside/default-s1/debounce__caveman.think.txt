@@ -1,0 +1,11 @@
+User wants to add debounce to a search input that fires API calls on every keystroke. They want to see the code.
+
+First, I should check what's in the working directory to understand the current implementation.
+
+Caveman mode is active ("full" is default), so I should be terse - drop articles, filler, hedging. Fragments OK. Use short synonyms.
+
+Let me start by exploring the directory to see what we're working with.
+
+---
+
+Let me check what files exist in the directory.

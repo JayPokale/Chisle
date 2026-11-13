@@ -1,0 +1,111 @@
+The user is asking for a database migration script that:
+1. Moves a users table from a single full_name column to first_name/last_name columns
+2. Backfills existing rows
+3. Is safely re-runnable
+
+I should ask a few clarifying questions first, but given the instruction to "When you have enough information to act, act", I can make reasonable assumptions here. However, the user hasn't specified:
+- The database system (PostgreSQL, MySQL, SQLite, etc.)
+- The framework (if any) they're using for migrations
+
+Let me think about this. The user said "Show the code" which suggests they want a concrete implementation. I should probably assume a common setup. PostgreSQL is the most common for production systems, and I'll provide that. If they want a different database, they can say so.
+
+For a migration that's safely re-runnable, I need to:
+1. Make it idempotent - it should be safe to run multiple times
+2. Add the new columns if they don't exist
+3. Backfill the data by splitting full_name
+4. Drop the old column only after confirming the migration is safe (or skip the drop)
+
+The tricky part is parsing full_name into first_name and last_name. A simple approach: split on the last space, take everything before as first_name and after as last_name. If there's no space, put the whole thing in first_name.
+
+For a "safely re-runnable" migration, I'd typically use:
+- `IF NOT EXISTS` / `IF EXISTS` checks
+- Transaction blocks
+- Proper error handling
+
+Let me write a SQL migration (PostgreSQL) and maybe also a Python script that could work with common ORMs.
+
+Actually, let me think about what "safely re-runnable" means:
+1. Can be run multiple times without failing
+2. Doesn't duplicate data
+3. Doesn't break if partial state exists (e.g., columns already exist)
+
+I'll provide a SQL migration file (the standard approach) and note that it depends on the database system.
+I'll add the new columns conditionally, backfill only where empty, and leave dropping full_name as a separate step rather than bundling it in — safer for production rollouts. Defaulting to PostgreSQL syntax unless told otherwise.
+
+Keeping this lean: single file, basic string splitting on the last space for parsing names, no fancy name-parsing libraries or excessive error handling for edge cases that won't realistically occur. Just a clean, idempotent script that does the job.
+
+Initially using `SUBSTRING_INDEX` for splitting, but that's MySQL-specific — PostgreSQL needs `SPLIT_PART` or regex instead, so switching the backfill logic to match.
+
+(255);
+
+-- Backfill using first space as split point
+UPDATE users 
+SET 
+  first_name = COALESCE(first_name, 
+    CASE 
+      WHEN position(' ' in full_name) > 0 
+      THEN substring(full_name, 1, position(' ' in full_name) - 1)
+      ELSE full_name
+    END
+  ),
+  last_name = COALESCE(last_name,
+    CASE 
+      WHEN position(' ' in full_name) > 0 
+      THEN substring(full_name, position(' ' in full_name) + 1)
+      ELSE ''
+    END
+  )
+WHERE first_name IS NULL;
+
+COMMIT;
+```
+
+Wait, `position` finds the first space, not the last - need to reconsider for names with middle names.
+
+Actually `split_part(full_name, ' ', 1)` is cleaner for first name. For last name, I'll want everything after the first space, trimmed.
+
+```sql
+BEGIN;
+
+ALTER TABLE users 
+ADD COLUMN IF NOT EXISTS first_name VARCHAR(255),
+ADD COLUMN IF NOT EXISTS last_name VARCHAR(255);
+
+UPDATE users 
+SET 
+  first_name = COALESCE(first_name, 
+    CASE 
+      WHEN strpos(full_name, ' ') > 0 THEN substring(full_name, 1, strpos(full_name, ' ') - 1)
+      ELSE full_name
+    END
+  ),
+  last_name = COALESCE(last_name,
+    CASE 
+      WHEN strpos(full_name, ' ') > 0 THEN substring(full_name, strpos(full_name, ' ') + 1)
+```
+
+Using `strpos` and `substring` gives precise control over splitting on the first space only, unlike `split_part` which truncates multi-word last names.
+
+This migration is idempotent: `IF NOT EXISTS` avoids column errors on rerun, `COALESCE` and the `WHERE first_name IS NULL` clause ensure only unpopulated rows get touched. Since I don't know their exact database system, I'll give a PostgreSQL version since it's most common, and keep it to a single clean file rather than offering multiple variants.
+
+Wait, I need to double-check my `substring` syntax—Postgres has specific conventions for this that I should verify before finalizing.
+
+      ELSE full_name
+    END
+  ),
+  last_name = COALESCE(last_name,
+    CASE 
+      WHEN strpos(full_name, ' ') > 0 
+      THEN substring(full_name, strpos(full_name, ' ') + 1)
+      ELSE ''
+    END
+  )
+WHERE first_name IS NULL;
+
+COMMIT;
+```
+
+Clear and correct. For production, I'd also want a rollback script and tests verifying the split worked correctly.
+
+The user just wants the migration code itself, so I'll give the main script plus a quick verification query rather than overloading with extras. I'll assume PostgreSQL syntax and flag that. The re-runnable safety comes from `ADD COLUMN IF NOT EXISTS` and `COALESCE` only touching NULL rows—running it twice is harmless.
+

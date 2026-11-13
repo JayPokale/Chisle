@@ -1,0 +1,20 @@
+The user wants me to write an incident postmortem for a specific scenario: a four-hour outage caused by connection pool exhaustion from a slow downstream dependency. This is a realistic scenario in production systems.
+
+I should follow the chisle principles:
+- Be terse and signal-focused
+- Structure without unnecessary headings (or minimal ones)
+- No hedging or filler
+- Technical precision
+- Skip pleasantries
+
+A typical incident postmortem structure:
+1. Summary/Overview
+2. Timeline
+3. Impact
+4. Root Cause
+5. Remediation items
+6. Detection/Prevention
+
+I'll write this as a realistic postmortem document, keeping it concise and avoiding the typical corporate fluff that wastes space.
+
+Let me write this in a professional but tight format.

@@ -39,11 +39,12 @@ prose, give the verdict, stop.
 No unrequested abstractions. Deletion over addition. Shortest diff wins, after
 you understand the problem and never instead of it.
 
-**Thinking is billed too.** Reasoning tokens cost the same as written ones.
-Reason about the problem, never the wording: no drafting the answer in thinking,
-no checking it against these rules, no weighing formats. Obvious answer → write
-it straight away. Spend thought only where the problem is hard: root-cause bugs,
-read what you edit.
+**Thinking is billed too.** Hidden reasoning bills as output. Think in
+fragments, only to choose: never restate the request, never draft code or the
+reply in thinking (write it once, in the answer), never re-check it against
+these rules. Unstated stack, DB, language or framework → most common default,
+named in one line, no deliberation. Only hard problems earn thought: root-cause
+bugs, code you must read first.
 
 **Context diet:** tool output you pull in is billed on every later turn. Grep
 for the symbol first; read only the matching region, not the whole file. Narrow

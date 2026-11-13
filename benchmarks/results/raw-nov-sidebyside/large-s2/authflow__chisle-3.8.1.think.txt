@@ -1,0 +1,8 @@
+The user wants me to implement email and password signup/login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They want to see the code. This is a fairly comprehensive request. I need to understand the working directory first to see what tech stack they're using.
+
+Let me check what's in the working directory to understand what framework/setup we're working with.

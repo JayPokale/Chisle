@@ -1,0 +1,23 @@
+The user is asking me to add debounce to a search input that currently fires an API call on every keystroke. They want to see the code.
+
+First, I should understand what they have - let me look at the working directory to see what files exist and what the current implementation looks like.
+
+Since they said "currently fires an API call on every keystroke", there's probably existing code I need to modify. Let me explore the directory structure first.
+
+I'm in Ponytail mode (full), so I should:
+1. Look at what exists first (don't over-engineer)
+2. Use the simplest solution that works
+3. Check if it's already in the codebase
+4. Use stdlib/native features
+5. Skip unrequested abstractions
+6. Be concise in explanation
+
+Let me start by exploring what's in the working directory.
+
+---
+
+Let me check what files are in the directory.
+
+---
+
+No files found in the glob results. Let me see what's actually in the directory by trying to read it or use a different approach.

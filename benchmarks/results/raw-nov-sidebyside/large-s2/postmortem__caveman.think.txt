@@ -1,0 +1,15 @@
+User wants a postmortem for an incident. They want:
+1. Four-hour outage
+2. Caused by connection pool exhaustion
+3. Slow downstream dependency
+4. Timeline, root cause, remediations
+
+This is a template/example document they want me to write. I should write it in a realistic postmortem format. They've also activated "caveman" mode, so I should write tersely - but for a document like this, caveman mode might make it less professional/readable. However, they said code blocks and formal structures stay normal. A postmortem is a formal document, not casual chat. Let me check the rules...
+
+"Code/commits/PRs: write normal" - postmortems are formal documentation, similar spirit. I could interpret this as "write normal for formal docs." But they said "ACTIVE EVERY RESPONSE" with no exceptions listed except explicit "stop caveman" command.
+
+Actually, looking at the rules: "Drop: articles (a/an/the), filler (just/really/basically/actually/simply), pleasantries". A postmortem should still be professional and clear. The caveman mode is about cutting filler, not making official docs unprofessional.
+
+Let me write a realistic postmortem in caveman-lite style (no filler, keep professional structure). The key info stays, fluff dies, but clarity maintained.
+
+Timeline, root cause, remediation format is standard. I can be terse while keeping it readable.

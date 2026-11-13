@@ -1,0 +1,104 @@
+The user is asking me to implement an order state machine with specific states and transitions, and to enforce legal transitions while rejecting invalid ones.
+
+States: created, paid, shipped, delivered, cancelled, refunded
+Transitions need to be enforced.
+
+Let me think about valid transitions:
+- created → paid (customer pays)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order is packed and sent)
+- paid → refunded (refund issued)
+- shipped → delivered (order arrives)
+- delivered → done/complete (end state)
+- cancelled → ? (terminal state usually)
+- refunded → ? (terminal state usually)
+
+Actually, let me think more carefully about order lifecycle:
+- created: new order, awaiting payment
+- paid: payment received, order can be shipped
+- shipped: order in transit
+- delivered: order arrived
+- cancelled: order cancelled (can happen at created or paid state)
+- refunded: refund issued (can happen at paid or shipped states)
+
+Valid transitions might be:
+- created → paid
+- created → cancelled
+- paid → shipped
+- paid → refunded
+- paid → cancelled
+- shipped → delivered
+- shipped → refunded
+- delivered → (terminal, maybe refunded for returns but that's complex)
+- cancelled → (terminal)
+- refunded → (terminal)
+
+Let me implement this in Python since it's clean and straightforward.
+
+I'm in ponytail mode (full), so I should:
+1. Check if this needs stdlib (yes - we can use enums)
+2. Implement the minimum viable state machine
+3. No unnecessary abstractions
+4. Make it simple and clear
+
+I'll use Python's Enum and a simple approach with a transitions dict or method dispatch.
+
+Let me create a minimal implementation:
+
+```python
+from enum import Enum
+
+class OrderState(Enum):
+    CREATED = "created"
+    PAID = "paid"
+    SHIPPED = "shipped"
+    DELIVERED = "delivered"
+    CANCELLED = "cancelled"
+    REFUNDED = "refunded"
+```
+
+Mapping out the adjacency structure as a dict keyed by source state pointing to a set of allowed destinations feels cleanest - created leads to paid or cancelled, paid leads to shipped, refunded, or cancelled, shipped leads to delivered or refunded, and delivered/cancelled/refunded are terminal with empty sets.
+
+The transition_to method just checks membership in the set and raises ValueError with a clear message if invalid, otherwise updates state. Adding __str__ for readability.
+
+Delivered could arguably support a return-to-refunded path, but that wasn't specified, so keeping it terminal for now matches the stated requirements.
+
+Since the user didn't enumerate exact transitions, I need to infer reasonable flows:
+1. created → paid → shipped → delivered
+2. created → cancelled
+3. paid → cancelled or paid → refunded
+4. shipped → refunded (possible though less common)
+
+Delivered, cancelled, and refunded end the lifecycle. Rewriting with cleaner typing (Set) and clearer error messages:
+
+```python
+from enum import Enum
+from typing import Set
+
+class OrderState(Enum):
+    CREATED = "created"
+    PAID = "paid"
+    SHIPPED = "shipped"
+    DELIVERED = "delivered"
+    CANCELLED = "cancelled"
+    REFUNDED = "refunded"
+
+class Order:
+    TRANSITIONS =
+
+{
+        OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
+        OrderState.PAID: {OrderState.SHIPPED, OrderState.REFUNDED, OrderState.CANCELLED},
+        OrderState.SHIPPED: {OrderState.DELIVERED, OrderState.REFUNDED},
+        OrderState.DELIVERED: set(),
+        OrderState.CANCELLED: set(),
+        OrderState.REFUNDED: set(),
+    }
+```
+
+I add `__init__` storing order_id and initial state, a `can_transition_to` helper checking membership in the transitions set, and a `transition_to` method that raises a `ValueError` listing allowed next states (or noting terminal state) when invalid.
+
+A demo function walks the happy path—paid, shipped, delivered—then shows failure on an invalid refund-after-delivery attempt, and also demonstrates cancelling before payment.
+
+Checking against my principles: this is genuinely needed code, nothing reusable already exists, stdlib's `enum` suffices and a full state-machine library would be overkill. The dict-of-sets approach stays minimal and readable without adding a dependency like `transitions`. I'll keep it to one file with the demo included.
+

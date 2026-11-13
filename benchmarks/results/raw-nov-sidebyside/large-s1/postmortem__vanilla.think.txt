@@ -1,0 +1,14 @@
+The user is asking me to write an incident postmortem document for a hypothetical scenario: a four-hour outage caused by a connection pool being exhausted by a slow downstream dependency.
+
+This is a writing task. I should write a professional incident postmortem that follows best practices. I'll create a comprehensive document that includes:
+
+1. Executive summary
+2. Timeline of events
+3. Root cause analysis
+4. Impact assessment
+5. Remediation steps (immediate and long-term)
+6. Prevention measures
+
+Since the user said "write," I should create a new file with this postmortem. I'll use a Markdown format as it's standard for documentation.
+
+Let me write a realistic and detailed postmortem that could apply to many systems.

@@ -1,0 +1,10 @@
+The user is asking for an explanation of how to migrate a monolith to microservices incrementally (not a big-bang rewrite). They want coverage of:
+1. Ordering (which services/features to extract first)
+2. Data ownership (handling the distributed data problem)
+3. Keeping it shippable throughout (maintaining working state)
+
+This is a strategic/architectural question, not a code task. The user wants explanation/guidance.
+
+In Chisle mode, I should be terse, fragment-based, causality with arrows, no articles/filler. But this is also a complex architectural topic that needs clarity - the "When NOT to be lazy" section says "never simplify away...anything explicitly requested" and this is asking for explanation coverage of multiple interconnected topics. So I should be concise but complete enough to be useful.
+
+Let me structure this as tight prose with clear causality chains, avoiding unnecessary words but keeping every decisive fact.

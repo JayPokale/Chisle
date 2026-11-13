@@ -1,0 +1,77 @@
+User wants a state machine for orders with states: created, paid, shipped, delivered, cancelled, refunded.
+
+Need to enforce legal transitions and reject invalid ones.
+
+Let me think about what transitions should be valid:
+- created → paid (customer pays)
+- created → cancelled (order gets cancelled before payment)
+- paid → shipped (order is fulfilled)
+- paid → cancelled (cancel after payment, likely with refund)
+- shipped → delivered (order arrives)
+- paid → refunded (refund without shipping)
+- shipped → refunded (refund after shipping)
+- Any state with refund → refunded
+
+Let me think more carefully about realistic flows:
+- created → paid (normal)
+- created → cancelled (cancel before paying)
+- paid → shipped (fulfill)
+- paid → refunded (refund after payment, before shipping)
+- shipped → delivered (complete)
+- shipped → cancelled (cancel after shipping, with refund)
+- delivered → refunded (return after delivery)
+
+Invalid: can't go from cancelled to anything, can't go from delivered back anywhere, can't go from refunded anywhere, can't go backwards easily.
+
+I'll write this in Python since it's clean for state machines. Could also do TypeScript, but Python is more readable here.
+
+Caveman mode active - drop articles, filler, be terse.
+
+Let me code up a state machine:
+
+```python
+from enum import Enum
+from typing import Set, Dict
+
+class OrderState(Enum):
+    CREATED = "created"
+    PAID = "paid"
+    SHIPPED = "shipped"
+    DELIVERED = "delivered"
+    CANCELLED = "cancelled"
+    REFUNDED = "refunded"
+
+class OrderStateMachine:
+    # Define valid transitions as {from_state: {to_state}}
+    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
+        OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
+        OrderState.PAID: {OrderState.SHIPPED, OrderState.REFUNDED, OrderState.CANCELLED},
+        OrderState.SHIPPED: {OrderState.DELIVERED, OrderState.REFUNDED, OrderState.CANCELLED},
+        OrderState.DELIVERED: {OrderState.REFUNDED},
+        OrderState.CANCELLED: set(),
+        OrderState.REFUNDED: set(),
+    }
+    
+    def __init__(self, initial_state: OrderState = OrderState.CREATED):
+        self.current_state = initial_state
+        self.history = [initial_state]
+    
+    def can_transition(self, next_state: OrderState) -> bool:
+        return next_state in self.VALID_TRANSITIONS[self.current_state]
+```
+
+Terminal states (cancelled, refunded) map to empty sets - no way out. Need transition method next that raises on invalid moves and updates history on success.
+
+Testing flow: created→paid→shipped→delivered works fine, then try delivered→cancelled which should fail since delivered only allows refunded. Catch that ValueError, then do delivered→refunded successfully. Should also test attempting a transition from a terminal state to show it's fully locked.
+
+Let me reconsider the actual business logic for transitions - thinking through realistic e-commerce flows: created can go to paid or cancelled, paid can go to shipped/refunded/cancelled, shipped to delivered or refunded, delivered to refunded only, with cancelled and refunded as terminal states. I'll refine the state machine definition with this more realistic mapping.
+
+)
+    self.current_state = next_state
+    self.history.append(next_state)
+
+def __str__(self):
+    return self.current_state.value
+
+That covers the core structure. Now I want practical examples demonstrating both valid and invalid transitions, plus a quick illustration of how the state enum and history tracking work together in practice.
+

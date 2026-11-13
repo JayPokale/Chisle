@@ -1,0 +1,14 @@
+The user is asking me to add debounce to a search input that currently fires an API call on every keystroke. They want me to show the code.
+
+However, I don't have any context about what codebase this is or what the current implementation looks like. The user hasn't provided any code, and I'm in a directory `/tmp/chisle-ablate-work-vgAXU7` which is not a git repository.
+
+I should ask the user to either:
+1. Show me the current code
+2. Clarify what framework/technology they're using
+3. Tell me if they want a general example
+
+Actually, let me reconsider. The user might be asking for a general example of how to add debounce to a search input. Given the context and the phrasing "Show the code", they might want a practical example.
+
+But it's better to ask for the actual code they're working with so I can modify it directly, since the instructions say "Prefer editing existing files to creating new ones."
+
+Let me ask the user to share their current implementation.

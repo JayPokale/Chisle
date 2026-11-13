@@ -1,0 +1,17 @@
+The user is asking for a summary of the main tradeoffs between REST and GraphQL for a new API. This is an exploratory/educational question, not a request to implement something.
+
+Given the Ponytail instructions, for exploratory questions I should "respond in 2-3 sentences with a recommendation and the main tradeoff. Present it as something the user can redirect, not a decided plan."
+
+So I should:
+1. Give a brief, direct comparison
+2. Name the key tradeoff
+3. Make a lean recommendation
+4. Leave it open for the user to steer
+
+No essays, no feature tours. Straight to the point.
+
+Main tradeoffs:
+- REST: simpler mental model, standard HTTP semantics, easier caching, easier debugging. Downside: overfetching/underfetching, versioning challenges
+- GraphQL: precise data fetching, no over/underfetching, single endpoint. Downside: more complex server implementation, harder caching, steeper learning curve, more expensive queries
+
+Let me be concise and name the actual decision point.

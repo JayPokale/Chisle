@@ -1,0 +1,45 @@
+User wants me to implement a complete auth system with:
+1. Email-and-password signup
+2. Login
+3. Password hashing
+4. Session issuing
+5. Rate limiting on failed attempts
+
+They want to see the code. No context about what tech stack, so I should pick a reasonable default. Given they're in Claude Code/CLI environment, probably a web backend. I'll build a Node.js + Express example since it's widely used and clear.
+
+Actually, let me reconsider - they said "show the code" but didn't specify a tech stack or existing project. Let me check the working directory to see what exists.
+
+Wait, the system reminder says "Is a git repository: false" - so this is a fresh directory. No existing code. I should ask OR just pick a reasonable default and implement it.
+
+Given the caveman mode is active ("Respond terse like smart caveman"), I should:
+- Drop articles, filler, pleasantries, hedging
+- Use fragments
+- Keep code unchanged
+- Be direct
+
+I'll implement a clean Node.js/Express auth system with:
+- Password hashing (bcrypt)
+- JWT sessions or simple session tokens
+- Rate limiting with in-memory store (or Redis pattern)
+- Signup/login endpoints
+
+Let me build this out. I'll create:
+1. Express server with routes
+2. SQLite or in-memory DB for simplicity
+3. Bcrypt for hashing
+4. Simple rate limiter
+5. Session management
+
+Actually, let me be practical - I'll show a solid, production-ready pattern with:
+- Password hashing (bcrypt)
+- JWT tokens (stateless, simple)
+- Rate limiting (token bucket or fixed window)
+- Input validation
+- Security headers
+
+Let me create files in the working directory.
+User wants email-password auth with hashing, sessions, and rate limiting. Fresh directory, no existing code. I should implement a working system.
+
+Going with Node.js/Express + SQLite + bcrypt + JWT. Will show:
+database schema, signup/login routes, rate limiter, password hashing, token generation. Keep terse per caveman mode - fragments fine, drop fluff, exact technical terms.
+

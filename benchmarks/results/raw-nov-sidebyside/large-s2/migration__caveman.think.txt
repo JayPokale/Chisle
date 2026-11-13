@@ -1,0 +1,26 @@
+User wants a database migration script that:
+1. Moves users table from single `full_name` column to `first_name` and `last_name`
+2. Backfills existing rows
+3. Is safely re-runnable (idempotent)
+
+They want code shown. This is a clear software task. They're in caveman mode (active every response). But this is code-adjacent and involves potentially destructive operations, so I should be clear about structure - fragments are OK but I need to be precise about the actual migration logic.
+
+I don't know what database system they're using (PostgreSQL, MySQL, SQLite, etc.). I should probably pick one or ask, but "write code" usually implies they want a working example. PostgreSQL is most common for migrations. I'll do PostgreSQL but could offer alternatives.
+
+Caveman mode: drop articles, filler, pleasantries. Fragments OK. But for migrations, clarity is critical - this is irreversible if wrong. Let me write the code clearly (normal code style) and explain in caveman.
+
+Let me write:
+1. A migration script (probably SQL + transaction safety)
+2. Show both the schema changes and the data backfill
+3. Make it idempotent (check if columns exist before adding, etc.)
+
+I'll use PostgreSQL as the example. Can use standard SQL patterns.
+
+Structure:
+- Check if new columns exist (skip if already run)
+- Add new columns
+- Populate them from full_name (parse first/last)
+- Drop old column (with backup option)
+- Optional: rollback script
+
+Let me write this clearly with good comments so it's safe.

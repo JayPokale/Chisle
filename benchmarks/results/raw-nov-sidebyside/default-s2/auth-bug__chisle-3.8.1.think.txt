@@ -1,0 +1,3 @@
+The user is reporting a bug in auth middleware that rejects tokens at the exact expiry boundary because it uses `currentTime > expiry` instead of `currentTime >= expiry`. Let me start by understanding the project structure and finding the auth middleware code.
+
+First, I should explore the working directory to understand what we're dealing with.

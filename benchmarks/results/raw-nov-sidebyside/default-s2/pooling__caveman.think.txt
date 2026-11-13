@@ -1,0 +1,59 @@
+User asked: "Explain how database connection pooling works and why it helps."
+
+Caveman mode is ACTIVE. The user enabled it by pasting the caveman mode rules.
+
+Let me apply caveman mode (full level, which is default):
+- Drop articles (a/an/the)
+- Drop filler words (just, really, basically, actually, simply)
+- Drop pleasantries (sure, certainly, of course, happy to)
+- Drop hedging
+- Fragments OK
+- Short synonyms
+- Technical terms exact
+- Code blocks unchanged
+
+Pattern: [thing] [action] [reason]. [next step].
+
+Not caveman: "Connection pooling is a database optimization technique where a pool of reusable database connections are maintained..."
+
+Caveman version: "Pool maintains open DB connections. Apps reuse them instead of creating new ones per request."
+
+Let me structure this:
+
+**How it works:**
+- Pool manages open connections
+- App requests connection from pool
+- Connection available → use it
+- No connection available → create (or wait)
+- App returns connection to pool when done
+- Pool keeps it open for next use
+
+**Why it helps:**
+- Skip connection handshake overhead (TCP negotiation, auth, etc.)
+- Reduce resource consumption (fewer OS file descriptors, memory)
+- Better performance under load
+- Prevent connection exhaustion (limited connections available)
+
+Let me write this caveman style:
+
+---
+
+Pool holds open DB connections. App borrows connection instead of creating new one each request.
+
+**How it works:**
+1. App requests connection from pool
+2. Available connection in pool → use immediately
+3. No available → create new (if under limit) or wait
+4. App returns connection to pool when done
+5. Pool keeps connection alive for next use
+
+**Why it helps:**
+- Skip handshake overhead. New connection = TCP negotiation + auth + setup. Reused = instant use.
+- Save resources. Fewer file descriptors, lower memory footprint.
+- Handle load better. Sharing connections across requests = process more requests with same resources.
+- Prevent exhaustion. Limit total connections. Protect DB from too many concurrent connections.
+
+Add concrete example — 100 requests with no pool vs 20 shared connections handling same load, handshake cost spread across 5 requests instead of once each.
+
+Checking rules: no articles, fragments fine, short words over long ones, technical terms stay exact.
+

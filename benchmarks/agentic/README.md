@@ -18,7 +18,8 @@ node benchmarks/agentic/score.js --json                     # per-cell rows
 Both take `ARMS` (default `vanilla,chisle`) and `RAW_DIR` (default `./raw`).
 Arms: `vanilla` (bare agent), `chisle` (ruleset appended as a system prompt),
 `chisle-hook` (ruleset plus the shipped PostToolUse compressor, wired from
-`plugin.json`, with chars elided recorded per cell). Point `RAW_DIR` at a fresh
+`plugin.json`, with chars elided recorded per cell), `chisle-trim` (ruleset plus
+the deny list `npx chisle tools trim` writes), `ponytail` (the rival's skill). Point `RAW_DIR` at a fresh
 directory whenever the ruleset changes: the runner skips any cell that already
 has a result, so old cells would otherwise be scored as new.
 
@@ -57,88 +58,25 @@ log itself? The results below predate it and cover five fixtures.
 | context tokens | the context diet: input + cache read + cache creation, i.e. everything the run pulled into the window |
 | $ / run | the two above, priced |
 
-## Results, 2026-10-12: ponytail arm added (#37)
+## Results (Chisle 3.9, 2026-11-07)
 
-`ARMS=ponytail RAW_DIR=benchmarks/agentic/raw-oct`, the same six fixtures x 6
-seeds, Haiku 4.5, Claude Code 2.1.285, ponytail 4.8.3 (installed plugin cache).
-Its cells sit beside the 2026-10-01 vanilla and Chisle cells below; same model
-and CLI version, run 11 days later. Score all three with
-`ARMS=vanilla,chisle,ponytail RAW_DIR=benchmarks/agentic/raw-oct node benchmarks/agentic/score.js`.
+`ARMS=vanilla,chisle,chisle-trim RAW_DIR=benchmarks/agentic/raw-nov node benchmarks/agentic/score.js`, 7 fixtures × 6 seeds, Haiku 4.5, Claude Code 2.1.285.
 
-| arm | n | passed | net LOC | out tokens | context tokens | turns | $ / run |
-|-----|--:|-------:|--------:|-----------:|---------------:|------:|--------:|
-| vanilla | 36 | 28 | 2.8 | 1118 | 115,063 | 5.42 | 0.0397 |
-| chisle | 36 | 28 | 2.5 | 1155 | 133,974 | 5.92 | 0.0424 |
-| ponytail | 36 | 32 | 2.5 | 1206 | 137,185 | 6.00 | 0.0453 |
+| arm | n | passed | net LOC | out tokens | context tokens | turns | $ / run | $ / request |
+|-----|--:|-------:|--------:|-----------:|---------------:|------:|--------:|------------:|
+| vanilla | 42 | 36 | 2.6 | 1433 | 148,497 | 6.31 | 0.0506 | — |
+| chisle | 42 | 38 | 2.3 | 1270 | 144,692 | 6.02 | 0.0503 | 0.00894 |
+| chisle-trim | 42 | 36 | 2.5 | 1342 | 136,599 | 6.29 | 0.0507 | 0.00801 |
 
-ponytail passed the most hidden tests (32/36; `dupepaths` 3/6, `yagni` 5/6),
-but against vanilla p = 0.343 (Fisher exact), so 36 cells cannot separate it
-from noise. It also cost the most: +14% per run, against Chisle's +6.8%.
-Neither ruleset made a loop run cheaper than no ruleset.
+Pass rates tie (chisle vs vanilla p = 0.738, chisle-trim vs vanilla p = 1.000). `chisle-trim` (the deny list `npx chisle tools trim` writes) cuts the first request from 22.0k to 18.9k tokens and cost per request by 10%; per run it looks flat only because that arm took more turns. Its two fewer passes are `yagni` seeds where the fix used `|| 3` and so returned 3 for `RETRY_COUNT=0`, the fixture's planted trap; the bare model fell into it on 3 of 6 seeds in the same run, and no arm ever called a denied tool.
 
-## Results, 2026-10-01 (trimmed ruleset, six fixtures)
+| fixture | vanilla | chisle | chisle-trim |
+|---------|--------:|-------:|------------:|
+| dupepaths | 3/6 | 2/6 | 3/6 |
+| yagni | 3/6 | 6/6 | 3/6 |
+| noisylog, reuse, rootcause, routing-catalog, stdlib | 30/30 | 30/30 | 30/30 |
 
-`ARMS=vanilla,chisle RAW_DIR=benchmarks/agentic/raw-oct`, 6 fixtures x 6 seeds,
-Haiku 4.5, Claude Code 2.1.285, ruleset 48485e7 (~900 tokens per request).
-
-| arm | n | passed | net LOC | out tokens | context tokens | turns | $ / run |
-|-----|--:|-------:|--------:|-----------:|---------------:|------:|--------:|
-| vanilla | 36 | 28 | 2.8 | 1118 | 115,063 | 5.42 | 0.0397 |
-| chisle | 36 | 28 | 2.5 | 1155 | 133,974 | 5.92 | 0.0424 |
-
-The trim did not make Chisle cheaper in a loop. Pass rate ties again; context
-is **+16%** and cost **+6.8%**. On the three easy fixtures the gap is +4%,
-about the ruleset's own size times the request count. The rest is extra turns:
-`dupepaths` 8.2 vs 6.8 (+22% context), `noisylog` 9.8 vs 8.2 (+37%). Each
-extra request re-sends the whole context, so fetching less per call costs more
-if it means more calls.
-
-**Follow-up with tool-call and per-request logs** (`raw-diag/`, `raw-diag2/`):
-most of that gap is turn-count noise, not behaviour. Every Chisle request
-carries the ruleset, ~0.9k tokens (first prompt 20.3k vs 19.4k bare), and that
-part repeats exactly. Everything else is how many requests a run takes, which
-swings both ways: in one `noisylog` batch Chisle took 6 turns in all three
-cells (172k context vs 248–276k bare), in another it took more than bare.
-Pooled over 12 `noisylog` cells per arm: 233k vs 210k (+11%), wide spread.
-The tool sequences themselves match closely; on `dupepaths` Chisle sometimes
-stops after fixing `money.js` alone and fails, as bare does. The repeatable
-cost is the ruleset; the turn gap needs far more than six seeds to call.
-
-## Results, 2026-09-14 (pre-trim ruleset, five fixtures)
-
-Regenerated from the committed `raw/` by `score.js` — deterministic, no tokens
-spent. 5 fixtures x 12 seeds = 60 cells per arm. Run on 2026-09-14 with the
-ruleset as it was then (~1.8k tokens); it has since been trimmed to ~900
-because of the cost row below, and these cells have not been re-run yet.
-
-| arm | n | passed | pass rate | new files | net LOC | deps added | out tokens | context tokens | turns | $ / run |
-|-----|--:|-------:|----------:|----------:|--------:|-----------:|-----------:|---------------:|------:|--------:|
-| vanilla | 60 | 49 | 81.7% | 0.20 | 3.7 | 0.00 | 1171 | 67832 | 5.38 | 0.0269 |
-| **chisle** | 60 | 48 | 80.0% | 0.20 | **2.9** | 0.00 | **1083** | **64695** | 5.25 | 0.0276 |
-
-vanilla 49/60, 95% CI 70.1%–89.4%; chisle 48/60, 95% CI 68.2%–88.2%.
-Fisher exact, two-sided: **p = 1.000** — a tie within noise.
-
-| fixture | vanilla | chisle | Fisher p | reading |
-|---------|--------:|-------:|---------:|---------|
-| `reuse` | 12/12 | 12/12 | 1.000 | trap avoided by both arms |
-| `rootcause` | 12/12 | 12/12 | 1.000 | trap avoided by both arms |
-| `stdlib` | 12/12 | 12/12 | 1.000 | trap avoided by both arms; no deps added in either arm |
-| `yagni` | 9/12 | 8/12 | 1.000 | chisle loses one cell — the `"0"` null-check case |
-| `dupepaths` | 4/12 | 4/12 | 1.000 | both arms fail 8/12 on `TOTAL $-4.50` — hard fixture, not a discriminator |
-
-Three honest negatives, stated rather than buried:
-
-- **Pass rate is a tie, and chisle is one cell down**, driven by `yagni`.
-- **Cost per run is slightly worse** ($0.0276 vs $0.0269). Chisle spends fewer
-  output tokens (1083 vs 1171) and pulls ~4.6% less context, but the ruleset's
-  own prompt tokens eat the difference at this task size.
-- **`dupepaths` discriminates nothing.** It fails two thirds of the time in both
-  arms; it stays in the suite because it was fixed before the run, not because
-  it flatters anyone.
-
-What does hold up: the diff is shorter (2.9 vs 3.7 net LOC) at equal
-correctness, and neither arm ever reached for a dependency.
+`dupepaths` fails about half the time in every arm and discriminates nothing; it stays because it was fixed before any run. Earlier rounds (September–October 2026) are in the git history.
 
 ## Honesty rules
 

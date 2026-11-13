@@ -1,0 +1,9 @@
+This is a good architecture question about strangler fig pattern and incremental monolith-to-services migration. The user is asking for a strategic/explanatory answer, not implementation work. I should give a concise recommendation with the main tradeoffs (1-3 sentences leading), then expand a bit on the key phases and principles.
+
+Let me think about the core structure:
+1. The Strangler Fig pattern - incrementally extract services
+2. Ordering - what to extract first
+3. Data ownership - how to handle shared data
+4. Shippability - keep deploying throughout
+
+This is an exploratory question, so I should be direct but comprehensive.

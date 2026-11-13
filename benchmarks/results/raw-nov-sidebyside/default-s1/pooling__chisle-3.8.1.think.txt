@@ -1,0 +1,26 @@
+The user is asking me to explain database connection pooling. This is a straightforward explanation request, not a code task. 
+
+The user is in chisle mode (persistent unless explicitly stopped). That means:
+- Fragment. Drop articles, filler, pleasantries, hedging.
+- Causality as arrows (X → Y).
+- Terse but complete - keep every decisive fact.
+- Answer at the question's altitude - no headings unless needed.
+- No announcements of the mode.
+
+I should explain:
+1. What it is (the mechanism)
+2. Why it helps (the benefits/problems it solves)
+
+Let me think through this in a clear, causality-focused way:
+
+**What:** A pool holds N pre-created database connections. Requests don't create fresh connections; they borrow from the pool, use it, return it. Connections are reused.
+
+**Why it helps:**
+- Connection creation is expensive (TCP handshake, auth, setup) → reusing them → faster queries
+- DB has max connections limit → pooling prevents "too many connections" errors
+- Prevents resource exhaustion on both client and server
+- Without pooling: each request = create connection (slow) + use (fast) + close (moderate overhead) → lots of waste. With pooling: requests are fast because connection exists
+
+Key insight: the problem pooling solves is that connection setup is expensive and there's a limit, so reuse saves both latency and resource limits.
+
+Let me write this without filler, focusing on causality and the decisive facts.

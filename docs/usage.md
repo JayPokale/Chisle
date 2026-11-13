@@ -73,6 +73,23 @@ In Claude Code the statusline badge carries the same number live: `[CHISLE] ⇣2
 
 This is the **input axis only**, and deliberately so. Chars elided have a real baseline, since the hook knows exactly what it cut. The output axis has none: there is no way to know what the model would have written without the ruleset, which is why that half is measured with A/B benchmark arms instead of a counter. A number that blended the two would be inventing the interesting half.
 
+## Trim unused tool schemas and skill descriptions (Claude Code)
+
+Every request carries the schema of every loaded tool and a description of every skill, whether or not the model ever uses them. `npx chisle tools` reads your own transcripts and shows each heavy tool's schema size next to how often you called it in the last 30 days:
+
+```bash
+npx chisle tools                        # report only, changes nothing
+npx chisle tools trim                   # deny the heavy tools you have not used
+npx chisle tools trim --also Artifact   # also deny a rarely used one you pick
+npx chisle tools restore                # remove exactly what trim added
+```
+
+`trim` writes whole-tool entries to `permissions.deny` in `settings.json`, which drops those schemas from every request, and lists skills the model never invoked as `skillOverrides: { name: "name-only" }`, which keeps them listed and callable by name without their descriptions; it never denies core tools (Bash, Read, Edit, Write, Grep, Agent and the like) or MCP tools, and leaves your own deny rules and skill overrides alone. `--days N` changes the window, `--dry-run` previews. `npx chisle --uninstall` also removes what `trim` added. On the agentic suite it cut cost per request by 10% with no trimmed tool ever needed.
+
+## Resume nudge (Claude Code)
+
+The prompt cache lives about an hour. When you send the first prompt after a gap of more than 60 minutes and the session holds 150k+ tokens of context, Chisle shows one line suggesting `/compact` (keep a summary) or `/clear` (new task), because that turn re-sends the whole context and every later turn re-reads it. It never blocks the prompt and the model never sees it.
+
 ## See what it would do, before it does it
 
 ```bash
@@ -151,7 +168,7 @@ read, so they can't honor this key.
 
 ## Multi-agent
 
-Ships to thirteen agents: Claude Code and Pi get both axes, live `/chisle` toggling, and a status badge; OpenCode gets both axes too — the global fenced ruleset, on-demand skills, and a native compression plugin — but no live toggle; Copilot CLI gets both axes through its global instructions file and a `postToolUse` hook, also without a live toggle; Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and Copilot get the always-on ruleset; Hermes gets the skills as `/chisle` commands. `npx chisle mcp wrap` adds MCP tool-output compression to Cursor, Windsurf, Cline, Kiro, Gemini, Qwen Code and Copilot CLI ([details](../INSTALL.md#mcp-output-compression-any-agent)). Per-agent static copies come from `scripts/build-rules.js`; Pi uses its package extension plus the Agent Skills standard. See [agent portability](agent-portability.md).
+Ships to thirteen agents: Claude Code and Pi get both axes, live `/chisle` toggling, and a status badge; OpenCode gets both axes too — the global fenced ruleset, on-demand skills, and a native compression plugin — but no live toggle; Copilot CLI gets both axes through its global instructions file and a `postToolUse` hook, also without a live toggle; Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and Copilot get the always-on ruleset; Hermes gets the skills as `/chisle` commands. `npx chisle mcp wrap` adds MCP tool-output compression to Cursor, Windsurf, Cline, Kiro, Gemini, Qwen Code, Copilot CLI, Antigravity, Codex and GitHub Copilot in VS Code ([details](../INSTALL.md#mcp-output-compression-any-agent)). Per-agent static copies come from `scripts/build-rules.js`; Pi uses its package extension plus the Agent Skills standard. See [agent portability](agent-portability.md).
 
 ## Prior art & what stacks with it
 

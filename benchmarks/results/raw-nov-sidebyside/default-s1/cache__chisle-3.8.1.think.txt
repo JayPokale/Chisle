@@ -1,0 +1,16 @@
+The user is asking me to add a cache layer for user profile API responses. However, they haven't provided me with any code to work with. I need to understand:
+
+1. What code exists in the working directory
+2. What the current user profile API looks like
+3. What programming language/framework they're using
+4. How they want the cache implemented
+
+Let me first explore the working directory to understand what we're working with.
+
+Since they said "Chisle mode" is active and to be concise, I should:
+1. Check what files exist
+2. Identify the user profile API code
+3. Implement a cache layer
+4. Show the code changes
+
+Let me start by listing the directory structure.

@@ -1,0 +1,93 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle-trim",
+ "seed": 2,
+ "out_tokens": 692,
+ "input_tokens": 65954,
+ "cost_usd": 0.06773610000000001,
+ "turns": 3,
+ "answer": "Fixed. The comparison operator was `>` (strictly greater than) but should be `>=` (greater than or equal). Now when `now` reaches `expiresAt`, the session is immediately invalid—no grace period at the exact millisecond.",
+ "tool_calls": [
+  {
+   "tool": "Agent",
+   "input": "",
+   "chars": 1055
+  },
+  {
+   "tool": "SendMessage",
+   "input": "",
+   "chars": 176
+  },
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-UcAbPm/repo -type f \\( -name \"*.js\" -o -name \"*.ts\" -o -name \"*.jsx\" -o -name",
+   "chars": 244
+  },
+  {
+   "tool": "Bash",
+   "input": "grep -r \"expiresAt\" /tmp/wk-rootcause-UcAbPm/repo --include=\"*.js\" --include=\"*.ts\" --include=\"*.jsx",
+   "chars": 517
+  },
+  {
+   "tool": "Bash",
+   "input": "grep -r \"expir\" /tmp/wk-rootcause-UcAbPm/repo --include=\"*.js\" --include=\"*.ts\" --include=\"*.jsx\" --",
+   "chars": 649
+  },
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-UcAbPm/repo -type f \\( -name \"*session*\" -o -name \"*auth*\" \\) 2>/dev/null",
+   "chars": 49
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Read",
+   "input": "middleware.js",
+   "chars": 330
+  },
+  {
+   "tool": "Read",
+   "input": "refresh.js",
+   "chars": 260
+  },
+  {
+   "tool": "Read",
+   "input": "cleanup.js",
+   "chars": 209
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  }
+ ],
+ "request_prompts": [
+  18916,
+  20461,
+  8905,
+  20724,
+  11222,
+  12202,
+  21586,
+  22019,
+  22349
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

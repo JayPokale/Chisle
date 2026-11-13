@@ -1,0 +1,14 @@
+The user is asking me to explain database connection pooling and its benefits. This is a straightforward educational question about a common software engineering pattern. I should provide a clear, concise explanation that covers:
+
+1. What connection pooling is
+2. How it works
+3. Why it's beneficial
+
+I don't need to use any tools for this - it's a conceptual explanation question. I'll keep it short and direct as per my instructions.
+
+Let me think about the key points:
+- What happens without pooling: creating a new DB connection for each query is expensive
+- How pooling works: maintains a pool of ready-to-use connections
+- Benefits: reduced latency, better resource usage, improved throughput
+
+I should keep this concise and clear.

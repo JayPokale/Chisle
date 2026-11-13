@@ -1,0 +1,7 @@
+User is asking for an explanation of database connection pooling and why it's beneficial. This is a straightforward technical question that doesn't require code or tool use. I should be in Chisle mode based on the instructions, so I need to be terse and efficient.
+
+Let me think about the key points:
+1. What is connection pooling - reusing connections instead of creating new ones each time
+2. Why it helps - reduces overhead of creating connections, improves performance and resource utilization
+
+I should explain this in a concise, signal-dense way without unnecessary structure or filler.

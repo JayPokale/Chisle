@@ -1,0 +1,7 @@
+The user is asking me to add debounce to a search input that currently fires an API call on every keystroke. They want to see the code.
+
+However, I don't have any context about what project or code they're working on. There's no codebase open, no files shown, nothing. They've just asked a general question about how to implement debounce for a search input.
+
+I should first check what files are in their working directory to understand what project they're working with and what the current implementation looks like.
+
+Let me read the directory structure first.

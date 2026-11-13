@@ -1,0 +1,59 @@
+The user wants a database migration script that:
+1. Moves from a single `full_name` column to `first_name` and `last_name`
+2. Backfills existing rows
+3. Is safely re-runnable
+
+They want me to "Show the code", so they want to see the actual migration code.
+
+Since no specific database system was mentioned, I should pick the most common default. SQL (PostgreSQL) is standard for migrations. I'll write a PostgreSQL migration that's idempotent and handles the data transformation.
+
+Key requirements for a safe, re-runnable migration:
+- Check if columns already exist before creating
+- Handle the data split safely (full_name → first_name + last_name)
+- Backfill existing data
+- Idempotent (can be run multiple times without error)
+
+I'll use a common pattern: create new columns, backfill data, drop old column. Or I could use a conditional approach.
+
+Actually, for true re-runnability, I should use `IF NOT EXISTS` and similar guards.
+
+Let me write this as a standard SQL migration file (which would typically be named something like `001_split_full_name.sql` or as a .sql file):
+
+```sql
+-- Split users.full_name into first_name and last_name
+-- Safely re-runnable: uses IF NOT EXISTS checks
+
+-- Add new columns if they don't exist
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS first_name VARCHAR(255),
+ADD COLUMN IF NOT EXISTS last_name VARCHAR(255);
+
+-- Backfill from full_name if not already done
+-- Split on first space; everything before first space is first name, rest is last name
+UPDATE users
+SET 
+  first_name = TRIM(SUBSTRING_INDEX(full_name, ' ', 1)),
+  last_name = TRIM(SUBSTRING_INDEX(full_name, ' ', -1))
+WHERE first_name IS NULL AND full_name IS NOT NULL;
+```
+
+I realize `SUBSTRING_INDEX` is MySQL-specific syntax, not PostgreSQL. I should switch to `split_part` or `substring` since PostgreSQL is more standard for serious applications. I'll drop the full_name column at the end for cleanup, guarded with `IF EXISTS`, and rewrite the backfill logic using PostgreSQL-compatible functions instead.
+
+ 0 THEN substring(full_name, position(' ' IN full_name) + 1)
+    ELSE full_name
+  END)
+WHERE first_name IS NULL AND full_name IS NOT NULL;
+
+-- Drop old column (optional; remove if you need compatibility)
+ALTER TABLE users
+DROP COLUMN IF EXISTS full_name;
+```
+
+Still clunky. Trying a tighter PostgreSQL version using split_part with a trick for the remainder, or just accepting the CASE approach is fine and moving on.
+
+Actually dropping full_name right away is risky if old code still reads that column during a rolling deploy — better to leave it optional rather than mandatory. I'll present a clean, practical migration that adds first_name/last_name, backfills safely with IF NOT EXISTS checks, and skips dropping full_name by default for backward compatibility.
+
+For the splitting logic, single-word names need a fallback: "John" should probably get last_name = "John" too rather than NULL, since many apps assume last_name is non-empty. I'll use COALESCE with NULLIF to catch the empty-string case from the regex and fall back to the full name.
+
+Good. Now let me present this: code first, minimal explanation.
+

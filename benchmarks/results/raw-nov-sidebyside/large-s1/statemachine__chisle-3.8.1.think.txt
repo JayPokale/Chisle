@@ -1,0 +1,70 @@
+The user wants me to implement an order state machine with specific states and enforce legal transitions. Let me think about what states they mentioned:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+Legal transitions to think about:
+- created → paid (payment)
+- created → cancelled (cancel before payment)
+- paid → shipped (ship after payment)
+- paid → refunded (refund)
+- shipped → delivered (delivery)
+- delivered → refunded (refund after delivery)
+- Any state → cancelled? (probably cancel anytime before delivery)
+- cancelled → refunded? (probably not, cancel means no money taken or already refunded)
+
+Actually, let me think more carefully about typical e-commerce flows:
+- created → paid
+- created → cancelled (cancel unpaid order)
+- paid → shipped
+- paid → refunded (refund before shipping)
+- shipped → delivered
+- shipped → cancelled? (cancel during transit?)
+- delivered → refunded (return/refund after delivery)
+- cancelled → ??? (terminal state)
+- refunded → ??? (terminal state)
+
+The user said "with the legal transitions enforced and invalid ones rejected" - so I need to show validation that prevents invalid state transitions.
+
+This is a code task, so I should write actual code. A state machine can be implemented several ways:
+1. Enum + switch statement
+2. Graph/table of allowed transitions
+3. FSM library
+4. Class with state and methods
+
+Since they said "Show the code" and didn't specify a language, I'll use a common, clear approach. Python is good for this. I can show a clean, minimal implementation.
+
+Let me write a Python implementation using a table of valid transitions. This is simple, clear, and easy to extend.
+
+```python
+class OrderStateMachine:
+    VALID_TRANSITIONS = {
+        'created': {'paid', 'cancelled'},
+        'paid': {'shipped', 'refunded'},
+        'shipped': {'delivered'},
+        'delivered': {'refunded'},
+        'cancelled': set(),
+        'refunded': set(),
+    }
+    
+    def __init__(self):
+        self.state = 'created'
+    
+    def transition(self, next_state):
+        if next_state not in self.VALID_TRANSITIONS[self.state]:
+            raise ValueError(f"Cannot transition from {self.state} to {next_state}")
+        self.state = next_state
+    
+    def __repr__(self):
+        return f"Order({self.state})"
+```
+
+I should reconsider the exact set of transitions since the user didn't specify exactly which ones count as legal—I'll need to make reasonable assumptions and state them clearly.
+
+Mapping out a sensible e-commerce flow: created leads to paid or cancelled, paid leads to shipped or refunded, shipped leads to delivered, and delivered leads to refunded. Cancelled and refunded are terminal states with no outgoing transitions. Edge cases like cancelling after shipping or delivery seem too complex for what was asked, so I'll skip those and keep the model straightforward.
+
+Since they asked to see the code, I'll just write it out with minimal commentary—the validation logic should speak for itself.
+

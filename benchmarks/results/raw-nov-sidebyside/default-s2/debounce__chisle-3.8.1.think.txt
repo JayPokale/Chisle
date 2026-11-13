@@ -1,0 +1,5 @@
+The user wants me to add debounce to a search input that fires API calls on every keystroke. They want to see the code.
+
+First, I need to check what's in the working directory to understand what project this is and what the current implementation looks like.
+
+Let me start by exploring the directory structure to see what we're working with.
