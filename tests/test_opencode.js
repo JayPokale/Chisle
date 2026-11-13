@@ -14,10 +14,11 @@ const { spawn, spawnSync } = require('child_process');
 // State (spill/dedup) must not leak into ~/.claude during tests.
 process.env.CHISLE_STATE_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-'));
 
+const opencodeCore = require('../hooks/chisle-compress-output');
 const {
   opencodeToolAllowed, compressForOpencode, boundForOpencode, recordSavings,
   SAFE_TOOLS_OPENCODE, THRESHOLDS,
-} = require('../hooks/chisle-compress-output');
+} = opencodeCore;
 const { getOpencodeDir, getOpencodeStateDir } = require('../hooks/chisle-config');
 
 function bigOutput(lines, prefix) {
@@ -57,8 +58,15 @@ test('OpenCode state uses its config root unless CHISLE_STATE_DIR overrides it',
 // ── allowlist ────────────────────────────────────────────────────────────────
 
 test('opencodeToolAllowed allows only explicit read-heavy defaults', () => {
-  assert.deepEqual(SAFE_TOOLS_OPENCODE, ['bash', 'grep', 'glob', 'webfetch', 'websearch', 'list']);
-  for (const t of SAFE_TOOLS_OPENCODE) assert.equal(opencodeToolAllowed(t), true, t);
+  const previous = process.env.CHISLE_COMPRESS_TOOLS;
+  delete process.env.CHISLE_COMPRESS_TOOLS;
+  try {
+    assert.deepEqual(SAFE_TOOLS_OPENCODE, ['bash', 'shell', 'grep', 'glob', 'webfetch', 'websearch', 'list']);
+    for (const t of SAFE_TOOLS_OPENCODE) assert.equal(opencodeToolAllowed(t), true, t);
+  } finally {
+    if (previous === undefined) delete process.env.CHISLE_COMPRESS_TOOLS;
+    else process.env.CHISLE_COMPRESS_TOOLS = previous;
+  }
 });
 
 test('opencodeToolAllowed excludes source-bearing and mutating tools', () => {
@@ -390,6 +398,83 @@ test('OpenCode truncation is Unicode-safe', () => {
 });
 
 // ── plugin hook wiring ───────────────────────────────────────────────────────
+
+async function loadV2Plugin() {
+  const hooks = [];
+  const setup = require('../.opencode/plugins-v2/chisle/setup.cjs');
+  await setup({ tool: { hook: async (name, callback) => hooks.push([name, callback]) } });
+  assert.equal(hooks.length, 1);
+  assert.equal(hooks[0][0], 'execute.after');
+  return hooks[0][1];
+}
+
+test('OpenCode v2 plugin uses Plugin.define and registers execute.after', async () => {
+  const entry = fs.readFileSync(path.join(__dirname, '..', '.opencode', 'plugins-v2', 'chisle', 'index.mjs'), 'utf8');
+  assert.match(entry, /import \{ Plugin \} from '@opencode\/plugin'/);
+  assert.match(entry, /Plugin\.define\(\{ id: 'chisle', setup \}\)/);
+  assert.equal(typeof await loadV2Plugin(), 'function');
+});
+
+test('OpenCode v2 shell compression preserves spill, metadata, safety, stats, and idempotency', async () => {
+  const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-v2-'));
+  const previous = process.env.CHISLE_STATE_DIR;
+  const previousTools = process.env.CHISLE_COMPRESS_TOOLS;
+  process.env.CHISLE_STATE_DIR = stateDir;
+  process.env.CHISLE_COMPRESS_TOOLS = 'shell';
+  try {
+    const after = await loadV2Plugin();
+    const original = bigOutput(500, 'shell');
+    const event = {
+      tool: 'shell', sessionID: 'v2', id: 'one', status: 'completed', input: {},
+      result: { output: { output: original, exit: 0 }, content: [{ type: 'text', text: original }], metadata: { exit: 0 } },
+    };
+    await after(event);
+    const compressed = event.result.content[0].text;
+    assert.ok(compressed.length < original.length);
+    assert.match(compressed, /chisle: elided/);
+    assert.deepEqual(event.result.output, { output: original, exit: 0 });
+    assert.deepEqual(event.result.metadata, { exit: 0 });
+    assert.deepEqual(fs.readFileSync(recoveryPath(compressed)), Buffer.from(original));
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(stateDir, '.chisle-compress-stats.json'), 'utf8')), {
+      savedChars: original.length - compressed.length, events: 1,
+    });
+
+    await after(event);
+    assert.equal(event.result.content[0].text, compressed);
+
+    for (const tool of ['read', 'edit', 'write']) {
+      const protectedEvent = {
+        tool, sessionID: 'v2', id: tool, status: 'completed', input: {},
+        result: { content: original, metadata: {} },
+      };
+      await after(protectedEvent);
+      assert.equal(protectedEvent.result.content, original);
+    }
+  } finally {
+    if (previous === undefined) delete process.env.CHISLE_STATE_DIR;
+    else process.env.CHISLE_STATE_DIR = previous;
+    if (previousTools === undefined) delete process.env.CHISLE_COMPRESS_TOOLS;
+    else process.env.CHISLE_COMPRESS_TOOLS = previousTools;
+    fs.rmSync(stateDir, { recursive: true, force: true });
+  }
+});
+
+test('OpenCode v2 plugin fails open when compression throws', async () => {
+  const originalCompress = opencodeCore.compressForOpencode;
+  opencodeCore.compressForOpencode = () => { throw new Error('compressor failed'); };
+  try {
+    const after = await loadV2Plugin();
+    const original = bigOutput(500, 'error');
+    const event = {
+      tool: 'shell', sessionID: 'v2', id: 'error', status: 'completed', input: {},
+      result: { content: original, metadata: {} },
+    };
+    await assert.doesNotReject(after(event));
+    assert.equal(event.result.content, original);
+  } finally {
+    opencodeCore.compressForOpencode = originalCompress;
+  }
+});
 
 test('plugin tool.execute.after compresses output.output in place', async () => {
   const { default: plugin } = await import('../.opencode/plugins/chisle.mjs');

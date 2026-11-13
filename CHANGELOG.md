@@ -5,6 +5,9 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+- **OpenCode v2 plugin compatibility.** The installer detects OpenCode's major version and installs an isolated `Plugin.define({ id, setup })` entrypoint for v2 while preserving the v1 plugin. V2 `shell` output uses the shared compressor, spill recovery, statistics, configuration, and safety exclusions.
+
 ## [3.11.1] - 2026-11-07
 
 ### Added

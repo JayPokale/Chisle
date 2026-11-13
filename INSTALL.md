@@ -81,16 +81,13 @@ OpenCode's native `skill` tool. The root follows `OPENCODE_CONFIG_DIR`, then
 is added, so nothing loads twice. The ruleset is always on; `/chisle` loads the
 skill but does not toggle the global instructions.
 
-It also installs the tool-output compression plugin into that root's `plugins/`
-(`chisle.js` plus its zero-dep compressor core in
-`chisle-hooks/`, pinned to CommonJS so the config dir's `type: module` does not
-propagate into it). OpenCode loads it at startup. It hooks `tool.execute.after`
-(mutating `output.output`, which persists onto the stored tool part) and
-`experimental.chat.messages.transform` (a request-time safety net over
-completed tool parts), eliding oversized explicitly allowed tool output before
-the model reads it. OpenCode applies its `tool_output` line/byte truncation
-before `tool.execute.after`, so Chisle compresses only the retained preview in
-that path and preserves OpenCode's full-output recovery hint. MCP tools are not
+It also installs the tool-output compression plugin into that root's `plugins/`.
+OpenCode v1 keeps `chisle.js` plus `chisle-hooks/`; v2 gets the directory plugin
+`chisle/index.js` plus its colocated core. The installer selects the layout from
+`opencode --version`. The v1 hooks remain unchanged. The v2 entrypoint uses
+`Plugin.define({ id, setup })` and `ctx.tool.hook("execute.after", ...)`, eliding
+oversized model-visible text while preserving structured output and metadata.
+Both reuse the same compressor and configuration code. MCP tools are not
 assumed safe from their names; add known read-only tools with
 `CHISLE_COMPRESS_TOOLS`. Source-bearing and mutating tools remain excluded even
 when configured. Disable compression with `CHISLE_COMPRESS=0` or
@@ -200,7 +197,7 @@ From 2.x to 3.x, replace legacy `lite` / `full` / `ultra` config with `on` / `of
 
 Claude Code: start a session and run `/chisle off`, then `/chisle`.
 
-OpenCode: the configured root's `AGENTS.md` contains the fenced block and `/chisle` resolves as a skill. Its `plugins/chisle.js` exists and oversized bash/grep/webfetch output is elided in transcripts.
+OpenCode: the configured root's `AGENTS.md` contains the fenced block and `/chisle` resolves as a skill. OpenCode v1 has `plugins/chisle.js`; v2 has `plugins/chisle/index.js`. Oversized `bash` (v1), `shell` (v2), grep, and webfetch output is elided in transcripts.
 
 Hermes: `~/.hermes/skills/chisle/SKILL.md` exists and `/chisle` loads the skill.
 

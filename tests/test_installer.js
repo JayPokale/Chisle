@@ -368,11 +368,81 @@ function isolatedOpencodeEnv(home, extra) {
 
 function repoSkill(rel) { return fs.readFileSync(path.join(__dirname, '..', 'skills', rel), 'utf8'); }
 
+function fakeOpencode(home, version) {
+  const bin = path.join(home, 'bin');
+  fs.mkdirSync(bin, { recursive: true });
+  const command = path.join(bin, 'opencode');
+  fs.writeFileSync(command, `#!/bin/sh\n[ "$1" = "--version" ] && printf '${version}\\n'\n`, { mode: 0o755 });
+  return bin + path.delimiter + process.env.PATH;
+}
+
 test('--help and --list advertise opencode + hermes', () => {
   assert.match(runCLI(['--help']).out, /opencode/);
   assert.match(runCLI(['--help']).out, /hermes/);
   assert.match(runCLI(['--list']).out, /OpenCode/);
   assert.match(runCLI(['--list']).out, /Hermes/);
+});
+
+test('opencode v1 installation layout remains unchanged', () => {
+  const home = mkHome();
+  const root = path.join(home, '.config', 'opencode');
+  const env = isolatedOpencodeEnv(home, { PATH: fakeOpencode(home, '1.19.5') });
+  try {
+    const staleV2 = path.join(root, 'plugins', 'chisle');
+    fs.mkdirSync(staleV2, { recursive: true });
+    fs.writeFileSync(path.join(staleV2, 'index.js'), 'stale v2');
+    let result = runCLI(['--only', 'opencode'], { env });
+    assert.equal(result.status, 0, result.out);
+    assert.ok(fs.existsSync(path.join(root, 'plugins', 'chisle.js')));
+    assert.equal(fs.existsSync(staleV2), false);
+    assert.ok(fs.existsSync(path.join(root, 'plugins', 'chisle-hooks', 'chisle-compress-output.js')));
+    assert.equal(fs.existsSync(path.join(root, 'plugins', 'chisle')), false);
+
+    result = runCLI(['--only', 'opencode', '--update'], { env });
+    assert.equal(result.status, 0, result.out);
+    assert.ok(fs.existsSync(path.join(root, 'plugins', 'chisle.js')));
+
+    result = runCLI(['--uninstall', '--only', 'opencode'], { env });
+    assert.equal(result.status, 0, result.out);
+    assert.equal(fs.existsSync(path.join(root, 'plugins', 'chisle.js')), false);
+  } finally {
+    fs.rmSync(home, { recursive: true, force: true });
+  }
+});
+
+test('opencode v2 install, update, dry-run, and uninstall use the v2 plugin directory', () => {
+  const home = mkHome();
+  const root = path.join(home, '.config', 'opencode');
+  const env = isolatedOpencodeEnv(home, { PATH: fakeOpencode(home, '2.2.2') });
+  const plugin = path.join(root, 'plugins', 'chisle');
+  try {
+    let result = runCLI(['--only', 'opencode', '--dry-run'], { env });
+    assert.equal(result.status, 0, result.out);
+    assert.match(result.out, /plugins.*chisle/);
+    assert.deepEqual(fs.readdirSync(home), ['bin']);
+
+    const legacy = path.join(root, 'plugins');
+    fs.mkdirSync(path.join(legacy, 'chisle-hooks'), { recursive: true });
+    fs.writeFileSync(path.join(legacy, 'chisle.js'), 'legacy');
+    result = runCLI(['--only', 'opencode'], { env });
+    assert.equal(result.status, 0, result.out);
+    assert.ok(fs.existsSync(path.join(plugin, 'index.js')));
+    assert.equal(fs.existsSync(path.join(legacy, 'chisle.js')), false);
+    assert.equal(fs.existsSync(path.join(legacy, 'chisle-hooks')), false);
+    assert.ok(fs.existsSync(path.join(plugin, 'chisle-hooks', 'chisle-compress-output.js')));
+    assert.equal(fs.existsSync(path.join(root, 'plugins', 'chisle.js')), false);
+
+    fs.writeFileSync(path.join(plugin, 'index.js'), 'STALE');
+    result = runCLI(['--only', 'opencode', '--update'], { env });
+    assert.equal(result.status, 0, result.out);
+    assert.notEqual(fs.readFileSync(path.join(plugin, 'index.js'), 'utf8'), 'STALE');
+
+    result = runCLI(['--uninstall', '--only', 'opencode'], { env });
+    assert.equal(result.status, 0, result.out);
+    assert.equal(fs.existsSync(plugin), false);
+  } finally {
+    fs.rmSync(home, { recursive: true, force: true });
+  }
 });
 
 test('opencode install appends fenced ruleset, preserves user content, copies skills', () => {

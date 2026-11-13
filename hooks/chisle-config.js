@@ -174,7 +174,7 @@ function filterSections(content, sections, proseHeadings, codeHeadings) {
 // active style IS readable — it just isn't in the SessionStart payload.
 //
 // Kept dependency-free on purpose: this file is copied standalone into
-// ~/.config/opencode/plugins/chisle-hooks/, so it must not require anything
+// the OpenCode plugin's chisle-hooks/ directory, so it must not require anything
 // outside itself.
 
 // Claude Code parses settings.json with strict JSON, but users do leave

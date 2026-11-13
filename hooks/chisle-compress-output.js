@@ -159,7 +159,7 @@ function copilotToolAllowed(name) {
 // establish read-only safety, so they require explicit allowlisting.
 // read/edit/write/patch are excluded on purpose: their output feeds exact-match
 // edits, exactly as SAFE_TOOLS omits Read/Edit/Write.
-const SAFE_TOOLS_OPENCODE = ['bash', 'grep', 'glob', 'webfetch', 'websearch', 'list'];
+const SAFE_TOOLS_OPENCODE = ['bash', 'shell', 'grep', 'glob', 'webfetch', 'websearch', 'list'];
 const UNSAFE_TOOLS_OPENCODE = [
   'read', 'edit', 'write', 'patch', 'apply_patch', 'multiedit',
   'notebookedit', 'notebookread', 'notebook_write', 'notebook_edit',

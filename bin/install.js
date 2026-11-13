@@ -203,6 +203,12 @@ function opencodeDir() { return getOpencodeDir({ home: homeDir() }); }
 // Copilot CLI reads hooks, instructions and MCP config under COPILOT_HOME.
 function copilotDir() { return process.env.COPILOT_HOME || path.join(homeDir(), '.copilot'); }
 function opencodeStateDir() { return getOpencodeStateDir({ home: homeDir() }); }
+function opencodeMajor() {
+  let r = capture('opencode', ['--version']);
+  if (!ranOk(r)) r = capture('opencode2', ['--version']);
+  const match = ranOk(r) && String(r.stdout || '').match(/(\d+)\./);
+  return match ? Number(match[1]) : 1;
+}
 
 // ── what is already installed ───────────────────────────────────────────────
 // Every install path skips when Chisle is already present, which is right for
@@ -536,23 +542,18 @@ function installCodex(ctx) {
 // for on-demand loading via the native skill tool
 // (the global skills dir is scanned by default, so skills.paths needs no
 // edit and no second system message is added).
-// Copies the OpenCode compression plugin and the shared compressor core it
-// requires into the configured OpenCode plugins directory. It auto-discovers *.js
-// or *.ts file in that dir at startup (not *.mjs), and its config dir is
-// type:module, so the ESM source ships as chisle.js. Returns the number of
-// files written. Never called on a dry run (installOpencode returns early),
-// so no dry-run branch.
-//
-// chisle-hooks/package.json pins the core as CommonJS. Without it the config
-// dir's own "type": "module" propagates down to these .js files, and the core
-// dies on its first `require` with a ReferenceError that takes the whole
-// plugin with it (loadFrom only swallows MODULE_NOT_FOUND). Bun is lenient
-// enough not to care; Node is not, so pin it rather than rely on the runtime.
-function copyOpencodePlugin(root) {
+// Copies the version-matched OpenCode plugin and shared compressor core.
+// V1 gets plugins/chisle.js; V2 gets the directory plugin plugins/chisle/.
+// The source entrypoints stay separate and both load the same CommonJS core.
+// chisle-hooks/package.json pins that core as CommonJS under type:module roots.
+function copyOpencodePlugin(root, major) {
   const pluginDir = path.join(root, 'plugins');
-  const hooksDir = path.join(pluginDir, 'chisle-hooks');
+  const v2 = major >= 2;
+  const entryDir = v2 ? path.join(pluginDir, 'chisle') : pluginDir;
+  const hooksDir = path.join(entryDir, 'chisle-hooks');
   const files = [
-    ['.opencode/plugins/chisle.mjs', path.join(pluginDir, 'chisle.js')],
+    [v2 ? '.opencode/plugins-v2/chisle/index.mjs' : '.opencode/plugins/chisle.mjs', path.join(entryDir, v2 ? 'index.js' : 'chisle.js')],
+    ...(v2 ? [['.opencode/plugins-v2/chisle/setup.cjs', path.join(entryDir, 'setup.cjs')]] : []),
     ['hooks/chisle-compress-output.js', path.join(hooksDir, 'chisle-compress-output.js')],
     ['hooks/chisle-config.js', path.join(hooksDir, 'chisle-config.js')],
   ];
@@ -574,7 +575,8 @@ function installOpencode(ctx) {
   const root = opencodeDir();
   const target = path.join(root, 'AGENTS.md');
   const skillsDst = path.join(root, 'skills');
-  const pluginDst = path.join(root, 'plugins');
+  const major = opencodeMajor();
+  const pluginDst = path.join(root, 'plugins', major >= 2 ? 'chisle' : '');
 
   if (opts.dryRun) {
     note('  would write chisle ruleset to ' + target);
@@ -587,9 +589,11 @@ function installOpencode(ctx) {
 
   try {
     const st = writeFencedRuleset(target, opts, note);
+    const stale = major >= 2 ? ['chisle.js', 'chisle-hooks'] : ['chisle'];
+    for (const rel of stale) fs.rmSync(path.join(root, 'plugins', rel), { recursive: true, force: true });
     const n = copySkills(skillsDst, opts);
     process.stdout.write('  installed: ' + n + ' skill file(s) to ' + skillsDst + '\n');
-    const p = copyOpencodePlugin(root);
+    const p = copyOpencodePlugin(root, major);
     process.stdout.write('  installed: ' + p + ' plugin file(s) to ' + pluginDst + '\n');
     if (st === 'installed') results.installed.push('opencode');
     else results.skipped.push(['opencode', 'ruleset already present; skills + plugin refreshed']);
@@ -797,7 +801,7 @@ function uninstall(ctx) {
     if (ocGone > 0) { note('  removed ' + ocGone + ' chisle skill dir(s) from ' + ocSkills); touched++; }
 
     const ocPlugins = path.join(ocRoot, 'plugins');
-    for (const rel of ['chisle.js', 'chisle-hooks']) {
+    for (const rel of ['chisle.js', 'chisle-hooks', 'chisle']) {
       const dst = path.join(ocPlugins, rel);
       if (fs.existsSync(dst)) { if (!opts.dryRun) fs.rmSync(dst, { recursive: true, force: true }); note('  removed ' + dst); touched++; }
     }
