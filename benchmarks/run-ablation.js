@@ -40,7 +40,8 @@ const arms = armSpecs.map((spec) => {
 });
 
 // The prompts live in run-live.sh; read them rather than keep a second copy.
-const live = fs.readFileSync(path.join(__dirname, 'run-live.sh'), 'utf8');
+// Normalize CRLF: a Windows checkout with core.autocrlf=true breaks the heredoc match.
+const live = fs.readFileSync(path.join(__dirname, 'run-live.sh'), 'utf8').replace(/\r\n/g, '\n');
 const heredoc = (v) => live.match(new RegExp(`\\n${v}=\\$\\(cat <<'EOF'\\n([\\s\\S]*?)\\nEOF`))[1];
 const suites = { default: heredoc('TASKS'), large: heredoc('TASKS_LARGE') };
 
