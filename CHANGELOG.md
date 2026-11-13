@@ -5,8 +5,18 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [3.12.0] - 2026-11-13
+
+Minor: native OpenCode v2 support, and `--update` now really updates the Claude Code plugin.
+
 ### Added
-- **OpenCode v2 plugin compatibility.** The installer detects OpenCode's major version and installs an isolated `Plugin.define({ id, setup })` entrypoint for v2 while preserving the v1 plugin. V2 `shell` output uses the shared compressor, spill recovery, statistics, configuration, and safety exclusions.
+- **OpenCode v2 plugin compatibility.** The installer detects OpenCode's major version and installs an isolated `Plugin.define({ id, setup })` entrypoint for v2 while preserving the v1 plugin. V2 `shell` output uses the shared compressor, spill recovery, statistics, configuration, and safety exclusions. (#48, [@lextiz](https://github.com/lextiz))
+
+### Fixed
+- **`--update` updates the Claude Code plugin.** `npx chisle@latest --update` ran `claude plugin install`, which skips a plugin that is already installed, so Claude Code stayed on the previous release while the run reported success. When the plugin is present, `--update` and `--force` now run `claude plugin update chisle@chisle`. A regression test drives a fake `claude` CLI and checks the update path.
+
+### Docs
+- README, site and the benchmark chart label the current numbers as Chisle rather than Chisle 3.9.
 
 ## [3.11.1] - 2026-11-07
 
