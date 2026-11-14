@@ -1,0 +1,40 @@
+name: Star history
+
+# Redraws the animated star chart in the README and force-pushes it as the only
+# commit on the `stars` branch, so main's history and protection stay untouched.
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [scripts/build-readme-art.js, .github/workflows/stars.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: star-history
+  cancel-in-progress: true
+
+jobs:
+  draw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Draw the chart
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/build-readme-art.js --stars out
+      - name: Publish to the stars branch
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          cd out
+          git init -q -b stars
+          git add stars-dark.svg stars-light.svg
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -q -m 'Update star history'
+          git push -q -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" stars

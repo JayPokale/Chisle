@@ -170,6 +170,17 @@ Per-agent setup, upgrading and config: [docs/usage.md](docs/usage.md).
 <p align="center"><img src="assets/readme/line.svg" width="100%" height="4" alt=""></p>
 
 <p align="center">
+  <a href="https://www.star-history.com/#JayPokale/Chisle&Date">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/JayPokale/Chisle/stars/stars-dark.svg">
+      <img src="https://raw.githubusercontent.com/JayPokale/Chisle/stars/stars-light.svg" width="880" alt="GitHub stars over time">
+    </picture>
+  </a>
+</p>
+
+<p align="center"><img src="assets/readme/line.svg" width="100%" height="4" alt=""></p>
+
+<p align="center">
   <a href="https://buymeacoffee.com/jaypokale3b">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="assets/readme/support-dark.svg">

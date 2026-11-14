@@ -413,6 +413,84 @@ function support(t) {
   return svg(t, 880, 210, "Chisle is free. Its benchmarks aren't. Every benchmark run costs real API money. Saved you tokens? Buy me a coffee at buymeacoffee.com/jaypokale3b.", o, defs);
 }
 
+// ── Stars: GitHub stars over time. Needs the network, so only `--stars <dir>`
+// draws it; .github/workflows/stars.yml runs that and publishes the branch `stars`.
+async function fetchStars(repo, token) {
+  const times = [];
+  for (let page = 1; ; page++) {
+    const res = await fetch(`https://api.github.com/repos/${repo}/stargazers?per_page=100&page=${page}`, {
+      headers: { Accept: 'application/vnd.github.star+json', 'User-Agent': 'chisle-readme-art', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    });
+    if (!res.ok) throw new Error(`GitHub API ${res.status} on stargazers page ${page}`);
+    const batch = await res.json();
+    times.push(...batch.map((s) => Date.parse(s.starred_at)));
+    if (batch.length < 100) return times.sort((a, b) => a - b);
+  }
+}
+
+function stars(t, times, now) {
+  const W = 880, H = 320, D = 10, X0 = 64, X1 = 852, YT = 96, YB = 272, total = times.length, DAY = 864e5;
+  const start = times[0] - DAY, span = now - start;
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * 10 ** Math.floor(Math.log10(Math.max(total, 5) / 5))).find((s) => total / s <= 5) || 10;
+  const top = Math.ceil(total / step) * step || step;
+  const X = (ms) => r1(X0 + ((ms - start) / span) * (X1 - X0)), Y = (n) => r1(YB - (n / top) * (YB - YT));
+  const fmt = (n) => (n >= 1000 ? `${+(n / 1000).toFixed(2)}k` : `${n}`);
+  // Cumulative stars at 180 evenly spaced moments.
+  const pts = [];
+  for (let i = 0, k = 0; i <= 180; i++) {
+    const at = start + (span * i) / 180;
+    while (k < total && times[k] <= at) k++;
+    pts.push([X(at), Y(k)]);
+  }
+  let len = 0;
+  for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+  const line = 'M' + pts.map((p) => p.join(' ')).join('L');
+  const week = times.filter((ms) => ms > now - 7 * DAY).length;
+  const out = D - 0.6, T0 = 0.3, T1 = 2.6;
+  const defs = `<linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${t.fill}" stop-opacity="0.32"/><stop offset="1" stop-color="${t.fill}" stop-opacity="0"/></linearGradient>`;
+  const o = [];
+  // Grid and axis labels.
+  for (let v = step; v <= top; v += step) {
+    o.push(`<path d="M${X0} ${Y(v)}H${X1}" stroke="${t.track}" stroke-dasharray="3 4"/>`,
+      `<text x="${X0 - 10}" y="${r1(Y(v) + 4)}" font-size="11" fill="${t.faint}" text-anchor="end">${fmt(v)}</text>`);
+  }
+  o.push(`<path d="M${X0} ${YB}H${X1}" stroke="${t.border}"/>`);
+  const first = new Date(start);
+  for (let m = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 1)); m.getTime() < now; m.setUTCMonth(m.getUTCMonth() + 1)) {
+    const lbl = m.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }) + (m.getUTCMonth() === 0 ? ` ${m.getUTCFullYear()}` : '');
+    o.push(`<text x="${X(m.getTime())}" y="${YB + 20}" font-size="11" fill="${t.faint}" text-anchor="middle">${lbl}</text>`);
+  }
+  // Area, line (drawn on), and the pulsing head.
+  const [hx, hy] = pts[pts.length - 1];
+  o.push(`<g>${anim('opacity', [[out, 1], [out + 0.3, 0]], D)}` +
+    `<path d="${line}L${X1} ${YB}L${X0} ${YB}Z" fill="url(#area)" opacity="1">${anim('opacity', [[T0, 0], [T1, 1]], D)}</path>` +
+    `<path d="${line}" fill="none" stroke="${t.fill}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="${r1(len)}" stroke-dashoffset="0">` +
+      anim('stroke-dashoffset', [[T0, r1(len)], [T1, 0]], D, { ease: true }) + '</path>' +
+    `<g opacity="1">${anim('opacity', [[T1 - 0.1, 0], [T1 + 0.1, 1]], D)}` +
+      `<circle cx="${hx}" cy="${hy}" r="5" fill="${t.fill}" opacity="0.6">${anim('r', [[0, 5], [1.6, 16]], 1.6)}${anim('opacity', [[0, 0.6], [1.6, 0]], 1.6)}</circle>` +
+      `<circle cx="${hx}" cy="${hy}" r="5" fill="${t.accent}" stroke="${t.bg}" stroke-width="2"/></g></g>`);
+  // Header: star, a counter that counts up with the line, the weekly gain.
+  const star = Array.from({ length: 10 }, (_, i) => {
+    const a = -Math.PI / 2 + (i * Math.PI) / 5, r = i % 2 ? 6.3 : 14;
+    return `${r1(46 + r * Math.cos(a))},${r1(44 + r * Math.sin(a))}`;
+  }).join(' ');
+  o.push(`<polygon points="${star}" fill="${t.fill}" stroke-linejoin="round"/>`);
+  const F = 16;
+  for (let k = 0; k <= F; k++) {
+    const n = Math.round(total * (1 - (1 - k / F) ** 3)), tk = T0 + ((T1 - T0) * k) / F, tn = T0 + ((T1 - T0) * (k + 1)) / F;
+    const pts2 = k === 0 ? [[0, 1], [tn, 0]] : k === F ? [[0, 0], [tk, 1], [out + 0.3, 0]] : [[0, 0], [tk, 1], [tn, 0]];
+    o.push(`<text x="70" y="56" font-size="34" font-weight="800" letter-spacing="-0.5" fill="${t.text}" opacity="${k === F ? 1 : 0}">${n.toLocaleString('en-US')}${anim('opacity', pts2, D, { discrete: true })}</text>`);
+  }
+  o.push(`<text x="${r1(70 + total.toLocaleString('en-US').length * 20 + 10)}" y="55" font-size="14" fill="${t.muted}">GitHub stars</text>`);
+  if (week > 0) {
+    const chip = `+${week.toLocaleString('en-US')} this week`, cw = r1(chip.length * 7.4 + 26);
+    o.push(`<rect x="${r1(X1 - cw)}" y="30" width="${cw}" height="26" rx="13" fill="${t.green}" fill-opacity="0.12" stroke="${t.green}" stroke-opacity="0.5"/>`,
+      `<text x="${r1(X1 - cw / 2)}" y="47.5" font-size="12.5" font-weight="700" fill="${t.green}" text-anchor="middle">${chip}</text>`);
+  }
+  o.push(`<text x="${X1}" y="${H - 12}"${mono(10.5)} fill="${t.faint}" text-anchor="end">updated ${new Date(now).toISOString().slice(0, 10)}</text>`);
+  return svg(t, W, H, `GitHub stars over time: ${total.toLocaleString('en-US')} stars since ${new Date(times[0]).toISOString().slice(0, 10)}, ${week} in the last 7 days.`, o, defs);
+}
+
 // ── Line: the travelling divider (one file; it reads on both themes) ──────────
 const LINE = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="4" viewBox="0 0 1200 4" preserveAspectRatio="none" role="img" aria-label="divider">
 <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#d78a3c" stop-opacity="0"/><stop offset="0.7" stop-color="#f0a85a"/><stop offset="1" stop-color="#fff3e0"/></linearGradient></defs>
@@ -421,9 +499,21 @@ const LINE = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="4" vi
 </svg>
 `;
 
-fs.mkdirSync(OUT, { recursive: true });
-fs.writeFileSync(path.join(OUT, 'line.svg'), LINE);
-for (const [name, build] of Object.entries({ banner, stats, race, trim, ladder, install, commands, strip, support })) {
-  for (const [theme, t] of Object.entries(THEMES)) fs.writeFileSync(path.join(OUT, `${name}-${theme}.svg`), build(t));
+const starsAt = process.argv.indexOf('--stars');
+if (starsAt !== -1) {
+  const dir = path.resolve(process.argv[starsAt + 1] || '.');
+  fetchStars(process.env.GITHUB_REPOSITORY || 'JayPokale/Chisle', process.env.GITHUB_TOKEN).then((times) => {
+    if (!times.length) throw new Error('no stargazers returned');
+    fs.mkdirSync(dir, { recursive: true });
+    const now = Date.now();
+    for (const [theme, t] of Object.entries(THEMES)) fs.writeFileSync(path.join(dir, `stars-${theme}.svg`), stars(t, times, now));
+    console.log(`wrote ${path.relative(process.cwd(), dir) || '.'}: stars (dark, light), ${times.length} stars`);
+  }).catch((e) => { console.error(`stars: ${e.message}`); process.exit(1); });
+} else {
+  fs.mkdirSync(OUT, { recursive: true });
+  fs.writeFileSync(path.join(OUT, 'line.svg'), LINE);
+  for (const [name, build] of Object.entries({ banner, stats, race, trim, ladder, install, commands, strip, support })) {
+    for (const [theme, t] of Object.entries(THEMES)) fs.writeFileSync(path.join(OUT, `${name}-${theme}.svg`), build(t));
+  }
+  console.log(`wrote ${path.relative(process.cwd(), OUT)}: line + banner, stats, race, trim, ladder, install, commands, strip, support (dark, light)`);
 }
-console.log(`wrote ${path.relative(process.cwd(), OUT)}: line + banner, stats, race, trim, ladder, install, commands, strip, support (dark, light)`);
