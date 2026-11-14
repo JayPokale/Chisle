@@ -1,8 +1,8 @@
 <!-- Translated from ../README.md. Keep images, numbers and links in sync with it. -->
 <h1 align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/banner-dark.svg">
-    <img src="../assets/readme/banner-light.svg" width="100%" alt="Chisle: menos tokens de entrada, menos tokens de salida, las mismas respuestas.">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/banner-dark.svg">
+    <img src="../assets/readme/es/banner-light.svg" width="100%" alt="Chisle: menos tokens de entrada, menos tokens de salida, las mismas respuestas.">
   </picture>
 </h1>
 
@@ -21,8 +21,8 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/stats-dark.svg">
-    <img src="../assets/readme/stats-light.svg" width="880" alt="Chisle frente al mismo modelo sin ruleset: 29% menos tokens de salida facturados, respuestas un 45% más cortas, salidas de herramientas enormes un 48% más pequeñas, precisión de 156 sobre 156 frente a 154 sobre 156.">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/stats-dark.svg">
+    <img src="../assets/readme/es/stats-light.svg" width="880" alt="Chisle frente al mismo modelo sin ruleset: 29% menos tokens de salida facturados, respuestas un 45% más cortas, salidas de herramientas enormes un 48% más pequeñas, precisión de 156 sobre 156 frente a 154 sobre 156.">
   </picture>
 </p>
 
@@ -35,8 +35,8 @@ npx chisle
 <p align="center">
   <a href="https://buymeacoffee.com/jaypokale3b">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/strip-dark.svg">
-      <img src="../assets/readme/strip-light.svg" width="880" alt="Chisle es gratis. Sus benchmarks no. ¿Te ahorró tokens? Invítame a un café.">
+      <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/strip-dark.svg">
+      <img src="../assets/readme/es/strip-light.svg" width="880" alt="Chisle es gratis. Sus benchmarks no. ¿Te ahorró tokens? Invítame a un café.">
     </picture>
   </a>
 </p>
@@ -45,8 +45,8 @@ npx chisle
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/race-dark.svg">
-    <img src="../assets/readme/race-light.svg" width="880" alt="Mismo prompt, cuatro rulesets, tokens de respuesta visibles: Chisle 530, caveman 604, ponytail 747, sin ruleset 1.186. Chisle es un 55% más corto que sin ruleset.">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/race-dark.svg">
+    <img src="../assets/readme/es/race-light.svg" width="880" alt="Mismo prompt, cuatro rulesets, tokens de respuesta visibles: Chisle 530, caveman 604, ponytail 747, sin ruleset 1.186. Chisle es un 55% más corto que sin ruleset.">
   </picture>
 </p>
 
@@ -114,8 +114,8 @@ Después, un bloque corto de uso.
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/trim-dark.svg">
-    <img src="../assets/readme/trim-light.svg" width="880" alt="Ilustración animada del compresor de salidas de Chisle: la salida de npm test con códigos de color, seis líneas idénticas y 172 líneas de tests aprobados se convierte en una versión corta: sin códigos de color, repeticiones colapsadas, el tramo central omitido y guardado completo en un archivo, y el test fallido con su error conservados.">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/trim-dark.svg">
+    <img src="../assets/readme/es/trim-light.svg" width="880" alt="Ilustración animada del compresor de salidas de Chisle: la salida de npm test con códigos de color, seis líneas idénticas y 172 líneas de tests aprobados se convierte en una versión corta: sin códigos de color, repeticiones colapsadas, el tramo central omitido y guardado completo en un archivo, y el test fallido con su error conservados.">
   </picture>
 </p>
 
@@ -123,8 +123,8 @@ Después, un bloque corto de uso.
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ladder-dark.svg">
-    <img src="../assets/readme/ladder-light.svg" width="880" alt="La escalera de eficiencia de Chisle. Antes de escribir código, detente en el primer peldaño que se cumpla: 1 ¿hace falta que exista?, 2 ¿ya está en este código?, 3 ¿lo hace la biblioteca estándar?, 4 ¿una función nativa de la plataforma?, 5 ¿una dependencia ya instalada?, 6 ¿cabe en una línea?, 7 solo entonces, el código mínimo que funciona.">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/ladder-dark.svg">
+    <img src="../assets/readme/es/ladder-light.svg" width="880" alt="La escalera de eficiencia de Chisle. Antes de escribir código, detente en el primer peldaño que se cumpla: 1 ¿hace falta que exista?, 2 ¿ya está en este código?, 3 ¿lo hace la biblioteca estándar?, 4 ¿una función nativa de la plataforma?, 5 ¿una dependencia ya instalada?, 6 ¿cabe en una línea?, 7 solo entonces, el código mínimo que funciona.">
   </picture>
 </p>
 
@@ -163,8 +163,8 @@ Configuración por agente, actualizaciones y opciones: [docs/usage.md](../docs/u
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/commands-dark.svg">
-    <img src="../assets/readme/commands-light.svg" width="880" alt="Chuleta: npx chisle configura cada agente; --dry-run muestra los cambios antes; --uninstall lo deja todo como estaba; /chisle off lo pausa; /chisle-review busca sobreingeniería; /chisle-audit busca código y prosa inflados; npx chisle tools muestra los esquemas de herramientas que pagas pero nunca usas; npx chisle mcp wrap recorta la salida MCP en cualquier agente.">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/commands-dark.svg">
+    <img src="../assets/readme/es/commands-light.svg" width="880" alt="Chuleta: npx chisle configura cada agente; --dry-run muestra los cambios antes; --uninstall lo deja todo como estaba; /chisle off lo pausa; /chisle-review busca sobreingeniería; /chisle-audit busca código y prosa inflados; npx chisle tools muestra los esquemas de herramientas que pagas pero nunca usas; npx chisle mcp wrap recorta la salida MCP en cualquier agente.">
   </picture>
 </p>
 
@@ -184,8 +184,8 @@ Configuración por agente, actualizaciones y opciones: [docs/usage.md](../docs/u
 <p align="center">
   <a href="https://buymeacoffee.com/jaypokale3b">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/support-dark.svg">
-      <img src="../assets/readme/support-light.svg" width="880" alt="Chisle es gratis. Sus benchmarks no. Cada ejecución de benchmark cuesta dinero real de API. ¿Te ahorró tokens? Invítame a un café.">
+      <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/support-dark.svg">
+      <img src="../assets/readme/es/support-light.svg" width="880" alt="Chisle es gratis. Sus benchmarks no. Cada ejecución de benchmark cuesta dinero real de API. ¿Te ahorró tokens? Invítame a un café.">
     </picture>
   </a>
 </p>

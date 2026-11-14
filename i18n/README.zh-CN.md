@@ -1,8 +1,8 @@
 <!-- Translated from ../README.md. Keep images, numbers and links in sync with it. -->
 <h1 align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/banner-dark.svg">
-    <img src="../assets/readme/banner-light.svg" width="100%" alt="Chisle：输入更少 token，输出更少 token，答案不变。">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/banner-dark.svg">
+    <img src="../assets/readme/zh-CN/banner-light.svg" width="100%" alt="Chisle：输入更少 token，输出更少 token，答案不变。">
   </picture>
 </h1>
 
@@ -21,8 +21,8 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/stats-dark.svg">
-    <img src="../assets/readme/stats-light.svg" width="880" alt="Chisle 对比无规则集的同一模型：计费输出 token 减少 29%，回答缩短 45%，超大工具输出缩小 48%，准确率 156/156 对 154/156。">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/stats-dark.svg">
+    <img src="../assets/readme/zh-CN/stats-light.svg" width="880" alt="Chisle 对比无规则集的同一模型：计费输出 token 减少 29%，回答缩短 45%，超大工具输出缩小 48%，准确率 156/156 对 154/156。">
   </picture>
 </p>
 
@@ -35,8 +35,8 @@ npx chisle
 <p align="center">
   <a href="https://buymeacoffee.com/jaypokale3b">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/strip-dark.svg">
-      <img src="../assets/readme/strip-light.svg" width="880" alt="Chisle 是免费的，基准测试可不是。帮你省下了 token？请我喝杯咖啡吧。">
+      <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/strip-dark.svg">
+      <img src="../assets/readme/zh-CN/strip-light.svg" width="880" alt="Chisle 是免费的，基准测试可不是。帮你省下了 token？请我喝杯咖啡吧。">
     </picture>
   </a>
 </p>
@@ -45,8 +45,8 @@ npx chisle
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/race-dark.svg">
-    <img src="../assets/readme/race-light.svg" width="880" alt="同一个提示词，四种规则集，可见回答 token：Chisle 530，caveman 604，ponytail 747，无规则集 1,186。Chisle 比无规则集短 55%。">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/race-dark.svg">
+    <img src="../assets/readme/zh-CN/race-light.svg" width="880" alt="同一个提示词，四种规则集，可见回答 token：Chisle 530，caveman 604，ponytail 747，无规则集 1,186。Chisle 比无规则集短 55%。">
   </picture>
 </p>
 
@@ -114,8 +114,8 @@ class OrderStateMachine:
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/trim-dark.svg">
-    <img src="../assets/readme/trim-light.svg" width="880" alt="Chisle 工具输出压缩器的动画示意：一段带颜色代码、六行重复内容和 172 行通过测试的 npm test 输出变成简短版本：去掉颜色代码，折叠重复行，省略中间部分并把完整输出保存到文件，保留失败的测试和它的错误。">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/trim-dark.svg">
+    <img src="../assets/readme/zh-CN/trim-light.svg" width="880" alt="Chisle 工具输出压缩器的动画示意：一段带颜色代码、六行重复内容和 172 行通过测试的 npm test 输出变成简短版本：去掉颜色代码，折叠重复行，省略中间部分并把完整输出保存到文件，保留失败的测试和它的错误。">
   </picture>
 </p>
 
@@ -123,8 +123,8 @@ class OrderStateMachine:
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ladder-dark.svg">
-    <img src="../assets/readme/ladder-light.svg" width="880" alt="Chisle 效率阶梯。写代码之前，停在第一个成立的台阶：1 这真的需要存在吗，2 代码库里已经有了吗，3 标准库能做吗，4 平台原生功能能做吗，5 已安装的依赖能做吗，6 能写成一行吗，7 最后才写能工作的最少代码。">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/ladder-dark.svg">
+    <img src="../assets/readme/zh-CN/ladder-light.svg" width="880" alt="Chisle 效率阶梯。写代码之前，停在第一个成立的台阶：1 这真的需要存在吗，2 代码库里已经有了吗，3 标准库能做吗，4 平台原生功能能做吗，5 已安装的依赖能做吗，6 能写成一行吗，7 最后才写能工作的最少代码。">
   </picture>
 </p>
 
@@ -163,8 +163,8 @@ irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/commands-dark.svg">
-    <img src="../assets/readme/commands-light.svg" width="880" alt="速查表：npx chisle 配置所有智能体；--dry-run 先预览；--uninstall 全部还原；/chisle off 暂停；/chisle-review 检查过度设计；/chisle-audit 审计臃肿的代码和文字；npx chisle tools 列出你付了费却从不使用的工具 schema；npx chisle mcp wrap 在任何智能体中精简 MCP 输出。">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/commands-dark.svg">
+    <img src="../assets/readme/zh-CN/commands-light.svg" width="880" alt="速查表：npx chisle 配置所有智能体；--dry-run 先预览；--uninstall 全部还原；/chisle off 暂停；/chisle-review 检查过度设计；/chisle-audit 审计臃肿的代码和文字；npx chisle tools 列出你付了费却从不使用的工具 schema；npx chisle mcp wrap 在任何智能体中精简 MCP 输出。">
   </picture>
 </p>
 
@@ -184,8 +184,8 @@ irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
 <p align="center">
   <a href="https://buymeacoffee.com/jaypokale3b">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/support-dark.svg">
-      <img src="../assets/readme/support-light.svg" width="880" alt="Chisle 是免费的，基准测试可不是。每次运行基准测试都要花真金白银的 API 费用。帮你省下了 token？请我喝杯咖啡吧。">
+      <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/support-dark.svg">
+      <img src="../assets/readme/zh-CN/support-light.svg" width="880" alt="Chisle 是免费的，基准测试可不是。每次运行基准测试都要花真金白银的 API 费用。帮你省下了 token？请我喝杯咖啡吧。">
     </picture>
   </a>
 </p>

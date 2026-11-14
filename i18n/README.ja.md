@@ -1,8 +1,8 @@
 <!-- Translated from ../README.md. Keep images, numbers and links in sync with it. -->
 <h1 align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/banner-dark.svg">
-    <img src="../assets/readme/banner-light.svg" width="100%" alt="Chisle：入力トークンも出力トークンも減らして、答えは同じ。">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/banner-dark.svg">
+    <img src="../assets/readme/ja/banner-light.svg" width="100%" alt="Chisle：入力トークンも出力トークンも減らして、答えは同じ。">
   </picture>
 </h1>
 
@@ -21,8 +21,8 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/stats-dark.svg">
-    <img src="../assets/readme/stats-light.svg" width="880" alt="Chisle とルールセットなしの同じモデルの比較：課金される出力トークン 29% 減、回答の長さ 45% 減、巨大なツール出力 48% 減、精度は 156/156 対 154/156。">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/stats-dark.svg">
+    <img src="../assets/readme/ja/stats-light.svg" width="880" alt="Chisle とルールセットなしの同じモデルの比較：課金される出力トークン 29% 減、回答の長さ 45% 減、巨大なツール出力 48% 減、精度は 156/156 対 154/156。">
   </picture>
 </p>
 
@@ -35,8 +35,8 @@ npx chisle
 <p align="center">
   <a href="https://buymeacoffee.com/jaypokale3b">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/strip-dark.svg">
-      <img src="../assets/readme/strip-light.svg" width="880" alt="Chisle は無料です。ベンチマークは無料ではありません。トークンを節約できたら、コーヒーをおごってください。">
+      <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/strip-dark.svg">
+      <img src="../assets/readme/ja/strip-light.svg" width="880" alt="Chisle は無料です。ベンチマークは無料ではありません。トークンを節約できたら、コーヒーをおごってください。">
     </picture>
   </a>
 </p>
@@ -45,8 +45,8 @@ npx chisle
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/race-dark.svg">
-    <img src="../assets/readme/race-light.svg" width="880" alt="同じプロンプト、4 つのルールセット、表示される回答トークン：Chisle 530、caveman 604、ponytail 747、ルールなし 1,186。Chisle はルールなしより 55% 短い。">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/race-dark.svg">
+    <img src="../assets/readme/ja/race-light.svg" width="880" alt="同じプロンプト、4 つのルールセット、表示される回答トークン：Chisle 530、caveman 604、ponytail 747、ルールなし 1,186。Chisle はルールなしより 55% 短い。">
   </picture>
 </p>
 
@@ -114,8 +114,8 @@ class OrderStateMachine:
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/trim-dark.svg">
-    <img src="../assets/readme/trim-light.svg" width="880" alt="Chisle のツール出力圧縮のアニメーション例：色コード、同じ 6 行、成功した 172 行のテストを含む npm test の出力が短くなります。色コードを除き、繰り返しをまとめ、中間を省略して全文をファイルに保存し、失敗したテストとそのエラーは残します。">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/trim-dark.svg">
+    <img src="../assets/readme/ja/trim-light.svg" width="880" alt="Chisle のツール出力圧縮のアニメーション例：色コード、同じ 6 行、成功した 172 行のテストを含む npm test の出力が短くなります。色コードを除き、繰り返しをまとめ、中間を省略して全文をファイルに保存し、失敗したテストとそのエラーは残します。">
   </picture>
 </p>
 
@@ -123,8 +123,8 @@ class OrderStateMachine:
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ladder-dark.svg">
-    <img src="../assets/readme/ladder-light.svg" width="880" alt="Chisle の効率はしご。コードを書く前に、最初に当てはまる段で止まる：1 そもそも必要か、2 すでにコードベースにあるか、3 標準ライブラリでできるか、4 プラットフォームの標準機能でできるか、5 インストール済みの依存関係でできるか、6 1 行で書けるか、7 そこで初めて、動く最小限のコード。">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/ladder-dark.svg">
+    <img src="../assets/readme/ja/ladder-light.svg" width="880" alt="Chisle の効率はしご。コードを書く前に、最初に当てはまる段で止まる：1 そもそも必要か、2 すでにコードベースにあるか、3 標準ライブラリでできるか、4 プラットフォームの標準機能でできるか、5 インストール済みの依存関係でできるか、6 1 行で書けるか、7 そこで初めて、動く最小限のコード。">
   </picture>
 </p>
 
@@ -163,8 +163,8 @@ irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/commands-dark.svg">
-    <img src="../assets/readme/commands-light.svg" width="880" alt="チートシート：npx chisle ですべてのエージェントを設定、--dry-run で事前確認、--uninstall ですべて元に戻す、/chisle off で一時停止、/chisle-review で過剰設計をレビュー、/chisle-audit で膨らんだコードと文章を監査、npx chisle tools で料金を払っているのに使っていないツールスキーマを表示、npx chisle mcp wrap でどのエージェントでも MCP 出力を削減。">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/commands-dark.svg">
+    <img src="../assets/readme/ja/commands-light.svg" width="880" alt="チートシート：npx chisle ですべてのエージェントを設定、--dry-run で事前確認、--uninstall ですべて元に戻す、/chisle off で一時停止、/chisle-review で過剰設計をレビュー、/chisle-audit で膨らんだコードと文章を監査、npx chisle tools で料金を払っているのに使っていないツールスキーマを表示、npx chisle mcp wrap でどのエージェントでも MCP 出力を削減。">
   </picture>
 </p>
 
@@ -184,8 +184,8 @@ irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
 <p align="center">
   <a href="https://buymeacoffee.com/jaypokale3b">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/support-dark.svg">
-      <img src="../assets/readme/support-light.svg" width="880" alt="Chisle は無料です。ベンチマークは無料ではありません。ベンチマークを 1 回回すたびに実際の API 料金がかかります。トークンを節約できたら、コーヒーをおごってください。">
+      <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/support-dark.svg">
+      <img src="../assets/readme/ja/support-light.svg" width="880" alt="Chisle は無料です。ベンチマークは無料ではありません。ベンチマークを 1 回回すたびに実際の API 料金がかかります。トークンを節約できたら、コーヒーをおごってください。">
     </picture>
   </a>
 </p>

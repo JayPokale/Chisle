@@ -32,6 +32,93 @@ const THEMES = {
   },
 };
 
+// Text inside the art, per README language. Terminal commands, CLI output and
+// code stay English everywhere; only the prose around them is translated.
+const I18N = {
+  en: {
+    pill: 'Claude Code plugin · 13 agents · 0 deps', tag1: 'Fewer tokens in. Fewer tokens out.', tag2: 'Same answers.',
+    words: (a, b) => `${a} words → ${b} words`, same: '✓ same answer',
+    statsTitle: 'Chisle vs the same model with no ruleset',
+    tiles: [['billed output tokens', '71% of the bare model'], ['answer length', '55% of the bare model'], ['oversized tool output', 'per trimmed tool output'], ['accuracy', 'bare model: 154/156']],
+    raceTitle: 'Same prompt. Four answers.', raceNote: 'visible answer tokens · lower is leaner', bare: 'no ruleset', tokens: ' tokens',
+    cut: (p) => `−${p}% vs no ruleset`, raceFoot: 'Claude Code + Haiku 4.5 · all four in one run · the verbatim answers are below',
+    reads: 'what Claude reads', kept: '  ← error kept', foot1: 'Raw output is billed again on every later turn', foot2: 'Oversized tool output: ~48% smaller on average',
+    ladderTitle: 'Before writing code, stop at the first rung that holds',
+    rungs: [['Does this need to exist at all?', 'skip it, say so in one line'], ['Already in this codebase?', 'reuse it'], ['Does the stdlib do it?', 'use the stdlib'], ['Native platform feature?', 'CSS over JS, DB constraint over code'], ['Already-installed dependency?', 'use it, never add a new one'], ['Can it be one line?', 'one line'], ['Only then', 'the minimum code that works']],
+    request: 'Request:', reqs: ['deep-copy a config object', 'add a date picker', 'format a date for the UI'], answers: ['structuredClone(config)', '<input type="date">', 'reuse utils/formatDate()'], hit: (n, a) => `✓ rung ${n}: ${a}`,
+    sheet: 'cheat sheet', notes: ['wire every agent on this machine', 'preview first', 'put everything back', 'pause it', 'over-engineering, one finding per line', 'bloated code and prose, biggest cut first', 'tool schemas you pay for but never use', 'trim MCP output in any agent'],
+    stripTitle: "Chisle is free. Its benchmarks aren't.", stripSub: 'Saved you tokens? A coffee pays for the next benchmark run.',
+    free: 'Chisle is free.', notFree: "Its benchmarks aren't.", body1: 'Every benchmark run costs real API money.', body2: 'Saved you tokens? A coffee pays for the next run.', button: '☕ Buy me a coffee',
+  },
+  es: {
+    pill: 'Plugin de Claude Code · 13 agentes · 0 deps', tag1: 'Menos tokens de entrada y de salida.', tag2: 'Las mismas respuestas.',
+    words: (a, b) => `${a} palabras → ${b}`, same: '✓ misma respuesta',
+    statsTitle: 'Chisle frente al mismo modelo sin ruleset',
+    tiles: [['tokens facturados', '71% del modelo sin reglas'], ['longitud de respuesta', '55% del modelo sin reglas'], ['salida de herramientas', 'por salida recortada'], ['precisión', 'sin reglas: 154/156']],
+    raceTitle: 'Mismo prompt. Cuatro respuestas.', raceNote: 'tokens de respuesta visibles · menos es mejor', bare: 'sin ruleset', tokens: ' tokens',
+    cut: (p) => `−${p}% frente a sin ruleset`, raceFoot: 'Claude Code + Haiku 4.5 · los cuatro en una ejecución · las respuestas literales, abajo',
+    reads: 'lo que lee Claude', kept: '  ← error conservado', foot1: 'La salida en bruto se vuelve a cobrar en cada turno', foot2: 'Salida enorme de herramientas: ~48% más pequeña de media',
+    ladderTitle: 'Antes de escribir código, detente en el primer peldaño que se cumpla',
+    rungs: [['¿Hace falta que exista?', 'sáltalo y dilo en una línea'], ['¿Ya está en este código?', 'reutilízalo'], ['¿Lo hace la biblioteca estándar?', 'usa la biblioteca estándar'], ['¿Una función nativa de la plataforma?', 'CSS antes que JS, restricción de BD antes que código'], ['¿Una dependencia ya instalada?', 'úsala, nunca añadas otra'], ['¿Cabe en una línea?', 'una línea'], ['Solo entonces', 'el código mínimo que funciona']],
+    request: 'Petición:', reqs: ['copia profunda de un objeto de configuración', 'añadir un selector de fecha', 'formatear una fecha para la interfaz'], answers: ['structuredClone(config)', '<input type="date">', 'reutiliza utils/formatDate()'], hit: (n, a) => `✓ peldaño ${n}: ${a}`,
+    sheet: 'chuleta', notes: ['configura cada agente de esta máquina', 'primero, una vista previa', 'lo deja todo como estaba', 'lo pausa', 'sobreingeniería, un hallazgo por línea', 'código y prosa inflados, el mayor recorte primero', 'esquemas de herramientas que pagas y no usas', 'recorta la salida MCP en cualquier agente'],
+    stripTitle: 'Chisle es gratis. Sus benchmarks, no.', stripSub: '¿Te ahorró tokens? Un café paga la próxima ejecución del benchmark.',
+    free: 'Chisle es gratis.', notFree: 'Sus benchmarks, no.', body1: 'Cada ejecución de benchmark cuesta dinero real de API.', body2: '¿Te ahorró tokens? Un café paga la próxima.', button: '☕ Invítame a un café',
+  },
+  ko: {
+    pill: 'Claude Code 플러그인 · 에이전트 13개 · 의존성 0', tag1: '입력 토큰도, 출력 토큰도 적게.', tag2: '답은 그대로.',
+    words: (a, b) => `${a}단어 → ${b}단어`, same: '✓ 같은 답',
+    statsTitle: '규칙 세트가 없는 같은 모델과 비교한 Chisle',
+    tiles: [['과금 출력 토큰', '규칙 없는 모델의 71%'], ['답변 길이', '규칙 없는 모델의 55%'], ['큰 도구 출력', '축소된 출력 기준'], ['정확도', '규칙 없음: 154/156']],
+    raceTitle: '같은 프롬프트, 네 가지 답.', raceNote: '보이는 답변 토큰 · 낮을수록 간결', bare: '규칙 없음', tokens: ' 토큰',
+    cut: (p) => `규칙 없음 대비 −${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 넷 다 한 번의 실행 · 원문 답변은 아래에',
+    reads: 'Claude가 읽는 내용', kept: '  ← 오류는 유지', foot1: '원본 출력은 이후 매 턴마다 다시 과금됩니다', foot2: '큰 도구 출력: 평균 ~48% 감소',
+    ladderTitle: '코드를 쓰기 전에, 성립하는 첫 단계에서 멈춥니다',
+    rungs: [['꼭 있어야 하나?', '건너뛰고 한 줄로 알리기'], ['이미 코드베이스에 있나?', '재사용하기'], ['표준 라이브러리로 되나?', '표준 라이브러리 쓰기'], ['플랫폼 기본 기능이 있나?', 'JS보다 CSS, 앱 코드보다 DB 제약'], ['이미 설치된 의존성이 있나?', '그걸 쓰고, 새로 추가하지 않기'], ['한 줄로 되나?', '한 줄로'], ['그때서야', '동작하는 최소한의 코드']],
+    request: '요청:', reqs: ['설정 객체 깊은 복사', '날짜 선택기 추가', 'UI용 날짜 서식 지정'], answers: ['structuredClone(config)', '<input type="date">', 'utils/formatDate() 재사용'], hit: (n, a) => `✓ ${n}단계: ${a}`,
+    sheet: '치트 시트', notes: ['이 컴퓨터의 모든 에이전트 설정', '먼저 미리 보기', '전부 되돌리기', '일시 중지', '과잉 설계, 한 줄에 하나씩', '부풀려진 코드와 글, 큰 절감부터', '비용만 내고 안 쓰는 도구 스키마', '모든 에이전트에서 MCP 출력 축소'],
+    stripTitle: 'Chisle은 무료입니다. 벤치마크는 아닙니다.', stripSub: '토큰을 아꼈나요? 커피 한 잔이 다음 벤치마크 비용이 됩니다.',
+    free: 'Chisle은 무료입니다.', notFree: '벤치마크는 아닙니다.', body1: '벤치마크를 돌릴 때마다 실제 API 비용이 듭니다.', body2: '토큰을 아꼈나요? 커피 한 잔이 다음 실행 비용이 됩니다.', button: '☕ 커피 한 잔 사 주기',
+  },
+  'zh-CN': {
+    pill: 'Claude Code 插件 · 13 个智能体 · 零依赖', tag1: '输入更少 token，输出更少 token。', tag2: '答案不变。',
+    words: (a, b) => `${a} 个词 → ${b} 个词`, same: '✓ 答案相同',
+    statsTitle: 'Chisle 对比无规则集的同一模型',
+    tiles: [['计费输出 token', '无规则集模型的 71%'], ['回答长度', '无规则集模型的 55%'], ['超大工具输出', '按每个被精简的输出'], ['准确率', '无规则集：154/156']],
+    raceTitle: '同一个提示词，四个回答。', raceNote: '可见回答 token · 越低越精简', bare: '无规则集', tokens: ' token',
+    cut: (p) => `比无规则集少 ${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 四者同一次运行 · 原始回答见下方',
+    reads: 'Claude 读到的内容', kept: '  ← 保留错误', foot1: '原始输出会在之后每一轮被重新计费', foot2: '超大工具输出：平均缩小约 48%',
+    ladderTitle: '写代码之前，停在第一个成立的台阶',
+    rungs: [['这真的需要存在吗？', '跳过，并用一句话说明'], ['代码库里已经有了吗？', '直接复用'], ['标准库能做吗？', '用标准库'], ['平台原生功能能做吗？', '能用 CSS 就不用 JS，能用数据库约束就不写代码'], ['已安装的依赖能做吗？', '用它，绝不新增依赖'], ['能写成一行吗？', '写成一行'], ['最后才', '写能工作的最少代码']],
+    request: '请求：', reqs: ['深拷贝一个配置对象', '添加日期选择器', '为界面格式化日期'], answers: ['structuredClone(config)', '<input type="date">', '复用 utils/formatDate()'], hit: (n, a) => `✓ 第 ${n} 级：${a}`,
+    sheet: '速查表', notes: ['配置本机所有智能体', '先预览', '全部还原', '暂停', '过度设计，每行一条', '臃肿的代码和文字，收益大的优先', '付了费却从不使用的工具 schema', '在任何智能体中精简 MCP 输出'],
+    stripTitle: 'Chisle 是免费的，基准测试可不是。', stripSub: '帮你省下了 token？一杯咖啡就能支付下一次基准测试。',
+    free: 'Chisle 是免费的。', notFree: '基准测试可不是。', body1: '每次运行基准测试都要花真实的 API 费用。', body2: '帮你省下了 token？一杯咖啡就能支付下一次运行。', button: '☕ 请我喝杯咖啡',
+  },
+  ja: {
+    pill: 'Claude Code プラグイン · 13 エージェント · 依存ゼロ', tag1: '入力も出力も、トークンは少なく。', tag2: '答えは同じ。',
+    words: (a, b) => `${a} 語 → ${b} 語`, same: '✓ 同じ答え',
+    statsTitle: 'ルールなしの同じモデルと比べた Chisle',
+    tiles: [['課金出力トークン', 'ルールなしモデルの 71%'], ['回答の長さ', 'ルールなしモデルの 55%'], ['巨大なツール出力', '削減した出力あたり'], ['精度', 'ルールなし：154/156']],
+    raceTitle: '同じプロンプト、4 つの回答。', raceNote: '表示される回答トークン · 低いほど簡潔', bare: 'ルールなし', tokens: ' トークン',
+    cut: (p) => `ルールなしより −${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 4 つとも同じ実行 · 回答の原文は下に',
+    reads: 'Claude が読む内容', kept: '  ← エラーは残す', foot1: '生の出力は以降のターンごとに再課金されます', foot2: '巨大なツール出力：平均で約 48% 縮小',
+    ladderTitle: 'コードを書く前に、最初に当てはまる段で止まる',
+    rungs: [['そもそも必要か？', '飛ばして、1 行でそう伝える'], ['すでにコードベースにあるか？', '再利用する'], ['標準ライブラリでできるか？', '標準ライブラリを使う'], ['プラットフォームの標準機能は？', 'JS より CSS、アプリより DB 制約'], ['インストール済みの依存関係は？', 'それを使い、新しく足さない'], ['1 行で書けるか？', '1 行で書く'], ['そこで初めて', '動く最小限のコード']],
+    request: 'リクエスト：', reqs: ['設定オブジェクトをディープコピー', '日付ピッカーを追加', 'UI 用に日付を整形'], answers: ['structuredClone(config)', '<input type="date">', 'utils/formatDate() を再利用'], hit: (n, a) => `✓ ${n} 段目：${a}`,
+    sheet: 'チートシート', notes: ['このマシンの全エージェントを設定', 'まずプレビュー', 'すべて元に戻す', '一時停止', '過剰設計を 1 行ずつ指摘', '膨らんだコードと文章、効果の大きい順', '払っているのに使わないツールスキーマ', 'どのエージェントでも MCP 出力を削減'],
+    stripTitle: 'Chisle は無料。ベンチマークは無料じゃない。', stripSub: 'トークンを節約できた？コーヒー 1 杯で次のベンチマークが回せます。',
+    free: 'Chisle は無料。', notFree: 'ベンチマークは無料じゃない。', body1: 'ベンチマークを回すたびに実際の API 料金がかかります。', body2: 'トークンを節約できた？コーヒー 1 杯で次の実行が回せます。', button: '☕ コーヒーをおごる',
+  },
+};
+let L = I18N.en; // the language being drawn; the main loop switches it
+
+// Rough rendered width: CJK and Hangul glyphs take about 1em; Latin about 0.5em
+// in the sans stack and 0.6em in mono. fit() shrinks a font size until s fits.
+const wide = (c) => /[ᄀ-ᇿ⺀-鿿가-힯豈-﫿＀-￯]/.test(c);
+const textW = (s, fs, isMono = false) => [...String(s)].reduce((w, c) => w + fs * (wide(c) ? 1 : isMono ? ADV : 0.5), 0);
+const fit = (s, fs, maxw, isMono = false) => Math.min(fs, Math.floor(((fs * maxw) / textW(s, fs, isMono)) * 10) / 10);
+
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const r1 = (n) => Math.round(n * 10) / 10;
 const mono = (size) => ` font-family="${MONO}" font-size="${size}"`;
@@ -88,14 +175,14 @@ function banner(t) {
   ];
 
   // Left: the pitch.
-  const pill = 'Claude Code plugin · 13 agents · 0 deps';
-  o.push(`<rect x="64" y="58" width="${r1(pill.length * 13 * ADV + 44)}" height="30" rx="15" fill="${t.card}" stroke="${t.border}"/>`,
+  const pill = L.pill;
+  o.push(`<rect x="64" y="58" width="${r1(textW(pill, 13, true) + 44)}" height="30" rx="15" fill="${t.card}" stroke="${t.border}"/>`,
     `<circle cx="81" cy="73" r="4" fill="${t.green}">${anim('opacity', [[0, 1], [1, 0.3], [2, 1]], 2)}</circle>`,
     `<text x="93" y="77.5"${mono(13)} fill="${t.muted}">${esc(pill)}</text>`,
     `<text x="58" y="196"${mono(96)} font-weight="800" letter-spacing="-2" fill="${t.text}">chisle</text>`,
     `<rect x="408" y="126" width="30" height="80" rx="3" fill="${t.fill}">${anim('opacity', [[0, 1], [0.55, 0]], 1.1, { discrete: true })}</rect>`,
-    `<text x="64" y="262" font-size="26" font-weight="600" fill="${t.text}">Fewer tokens in. Fewer tokens out.</text>`,
-    `<text x="64" y="300" font-size="26" font-weight="700" fill="${t.accent}">Same answers.</text>`,
+    `<text x="64" y="262" font-size="${fit(L.tag1, 26, 520)}" font-weight="600" fill="${t.text}">${esc(L.tag1)}</text>`,
+    `<text x="64" y="300" font-size="${fit(L.tag2, 26, 520)}" font-weight="700" fill="${t.accent}">${esc(L.tag2)}</text>`,
     `<rect x="64" y="330" width="176" height="44" rx="10" fill="${t.card}" stroke="${t.border}"/>`,
     `<text x="84" y="358.5"${mono(18)}><tspan fill="${t.faint}">$</tspan><tspan fill="${t.text}"> npx chisle</tspan></text>`);
 
@@ -153,13 +240,13 @@ function banner(t) {
     anim('opacity', [[tLine(0) - 0.01, 0], [tLine(0), 1], [tLine(nLines) - 0.01, 1], [tLine(nLines), 0]], D) + '</g>');
 
   // The receipt.
-  const stat = `${words.length} words → ${KEEP.length} words`;
+  const stat = L.words(words.length, KEEP.length);
   const pct = `−${Math.round(100 * (1 - KEEP.length / words.length))}%`;
-  const cw = (stat.length + pct.length + 1) * 13 * ADV + 28;
+  const cw = textW(`${stat} ${pct}`, 13, true) + 28;
   o.push(`<g>${shown(tChip, tOut + 0.35, D)}` +
     `<rect x="${X0}" y="162" width="${r1(cw)}" height="28" rx="14" fill="${t.fill}" fill-opacity="0.12" stroke="${t.fill}" stroke-opacity="0.45"/>` +
     `<text x="${X0 + 14}" y="180.5"${mono(13)}><tspan fill="${t.muted}">${esc(stat)} </tspan><tspan fill="${t.accent}" font-weight="700">${pct}</tspan></text>` +
-    `<text x="${r1(X0 + cw + 14)}" y="180.5"${mono(13)} fill="${t.green}">✓ same answer</text></g>`);
+    `<text x="${r1(X0 + cw + 14)}" y="180.5"${mono(13)} fill="${t.green}">${esc(L.same)}</text></g>`);
 
   return svg(t, W, H, `Chisle: fewer tokens in, fewer tokens out, same answers. Animated: a ${words.length}-word AI answer is chiselled down to "structuredClone(config), built in, no dependency".`, o, defs);
 }
@@ -168,20 +255,20 @@ function banner(t) {
 function stats(t) {
   const W = 880, H = 248;
   const tiles = [
-    ['−29%', 'billed output tokens', '71% of the bare model', 0.71],
-    ['−45%', 'answer length', '55% of the bare model', 0.55],
-    ['−48%', 'oversized tool output', 'per trimmed tool output', 0.52],
-    ['156/156', 'accuracy', 'bare model: 154/156', 1],
+    ['−29%', ...L.tiles[0], 0.71],
+    ['−45%', ...L.tiles[1], 0.55],
+    ['−48%', ...L.tiles[2], 0.52],
+    ['156/156', ...L.tiles[3], 1],
   ];
-  const o = [`<text x="${W / 2}" y="34" font-size="14" fill="${t.muted}" text-anchor="middle">Chisle vs the same model with no ruleset</text>`];
+  const o = [`<text x="${W / 2}" y="34" font-size="14" fill="${t.muted}" text-anchor="middle">${esc(L.statsTitle)}</text>`];
   const tw = 196, gap = 16, x0 = (W - 4 * tw - 3 * gap) / 2, y0 = 52, bw = tw - 36;
   tiles.forEach(([v, label, sub, p], i) => {
     const x = x0 + i * (tw + gap), c = p === 1 ? t.green : t.accent, fc = p === 1 ? t.green : t.fill, fw = r1(bw * p);
     o.push(`<g>${enter(0.15 * i)}` +
       `<rect x="${x}" y="${y0}" width="${tw}" height="172" rx="10" fill="${t.card}" stroke="${t.border}"/>` +
       `<text x="${x + 18}" y="${y0 + 60}" font-size="42" font-weight="800" letter-spacing="-1" fill="${c}">${v}</text>` +
-      `<text x="${x + 18}" y="${y0 + 92}" font-size="15" font-weight="600" fill="${t.text}">${esc(label)}</text>` +
-      `<text x="${x + 18}" y="${y0 + 114}" font-size="12.5" fill="${t.muted}">${esc(sub)}</text>` +
+      `<text x="${x + 18}" y="${y0 + 92}" font-size="${fit(label, 15, 162)}" font-weight="600" fill="${t.text}">${esc(label)}</text>` +
+      `<text x="${x + 18}" y="${y0 + 114}" font-size="${fit(sub, 12.5, 162)}" fill="${t.muted}">${esc(sub)}</text>` +
       `<rect x="${x + 18}" y="${y0 + 138}" width="${bw}" height="8" rx="4" fill="${t.track}"/>` +
       `<rect x="${x + 18}" y="${y0 + 138}" width="${fw}" height="8" rx="4" fill="${fc}">` +
       (p === 1 ? '' : anim('width', [[0, bw], [1, bw], [2.5, fw]], 5, { ease: true })) + '</rect></g>');
@@ -192,29 +279,29 @@ function stats(t) {
 // ── Race: one prompt, four rulesets, tokens streamed at the same speed ────────
 function race(t) {
   const W = 880, H = 304, D = 9, X = 150, MAXW = 560, T0 = 0.6, RUN = 4.4;
-  const arms = [['Chisle', 530], ['caveman', 604], ['ponytail', 747], ['no ruleset', 1186]];
+  const arms = [['Chisle', 530], ['caveman', 604], ['ponytail', 747], [L.bare, 1186]];
   const max = Math.max(...arms.map((a) => a[1]));
   const o = [
-    `<text x="28" y="42" font-size="19" font-weight="700" fill="${t.text}">Same prompt. Four answers.</text>`,
-    `<text x="${W - 28}" y="42" font-size="13" fill="${t.muted}" text-anchor="end">visible answer tokens · lower is leaner</text>`,
+    `<text x="28" y="42" font-size="${fit(L.raceTitle, 19, 420)}" font-weight="700" fill="${t.text}">${esc(L.raceTitle)}</text>`,
+    `<text x="${W - 28}" y="42" font-size="${fit(L.raceNote, 13, 380)}" fill="${t.muted}" text-anchor="end">${esc(L.raceNote)}</text>`,
     `<text x="28" y="70"${mono(12.5)} fill="${t.muted}">${esc('> Implement an order state machine: created, paid, shipped, delivered, cancelled, refunded…')}</text>`,
   ];
   const tEnd = (n) => T0 + (n / max) * RUN;
   arms.forEach(([name, n], i) => {
     const y = 98 + i * 44, w = r1((n / max) * MAXW), me = i === 0, te = tEnd(n);
-    o.push(`<text x="${X - 16}" y="${y + 15}" font-size="14" font-weight="${me ? 700 : 500}" fill="${me ? t.accent : t.soft}" text-anchor="end">${esc(name)}</text>`,
+    o.push(`<text x="${X - 16}" y="${y + 15}" font-size="${fit(name, 14, 118)}" font-weight="${me ? 700 : 500}" fill="${me ? t.accent : t.soft}" text-anchor="end">${esc(name)}</text>`,
       `<rect x="${X}" y="${y}" width="${w}" height="20" rx="5" fill="${me ? t.fill : t.bar}">` +
         anim('width', [[T0, 0], [te, w], [D - 0.5, w], [D - 0.15, 0]], D) + '</rect>',
       `<rect x="${X}" y="${y - 2}" width="2.5" height="24" rx="1" fill="${t.text}" opacity="0">` +
         anim('x', [[T0, X], [te, r1(X + w)]], D) + anim('opacity', [[T0 - 0.01, 0], [T0, 1], [te, 1], [te + 0.01, 0]], D) + '</rect>',
       `<text x="${r1(X + w + 12)}" y="${y + 15}" font-size="14">${shown(te, D - 0.3, D, 0.2)}` +
-        `<tspan font-weight="700" fill="${me ? t.accent : t.text}">${n.toLocaleString('en-US')}</tspan><tspan fill="${t.muted}"> tokens</tspan></text>`);
+        `<tspan font-weight="700" fill="${me ? t.accent : t.text}">${n.toLocaleString('en-US')}</tspan><tspan fill="${t.muted}">${esc(L.tokens)}</tspan></text>`);
   });
-  const cut = `−${Math.round(100 * (1 - arms[0][1] / max))}% vs no ruleset`;
+  const cut = L.cut(Math.round(100 * (1 - arms[0][1] / max)));
   const px = r1(X + (arms[0][1] / max) * MAXW + 106);
-  o.push(`<g>${shown(tEnd(max) + 0.2, D - 0.3, D)}<rect x="${px}" y="97" width="${r1(cut.length * 7.1 + 24)}" height="22" rx="11" fill="${t.fill}" fill-opacity="0.12" stroke="${t.fill}" stroke-opacity="0.45"/>` +
+  o.push(`<g>${shown(tEnd(max) + 0.2, D - 0.3, D)}<rect x="${px}" y="97" width="${r1(textW(cut, 12.5) * 1.12 + 24)}" height="22" rx="11" fill="${t.fill}" fill-opacity="0.12" stroke="${t.fill}" stroke-opacity="0.45"/>` +
     `<text x="${px + 12}" y="112.5" font-size="12.5" font-weight="700" fill="${t.accent}">${esc(cut)}</text></g>`,
-    `<text x="28" y="${H - 22}"${mono(11.5)} fill="${t.faint}">Claude Code + Haiku 4.5 · all four in one run · the verbatim answers are below</text>`);
+    `<text x="28" y="${H - 22}"${mono(fit(L.raceFoot, 11.5, 824, true))} fill="${t.faint}">${esc(L.raceFoot)}</text>`);
   return svg(t, W, H, 'Same prompt, four rulesets, visible answer tokens: Chisle 530, caveman 604, ponytail 747, no ruleset 1,186. Chisle is 55% shorter than no ruleset.', o);
 }
 
@@ -243,11 +330,11 @@ function trim(t) {
     [8, [['✓', t.green], [' collapses repeats', t.soft]]],
     [9, [['... [chisle: elided 172 lines,', t.accent]]],
     [9, [['     full output saved to a file] ...', t.accent]]],
-    [10, [['✗ spill file is owner-only', t.red], ['  ← error kept', t.green]]],
+    [10, [['✗ spill file is owner-only', t.red], [L.kept, t.green]]],
     [11, [['  AssertionError: 0o644 !== 0o600', t.red]]],
     [12, [['ℹ tests 246  pass 245  fail 1', t.soft]]],
   ];
-  const o = [win(t, 16, 16, 416, 330, 'bash · npm test'), win(t, 448, 16, 416, 330, 'what Claude reads'),
+  const o = [win(t, 16, 16, 416, 330, 'bash · npm test'), win(t, 448, 16, 416, 330, L.reads),
     `<rect x="17" y="${Y0 - 14}" width="414" height="20" fill="${t.fill}" fill-opacity="0.13" opacity="0">` +
       anim('y', [[0.7, Y0 - 14], [5.7, Y0 - 14 + 12 * STEP]], D) +
       anim('opacity', [[0.69, 0], [0.7, 1], [5.7, 1], [5.71, 0]], D) + '</rect>',
@@ -265,27 +352,19 @@ function trim(t) {
       anim('opacity', [[at, 0], [at + 0.3, 1], [D - 0.5, 1], [D - 0.2, 0]], D) + '</text>');
   });
   o.push('</g>',
-    `<text x="${W / 2}" y="376" font-size="15.5" fill="${t.muted}" text-anchor="middle" opacity="0">Raw output is billed again on every later turn` +
+    `<text x="${W / 2}" y="376" font-size="${fit(L.foot1, 15.5, 820)}" fill="${t.muted}" text-anchor="middle" opacity="0">${esc(L.foot1)}` +
       anim('opacity', [[0, 1], [6, 1], [6.2, 0], [D - 0.3, 0], [D - 0.1, 1]], D) + '</text>',
-    `<text x="${W / 2}" y="376" font-size="15.5" font-weight="700" fill="${t.accent}" text-anchor="middle">Oversized tool output: ~48% smaller on average` +
+    `<text x="${W / 2}" y="376" font-size="${fit(L.foot2, 15.5, 760)}" font-weight="700" fill="${t.accent}" text-anchor="middle">${esc(L.foot2)}` +
       anim('opacity', [[6.1, 0], [6.4, 1], [D - 0.5, 1], [D - 0.2, 0]], D) + '</text>');
   return svg(t, W, H, 'Animated illustration of the Chisle tool-output compressor: raw npm test output with colour codes, six identical lines and 172 passing lines becomes a short version with the codes stripped, the repeats collapsed, the middle elided with the full output saved to a file, and the failing test and its error kept. On real sessions, oversized output shrinks by about 48 percent on average.', o);
 }
 
 // ── Ladder: the efficiency ladder, walked for three requests ──────────────────
 function ladder(t) {
-  const rungs = [
-    ['Does this need to exist at all?', 'skip it, say so in one line'],
-    ['Already in this codebase?', 'reuse it'],
-    ['Does the stdlib do it?', 'use the stdlib'],
-    ['Native platform feature?', 'CSS over JS, DB constraint over code'],
-    ['Already-installed dependency?', 'use it, never add a new one'],
-    ['Can it be one line?', 'one line'],
-    ['Only then', 'the minimum code that works'],
-  ];
-  const scen = [['deep-copy a config object', 2, 'structuredClone(config)'], ['add a date picker', 3, '<input type="date">'], ['format a date for the UI', 1, 'reuse utils/formatDate()']];
+  const rungs = L.rungs;
+  const scen = [[L.reqs[0], 2, L.answers[0]], [L.reqs[1], 3, L.answers[1]], [L.reqs[2], 1, L.answers[2]]];
   const SL = 4.5, D = SL * scen.length, W = 880, H = 396, Y0 = 84, RH = 36;
-  const o = [`<text x="28" y="40" font-size="16" font-weight="700" fill="${t.text}">Before writing code, stop at the first rung that holds</text>`,
+  const o = [`<text x="28" y="40" font-size="${fit(L.ladderTitle, 16, 820)}" font-weight="700" fill="${t.text}">${esc(L.ladderTitle)}</text>`,
     `<path d="M46 ${Y0 - 6}V${Y0 - 6 + 6 * RH}" stroke="${t.border}" stroke-width="2"/>`];
   const rowY = (r) => Y0 - 24 + r * RH;
   const hl = [];
@@ -301,15 +380,15 @@ function ladder(t) {
   rungs.forEach(([q, a], r) => {
     const y = Y0 + r * RH;
     o.push(`<circle cx="46" cy="${y - 6}" r="12" fill="${t.card}" stroke="${t.border}"/><text x="46" y="${y - 1.5}" font-size="12.5" font-weight="700" fill="${t.accent}" text-anchor="middle">${r + 1}</text>`,
-      `<text x="72" y="${y}" font-size="14.5" font-weight="600" fill="${t.text}">${esc(q)}</text>`,
-      `<text x="420" y="${y}" font-size="13.5" fill="${t.muted}">→ ${esc(a)}</text>`);
+      `<text x="72" y="${y}" font-size="${fit(q, 14.5, 340)}" font-weight="600" fill="${t.text}">${esc(q)}</text>`,
+      `<text x="420" y="${y}" font-size="${fit(`→ ${a}`, 13.5, 432)}" fill="${t.muted}">→ ${esc(a)}</text>`);
   });
   const yb = Y0 + 7 * RH + 8;
   o.push(`<path d="M20 ${yb - 18}H${W - 20}" stroke="${t.border}"/>`);
   scen.forEach(([req, tgt, ans], i) => {
     const s = i * SL, hit = s + 0.45 + tgt * 0.45 + 0.25, last = i === scen.length - 1;
-    o.push(`<text x="28" y="${yb + 12}" font-size="14" fill="${t.muted}" opacity="${last ? 1 : 0}">Request: <tspan fill="${t.text}" font-weight="600">${esc(req)}</tspan>${shown(s + 0.01, s + SL, D, 0.2)}</text>`,
-      `<text x="${W - 28}" y="${yb + 12}"${mono(14)} text-anchor="end" fill="${t.green}" opacity="${last ? 1 : 0}">✓ rung ${tgt + 1}: ${esc(ans)}${shown(hit, s + SL, D, 0.2)}</text>`);
+    o.push(`<text x="28" y="${yb + 12}" font-size="${fit(`${L.request} ${req}`, 14, 470)}" fill="${t.muted}" opacity="${last ? 1 : 0}">${esc(L.request)} <tspan fill="${t.text}" font-weight="600">${esc(req)}</tspan>${shown(s + 0.01, s + SL, D, 0.2)}</text>`,
+      `<text x="${W - 28}" y="${yb + 12}"${mono(fit(L.hit(tgt + 1, ans), 14, 360, true))} text-anchor="end" fill="${t.green}" opacity="${last ? 1 : 0}">${esc(L.hit(tgt + 1, ans))}${shown(hit, s + SL, D, 0.2)}</text>`);
   });
   return svg(t, W, H, 'The Chisle efficiency ladder. Before writing code, stop at the first rung that holds: 1 does this need to exist at all, 2 already in this codebase, 3 does the stdlib do it, 4 a native platform feature, 5 an already-installed dependency, 6 can it be one line, 7 only then the minimum code that works. Animated examples: deep-copying a config object stops at the stdlib with structuredClone; a date picker stops at the platform with input type date; formatting a date stops at reuse.', o);
 }
@@ -361,8 +440,9 @@ function commands(t) {
     ['$', 'npx chisle mcp wrap', 'trim MCP output in any agent'],
   ];
   const out = D - 0.6;
-  const o = [win(t, 16, 16, 848, 280, 'cheat sheet'), `<g>${anim('opacity', [[out, 1], [out + 0.3, 0]], D)}`];
-  cmds.forEach(([p, c, note], i) => {
+  const o = [win(t, 16, 16, 848, 280, L.sheet), `<g>${anim('opacity', [[out, 1], [out + 0.3, 0]], D)}`];
+  cmds.forEach(([p, c], i) => {
+    const note = L.notes[i];
     const y = Y0 + i * LH, t0 = 0.5 + i * 0.85, t1 = t0 + 0.45;
     o.push(typed(t, `c${i}`, X, y, [[`${p} `, p === '$' ? t.faint : t.accent], [c, t.text]], FS, t0, t1, D),
       printed(r1(X + PAD * FS * ADV), y, [[`# ${note}`, t.muted]], FS, t1 + 0.15, D));
@@ -392,22 +472,22 @@ function coffeeButton(x, y, w, h, fs) {
     `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${h / 4}" fill="${BMC}" stroke="#e5c700"/>` +
     `<g clip-path="url(#btn)"><rect x="${x - 60}" y="${y}" width="34" height="${h}" fill="#ffffff" opacity="0.5" transform="skewX(-18) translate(${r1(0.325 * y)} 0)">` +
     anim('x', [[0, x - 60], [0.9, x + w + 40]], 3.2, { ease: true }) + '</rect></g>' +
-    `<text x="${x + w / 2}" y="${r1(y + h / 2 + fs * 0.36)}" font-size="${fs}" font-weight="700" fill="#0d1117" text-anchor="middle">☕ Buy me a coffee</text>`;
+    `<text x="${x + w / 2}" y="${r1(y + h / 2 + fs * 0.36)}" font-size="${fit(L.button, fs, w - 24)}" font-weight="700" fill="#0d1117" text-anchor="middle">${esc(L.button)}</text>`;
 }
 function strip(t) {
   const o = [cup(t, 26, 8, 0.6),
-    `<text x="96" y="36" font-size="16" font-weight="700" fill="${t.text}">Chisle is free. Its benchmarks aren't.</text>`,
-    `<text x="96" y="58" font-size="13.5" fill="${t.muted}">Saved you tokens? A coffee pays for the next benchmark run.</text>`,
+    `<text x="96" y="36" font-size="${fit(L.stripTitle, 16, 580)}" font-weight="700" fill="${t.text}">${esc(L.stripTitle)}</text>`,
+    `<text x="96" y="58" font-size="${fit(L.stripSub, 13.5, 580)}" fill="${t.muted}">${esc(L.stripSub)}</text>`,
     coffeeButton(690, 20, 166, 40, 15)];
   return svg(t, 880, 80, "Chisle is free. Its benchmarks aren't. Saved you tokens? Buy me a coffee.", o);
 }
 function support(t) {
   const defs = `<radialGradient id="warm" cx="0.08" cy="0.5" r="0.5"><stop offset="0" stop-color="${BMC}" stop-opacity="${t.glow}"/><stop offset="1" stop-color="${BMC}" stop-opacity="0"/></radialGradient>`;
   const o = [`<rect x="1" y="1" width="878" height="208" rx="14" fill="url(#warm)"/>`, cup(t, 50, 46, 1.15),
-    `<text x="190" y="84" font-size="26" font-weight="800" fill="${t.text}">Chisle is free.</text>`,
-    `<text x="190" y="118" font-size="26" font-weight="800" fill="${t.accent}">Its benchmarks aren't.</text>`,
-    `<text x="190" y="152" font-size="14.5" fill="${t.muted}">Every benchmark run costs real API money.</text>`,
-    `<text x="190" y="174" font-size="14.5" fill="${t.muted}">Saved you tokens? A coffee pays for the next run.</text>`,
+    `<text x="190" y="84" font-size="${fit(L.free, 26, 440)}" font-weight="800" fill="${t.text}">${esc(L.free)}</text>`,
+    `<text x="190" y="118" font-size="${fit(L.notFree, 26, 440)}" font-weight="800" fill="${t.accent}">${esc(L.notFree)}</text>`,
+    `<text x="190" y="152" font-size="${fit(L.body1, 14.5, 440)}" fill="${t.muted}">${esc(L.body1)}</text>`,
+    `<text x="190" y="174" font-size="${fit(L.body2, 14.5, 440)}" fill="${t.muted}">${esc(L.body2)}</text>`,
     coffeeButton(640, 76, 210, 54, 17),
     `<text x="745" y="158"${mono(12)} fill="${t.faint}" text-anchor="middle">buymeacoffee.com/jaypokale3b</text>`];
   return svg(t, 880, 210, "Chisle is free. Its benchmarks aren't. Every benchmark run costs real API money. Saved you tokens? Buy me a coffee at buymeacoffee.com/jaypokale3b.", o, defs);
@@ -512,8 +592,14 @@ if (starsAt !== -1) {
 } else {
   fs.mkdirSync(OUT, { recursive: true });
   fs.writeFileSync(path.join(OUT, 'line.svg'), LINE);
-  for (const [name, build] of Object.entries({ banner, stats, race, trim, ladder, install, commands, strip, support })) {
-    for (const [theme, t] of Object.entries(THEMES)) fs.writeFileSync(path.join(OUT, `${name}-${theme}.svg`), build(t));
+  for (const [lang, strings] of Object.entries(I18N)) {
+    L = strings;
+    const dir = lang === 'en' ? OUT : path.join(OUT, lang);
+    fs.mkdirSync(dir, { recursive: true });
+    const panels = { banner, stats, race, trim, ladder, commands, strip, support, ...(lang === 'en' ? { install } : {}) };
+    for (const [name, build] of Object.entries(panels)) {
+      for (const [theme, t] of Object.entries(THEMES)) fs.writeFileSync(path.join(dir, `${name}-${theme}.svg`), build(t));
+    }
   }
-  console.log(`wrote ${path.relative(process.cwd(), OUT)}: line + banner, stats, race, trim, ladder, install, commands, strip, support (dark, light)`);
+  console.log(`wrote ${path.relative(process.cwd(), OUT)}: line, install, and banner, stats, race, trim, ladder, commands, strip, support for ${Object.keys(I18N).join(', ')} (dark, light)`);
 }
