@@ -567,7 +567,10 @@ function stars(t, times, now) {
     o.push(`<rect x="${r1(X1 - cw)}" y="30" width="${cw}" height="26" rx="13" fill="${t.green}" fill-opacity="0.12" stroke="${t.green}" stroke-opacity="0.5"/>`,
       `<text x="${r1(X1 - cw / 2)}" y="47.5" font-size="12.5" font-weight="700" fill="${t.green}" text-anchor="middle">${chip}</text>`);
   }
-  o.push(`<text x="${X1}" y="${H - 12}"${mono(10.5)} fill="${t.faint}" text-anchor="end">updated ${new Date(now).toISOString().slice(0, 10)}</text>`);
+  // Footer: a pulsing dot and the minute it was drawn (stars.yml redraws on every new star).
+  const stamp = `live · updated ${new Date(now).toISOString().slice(0, 16).replace('T', ' ')} UTC`;
+  o.push(`<circle cx="${r1(X1 - textW(stamp, 10.5, true) - 9)}" cy="${H - 15.5}" r="3.5" fill="${t.green}">${anim('opacity', [[0, 1], [0.8, 0.25], [1.6, 1]], 1.6)}</circle>`,
+    `<text x="${X1}" y="${H - 12}"${mono(10.5)} fill="${t.faint}" text-anchor="end">${stamp}</text>`);
   return svg(t, W, H, `GitHub stars over time: ${total.toLocaleString('en-US')} stars since ${new Date(times[0]).toISOString().slice(0, 10)}, ${week} in the last 7 days.`, o, defs);
 }
 
