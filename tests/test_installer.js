@@ -371,8 +371,12 @@ function repoSkill(rel) { return fs.readFileSync(path.join(__dirname, '..', 'ski
 function fakeOpencode(home, version) {
   const bin = path.join(home, 'bin');
   fs.mkdirSync(bin, { recursive: true });
-  const command = path.join(bin, 'opencode');
-  fs.writeFileSync(command, `#!/bin/sh\n[ "$1" = "--version" ] && printf '${version}\\n'\n`, { mode: 0o755 });
+  // Windows only finds a bare `opencode` through PATHEXT, so the stub is a .cmd there.
+  if (process.platform === 'win32') {
+    fs.writeFileSync(path.join(bin, 'opencode.cmd'), `@echo off\r\nif "%1"=="--version" echo ${version}\r\n`);
+  } else {
+    fs.writeFileSync(path.join(bin, 'opencode'), `#!/bin/sh\n[ "$1" = "--version" ] && printf '${version}\\n'\n`, { mode: 0o755 });
+  }
   return bin + path.delimiter + process.env.PATH;
 }
 

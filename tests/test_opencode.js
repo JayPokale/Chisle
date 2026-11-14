@@ -9,6 +9,7 @@ const os = require('os');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const { symlinkSkip } = require('./fixtures/symlinks');
 const { spawn, spawnSync } = require('child_process');
 
 // State (spill/dedup) must not leak into ~/.claude during tests.
@@ -237,7 +238,7 @@ test('spill preserves the byte-identical pre-scrub output', () => {
     const out = compressForOpencode('bash', text, { mode: 'on', stateDir });
     const recovery = recoveryPath(out);
     assert.deepEqual(fs.readFileSync(recovery), Buffer.from(text));
-    assert.equal(fs.statSync(recovery).mode & 0o777, 0o600);
+    if (process.platform !== 'win32') assert.equal(fs.statSync(recovery).mode & 0o777, 0o600); // NTFS has no POSIX mode bits
     assert.deepEqual(fs.readdirSync(path.dirname(recovery)).filter(name => name.endsWith('.tmp')), []);
   } finally {
     fs.rmSync(stateDir, { recursive: true, force: true });
@@ -675,6 +676,7 @@ test('OpenCode dedup state is bounded and does not follow symlinks', () => {
     }
     const dir = path.join(stateDir, 'chisle-dedup');
     assert.equal(fs.readdirSync(dir).filter((name) => name.endsWith('.json')).length, 20);
+    if (symlinkSkip) return; // the bound above holds everywhere; the symlink half needs symlinks
     const target = path.join(stateDir, 'target');
     fs.writeFileSync(target, 'unchanged');
     fs.symlinkSync(target, sessionStateFile(stateDir, 'linked'));
