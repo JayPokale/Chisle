@@ -270,5 +270,6 @@ Chisle began as a merge of [caveman](https://github.com/JuliusBrussee/caveman) (
 ---
 
 <p align="center">
-  Saved you tokens? <a href="https://github.com/JayPokale/Chisle">⭐ Star the repo</a>. It costs zero tokens and keeps the benchmarks running.
+  Saved you tokens? <a href="https://github.com/JayPokale/Chisle">⭐ Star the repo</a>. It costs zero tokens and keeps the benchmarks running.<br>
+  Want to help more? <a href="https://buymeacoffee.com/jaypokale3b">☕ Buy me a coffee</a>.
 </p>
