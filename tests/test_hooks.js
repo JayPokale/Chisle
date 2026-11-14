@@ -9,6 +9,7 @@ const os = require('os');
 const path = require('path');
 
 const { VALID_MODES, safeWriteFlag, readFlag, getDefaultMode } = require('../hooks/chisle-config');
+const { symlinkSkip } = require('./fixtures/symlinks');
 
 // ── VALID_MODES ──────────────────────────────────────────────────────────────
 
@@ -44,7 +45,7 @@ test('readFlag returns null for unknown mode', () => {
   fs.rmSync(dir, { recursive: true });
 });
 
-test('readFlag returns null for symlink', () => {
+test('readFlag returns null for symlink', { skip: symlinkSkip }, () => {
   const dir = tmpDir();
   const flagPath = path.join(dir, '.chisle-active');
   const target = path.join(dir, 'target');
@@ -62,7 +63,7 @@ test('readFlag returns null for oversized file', () => {
   fs.rmSync(dir, { recursive: true });
 });
 
-test('safeWriteFlag refuses to overwrite a symlink', () => {
+test('safeWriteFlag refuses to overwrite a symlink', { skip: symlinkSkip }, () => {
   const dir = tmpDir();
   const flagPath = path.join(dir, '.chisle-active');
   const target = path.join(dir, 'target');

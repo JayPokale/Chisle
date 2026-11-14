@@ -335,7 +335,7 @@ test('an elided output spills in full and the marker points at it', () => {
     assert.ok(!out.includes('line 250 '), 'middle was not actually elided');
     assert.ok(spilled.includes('line 250 '), 'middle is not recoverable');
 
-    assert.equal(fs.statSync(m[1]).mode & 0o777, 0o600, 'spill is not owner-only');
+    if (process.platform !== 'win32') assert.equal(fs.statSync(m[1]).mode & 0o777, 0o600, 'spill is not owner-only'); // NTFS has no POSIX mode bits
   });
 });
 
