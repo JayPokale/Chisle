@@ -2,7 +2,15 @@
 
 const { test, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const chisleExtension = require('../pi-extension');
+
+// Keep the developer's real chisle config (e.g. sections.code=false) out of these tests.
+const configDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-pi-config-'));
+process.env.XDG_CONFIG_HOME = configDir;
+process.on('exit', () => fs.rmSync(configDir, { recursive: true, force: true }));
 
 const ENV_KEYS = [
   'CHISLE_COMPRESS', 'CHISLE_COMPRESS_DEDUP', 'CHISLE_COMPRESS_SCRUB',
