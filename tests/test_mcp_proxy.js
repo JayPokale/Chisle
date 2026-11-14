@@ -84,8 +84,14 @@ test('proxy exits with the server exit code; missing server exits 127', () => {
   const state = tmp('chisle-mcp-state-');
   assert.equal(proxy([rpc(1, 'initialize', {})], { CHISLE_STATE_DIR: state, FAKE_MCP_EXIT: '7' }).status, 7);
   const r = spawnSync(process.execPath, [PROXY, '--', 'chisle-no-such-binary-xyz'], { input: '', encoding: 'utf8' });
-  assert.equal(r.status, 127);
-  assert.match(r.stderr, /cannot start/);
+  if (process.platform === 'win32') {
+    // The Windows proxy spawns through cmd.exe, which reports a missing command
+    // itself (localized message, exit 1) instead of raising a spawn error.
+    assert.notEqual(r.status, 0);
+  } else {
+    assert.equal(r.status, 127);
+    assert.match(r.stderr, /cannot start/);
+  }
   fs.rmSync(state, { recursive: true, force: true });
 });
 
@@ -111,7 +117,7 @@ function cli(args, env) {
 function isolated() {
   const home = tmp('chisle-home-');
   const xdg = tmp('chisle-xdg-');
-  return { home, xdg, env: { CHISLE_HOME: home, XDG_CONFIG_HOME: xdg, COPILOT_HOME: '', CODEX_HOME: '', CLAUDE_CONFIG_DIR: path.join(home, '.claude') } };
+  return { home, xdg, env: { CHISLE_HOME: home, XDG_CONFIG_HOME: xdg, APPDATA: xdg, COPILOT_HOME: '', CODEX_HOME: '', CLAUDE_CONFIG_DIR: path.join(home, '.claude') } };
 }
 
 test('mcp wrap routes stdio servers through the proxy; unwrap restores them exactly', () => {
