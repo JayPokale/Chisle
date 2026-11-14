@@ -171,10 +171,10 @@ irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
 <p align="center"><img src="../assets/readme/line.svg" width="100%" height="4" alt=""></p>
 
 <p align="center">
-  <a href="https://www.star-history.com/#JayPokale/Chisle&Date">
+  <a href="https://www.star-history.com/?repos=JayPokale%2FChisle&type=date&legend=top-left">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/JayPokale/Chisle/stars/stars-dark.svg">
-      <img src="https://raw.githubusercontent.com/JayPokale/Chisle/stars/stars-light.svg" width="880" alt="시간에 따른 GitHub 스타 수">
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=jaypokale%2Fchisle&type=date&legend=top-left&theme=dark">
+      <img src="https://api.star-history.com/svg?repos=jaypokale%2Fchisle&type=date&legend=top-left" width="800" alt="시간에 따른 GitHub 스타 수">
     </picture>
   </a>
 </p>
