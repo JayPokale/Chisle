@@ -314,25 +314,103 @@ function ladder(t) {
   return svg(t, W, H, 'The Chisle efficiency ladder. Before writing code, stop at the first rung that holds: 1 does this need to exist at all, 2 already in this codebase, 3 does the stdlib do it, 4 a native platform feature, 5 an already-installed dependency, 6 can it be one line, 7 only then the minimum code that works. Animated examples: deep-copying a config object stops at the stdlib with structuredClone; a date picker stops at the platform with input type date; formatting a date stops at reuse.', o);
 }
 
-// ── Agents: every agent the installer wires ───────────────────────────────────
-function agents(t) {
-  const rows = [['Claude Code', 'Codex', 'Cursor', 'Gemini CLI', 'Copilot', 'Copilot CLI'], ['OpenCode', 'Pi', 'Windsurf', 'Cline', 'Kiro', 'Antigravity', 'Hermes']];
-  const W = 880, H = 156, FS = 13.5, GAP = 10, D = 5.2;
-  const o = [`<text x="${W / 2}" y="34" font-size="12" font-weight="700" letter-spacing="2" fill="${t.muted}" text-anchor="middle">ONE COMMAND · 13 AGENTS</text>`];
-  let k = 0;
-  rows.forEach((names, r) => {
-    const ws = names.map((n) => n.length * FS * ADV + 30);
-    let x = (W - ws.reduce((a, b) => a + b, 0) - GAP * (names.length - 1)) / 2;
-    const y = 52 + r * 46;
-    names.forEach((n, i) => {
-      const at = 0.3 + k++ * 0.28;
-      o.push(`<g><rect x="${r1(x)}" y="${y}" width="${r1(ws[i])}" height="34" rx="17" fill="${t.card}" stroke="${t.border}"/>` +
-        `<rect x="${r1(x)}" y="${y}" width="${r1(ws[i])}" height="34" rx="17" fill="${t.fill}" fill-opacity="0.12" stroke="${t.fill}" opacity="0">${anim('opacity', [[at, 0], [at + 0.2, 1], [at + 0.7, 1], [at + 1.1, 0]], D)}</rect>` +
-        `<text x="${r1(x + ws[i] / 2)}" y="${y + 21.5}"${mono(FS)} fill="${t.soft}" text-anchor="middle">${esc(n)}</text></g>`);
-      x += ws[i] + GAP;
-    });
+// Types `segs` ([[text, colour], ...]) at (x, y) between t0 and t1 behind a caret.
+function typed(t, id, x, y, segs, fs, t0, t1, D) {
+  const w = r1(segs.reduce((n, [s]) => n + s.length, 0) * fs * ADV);
+  return `<clipPath id="${id}"><rect x="${x}" y="${y - fs}" width="${w}" height="${r1(fs * 1.5)}">${anim('width', [[t0, 0], [t1, w]], D)}</rect></clipPath>` +
+    `<text x="${x}" y="${y}"${mono(fs)} clip-path="url(#${id})">` + segs.map(([s, c]) => `<tspan fill="${c}">${esc(s)}</tspan>`).join('') + '</text>' +
+    `<rect x="${x}" y="${y - fs + 1}" width="${r1(fs * ADV)}" height="${fs + 3}" fill="${t.soft}" opacity="0">` +
+    anim('x', [[t0, x], [t1, r1(x + w)]], D) + anim('opacity', [[t0 - 0.01, 0], [t0, 0.75], [t1 + 0.3, 0.75], [t1 + 0.31, 0]], D) + '</rect>';
+}
+// Lines that print after a command: each [[text, colour], ...] fades in at its time.
+const printed = (x, y, segs, fs, at, D) => `<text x="${x}" y="${y}"${mono(fs)} opacity="1">` +
+  segs.map(([s, c]) => `<tspan fill="${c}">${esc(s)}</tspan>`).join('') + anim('opacity', [[at, 0], [at + 0.15, 1]], D) + '</text>';
+
+// ── Install: what `npx chisle` prints (format copied from bin/install.js) ────
+function install(t) {
+  const W = 880, H = 420, D = 10, FS = 13.5, X = 40, Y0 = 82, LH = 21.5, out = D - 0.6;
+  const agents = ['Claude Code', 'Gemini CLI', 'Codex', 'OpenCode', 'Copilot CLI', 'Cursor'];
+  const ids = ['claude', 'gemini', 'codex', 'opencode', 'copilot-cli', 'cursor'];
+  const lines = [
+    [1.7, [['╭─ Chisle installer ─╮', t.accent]]],
+    ...agents.map((a, i) => [2.1 + i * 0.35, [['→ ', t.accent], [`${a} detected`, t.soft]]]),
+    [4.3, [['── summary ──', t.accent]]],
+    [4.45, [[`  detected:  ${agents.length}`, t.soft]]],
+    [4.6, [[`  installed: ${ids.join(', ')}`, t.green]]],
+    [5.0, [['Done.', t.accent], [' Restart your agent. Type ', t.soft], ['/chisle', t.accent], [' in Claude Code or Pi, or just start coding.', t.soft]]],
+  ];
+  const rows = [1, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14]; // blank rows between blocks, as the installer prints them
+  const o = [win(t, 16, 16, 848, 388, '~/app — npx chisle'),
+    `<g>${anim('opacity', [[out, 1], [out + 0.3, 0]], D)}` +
+    typed(t, 'cmd', X, Y0, [['$ ', t.faint], ['npx chisle', t.text]], FS, 0.5, 1.2, D) +
+    lines.map(([at, segs], i) => printed(X, r1(Y0 + rows[i] * LH), segs, FS, at, D)).join('') + '</g>'];
+  return svg(t, W, H, `Animated terminal: npx chisle detects ${agents.join(', ')}, installs into each, and prints "Done. Restart your agent."`, o);
+}
+
+// ── Commands: a typed cheat sheet ─────────────────────────────────────────────
+function commands(t) {
+  const W = 880, H = 312, D = 11, FS = 14, X = 40, Y0 = 84, LH = 27, PAD = 26;
+  const cmds = [
+    ['$', 'npx chisle', 'wire every agent on this machine'],
+    ['$', 'npx chisle --dry-run', 'preview first'],
+    ['$', 'npx chisle --uninstall', 'put everything back'],
+    ['>', '/chisle off', 'pause it'],
+    ['>', '/chisle-review', 'over-engineering, one finding per line'],
+    ['>', '/chisle-audit', 'bloated code and prose, biggest cut first'],
+    ['$', 'npx chisle tools', 'tool schemas you pay for but never use'],
+    ['$', 'npx chisle mcp wrap', 'trim MCP output in any agent'],
+  ];
+  const out = D - 0.6;
+  const o = [win(t, 16, 16, 848, 280, 'cheat sheet'), `<g>${anim('opacity', [[out, 1], [out + 0.3, 0]], D)}`];
+  cmds.forEach(([p, c, note], i) => {
+    const y = Y0 + i * LH, t0 = 0.5 + i * 0.85, t1 = t0 + 0.45;
+    o.push(typed(t, `c${i}`, X, y, [[`${p} `, p === '$' ? t.faint : t.accent], [c, t.text]], FS, t0, t1, D),
+      printed(r1(X + PAD * FS * ADV), y, [[`# ${note}`, t.muted]], FS, t1 + 0.15, D));
   });
-  return svg(t, W, H, 'Works with 13 agents: Claude Code, Codex, Cursor, Gemini CLI, Copilot, Copilot CLI, OpenCode, Pi, Windsurf, Cline, Kiro, Antigravity and Hermes.', o);
+  o.push('</g>');
+  return svg(t, W, H, 'Animated cheat sheet: ' + cmds.map(([, c, n]) => `${c}: ${n}`).join('; ') + '.', o);
+}
+
+// ── Support: the coffee ask, as a slim strip (top) and a full card (bottom) ──
+const BMC = '#FFDD00';
+// A mug with rising steam; (x, y) is the top-left of an 80×100 box at scale s.
+function cup(t, x, y, s) {
+  const steam = [20, 34, 48].map((sx, i) => {
+    const p = i * 0.7;
+    return `<path d="M${sx} 28c-6-7 6-11 0-19" fill="none" stroke="${t.muted}" stroke-width="3" stroke-linecap="round" opacity="0">` +
+      anim('opacity', [[p, 0], [p + 0.8, 0.85], [p + 1.6, 0]], 3) +
+      anim('transform', [[p, '0 6'], [p + 1.6, '0 -6']], 3, { type: 'translate' }) + '</path>';
+  }).join('');
+  return `<g transform="translate(${x} ${y}) scale(${s})">${steam}` +
+    `<ellipse cx="38" cy="92" rx="38" ry="6" fill="${t.border}"/>` +
+    `<path d="M62 42h6a10 10 0 0 1 0 20h-6" fill="none" stroke="${t.text}" stroke-width="3"/>` +
+    `<path d="M6 34h56v30a20 20 0 0 1-20 20H26A20 20 0 0 1 6 64z" fill="${BMC}" stroke="${t.text}" stroke-width="3" stroke-linejoin="round"/></g>`;
+}
+// The yellow button, with a light sweep across it every few seconds.
+function coffeeButton(x, y, w, h, fs) {
+  return `<clipPath id="btn"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${h / 4}"/></clipPath>` +
+    `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${h / 4}" fill="${BMC}" stroke="#e5c700"/>` +
+    `<g clip-path="url(#btn)"><rect x="${x - 60}" y="${y}" width="34" height="${h}" fill="#ffffff" opacity="0.5" transform="skewX(-18) translate(${r1(0.325 * y)} 0)">` +
+    anim('x', [[0, x - 60], [0.9, x + w + 40]], 3.2, { ease: true }) + '</rect></g>' +
+    `<text x="${x + w / 2}" y="${r1(y + h / 2 + fs * 0.36)}" font-size="${fs}" font-weight="700" fill="#0d1117" text-anchor="middle">☕ Buy me a coffee</text>`;
+}
+function strip(t) {
+  const o = [cup(t, 26, 8, 0.6),
+    `<text x="96" y="36" font-size="16" font-weight="700" fill="${t.text}">Chisle is free. Its benchmarks aren't.</text>`,
+    `<text x="96" y="58" font-size="13.5" fill="${t.muted}">Saved you tokens? A coffee pays for the next benchmark run.</text>`,
+    coffeeButton(690, 20, 166, 40, 15)];
+  return svg(t, 880, 80, "Chisle is free. Its benchmarks aren't. Saved you tokens? Buy me a coffee.", o);
+}
+function support(t) {
+  const defs = `<radialGradient id="warm" cx="0.08" cy="0.5" r="0.5"><stop offset="0" stop-color="${BMC}" stop-opacity="${t.glow}"/><stop offset="1" stop-color="${BMC}" stop-opacity="0"/></radialGradient>`;
+  const o = [`<rect x="1" y="1" width="878" height="208" rx="14" fill="url(#warm)"/>`, cup(t, 50, 46, 1.15),
+    `<text x="190" y="84" font-size="26" font-weight="800" fill="${t.text}">Chisle is free.</text>`,
+    `<text x="190" y="118" font-size="26" font-weight="800" fill="${t.accent}">Its benchmarks aren't.</text>`,
+    `<text x="190" y="152" font-size="14.5" fill="${t.muted}">Every benchmark run costs real API money.</text>`,
+    `<text x="190" y="174" font-size="14.5" fill="${t.muted}">Saved you tokens? A coffee pays for the next run.</text>`,
+    coffeeButton(640, 76, 210, 54, 17),
+    `<text x="745" y="158"${mono(12)} fill="${t.faint}" text-anchor="middle">buymeacoffee.com/jaypokale3b</text>`];
+  return svg(t, 880, 210, "Chisle is free. Its benchmarks aren't. Every benchmark run costs real API money. Saved you tokens? Buy me a coffee at buymeacoffee.com/jaypokale3b.", o, defs);
 }
 
 // ── Line: the travelling divider (one file; it reads on both themes) ──────────
@@ -345,7 +423,7 @@ const LINE = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="4" vi
 
 fs.mkdirSync(OUT, { recursive: true });
 fs.writeFileSync(path.join(OUT, 'line.svg'), LINE);
-for (const [name, build] of Object.entries({ banner, stats, race, trim, ladder, agents })) {
+for (const [name, build] of Object.entries({ banner, stats, race, trim, ladder, install, commands, strip, support })) {
   for (const [theme, t] of Object.entries(THEMES)) fs.writeFileSync(path.join(OUT, `${name}-${theme}.svg`), build(t));
 }
-console.log(`wrote ${path.relative(process.cwd(), OUT)}: line + banner, stats, race, trim, ladder, agents (dark, light)`);
+console.log(`wrote ${path.relative(process.cwd(), OUT)}: line + banner, stats, race, trim, ladder, install, commands, strip, support (dark, light)`);
