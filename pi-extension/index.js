@@ -71,6 +71,9 @@ function hasRulesEntry(entries) {
 function promptHasRules(event) {
   const containsRules = text => {
     text = text || '';
+    // Our own injection: the sections config can drop the prose or the code
+    // group, but never the header or "## Boundaries".
+    if (/^CHISLE ACTIVE\s*$/m.test(text) && text.includes('## Boundaries')) return true;
     return /^# Chisle\s*$/m.test(text) &&
       ((text.includes('## Prose: zero fluff') && text.includes('## Code: the efficiency ladder')) ||
         (text.includes('## Persistence') && text.includes('## Code:')));
