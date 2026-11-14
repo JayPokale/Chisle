@@ -5,6 +5,17 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [3.12.1] - 2026-11-14
+
+Patch: the Pi extension stops re-adding its rules every turn when a rules section is turned off, and Windows fixes from [@anhtahaylove](https://github.com/anhtahaylove).
+
+### Fixed
+- **Pi/OMP rules injected once with any `sections` config.** With `sections.code=false`, the extension no longer recognized its own rules in the system prompt and appended them again on every turn. It now also matches its `CHISLE ACTIVE` header plus `## Boundaries`, which the sections filter never drops. (#51)
+- **`benchmarks/run-ablation.js` on Windows.** CRLF checkouts no longer crash the prompt parser. (#49)
+
+### Tests
+- The suite passes on Windows: symlink and file-mode checks skip only where the OS can't support them, and tests no longer read the developer's real config or `%APPDATA%`. (#50)
+
 ## [3.12.0] - 2026-11-13
 
 Minor: native OpenCode v2 support, and `--update` now really updates the Claude Code plugin.
