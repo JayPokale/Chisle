@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="392" viewBox="0 0 880 392" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" role="img" aria-label="The Chisle efficiency ladder. Before writing code, stop at the first rung that holds: 1 does this need to exist at all, 2 already in this codebase, 3 does the stdlib do it, 4 a native platform feature, 5 an already-installed dependency, 6 can it be one line, 7 only then the minimum code that works. Animated examples: deep-copying a config object stops at the stdlib with structuredClone; a date picker stops at the platform with input type date; formatting a date stops at reuse.">
+<rect width="880" height="392" rx="14" fill="#0d1117"/>
+<text x="28" y="36" font-size="15" font-weight="700" fill="#c9d1d9">Before writing code, stop at the first rung that holds</text>
+<rect x="20" y="126" width="840" height="32" rx="8" fill="#d78a3c" fill-opacity="0.16" stroke="#d78a3c" stroke-opacity="0.6"><animate attributeName="y" calcMode="discrete" values="54;54;54;90;126;126;54;54;90;126;162;162;54;54;90;90;90" keyTimes="0.0000;0.0007;0.0296;0.0630;0.0963;0.3296;0.3341;0.3630;0.3963;0.4296;0.4630;0.6630;0.6674;0.6963;0.7296;0.9963;1.0000" dur="13.5s" repeatCount="indefinite"/></rect>
+<circle cx="46" cy="72" r="12" fill="#161b22" stroke="#30363d"/><text x="46" y="76.5" font-size="12.5" font-weight="700" fill="#d78a3c" text-anchor="middle">1</text>
+<text x="72" y="78" font-size="14.5" font-weight="600" fill="#c9d1d9">Does this need to exist at all?</text>
+<text x="420" y="78" font-size="13.5" fill="#8b949e">→ skip it, say so in one line</text>
+<circle cx="46" cy="108" r="12" fill="#161b22" stroke="#30363d"/><text x="46" y="112.5" font-size="12.5" font-weight="700" fill="#d78a3c" text-anchor="middle">2</text>
+<text x="72" y="114" font-size="14.5" font-weight="600" fill="#c9d1d9">Already in this codebase?</text>
+<text x="420" y="114" font-size="13.5" fill="#8b949e">→ reuse it</text>
+<circle cx="46" cy="144" r="12" fill="#161b22" stroke="#30363d"/><text x="46" y="148.5" font-size="12.5" font-weight="700" fill="#d78a3c" text-anchor="middle">3</text>
+<text x="72" y="150" font-size="14.5" font-weight="600" fill="#c9d1d9">Does the stdlib do it?</text>
+<text x="420" y="150" font-size="13.5" fill="#8b949e">→ use the stdlib</text>
+<circle cx="46" cy="180" r="12" fill="#161b22" stroke="#30363d"/><text x="46" y="184.5" font-size="12.5" font-weight="700" fill="#d78a3c" text-anchor="middle">4</text>
+<text x="72" y="186" font-size="14.5" font-weight="600" fill="#c9d1d9">Native platform feature?</text>
+<text x="420" y="186" font-size="13.5" fill="#8b949e">→ CSS over JS, DB constraint over code</text>
+<circle cx="46" cy="216" r="12" fill="#161b22" stroke="#30363d"/><text x="46" y="220.5" font-size="12.5" font-weight="700" fill="#d78a3c" text-anchor="middle">5</text>
+<text x="72" y="222" font-size="14.5" font-weight="600" fill="#c9d1d9">Already-installed dependency?</text>
+<text x="420" y="222" font-size="13.5" fill="#8b949e">→ use it, never add a new one</text>
+<circle cx="46" cy="252" r="12" fill="#161b22" stroke="#30363d"/><text x="46" y="256.5" font-size="12.5" font-weight="700" fill="#d78a3c" text-anchor="middle">6</text>
+<text x="72" y="258" font-size="14.5" font-weight="600" fill="#c9d1d9">Can it be one line?</text>
+<text x="420" y="258" font-size="13.5" fill="#8b949e">→ one line</text>
+<circle cx="46" cy="288" r="12" fill="#161b22" stroke="#30363d"/><text x="46" y="292.5" font-size="12.5" font-weight="700" fill="#d78a3c" text-anchor="middle">7</text>
+<text x="72" y="294" font-size="14.5" font-weight="600" fill="#c9d1d9">Only then</text>
+<text x="420" y="294" font-size="13.5" fill="#8b949e">→ the minimum code that works</text>
+<line x1="20" x2="860" y1="320" y2="320" stroke="#30363d"/>
+<text x="28" y="348" font-size="14" fill="#8b949e" opacity="1">Request: <tspan fill="#c9d1d9" font-weight="600">deep-copy a config object</tspan><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0000;0.0007;0.0156;0.3185;0.3333;1.0000" dur="13.5s" repeatCount="indefinite"/></text>
+<text x="852" y="348" font-size="14" text-anchor="end" fill="#3fb950" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace" opacity="1">✓ rung 3: structuredClone(config)<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0000;0.1185;0.1333;0.3185;0.3333;1.0000" dur="13.5s" repeatCount="indefinite"/></text>
+<text x="28" y="348" font-size="14" fill="#8b949e" opacity="0">Request: <tspan fill="#c9d1d9" font-weight="600">add a date picker</tspan><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0000;0.3341;0.3489;0.6519;0.6667;1.0000" dur="13.5s" repeatCount="indefinite"/></text>
+<text x="852" y="348" font-size="14" text-anchor="end" fill="#3fb950" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace" opacity="0">✓ rung 4: &lt;input type=&quot;date&quot;&gt;<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0000;0.4852;0.5000;0.6519;0.6667;1.0000" dur="13.5s" repeatCount="indefinite"/></text>
+<text x="28" y="348" font-size="14" fill="#8b949e" opacity="0">Request: <tspan fill="#c9d1d9" font-weight="600">format a date for the UI</tspan><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0000;0.6674;0.6822;0.9852;1.0000;1.0000" dur="13.5s" repeatCount="indefinite"/></text>
+<text x="852" y="348" font-size="14" text-anchor="end" fill="#3fb950" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace" opacity="0">✓ rung 2: reuse utils/formatDate()<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0000;0.7519;0.7667;0.9852;1.0000;1.0000" dur="13.5s" repeatCount="indefinite"/></text>
+</svg>
