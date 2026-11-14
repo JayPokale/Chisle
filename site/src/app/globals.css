@@ -161,7 +161,17 @@ body {
 }
 @keyframes blink { 50% { opacity: 0; } }
 
+/* Endless carousel: the track holds its items twice and slides by one set, so
+   the loop has no seam. Hover, focus or a press pauses it for reading. */
+.marquee { overflow: hidden; mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent); }
+.marquee-track { animation: marquee 80s linear infinite; }
+.marquee:hover .marquee-track, .marquee:focus-within .marquee-track, .marquee:active .marquee-track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
 @media (prefers-reduced-motion: reduce) {
+  .marquee { overflow-x: auto; mask-image: none; padding-inline: 1.25rem; }
+  .marquee-track { animation: none; }
+  .marquee [inert] { display: none; }
   html { scroll-behavior: auto; }
   .lift, .lift:hover { transition: none; transform: none; }
   .caret::after { animation: none; }

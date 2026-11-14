@@ -77,38 +77,39 @@ export default function Ladder() {
       <div className="mx-auto max-w-6xl px-5">
         <SectionHead eyebrow="The efficiency ladder" title="Seven rungs, before a line gets written">
           The agent stops at the <strong className="text-fg">first</strong> rung that holds, and
-          the ladder runs after reading the problem, never instead of it. Scroll the rungs →
+          the ladder runs after reading the problem, never instead of it. Hover to pause.
         </SectionHead>
       </div>
 
       <Reveal delay={0.08}>
-        <ol
-          className="pane-scroll mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pt-2 pb-4 [scroll-padding-inline:1.25rem] xl:px-[calc((100vw-72rem)/2+1.25rem)] xl:[scroll-padding-inline:calc((100vw-72rem)/2+1.25rem)]"
-          aria-label="Ladder rungs"
-        >
-          {RUNGS.map((r, i) => (
-            <li
-              key={r.tag}
-              className="lift flex w-[85vw] max-w-[22rem] shrink-0 snap-start flex-col rounded-xl border border-line bg-surface p-5"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs text-dim">rung {i + 1}/7</span>
-                <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-[11px] text-accent">{r.tag}</span>
-              </div>
-              <h3 className="mt-4 text-lg font-semibold leading-snug">{r.q}</h3>
-              <p className="mt-1 text-sm text-accent">→ {r.a}</p>
-              <p className="mt-4 font-mono text-[10px] uppercase tracking-wider text-dim">instead of</p>
-              <pre className="pane-scroll mt-1.5 overflow-x-auto rounded-lg border border-line bg-bg p-3 font-mono text-[11px] leading-relaxed text-dim">
-                {r.before}
-              </pre>
-              <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-accent">chisle</p>
-              <pre className="pane-scroll mt-1.5 overflow-x-auto rounded-lg border border-brand-hover/40 bg-accent-soft p-3 font-mono text-[11px] leading-relaxed">
-                {r.after}
-              </pre>
-              <p className="mt-4 flex-1 text-xs leading-relaxed text-dim">{r.why}</p>
-            </li>
-          ))}
-        </ol>
+        <div className="marquee pane-scroll mt-10">
+          {/* Rendered twice for a seamless loop; the copy is inert (no screen reader, no Tab stop). */}
+          <ol className="marquee-track flex w-max pt-2 pb-4" aria-label="Ladder rungs">
+            {[...RUNGS, ...RUNGS].map((r, i) => (
+              <li
+                key={i}
+                inert={i >= RUNGS.length || undefined}
+                className="lift mr-4 flex w-[85vw] max-w-[22rem] shrink-0 flex-col rounded-xl border border-line bg-surface p-5"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs text-dim">rung {(i % RUNGS.length) + 1}/7</span>
+                  <span className="rounded-md bg-accent-soft px-2 py-0.5 font-mono text-[11px] text-accent">{r.tag}</span>
+                </div>
+                <h3 className="mt-4 text-lg font-semibold leading-snug">{r.q}</h3>
+                <p className="mt-1 text-sm text-accent">→ {r.a}</p>
+                <p className="mt-4 font-mono text-[10px] uppercase tracking-wider text-dim">instead of</p>
+                <pre className="pane-scroll mt-1.5 overflow-x-auto rounded-lg border border-line bg-bg p-3 font-mono text-[11px] leading-relaxed text-dim">
+                  {r.before}
+                </pre>
+                <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-accent">chisle</p>
+                <pre className="pane-scroll mt-1.5 overflow-x-auto rounded-lg border border-brand-hover/40 bg-accent-soft p-3 font-mono text-[11px] leading-relaxed">
+                  {r.after}
+                </pre>
+                <p className="mt-4 flex-1 text-xs leading-relaxed text-dim">{r.why}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
       </Reveal>
 
       <div className="mx-auto max-w-6xl px-5">
