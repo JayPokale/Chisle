@@ -2,6 +2,9 @@
 
 const { test, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const chisleExtension = require('../pi-extension');
 
 const ENV_KEYS = [
@@ -187,6 +190,33 @@ test('OMP system prompt segments receive rules as a system prompt instead of a t
   assert.equal(await before({ ...event, systemPrompt: result.systemPrompt }, h.ctx), undefined,
     'rules already present in the prompt were appended twice');
 });
+
+for (const sections of [{ code: false }, { prose: false }, { prose: false, code: false }]) {
+  test(`OMP rules injected with sections ${JSON.stringify(sections)} are not appended twice`, async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-pi-sections-'));
+    const savedConfigHome = process.env.XDG_CONFIG_HOME;
+    try {
+      fs.mkdirSync(path.join(dir, 'chisle'));
+      fs.writeFileSync(path.join(dir, 'chisle', 'config.json'), JSON.stringify({ sections }));
+      process.env.XDG_CONFIG_HOME = dir;
+      process.env.CHISLE_DEFAULT_MODE = 'on';
+      const h = makeHarness({ omp: true });
+      await start(h);
+      const event = { systemPrompt: ['base system prompt'], systemPromptOptions: { contextFiles: [] } };
+      const before = h.handlers.get('before_agent_start');
+      const result = await before(event, h.ctx);
+      assert.match(result.systemPrompt.at(-1), /CHISLE ACTIVE/);
+      assert.equal(await before({ ...event, systemPrompt: result.systemPrompt }, h.ctx), undefined,
+        'rules already present in the prompt were appended twice');
+      assert.ok(await before({ ...event, systemPrompt: ['CHISLE ACTIVE is a phrase', '## Boundaries'] }, h.ctx),
+        'a prompt that merely mentions the markers suppressed injection');
+    } finally {
+      if (savedConfigHome === undefined) delete process.env.XDG_CONFIG_HOME;
+      else process.env.XDG_CONFIG_HOME = savedConfigHome;
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+}
 
 test('OMP array system prompts handle disabled mode without stringifying segments', async () => {
   process.env.CHISLE_DEFAULT_MODE = 'off';
