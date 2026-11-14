@@ -1,54 +1,68 @@
-<p align="center">
-  <img src="assets/logo.png" width="120" alt="Chisle">
-</p>
-
-<h1 align="center">Chisle</h1>
-
-<p align="center">
-  <em>Your AI talks less, builds less, reads less, and says more.<br>Like a senior dev who bills by the syllable.</em>
-</p>
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/banner-dark.svg">
+    <img src="assets/readme/banner-light.svg" width="100%" alt="Chisle: fewer tokens in, fewer tokens out, same answers.">
+  </picture>
+</h1>
 
 <p align="center">
-  <a href="https://github.com/JayPokale/Chisle/stargazers"><img src="https://img.shields.io/github/stars/JayPokale/Chisle?style=flat-square&color=d78a3c&label=stars" alt="Stars"></a>
+  <a href="https://github.com/JayPokale/Chisle/stargazers"><img src="https://img.shields.io/github/stars/JayPokale/Chisle?style=flat-square&color=d78a3c&label=stars" alt="GitHub stars"></a>
   <a href="https://www.npmjs.com/package/chisle"><img src="https://img.shields.io/npm/v/chisle?style=flat-square&color=d78a3c&label=npm" alt="npm version"></a>
-  <img src="https://img.shields.io/badge/works%20with-13%20agents-d78a3c?style=flat-square" alt="Works with 13 agents">
-  <a href="https://github.com/JayPokale/Chisle/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/JayPokale/Chisle/test.yml?style=flat-square&label=CI" alt="CI"></a>
-  <img src="https://img.shields.io/badge/deps-0-2da44e?style=flat-square" alt="Zero dependencies">
-  <img src="https://img.shields.io/badge/license-MIT-d78a3c?style=flat-square" alt="MIT license">
+  <a href="https://www.npmjs.com/package/chisle"><img src="https://img.shields.io/npm/dm/chisle?style=flat-square&color=d78a3c&label=downloads" alt="npm downloads per month"></a>
+  <img src="https://img.shields.io/badge/agents-13-d78a3c?style=flat-square" alt="Works with 13 agents">
+  <img src="https://img.shields.io/badge/dependencies-0-2da44e?style=flat-square" alt="Zero dependencies">
+  <a href="https://github.com/JayPokale/Chisle/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/JayPokale/Chisle/test.yml?style=flat-square&label=tests" alt="Tests"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-d78a3c?style=flat-square" alt="MIT license"></a>
   <a href="https://buymeacoffee.com/jaypokale3b"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=flat-square&logo=buymeacoffee&logoColor=black" alt="Buy me a coffee"></a>
 </p>
 
 <p align="center">
-  <img src="assets/line.svg" width="100%" height="4" alt="">
+  <a href="#install"><b>Install</b></a>
+  &nbsp;·&nbsp;
+  <a href="#same-prompt-four-answers"><b>Before / after</b></a>
+  &nbsp;·&nbsp;
+  <a href="#benchmarks"><b>Benchmarks</b></a>
+  &nbsp;·&nbsp;
+  <a href="#how-it-works"><b>How it works</b></a>
+  &nbsp;·&nbsp;
+  <a href="#commands"><b>Commands</b></a>
+  &nbsp;·&nbsp;
+  <a href="#faq"><b>FAQ</b></a>
 </p>
 
 <p align="center">
-  <img src="assets/hero.svg" width="880" alt="Chisle versus the same model with no ruleset: 29% fewer billed output tokens, answers 45% shorter, oversized tool output 48% smaller, accuracy 156 of 156 versus 154 of 156.">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/stats-dark.svg">
+    <img src="assets/readme/stats-light.svg" width="880" alt="Chisle versus the same model with no ruleset: 29% fewer billed output tokens, answers 45% shorter, oversized tool output 48% smaller, accuracy 156 of 156 versus 154 of 156.">
+  </picture>
 </p>
 
 <p align="center">
   <strong>Fewer tokens than caveman and ponytail. No accuracy lost.</strong><br>
-  <strong>−29% billed tokens &middot; −45% answer length &middot; −48% oversized tool output</strong><br>
-  <strong>And yet: 156/156 on graded problems.</strong> Without Chisle: 154/156.<br>
-  <sub>Claude Code + Haiku 4.5, 25 tasks, every arm in one run; accuracy auto-graded, no judge model. Every raw transcript is committed, <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">including the runs where Chisle lost</a>. <a href="#numbers">Details</a>.</sub>
+  <sub>Claude Code + Haiku 4.5, 25 tasks, every ruleset in one run. Accuracy is auto-graded, no judge model.<br>Every raw transcript is committed, <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">including the runs where Chisle lost</a>.</sub>
 </p>
+
+<p align="center"><img src="assets/readme/line.svg" width="100%" height="4" alt=""></p>
+
+Chisle makes Claude Code cheaper to run without making it dumber. It cuts what Claude **writes**: no filler, no hedging, no speculative abstractions, just the smallest code that works. And it cuts what Claude **reads**: oversized tool output is trimmed before it re-enters the context, where it would be billed again on every later turn. One command wires it into Claude Code and 12 more agents.
 
 ```bash
 npx chisle
 ```
 
+## Same prompt, four answers
+
 <p align="center">
-  <img src="assets/line.svg" width="100%" height="4" alt="">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/race-dark.svg">
+    <img src="assets/readme/race-light.svg" width="880" alt="Same prompt, four rulesets, visible answer tokens: Chisle 530, caveman 604, ponytail 747, no ruleset 1,186. Chisle is 55% shorter than no ruleset.">
+  </picture>
 </p>
 
-Chisle makes Claude Code cheaper to run without making it dumber. It cuts what Claude **writes**: no filler, no hedging, no speculative abstractions, just the smallest code that works. And it cuts what Claude **reads**: oversized tool output is trimmed before it re-enters the context, where it would be billed again on every later turn. One command wires it into Claude Code, Pi, Cursor, Codex, Gemini, Copilot, OpenCode and six more agents.
-
-## Before / after
-
-"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected." Same model, same prompt, one difference: the injected ruleset. Both answers are the **verbatim committed output** from [`raw-nov-sidebyside/large-s2`](benchmarks/results/raw-nov-sidebyside/large-s2/):
+The prompt: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* Excerpts from the verbatim committed answers in [`raw-nov-sidebyside/large-s2`](benchmarks/results/raw-nov-sidebyside/large-s2/):
 
 <table>
-<tr><th align="left" width="50%">bare model: 121 lines, 1,186 answer tokens</th><th align="left" width="50%">Chisle: 62 lines, 530 answer tokens</th></tr>
+<tr><th align="left" width="50%">no ruleset: 121 lines, 1,186 answer tokens</th><th align="left" width="50%">Chisle: 62 lines, 530 answer tokens</th></tr>
 <tr valign="top"><td>
 
 A preamble, a custom exception class, docstrings on every method, an extra `can_transition_to` helper:
@@ -92,12 +106,15 @@ Then a short usage block.
 </td></tr>
 </table>
 
-Same behaviour, under half the tokens. caveman wrote 604 and ponytail 747 on the same prompt.
+Same behaviour, under half the tokens.
 
-## Numbers
+## Benchmarks
 
 <p align="center">
-  <img src="assets/benchmark.svg" width="860" alt="Claude Code benchmark, 25 tasks in one run, billed output tokens as percent of the same model with no ruleset. caveman 87%, ponytail 90%, Chisle 3.8.1 75%, Chisle 71%.">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark.svg">
+    <img src="assets/benchmark-light.svg" width="860" alt="Claude Code benchmark, 25 tasks in one run, billed output tokens as percent of the same model with no ruleset. caveman 87%, ponytail 90%, Chisle 3.8.1 75%, Chisle 71%.">
+  </picture>
 </p>
 
 | % of a bare model, lower is leaner | caveman | ponytail | Chisle 3.8.1 | **Chisle** |
@@ -120,7 +137,10 @@ Neither gap is significant (Fisher p = 0.498, 0.738). Method, intervals and ever
 ## Reads less, too
 
 <p align="center">
-  <img src="assets/trim.svg" width="880" alt="Animated illustration of the Chisle tool-output compressor: raw npm test output with colour codes, six identical lines and 172 passing lines becomes a short version with the codes stripped, the repeats collapsed, the middle elided with the full output saved to a file, and the failing test and its error kept.">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/trim-dark.svg">
+    <img src="assets/readme/trim-light.svg" width="880" alt="Animated illustration of the Chisle tool-output compressor: raw npm test output with colour codes, six identical lines and 172 passing lines becomes a short version with the codes stripped, the repeats collapsed, the middle elided with the full output saved to a file, and the failing test and its error kept.">
+  </picture>
 </p>
 
 Tool output is **67.5%** of session context on a measured Claude Code corpus ([comparison](docs/comparison.md)), and it is billed again on every later request. Chisle's hook strips colour codes, collapses repeated lines, and keeps the first 60 lines, the last 40 and the error lines in between of an oversized output. The full output is saved to a file Claude can grep. Each oversized output gets **~48%** smaller. Deterministic, no LLM call, no network. `Read`, `Edit` and `Write` are never touched: their exact bytes feed later edits.
@@ -139,7 +159,10 @@ Tool output is **67.5%** of session context on a measured Claude Code corpus ([c
 ## How it works
 
 <p align="center">
-  <img src="assets/ladder.svg" width="880" alt="The Chisle efficiency ladder. Before writing code, stop at the first rung that holds: 1 does this need to exist at all, 2 already in this codebase, 3 does the stdlib do it, 4 a native platform feature, 5 an already-installed dependency, 6 can it be one line, 7 only then the minimum code that works.">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/ladder-dark.svg">
+    <img src="assets/readme/ladder-light.svg" width="880" alt="The Chisle efficiency ladder. Before writing code, stop at the first rung that holds: 1 does this need to exist at all, 2 already in this codebase, 3 does the stdlib do it, 4 a native platform feature, 5 an already-installed dependency, 6 can it be one line, 7 only then the minimum code that works.">
+  </picture>
 </p>
 
 The ladder runs *after* reading the code, never instead of it: lazy about the solution, never about understanding. Every rung ends the same way: say what was skipped, so "later" doesn't quietly become "never".
@@ -148,23 +171,48 @@ Lazy is not negligent: trust-boundary validation, data-loss handling, security a
 
 ## Install
 
-One command. It auto-detects your agents (Claude Code, Pi, Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, Copilot, Copilot CLI, OpenCode, Hermes) and wires each one.
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/agents-dark.svg">
+    <img src="assets/readme/agents-light.svg" width="880" alt="Works with 13 agents: Claude Code, Codex, Cursor, Gemini CLI, Copilot, Copilot CLI, OpenCode, Pi, Windsurf, Cline, Kiro, Antigravity and Hermes.">
+  </picture>
+</p>
 
 ```bash
 npx chisle
 ```
 
+It finds every agent on your machine and wires each one. `npx chisle --uninstall` puts everything back.
+
+> [!TIP]
+> Preview first with `npx chisle --dry-run`, or limit it to one agent with `--only claude` or `--only pi`.
+
+<details>
+<summary><b>Other ways to install</b></summary>
+<br>
+
+**Claude Code plugin marketplace**
+
 ```bash
-# or via curl
+claude plugin marketplace add JayPokale/Chisle
+claude plugin install chisle@chisle
+```
+
+**curl**
+
+```bash
 curl -fsSL https://raw.githubusercontent.com/JayPokale/Chisle/main/install.sh | bash
 ```
 
+**Windows (PowerShell)**
+
 ```powershell
-# Windows
 irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
 ```
 
-Preview with `npx chisle --dry-run`, scope with `--only claude` or `--only pi`, remove with `npx chisle --uninstall`. Upgrading, per-agent setup, `--stats` and config: [docs/usage.md](docs/usage.md).
+Per-agent setup, upgrading, `--stats` and config: [docs/usage.md](docs/usage.md).
+
+</details>
 
 ## Commands
 
@@ -176,27 +224,60 @@ Preview with `npx chisle --dry-run`, scope with `--only claude` or `--only pi`, 
 | `/chisle-review` | Review a diff for over-engineering: one finding per line, no praise |
 | `/chisle-audit` | Audit a diff, a file or the repo for bloated code *and* bloated prose, biggest cut first |
 | `/chisle-help` | Quick reference card |
-| `npx chisle tools` | Show which tool schemas and skills you pay for but never use; `tools trim` / `tools restore` |
+| `npx chisle tools` | Show the tool schemas and skills you pay for but never use; `tools trim` / `tools restore` |
 | `npx chisle mcp wrap` | Trim oversized MCP tool output in any agent |
 
 Code, function names, API names and error strings stay verbatim: only the noise around them compresses.
 
 ## FAQ
 
-**Does it make Claude dumber?**
-No measurable change: 156/156 vs 154/156 on graded problems, 38/42 vs 36/42 on real repos with hidden tests. Neither gap is significant.
+<details>
+<summary><b>Does it make Claude dumber?</b></summary>
+<br>
 
-**Can it lose something Claude needed?**
+No measurable change: 156/156 vs 154/156 on graded problems, and 38/42 vs 36/42 on real repos with hidden tests. Neither gap is significant. [Method](docs/benchmarks.md).
+
+</details>
+
+<details>
+<summary><b>Can trimming lose something Claude needed?</b></summary>
+<br>
+
 Error lines from the trimmed middle are kept, and an elided output is saved in full to a file Claude can search. `Read`, `Edit` and `Write` output is never changed.
 
-**Does it call another model to compress?**
-No. Plain rules and a local hook. Zero dependencies.
+</details>
 
-**Why publish the runs where it lost?**
-Because a benchmark you can't check is an ad. [Here's the longer answer](https://jaypokale.me/writing/chisle-benchmarks-it-loses).
+<details>
+<summary><b>Does it call another model to compress?</b></summary>
+<br>
 
-**Why "Chisle"?**
+No. Plain rules and a local hook, with zero dependencies.
+
+</details>
+
+<details>
+<summary><b>Why publish the runs where it lost?</b></summary>
+<br>
+
+Because a benchmark you can't check is an ad. [The longer answer](https://jaypokale.me/writing/chisle-benchmarks-it-loses).
+
+</details>
+
+<details>
+<summary><b>Where should I install it from?</b></summary>
+<br>
+
+Only from `chisle` on npm or `JayPokale/Chisle` on GitHub. Releases are published from CI with npm provenance.
+
+</details>
+
+<details>
+<summary><b>Why "Chisle"?</b></summary>
+<br>
+
 A chisel removes everything that isn't the statue.
+
+</details>
 
 ## Support Chisle
 
@@ -205,7 +286,7 @@ A chisel removes everything that isn't the statue.
 </p>
 
 <p align="center">
-  Saved you tokens? <a href="https://github.com/JayPokale/Chisle">⭐ Star the repo</a>. It costs zero tokens and keeps the benchmarks running.
+  Saved you tokens? <a href="https://github.com/JayPokale/Chisle/stargazers">⭐ Star the repo</a>. It costs zero tokens and keeps the benchmarks running.
 </p>
 
 ## Contributing
@@ -216,7 +297,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Built by [Jay Pokale](https://github.com
   <img src="https://contrib.rocks/image?repo=JayPokale/Chisle" alt="GitHub contributors">
 </a>
 
-## Star History
+## Star history
 
 <a href="https://www.star-history.com/?repos=JayPokale%2FChisle&type=date&legend=top-left">
   <picture>
@@ -231,3 +312,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Built by [Jay Pokale](https://github.com
 [MIT](LICENSE). The shortest license that works.
 
 Chisle began as a merge of [caveman](https://github.com/JuliusBrussee/caveman) (terse prose) and [ponytail](https://github.com/DietrichGebert/ponytail) (lazy-senior-dev code rules), and its ruleset still carries parts of both. Their MIT notices are in [NOTICE](NOTICE).
+
+<p align="center"><img src="assets/readme/line.svg" width="100%" height="4" alt=""></p>
+
+<p align="center"><sub>Built with fewer tokens.</sub></p>
