@@ -34,7 +34,11 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           cd out
+          # Vercel builds every branch; this one only holds the chart, so turn
+          # its deployments off (root and site/, wherever the project root points).
+          mkdir -p site
+          echo '{"git":{"deploymentEnabled":false}}' | tee vercel.json > site/vercel.json
           git init -q -b stars
-          git add stars-dark.svg stars-light.svg
+          git add stars-dark.svg stars-light.svg vercel.json site/vercel.json
           git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -q -m 'Update star history'
           git push -q -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" stars
