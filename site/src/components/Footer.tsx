@@ -23,6 +23,7 @@ const COLS = [
     links: [
       ["GitHub", "https://github.com/JayPokale/Chisle"],
       ["Follow @JayPokale", "https://github.com/JayPokale"],
+      ["Buy me a coffee", "https://buymeacoffee.com/jaypokale3b"],
       ["npm", "https://www.npmjs.com/package/chisle"],
       ["Contributing", "https://github.com/JayPokale/Chisle/blob/main/CONTRIBUTING.md"],
     ],
