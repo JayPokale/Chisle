@@ -5,6 +5,10 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [3.13.0] - 2026-11-19
+
+Minor: command-aware output filters, RTK-style, built into the compression hook, so no extra binary and any OS.
+
 ### Added
 - Command-aware output filters (`hooks/chisle-command-filters.js`), RTK-style without a binary or command rewriting. When the shell command is known, the compression hook drops `git status` hints, `git push`/`pull`/`fetch`/`clone` progress, passing-test lines (pytest, jest, vitest, mocha, `node --test` spec and TAP, `go test`, `cargo test`) and install/download noise (npm, pnpm, pip, uv, cargo, go, docker), and compacts default `git log`. Runs at any output size, before the scrub and elide tiers, on Claude Code, Pi, Copilot CLI and OpenCode. Failures, errors and summaries always stay; a marker counts what was hidden. Output piped into anything but `head`/`tail` is untouched (`| cat` shows raw), as is output from `rtk`. `CHISLE_COMPRESS_FILTERS=0` turns it off. On this repo's own `npm test` the model now reads 502 chars instead of 18,604.
 - Elided output now spills the raw original, not the scrubbed copy.
