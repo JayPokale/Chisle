@@ -48,7 +48,7 @@ function contentChars(content) {
   return content.reduce((sum, block) => sum + (block && block.type === 'text' ? (block.text || '').length : 0), 0);
 }
 
-function account(name, text, lastHash, allowDedup, failed) {
+function account(name, text, lastHash, allowDedup, failed, command) {
   const size = text ? text.length : 0;
   sessionChars += size;
   totals.results++;
@@ -83,7 +83,7 @@ function account(name, text, lastHash, allowDedup, failed) {
     lastHash[name] = hash;
   }
 
-  const output = transform(text, limits);
+  const output = transform(text, limits, undefined, undefined, command);
   if (output == null) return;
   totals.eligible++;
   totals.before += size;
@@ -106,6 +106,7 @@ function scan(file) {
 
 function scanClaude(lines) {
   const idName = {};
+  const idCmd = {};
   const lastHash = {};
   for (const line of lines) {
     if (!line) continue;
@@ -116,9 +117,9 @@ function scanClaude(lines) {
     if (!Array.isArray(message.content)) continue;
     for (const block of message.content) {
       if (block.type === 'text') sessionChars += (block.text || '').length;
-      else if (block.type === 'tool_use') idName[block.id] = block.name;
+      else if (block.type === 'tool_use') { idName[block.id] = block.name; idCmd[block.id] = block.input && block.input.command; }
       else if (block.type === 'tool_result') {
-        account(idName[block.tool_use_id] || '?', extractText(block.content), lastHash, true, block.is_error === true);
+        account(idName[block.tool_use_id] || '?', extractText(block.content), lastHash, true, block.is_error === true, idCmd[block.tool_use_id]);
       }
     }
   }

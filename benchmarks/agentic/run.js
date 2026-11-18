@@ -7,7 +7,9 @@
 // sees the test: test.js is copied in AFTER the run and decides pass/fail.
 //
 // Usage: node benchmarks/agentic/run.js [model] [seeds] [parallel]
-//   ARMS=vanilla,chisle,chisle-hook,chisle-trim,ponytail  arms to run (default: vanilla,chisle)
+//   ARMS=vanilla,chisle,chisle-hook,chisle-trim,ponytail,rtk,rtk-chisle-hook  arms to run (default: vanilla,chisle)
+//   rtk = bare agent plus RTK's PreToolUse rewrite hook (`rtk hook claude`);
+//   rtk-chisle-hook = chisle-hook plus that same rtk hook
 //   chisle-trim = chisle plus the deny list `npx chisle tools trim` writes for
 //   tools a coding loop never calls (TRIM_TOOLS overrides the list)
 //   PONYTAIL_SKILL=path              ponytail SKILL.md (default: installed plugin cache)
@@ -28,7 +30,7 @@ const MODEL = process.argv[2] || 'claude-haiku-4-5-20251001';
 const SEEDS = Number(process.argv[3] || 3);
 const PAR = Number(process.argv[4] || 5);
 
-const KNOWN_ARMS = ['vanilla', 'chisle', 'chisle-hook', 'chisle-trim', 'ponytail'];
+const KNOWN_ARMS = ['vanilla', 'chisle', 'chisle-hook', 'chisle-trim', 'ponytail', 'rtk', 'rtk-chisle-hook'];
 const ARMS = (process.env.ARMS || 'vanilla,chisle').split(',').map((a) => a.trim()).filter(Boolean);
 const unknown = ARMS.filter((a) => !KNOWN_ARMS.includes(a));
 if (unknown.length) { console.error(`unknown arm(s): ${unknown.join(', ')}; known: ${KNOWN_ARMS.join(', ')}`); process.exit(1); }
@@ -66,6 +68,15 @@ const plugin = JSON.parse(fs.readFileSync(path.join(ROOT, '.claude-plugin', 'plu
 const TRIM_SETTINGS = JSON.stringify({ permissions: { deny: (process.env.TRIM_TOOLS || 'Workflow,ScheduleWakeup,ReportFindings,ShareOnboardingGuide,SendFeedback').split(',') } });
 const HOOK_SETTINGS = JSON.stringify({ hooks: { PostToolUse: plugin.hooks.PostToolUse } })
   .split('${CLAUDE_PLUGIN_ROOT}').join(ROOT);
+// RTK arms: the hook `rtk init -g` installs, so the arm matches a real RTK user.
+const RTK_HOOK = [{ matcher: 'Bash', hooks: [{ type: 'command', command: 'rtk hook claude' }] }];
+const RTK_SETTINGS = JSON.stringify({ hooks: { PreToolUse: RTK_HOOK } });
+const RTK_HOOK_SETTINGS = JSON.stringify({ hooks: { PreToolUse: RTK_HOOK, PostToolUse: plugin.hooks.PostToolUse } })
+  .split('${CLAUDE_PLUGIN_ROOT}').join(ROOT);
+if (ARMS.some((a) => a.startsWith('rtk'))) {
+  try { console.log('rtk: ' + execFileSync('rtk', ['--version'], { encoding: 'utf8' }).trim()); }
+  catch (_) { console.error('rtk arms need rtk on PATH'); process.exit(1); }
+}
 
 const only = process.env.FIXTURES ? process.env.FIXTURES.split(',').map((f) => f.trim()) : null;
 const fixtures = fs.readdirSync(FIX).filter((f) => fs.existsSync(path.join(FIX, f, 'task.txt')) && (!only || only.includes(f)));
@@ -109,17 +120,19 @@ function runCell(c) {
 
     // stream-json, so each cell also records the tool calls it made, not only totals.
     const args = ['-p', task, '--model', MODEL, '--output-format', 'stream-json', '--verbose', '--dangerously-skip-permissions'];
-    if (c.arm !== 'vanilla') args.push('--append-system-prompt-file', path.join(ISO, c.arm === 'ponytail' ? 'ponytail.txt' : 'chisle.txt'));
+    const hooked = c.arm === 'chisle-hook' || c.arm === 'rtk-chisle-hook';
+    if (c.arm !== 'vanilla' && c.arm !== 'rtk') args.push('--append-system-prompt-file', path.join(ISO, c.arm === 'ponytail' ? 'ponytail.txt' : 'chisle.txt'));
     if (c.arm === 'chisle-trim') args.push('--settings', TRIM_SETTINGS);
     let cfg = ISO;
-    if (c.arm === 'chisle-hook') {
+    if (c.arm === 'rtk') args.push('--settings', RTK_SETTINGS);
+    if (hooked) {
       // Own config dir per cell: the hook keeps its on/off flag, savings ledger
       // and spill files there, and parallel cells must not share them.
       cfg = path.join(work, 'cfg');
       fs.mkdirSync(cfg);
       fs.copyFileSync(path.join(ISO, '.credentials.json'), path.join(cfg, '.credentials.json'));
       fs.writeFileSync(path.join(cfg, '.chisle-active'), 'on');
-      args.push('--settings', HOOK_SETTINGS);
+      args.push('--settings', c.arm === 'rtk-chisle-hook' ? RTK_HOOK_SETTINGS : HOOK_SETTINGS);
     }
 
     execFile('claude', args, {
@@ -157,7 +170,7 @@ function runCell(c) {
         rec.answer = (d.result || '').trim();
         rec.tool_calls = calls;
         rec.request_prompts = [...prompts.values()];
-        if (c.arm === 'chisle-hook') {
+        if (hooked) {
           let stats = {};
           try { stats = JSON.parse(fs.readFileSync(path.join(cfg, '.chisle-compress-stats.json'), 'utf8')); } catch (_) {}
           rec.compressed_chars = stats.savedChars || 0;
