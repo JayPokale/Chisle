@@ -326,7 +326,7 @@ function installClaudeHooks(ctx) {
   const hooksDst = path.join(cfg, 'chisle-hooks');
   const settingsPath = path.join(cfg, 'settings.json');
   const HOOK_FILES = ['package.json', 'chisle-config.js', 'chisle-activate.js',
-                      'chisle-mode.js', 'chisle-mode-tracker.js', 'chisle-compress-output.js',
+                      'chisle-mode.js', 'chisle-mode-tracker.js', 'chisle-compress-output.js', 'chisle-command-filters.js',
                       'chisle-statusline.sh', 'chisle-statusline.ps1'];
 
   if (opts.dryRun) {
@@ -555,6 +555,7 @@ function copyOpencodePlugin(root, major) {
     [v2 ? '.opencode/plugins-v2/chisle/index.mjs' : '.opencode/plugins/chisle.mjs', path.join(entryDir, v2 ? 'index.js' : 'chisle.js')],
     ...(v2 ? [['.opencode/plugins-v2/chisle/setup.cjs', path.join(entryDir, 'setup.cjs')]] : []),
     ['hooks/chisle-compress-output.js', path.join(hooksDir, 'chisle-compress-output.js')],
+    ['hooks/chisle-command-filters.js', path.join(hooksDir, 'chisle-command-filters.js')],
     ['hooks/chisle-config.js', path.join(hooksDir, 'chisle-config.js')],
   ];
   fs.mkdirSync(hooksDir, { recursive: true });
@@ -644,7 +645,7 @@ function installCopilotCli(ctx) {
   try {
     const st = writeFencedRuleset(rules, opts, note);
     fs.mkdirSync(hooksDir, { recursive: true });
-    for (const f of ['chisle-compress-output.js', 'chisle-config.js']) {
+    for (const f of ['chisle-compress-output.js', 'chisle-command-filters.js', 'chisle-config.js']) {
       fs.copyFileSync(path.join(REPO_ROOT, 'hooks', f), path.join(hooksDir, f));
     }
     fs.writeFileSync(path.join(hooksDir, 'package.json'), '{ "type": "commonjs" }\n');

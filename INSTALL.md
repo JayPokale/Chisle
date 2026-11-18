@@ -249,12 +249,21 @@ Input-axis switches work across Claude Code, Pi, Copilot, and OpenCode where sup
 ```bash
 CHISLE_COMPRESS=0
 CHISLE_COMPRESS_SCRUB=0
+CHISLE_COMPRESS_FILTERS=0       # command-aware filters (git, tests, installs)
 CHISLE_COMPRESS_DEDUP=0
 CHISLE_COMPRESS_MAX_CHARS=8000  # also the final OpenCode output bound
 CHISLE_COMPRESS_HEAD_LINES=60
 CHISLE_COMPRESS_TAIL_LINES=40
 CHISLE_COMPRESS_TOOLS=bash,grep
 ```
+
+Command-aware filters work like [RTK](https://github.com/rtk-ai/rtk) without a
+binary: when the shell command is known they drop `git status` hints, `git push`/`pull`
+progress, passing-test lines (pytest, jest, vitest, mocha, `node --test`, `go test`,
+`cargo test`) and install/download noise (npm, pnpm, pip, uv, cargo, go, docker), and
+compact default `git log`. Failures, errors and summaries are never dropped. A command
+piped into anything but `head`/`tail` is left alone, so `git status | cat` shows raw
+output; commands already run through `rtk` are skipped.
 
 `CHISLE_COMPRESS_TOOLS` replaces the allowlist. OpenCode defaults to `bash`,
 `grep`, `glob`, `webfetch`, `websearch`, and `list`; configure read-only MCP

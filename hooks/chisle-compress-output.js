@@ -50,6 +50,10 @@
 //   CHISLE_COMPRESS_TAIL_LINES        — lines kept from the bottom
 //   CHISLE_COMPRESS_TOOLS=Bash,Grep   — override the tool allowlist (both harnesses)
 //   CHISLE_COMPRESS_SPILL=0           — elide without writing the recovery copy
+//   CHISLE_COMPRESS_FILTERS=0         — disable command-aware filters
+//
+// Command-aware filters (chisle-command-filters.js) run first, at any size,
+// when the shell command is known: git hints, passing tests, install progress.
 //
 // Savings accrue in <stateDir>/.chisle-compress-stats.json for the statusline
 // (Claude/Pi: <claudeDir>; Copilot: <copilotDir>, see chisle-config.js).
@@ -60,6 +64,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { getClaudeDir, getCopilotDir, getOpencodeStateDir, readFlag, getDefaultMode } = require('./chisle-config');
+const { filterCommand } = require('./chisle-command-filters');
 
 // One threshold. Env overrides all.
 // These are the values the old 'full' level used — the default,
@@ -225,9 +230,11 @@ function compressForOpencode(toolName, text, opts) {
   const limits = limitsFor();
   const dup = dedupCheck(toolName, text, opts.sessionId, opts.callId, stateDir, true);
   if (dup != null && dup.length < text.length) return boundForOpencode(dup, null, limits.maxChars);
-  if (text.length <= SCRUB_MIN && text.length <= limits.maxChars) return null;
+  const filtered = commandFilter(opts.command, text);
+  if (filtered == null && text.length <= SCRUB_MIN && text.length <= limits.maxChars) return null;
   const spillPath = text.length > limits.maxChars && toolName ? spill(text, toolName, stateDir) : null;
-  let updated = process.env.CHISLE_COMPRESS_SCRUB === '0' ? text : scrub(text);
+  let updated = filtered || text;
+  if (updated.length > SCRUB_MIN && process.env.CHISLE_COMPRESS_SCRUB !== '0') updated = scrub(updated);
   if (updated.length > limits.maxChars && updated.split('\n').length > limits.headLines + limits.tailLines) {
     const elided = compress(updated, limits, spillPath);
     if (elided != null) updated = elided;
@@ -643,11 +650,23 @@ function recordSavings(saved, stateDir) {
 // Scrub + elide on plain text → transformed text, or null if no meaningful
 // win. Stateless (aside from the spill side-effect) — this is what the
 // replay benchmark measures for Claude/Pi.
-function transform(text, limits, toolName, stateDir) {
-  if (!text || text.length <= SCRUB_MIN) return null;
-  let t = process.env.CHISLE_COMPRESS_SCRUB === '0' ? text : scrub(text);
+function commandFilter(command, text) {
+  return process.env.CHISLE_COMPRESS_FILTERS === '0' ? null : filterCommand(command, text);
+}
+
+// Copilot sends toolArgs as an object or a JSON string; Claude/Pi/OpenCode as objects.
+function commandOf(args) {
+  if (typeof args === 'string') { try { args = JSON.parse(args); } catch (e) { return null; } }
+  return args && typeof args.command === 'string' ? args.command : null;
+}
+
+function transform(text, limits, toolName, stateDir, command) {
+  if (!text) return null;
+  let t = commandFilter(command, text) || text;
+  if (t === text && text.length <= SCRUB_MIN) return null;
+  if (t.length > SCRUB_MIN && process.env.CHISLE_COMPRESS_SCRUB !== '0') t = scrub(t);
   if (t.length > limits.maxChars) {
-    const elided = compress(t, limits, toolName ? spill(t, toolName, stateDir) : null);
+    const elided = compress(t, limits, toolName ? spill(text, toolName, stateDir) : null);
     if (elided != null) t = elided;
   }
   return text.length - t.length >= MIN_WIN ? t : null;
@@ -704,7 +723,7 @@ function processPayload(payload, mode) {
     const stateDir = getCopilotDir();
     const dup = dedupCheck(toolName, text, payload.sessionId, null, stateDir);
     if (dup != null && dup.length < text.length) return dup;
-    return transform(text, limitsFor(), toolName, stateDir);
+    return transform(text, limitsFor(), toolName, stateDir, commandOf(payload.toolArgs));
   }
 
   if (!toolAllowed(payload.tool_name)) return null;
@@ -712,7 +731,7 @@ function processPayload(payload, mode) {
   if (!text) return null;
   const dup = dedupCheck(payload.tool_name, text, payload.session_id, payload.tool_use_id, getClaudeDir());
   if (dup != null && dup.length < text.length) return dup;
-  return transform(text, limitsFor(), payload.tool_name, getClaudeDir());
+  return transform(text, limitsFor(), payload.tool_name, getClaudeDir(), commandOf(payload.tool_input));
 }
 
 function main() {
@@ -767,7 +786,7 @@ function main() {
 if (require.main === module) main();
 
 module.exports = {
-  extractText, rebuildResponse, scrub, compress, transform, limitsFor, toolAllowed, processPayload,
+  extractText, rebuildResponse, scrub, compress, transform, limitsFor, toolAllowed, processPayload, commandOf,
   duplicateMarker, THRESHOLDS, SAFE_TOOLS, NEVER_COMPRESS,
   // Copilot-specific additions (see PR description for rationale):
   isCopilotPayload, copilotToolAllowed, SAFE_TOOLS_COPILOT, NEVER_COMPRESS_COPILOT,

@@ -85,6 +85,7 @@ export default async () => {
           mode: getDefaultMode(),
           sessionId: input && input.sessionID,
           callId: input && input.callID,
+          command: input && input.args && input.args.command,
         });
         if (updated != null && updated.length < original.length) {
           output.output = updated;
@@ -115,7 +116,7 @@ export default async () => {
             const st = part.state;
             if (!st || st.status !== 'completed' || typeof st.output !== 'string') continue;
             if (st.output.includes(CHISLE_MARK) && st.output.length <= getOpencodeMaxChars()) continue;
-            const updated = compressForOpencode(part.tool, st.output, { mode });
+            const updated = compressForOpencode(part.tool, st.output, { mode, command: st.input && st.input.command });
             if (updated != null && updated.length < st.output.length) {
               st.output = updated;
             }

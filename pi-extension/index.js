@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const { getDefaultMode, getSections, filterSections } = require('../hooks/chisle-config');
-const { duplicateMarker, limitsFor, transform } = require('../hooks/chisle-compress-output');
+const { commandOf, duplicateMarker, limitsFor, transform } = require('../hooks/chisle-compress-output');
 const { requestedMode } = require('../hooks/chisle-mode');
 
 const RULES_TYPE = 'chisle-rules';
@@ -224,7 +224,7 @@ function chisleExtension(pi) {
           lastByToolBlock.set(key, hash);
           if (previous === hash) updated = duplicateMarker(event.toolName, text, 'earlier');
         }
-        if (updated == null) updated = transform(text, limitsFor(), event.toolName);
+        if (updated == null) updated = transform(text, limitsFor(), event.toolName, undefined, commandOf(event.input));
         if (updated == null || updated.length >= text.length) return block;
         changed = true;
         savedChars += text.length - updated.length;

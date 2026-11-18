@@ -180,7 +180,7 @@ Chisle borrows the best published token-saving techniques and implements the one
 | YAGNI/lazy-code ruleset | [ponytail](https://github.com/dietrichgebert/ponytail) | ✅ Chisle's code rules started from it |
 | Tool-output elision (head/tail) | [headroom](https://github.com/headroomlabs-ai/headroom)-style, proxy-free | ✅ hook, no proxy, works on subscription OAuth |
 | ANSI strip / log crush / dedup | headroom transforms | ✅ scrub + dedup tiers |
-| Command rewriting at the source | RTK-style `PreToolUse` ([writeup](https://andrewpatterson.dev/posts/token-savings-rtk-headroom/)) | ❌ stacks; RTK shrinks at source, Chisle catches what it can't reach (subagents, MCP, web) |
+| Command-aware output filters | [RTK](https://github.com/rtk-ai/rtk)-style ([writeup](https://andrewpatterson.dev/posts/token-savings-rtk-headroom/)) | ✅ same hook, no binary, any OS: git hints/progress, passing tests, install noise, compact `git log`; skips commands already run through `rtk` |
 | MCP/codebase-graph indexing | context-mode, [token-optimizer-mcp](https://github.com/ooples/token-optimizer-mcp) | ❌ stacks, orthogonal layer |
 | CLAUDE.md dieting | [community guides](https://www.firecrawl.dev/blog/claude-code-token-efficiency) | ✅ `/chisle-audit` flags bloated docs/config prose |
 
