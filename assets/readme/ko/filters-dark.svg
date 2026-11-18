@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="340" viewBox="0 0 880 340" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" xml:space="preserve" role="img" aria-label="Command-aware filters on real output, raw characters to what Claude reads: npm test 19,450 to 503 (97% less), go test -v 1,219 to 74 (94% less), git status 629 to 442 (30% less), git log -n 15 5,773 to 4,897 (15% less). Errors, failures and summaries always stay.">
+<rect x="0.5" y="0.5" width="879" height="339" rx="14" fill="#0d1117" stroke="#30363d"/>
+<text x="28" y="42" font-size="19" font-weight="700" fill="#e6edf3">명령을 알고, 잡음을 걷어낸다.</text>
+<text x="852" y="42" font-size="13" fill="#8b949e" text-anchor="end">원본 출력 → Claude가 읽는 것</text>
+<text x="28" y="68" font-size="13.5" fill="#8b949e">명령 인식 필터 내장: 추가 바이너리 없이 모든 OS에서. 오류, 실패, 요약은 항상 남긴다.</text>
+<text x="28" y="111" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14" fill="#f0a85a">$ npm test</text>
+<text x="28" y="130" font-size="12" fill="#8b949e">통과한 테스트 256개 숨김, 요약은 유지</text>
+<rect x="330" y="99" width="420" height="16" rx="5" fill="#484f58" fill-opacity="0.35"/>
+<rect x="330" y="99" width="10.9" height="16" rx="5" fill="#d78a3c"><animate attributeName="width" values="420;420;10.9;10.9;420;420" keyTimes="0.0000;0.0889;0.2000;0.9444;0.9833;1.0000" dur="9s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1"/></rect>
+<text x="330" y="132" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="11.5" fill="#6e7681">19,450 → 503 자</text>
+<text x="852" y="113" font-size="17" font-weight="700" fill="#f0a85a" text-anchor="end"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0000;0.2000;0.2222;0.9444;0.9667;1.0000" dur="9s" repeatCount="indefinite"/>−97%</text>
+<text x="28" y="161" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14" fill="#f0a85a">$ go test -v ./...</text>
+<text x="28" y="180" font-size="12" fill="#8b949e">통과 테스트 줄 46개 숨김</text>
+<rect x="330" y="149" width="420" height="16" rx="5" fill="#484f58" fill-opacity="0.35"/>
+<rect x="330" y="149" width="25.5" height="16" rx="5" fill="#d78a3c"><animate attributeName="width" values="420;420;25.5;25.5;420;420" keyTimes="0.0000;0.1389;0.2500;0.9444;0.9833;1.0000" dur="9s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1"/></rect>
+<text x="330" y="182" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="11.5" fill="#6e7681">1,219 → 74 자</text>
+<text x="852" y="163" font-size="17" font-weight="700" fill="#f0a85a" text-anchor="end"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0000;0.2500;0.2722;0.9444;0.9667;1.0000" dur="9s" repeatCount="indefinite"/>−94%</text>
+<text x="28" y="211" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14" fill="#f0a85a">$ git status</text>
+<text x="28" y="230" font-size="12" fill="#8b949e">&quot;(use git …)&quot; 힌트 줄 3개 숨김</text>
+<rect x="330" y="199" width="420" height="16" rx="5" fill="#484f58" fill-opacity="0.35"/>
+<rect x="330" y="199" width="295.1" height="16" rx="5" fill="#d78a3c"><animate attributeName="width" values="420;420;295.1;295.1;420;420" keyTimes="0.0000;0.1889;0.3000;0.9444;0.9833;1.0000" dur="9s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1"/></rect>
+<text x="330" y="232" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="11.5" fill="#6e7681">629 → 442 자</text>
+<text x="852" y="213" font-size="17" font-weight="700" fill="#f0a85a" text-anchor="end"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0000;0.3000;0.3222;0.9444;0.9667;1.0000" dur="9s" repeatCount="indefinite"/>−30%</text>
+<text x="28" y="261" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="14" fill="#f0a85a">$ git log -n 15</text>
+<text x="28" y="280" font-size="12" fill="#8b949e">커밋 헤더를 한 줄로 접음</text>
+<rect x="330" y="249" width="420" height="16" rx="5" fill="#484f58" fill-opacity="0.35"/>
+<rect x="330" y="249" width="356.3" height="16" rx="5" fill="#d78a3c"><animate attributeName="width" values="420;420;356.3;356.3;420;420" keyTimes="0.0000;0.2389;0.3500;0.9444;0.9833;1.0000" dur="9s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1"/></rect>
+<text x="330" y="282" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="11.5" fill="#6e7681">5,773 → 4,897 자</text>
+<text x="852" y="263" font-size="17" font-weight="700" fill="#f0a85a" text-anchor="end"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0000;0.3500;0.3722;0.9444;0.9667;1.0000" dur="9s" repeatCount="indefinite"/>−15%</text>
+<text x="28" y="318" font-size="12.5" fill="#6e7681">head/tail 외의 명령으로 파이프하면 그대로 둔다: | cat 이면 원본. rtk 로 실행한 명령은 건너뛴다.</text>
+</svg>

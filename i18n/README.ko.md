@@ -120,6 +120,13 @@ class OrderStateMachine:
   </picture>
 </p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ko/filters-dark.svg">
+    <img src="../assets/readme/ko/filters-light.svg" width="880" alt="실제 출력에 적용한 명령 인식 필터, 원본 문자 수 → Claude가 읽는 양: npm test 19,450 → 503 (−97%), go test -v 1,219 → 74 (−94%), git status 629 → 442 (−30%), git log -n 15 5,773 → 4,897 (−15%). 오류, 실패, 요약은 항상 남긴다.">
+  </picture>
+</p>
+
 <p align="center"><img src="../assets/readme/line.svg" width="100%" height="4" alt=""></p>
 
 <p align="center">

@@ -30,6 +30,10 @@ const QA = [
     a: "No, not since 3.5.0. Output styles also govern prose structure, so an active style and Chisle's prose rules used to issue contradicting instructions with no precedence between them. Chisle now reads the active style and steps its prose rules aside on its own, with nothing to configure. The code rules, the ladder, the context diet, and the compressor all keep running. If you want the prose rules even with a style active, set sections.prose to true in ~/.config/chisle/config.json; explicit config always beats detection.",
   },
   {
+    q: "Do I still need RTK?",
+    a: "No. Since 3.13.0 the compressor knows the command too: it drops git hints and progress, passing tests (pytest, jest, vitest, mocha, node --test, go test, cargo test) and install noise (npm, pnpm, pip, uv, cargo, go, docker), with no extra binary, on any OS. RTK still covers more commands, and the two stack: commands already run through rtk are skipped.",
+  },
+  {
     q: "How do I turn it off?",
     a: "\"stop chisle\" for the persona, CHISLE_COMPRESS=0 for the compressor, npx chisle --uninstall to remove everything.",
   },

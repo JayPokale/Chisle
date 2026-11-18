@@ -29,7 +29,7 @@ const HOOKS = [
   {
     id: "post",
     label: "PostToolUse",
-    body: "Scrub, elide, dedup. Deterministic, no LLM, no network. Rebuilds the result into the tool's own response shape, because a bare string gets rejected by the harness. Read and Edit are never touched.",
+    body: "Filter, scrub, elide, dedup. Command-aware filters drop git hints, passing tests and install progress. Deterministic, no LLM, no network. Rebuilds the result into the tool's own response shape, because a bare string gets rejected by the harness. Read and Edit are never touched.",
   },
 ] as const;
 
@@ -61,7 +61,7 @@ export default function Pipeline() {
               viewBox="0 20 716 274"
               className="mx-auto block w-full min-w-[620px] max-w-[760px]"
               role="img"
-              aria-label="Session diagram. SessionStart injects about 900 tokens on new sessions only. UserPromptSubmit adds a 50-token reminder each turn. Both feed the model, which either writes output or calls a tool. Tool output returns through the PostToolUse hook, which scrubs, elides and dedups it before the model reads it. Read and Edit results bypass the hook untouched."
+              aria-label="Session diagram. SessionStart injects about 900 tokens on new sessions only. UserPromptSubmit adds a 50-token reminder each turn. Both feed the model, which either writes output or calls a tool. Tool output returns through the PostToolUse hook, which filters, scrubs, elides and dedups it before the model reads it. Read and Edit results bypass the hook untouched."
             >
               <defs>
                 <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -140,7 +140,7 @@ export default function Pipeline() {
                 <rect x="508" y="222" width="200" height="58" rx="6" fill="var(--color-accent-soft)"
                   stroke="var(--color-accent)" strokeWidth={on("post") ? 2.4 : 1.5} />
                 <text x="608" y="244" textAnchor="middle" fontSize="12" fontWeight="700" fill="currentColor">PostToolUse</text>
-                <text x="608" y="262" textAnchor="middle" fontSize="11" fill="var(--color-dim)">scrub → elide → dedup</text>
+                <text x="608" y="262" textAnchor="middle" fontSize="11" fill="var(--color-dim)">filter → scrub → elide → dedup</text>
               </g>
               <path d="M 608 196 L 608 218" stroke="var(--color-dim)" fill="none" markerEnd="url(#ar)" />
 

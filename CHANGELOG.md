@@ -5,6 +5,9 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Docs
+- README and translations gain an animated card for the command-aware filters (`filters` in `scripts/build-readme-art.js`): four real, successful runs, raw output against what Claude reads. The site gets the same numbers as a section after the live compressor demo, plus a filter row in Features, the Pipeline diagram and an FAQ entry on RTK.
+
 ## [3.13.0] - 2026-11-19
 
 Minor: command-aware output filters, RTK-style, built into the compression hook, so no extra binary and any OS.

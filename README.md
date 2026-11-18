@@ -119,6 +119,13 @@ Then a short usage block.
   </picture>
 </p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/filters-dark.svg">
+    <img src="assets/readme/filters-light.svg" width="880" alt="Command-aware filters on real output, raw characters to what Claude reads: npm test 19,450 → 503 (−97%), go test -v 1,219 → 74 (−94%), git status 629 → 442 (−30%), git log -n 15 5,773 → 4,897 (−15%). Errors, failures and summaries always stay.">
+  </picture>
+</p>
+
 <p align="center"><img src="assets/readme/line.svg" width="100%" height="4" alt=""></p>
 
 <p align="center">

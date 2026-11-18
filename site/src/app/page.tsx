@@ -8,6 +8,7 @@ import Pipeline from "@/components/Pipeline";
 import Compare from "@/components/Compare";
 import Ladder from "@/components/Ladder";
 import Terminal from "@/components/Terminal";
+import Filters from "@/components/Filters";
 import Benchmarks from "@/components/Benchmarks";
 import Community from "@/components/Community";
 import Faq from "@/components/Faq";
@@ -24,6 +25,7 @@ export default function Page() {
       <Axes />
       <Pipeline />
       <Terminal />
+      <Filters />
       <Compare />
       <Ladder />
       <Benchmarks />
