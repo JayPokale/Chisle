@@ -5,21 +5,26 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [3.14.0] - 2026-11-19
+
+Minor: failed test and build runs filtered on Claude Code, and more RTK-style command filters (git, ls, wc, grep, go, cargo). The design follows [RTK](https://github.com/rtk-ai/rtk); no RTK code is used (see NOTICE).
+
 ### Added
 - **Failed test and build runs get filtered on Claude Code.** Claude Code hands a failed command's output to `PostToolUseFailure`, which cannot rewrite it. A new `PreToolUse` hook (`hooks/chisle-run.js`) now runs test, build and install commands through a Node wrapper that filters stdout and stderr like the compression hook and keeps the exit status. It wraps only the matching segments of a command (`cd app && npm test` → `cd app && <wrapper> npm test`) and skips what it cannot parse safely: subshells, `$(...)`, background jobs, heredocs, watch mode, `sudo`. Claude Code checks permission rules against the rewritten command, so the wrapper runs only in `bypassPermissions` mode and never for a program named by a deny or ask `Bash(...)` rule. `CHISLE_COMPRESS_WRAP=1` enables it in every mode and `=0` turns it off. Not on Windows.
-- **More command filters, RTK-inspired.** Long `git status` becomes the short `XY path` form. Default `git log` and `git show` get one header line per commit (10-char hash, subject, day, author without email; a shared author is named once). `git diff`, `git show` and `git log -p` headers shrink to one path line. `--stat` loses its bars and padding. `git branch -a` folds each remote onto one line. `ls -l` gives an octal mode (ACL/xattr mark kept), size and name, keeps `.` for the directory's own mode and names the owner unless it is you, `wc` drops padding, and `grep -rn`/`rg` print each path once. `cargo test` drops its banners, empty suites, zero counts and the repeated failure list. `go test -v` drops passing tests whole, header and log lines, so no log line ends up beside a failure it did not come from.
+- **More command filters, following RTK's output shapes.** Long `git status` becomes the short `XY path` form. Default `git log` and `git show` get one header line per commit (10-char hash, subject, day, author without email; a shared author is named once). `git diff`, `git show` and `git log -p` headers shrink to one path line. `--stat` loses its bars and padding. `git branch -a` folds each remote onto one line. `ls -l` gives an octal mode (ACL/xattr mark kept), size and name, keeps `.` for the directory's own mode and names the owner unless it is you, `wc` drops padding, and `grep -rn`/`rg` print each path once. `cargo test` drops its banners, empty suites, zero counts and the repeated failure list. `go test -v` drops passing tests whole, header and log lines, so no log line ends up beside a failure it did not come from.
 
 - The installer asks once, at the end of an interactive install or update, whether to star the repo and follow @JayPokale on GitHub (`[y/N]`), leading with the tokens Chisle has saved when its ledger has any. Default no; only `y` acts, through the user's own `gh` login (links printed without `gh`). The answer is saved as `starPrompt` in the Chisle config. Never asked in CI, on `--dry-run` or when piped.
 
 ### Changed
-- Lossy where RTK is: with more than one commit, `git log` keeps 3 body lines and 4 `--stat` files per commit and counts the rest; `git log` keeps the day but not the time or email; `ls -l` drops dates unless sorted with `-t`, and link counts.
+- Lossy where RTK is: with more than one commit, `git log` keeps 3 body lines per commit and counts the rest (`--stat` file lists are never cut, so a file never looks untouched); `git log` keeps the day but not the time or email; `ls -l` drops dates unless sorted with `-t`, and link counts.
 - The `[chisle: hid N ...]` marker is gone. Like RTK, filtered output carries no footer; `| cat` still shows raw output.
 - Command-filter wins count at any size. The 64-char minimum now applies only to the generic scrub and elide tiers.
 
 ### Benchmarks
-- `benchmarks/replay-commands.js` gains 14 held-out commands, written before the new filters, and models the wrapper. Chars the model reads across 37 commands: Chisle 27% of raw, RTK 84%, both together 27%; held-out only: Chisle 31%, RTK 84%. Chisle's output is smaller on 31 commands, RTK's on 5 (by 4 to 11 chars, except `git log --stat`), and 1 ties. RTK is smaller where it drops information: `wc` without the directory, `ls` without `.`, a 7-char hash, and a `git log --stat` that lost three of five commit headers in RTK 0.42.4.
+- `benchmarks/replay-commands.js` gains 14 held-out commands, written before the new filters, and models the wrapper. Chars the model reads across 37 commands: Chisle 28% of raw, RTK 84%, both together 27%; held-out only: Chisle 31%, RTK 84%. Chisle's output is smaller on 31 commands, RTK's on 5 (by 4 to 11 chars, except `git log --stat`), and 1 ties. RTK is smaller where it drops information: `wc` without the directory, `ls` without `.`, a 7-char hash, and a `git log --stat` that lost three of five commit headers in RTK 0.42.4 (Chisle keeps every commit and every file).
 
 ### Docs
+- RTK credited for the design of the command filters and the wrapper: NOTICE, the README footers, `docs/usage.md` and the site FAQ.
 - README and translations gain an animated card for the command-aware filters (`filters` in `scripts/build-readme-art.js`): four real, successful runs, raw output against what Claude reads. The site gets the same numbers as a section after the live compressor demo, plus a filter row in Features, the Pipeline diagram and an FAQ entry on RTK.
 
 ## [3.13.0] - 2026-11-19
