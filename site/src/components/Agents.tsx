@@ -3,20 +3,23 @@ import Reveal from "./Reveal";
 // Coverage per agent, matching the FAQ and README: "full" runs both axes,
 // "skills" gets /chisle commands, "rules+mcp" gets the ruleset plus MCP output
 // compression via `npx chisle mcp wrap` (bin/lib/mcp.js targets).
+// Logos: public/logos/, LobeHub Icons (MIT, see public/logos/LICENSE), drawn
+// as a mask in the text color so they follow light and dark mode. Hermes is
+// Nous Research's agent, so it carries their mark.
 const AGENTS = [
-  { name: "Claude Code", level: "full" },
-  { name: "Pi", level: "full" },
-  { name: "OpenCode", level: "full" },
-  { name: "Copilot CLI", level: "full" },
-  { name: "Hermes", level: "skills" },
-  { name: "Cursor", level: "rules+mcp" },
-  { name: "Windsurf", level: "rules+mcp" },
-  { name: "Cline", level: "rules+mcp" },
-  { name: "Kiro", level: "rules+mcp" },
-  { name: "Antigravity", level: "rules+mcp" },
-  { name: "Codex", level: "rules+mcp" },
-  { name: "Gemini", level: "rules+mcp" },
-  { name: "Copilot", level: "rules+mcp" },
+  { name: "Claude Code", level: "full", logo: "claudecode" },
+  { name: "Pi", level: "full", logo: "pi" },
+  { name: "OpenCode", level: "full", logo: "opencode" },
+  { name: "Copilot CLI", level: "full", logo: "githubcopilot" },
+  { name: "Hermes", level: "skills", logo: "nousresearch" },
+  { name: "Cursor", level: "rules+mcp", logo: "cursor" },
+  { name: "Windsurf", level: "rules+mcp", logo: "windsurf" },
+  { name: "Cline", level: "rules+mcp", logo: "cline" },
+  { name: "Kiro", level: "rules+mcp", logo: "kiro" },
+  { name: "Antigravity", level: "rules+mcp", logo: "antigravity" },
+  { name: "Codex", level: "rules+mcp", logo: "codex" },
+  { name: "Gemini", level: "rules+mcp", logo: "geminicli" },
+  { name: "Copilot", level: "rules+mcp", logo: "githubcopilot" },
 ] as const;
 
 const LEVEL = {
@@ -49,9 +52,15 @@ export default function Agents() {
               <div className="lift flex h-full items-center gap-3 rounded-lg border border-line bg-bg p-4">
                 <span
                   aria-hidden
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-line bg-raised font-mono text-sm font-semibold"
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-line bg-raised"
                 >
-                  {a.name.slice(0, 2)}
+                  <span
+                    className="h-5 w-5 bg-fg"
+                    style={{
+                      WebkitMask: `url(/logos/${a.logo}.svg) center / contain no-repeat`,
+                      mask: `url(/logos/${a.logo}.svg) center / contain no-repeat`,
+                    }}
+                  />
                 </span>
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{a.name}</p>
@@ -73,6 +82,7 @@ export default function Agents() {
             </a>
           </Reveal>
         </div>
+        <p className="mt-4 text-xs text-dim">Logos are trademarks of their owners, shown to mark compatibility.</p>
       </div>
     </section>
   );

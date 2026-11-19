@@ -5,6 +5,9 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Docs
+- Site: the "Thirteen agents, one install" grid shows each agent's logo (LobeHub Icons, MIT, `site/public/logos/LICENSE`) in the page's text color, instead of two-letter tiles.
+
 ### Fixed
 - Star prompt: a `y` reported "Couldn't use gh" even when the star went through. Star and follow are now separate calls with separate messages: gh's default login can star but lacks the `user:follow` scope, so a failed follow prints the scope hint and the link, and the repo owner is never asked to follow themselves.
 
