@@ -5,6 +5,9 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+- Star prompt: a `y` reported "Couldn't use gh" even when the star went through. Star and follow are now separate calls with separate messages: gh's default login can star but lacks the `user:follow` scope, so a failed follow prints the scope hint and the link, and the repo owner is never asked to follow themselves.
+
 ## [3.14.1] - 2026-11-19
 
 Patch: the star prompt defaults to "later", and the README, site and docs move to the full 3.14 benchmark run.

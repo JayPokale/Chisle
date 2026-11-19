@@ -968,7 +968,8 @@ function printList(c) {
 // "y"; on yes the user's own `gh` login does the starring, Chisle never sees
 // a token. Without `gh` (or if it fails) it prints the links instead.
 const REPO_URL = 'https://github.com/JayPokale/Chisle';
-const STAR_ENDPOINTS = ['user/starred/JayPokale/Chisle', 'user/following/JayPokale'];
+const OWNER = 'JayPokale';
+const FOLLOW_URL = `https://github.com/${OWNER}`;
 
 function starPromptState() {
   const file = path.join(getConfigDir(), 'config.json');
@@ -980,7 +981,6 @@ function starPromptState() {
 }
 
 async function askStar({ say, note, opts, c }) {
-  const links = () => note(`  Couldn't use gh. Star: ${REPO_URL}  ·  Follow: https://github.com/JayPokale`);
   const st = starPromptState();
   if (st && st.cfg.starPrompt) return;
   if (opts.dryRun || process.env.CI || !process.stdin.isTTY || !process.stdout.isTTY) {
@@ -1016,10 +1016,22 @@ async function askStar({ say, note, opts, c }) {
     } catch (_) {}
   }
   if (!yes) { note("  No problem, we won't ask again."); return; }
-  const done = hasCmd('gh') && STAR_ENDPOINTS.every(ep =>
-    cp.spawnSync('gh', ['api', '-X', 'PUT', ep, '--silent'], { stdio: 'ignore', timeout: 15000 }).status === 0);
-  if (done) say(`  ${c.orange('★')} Starred and following. Thank you!`);
-  else links();
+  // Star and follow are separate calls with separate outcomes: gh's default
+  // login has the repo scope (star works) but not user:follow, and nobody can
+  // follow themselves. Report each one honestly, with a link for what failed.
+  const gh = (...args) => cp.spawnSync('gh', args, { encoding: 'utf8', timeout: 15000 });
+  const hasGh = hasCmd('gh');
+  const starred = hasGh && gh('api', '-X', 'PUT', `user/starred/${OWNER}/Chisle`, '--silent').status === 0;
+  const me = hasGh ? (gh('api', 'user', '--jq', '.login').stdout || '').trim() : '';
+  const self = me.toLowerCase() === OWNER.toLowerCase();
+  const followed = !self && hasGh && gh('api', '-X', 'PUT', `user/following/${OWNER}`, '--silent').status === 0;
+  if (starred) say(`  ${c.orange('★')} Starred${followed ? ' and following' : ''}. Thank you!`);
+  else note(`  Couldn't star through gh. Star it here: ${REPO_URL}`);
+  if (!followed && !self) {
+    note(hasGh && starred
+      ? `  Following needs gh's user:follow scope (gh auth refresh -s user:follow). Or follow here: ${FOLLOW_URL}`
+      : `  Follow here: ${FOLLOW_URL}`);
+  }
 }
 
 // ── main ────────────────────────────────────────────────────────────────────
