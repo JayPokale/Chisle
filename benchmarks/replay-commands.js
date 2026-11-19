@@ -3,6 +3,9 @@
 // with and without RTK and Chisle's compressor. Deterministic, zero LLM calls.
 //
 // Usage: node benchmarks/replay-commands.js <fixtures-dir> [--json]
+//   CHISLE_PREV=<checkout>  also measure an older Chisle (e.g. a v3.13.0 git
+//                           worktree) as the `chisle-prev` arm: its own
+//                           compressor and filters, failures untouched
 //
 // <fixtures-dir> holds the repos the corpus runs in (see CORPUS below):
 //   chisle/     a clone of this repo with a few edits, staged and untracked files
@@ -92,17 +95,19 @@ function rtkRewrite(cmd) {
   } catch (_) { return cmd; }
 }
 
-function compress(text, failed, command, filters) {
+const PREV = process.env.CHISLE_PREV ? require(path.resolve(process.env.CHISLE_PREV, 'hooks', 'chisle-compress-output')) : null;
+
+function compress(text, failed, command, filters, core = { transform, limitsFor }) {
   if (failed) return text;
   const prev = process.env.CHISLE_COMPRESS_FILTERS;
   process.env.CHISLE_COMPRESS_FILTERS = filters ? '1' : '0';
-  try { return transform(text, limitsFor(), undefined, undefined, command) || text; }
+  try { return core.transform(text, core.limitsFor(), undefined, undefined, command) || text; }
   finally { if (prev === undefined) delete process.env.CHISLE_COMPRESS_FILTERS; else process.env.CHISLE_COMPRESS_FILTERS = prev; }
 }
 
 const root = process.argv[2];
 if (!root) { console.error('usage: node benchmarks/replay-commands.js <fixtures-dir> [--json]'); process.exit(1); }
-const ARMS = ['bare', 'chisle-3.12', 'chisle', 'rtk', 'rtk+chisle'];
+const ARMS = ['bare', 'chisle-3.12', ...(PREV ? ['chisle-prev'] : []), 'chisle', 'rtk', 'rtk+chisle'];
 const rows = [];
 for (const [dir, cmd, held] of CORPUS) {
   const cwd = path.join(root, dir);
@@ -114,6 +119,7 @@ for (const [dir, cmd, held] of CORPUS) {
   const out = {
     bare: raw.text,
     'chisle-3.12': compress(raw.text, raw.failed, cmd, false),
+    ...(PREV ? { 'chisle-prev': compress(raw.text, raw.failed, cmd, true, PREV) } : {}),
     chisle: compress(raw.text, raw.failed && !wrapped, cmd, true),
     rtk: rtkError ? rtk.text + '\n' + raw.text : rtk.text,
     'rtk+chisle': rtkError ? rtk.text + '\n' + compress(raw.text, false, 'rtk proxy ' + cmd, true) : compress(rtk.text, rtk.failed && !(rcmd === cmd && wrapped), rcmd, true),
