@@ -910,6 +910,16 @@ Examples:
 // axis has none, since there is no way to know what the model would have written
 // without the ruleset, which is what the benchmark arms are for. A counter that
 // blended the two would be inventing the interesting half.
+// The compressor's savings ledger, or null when absent/unreadable.
+function readStats(dir) {
+  const p = path.join(dir, '.chisle-compress-stats.json');
+  try {
+    if (fs.lstatSync(p).isSymbolicLink()) return null;
+    const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+    return parsed && Number.isFinite(parsed.savedChars) && Number.isFinite(parsed.events) ? parsed : null;
+  } catch (e) { return null; }
+}
+
 function printStats(c, opts) {
   const only = opts.only.length === 1 ? opts.only[0] : null;
   const dir = only === 'opencode' ? opencodeStateDir()
@@ -917,14 +927,7 @@ function printStats(c, opts) {
     : claudeDir(opts);
   const p = path.join(dir, '.chisle-compress-stats.json');
   process.stdout.write(c.orange('chisle') + ': tool-output savings\n\n');
-
-  let stats = null;
-  try {
-    if (!fs.lstatSync(p).isSymbolicLink()) {
-      const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
-      if (parsed && Number.isFinite(parsed.savedChars) && Number.isFinite(parsed.events)) stats = parsed;
-    }
-  } catch (e) {}
+  const stats = readStats(dir);
 
   if (!stats || stats.events === 0) {
     process.stdout.write('  no compression recorded yet\n\n');
@@ -976,17 +979,27 @@ function starPromptState() {
 }
 
 async function askStar({ say, note, opts, c }) {
-  const links = () => note(`Star: ${REPO_URL}  ·  Follow: https://github.com/JayPokale`);
+  const links = () => note(`  Couldn't use gh. Star: ${REPO_URL}  ·  Follow: https://github.com/JayPokale`);
   const st = starPromptState();
   if (st && st.cfg.starPrompt) return;
   if (opts.dryRun || process.env.CI || !process.stdin.isTTY || !process.stdout.isTTY) {
     note(`If Chisle earns its keep, a star helps others find it: ${REPO_URL}`);
     return;
   }
+  // Lead with what Chisle already did for this user when the ledger says so
+  // (an update); a first install has nothing to show yet.
+  const stats = readStats(claudeDir(opts));
+  const tokens = stats ? Math.floor(stats.savedChars / 4) : 0;
+  const short = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : `${Math.round(n / 1e3)}k`);
+  say('');
+  say(tokens >= 1000
+    ? `${c.orange('★')} Chisle has kept ~${short(tokens)} tokens of tool output out of your context so far.`
+    : `${c.orange('★')} Chisle is free and open source. A star helps other developers find it.`);
+  note(`  Yes stars ${REPO_URL.replace('https://', '')} and follows @JayPokale, using your gh login.`);
   const rl = require('readline').createInterface({ input: process.stdin, output: process.stdout });
   const answer = await new Promise(resolve => {
     rl.on('close', () => resolve(''));
-    rl.question('Star Chisle and follow @JayPokale on GitHub? [y/N] ', resolve);
+    rl.question(`  Star and follow on GitHub? ${c.dim('[y/N]')} `, resolve);
   });
   rl.close();
   const yes = /^\s*y(es)?\s*$/i.test(answer);
@@ -996,10 +1009,10 @@ async function askStar({ say, note, opts, c }) {
       fs.writeFileSync(st.file, JSON.stringify({ ...st.cfg, starPrompt: yes ? 'yes' : 'no' }, null, 2) + '\n');
     } catch (_) {}
   }
-  if (!yes) return;
+  if (!yes) { note("  No problem, we won't ask again."); return; }
   const done = hasCmd('gh') && STAR_ENDPOINTS.every(ep =>
     cp.spawnSync('gh', ['api', '-X', 'PUT', ep, '--silent'], { stdio: 'ignore', timeout: 15000 }).status === 0);
-  if (done) say(c.orange('Thanks!') + ' Starred and following.');
+  if (done) say(`  ${c.orange('★')} Starred and following. Thank you!`);
   else links();
 }
 

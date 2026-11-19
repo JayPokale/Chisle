@@ -245,7 +245,8 @@ export CHISLE_DEFAULT_MODE=off
 ```
 
 At the end of a first install or update in an interactive terminal, the installer asks
-once: `Star Chisle and follow @JayPokale on GitHub? [y/N]`. Enter means no. Only a `y`
+once whether to star the repo and follow @JayPokale on GitHub (`[y/N]`), leading with the
+tokens Chisle has saved you when its ledger has any. Enter means no. Only a `y`
 does anything, and then your own `gh` login stars and follows (without `gh` it prints
 the links). The answer is saved as `"starPrompt"` in `~/.config/chisle/config.json`, so
 it is never asked again. CI, `--dry-run` and piped runs never ask.
