@@ -88,6 +88,14 @@ process.stderr.write('warn: flaky\\n'); process.exit(3);`);
   assert.equal(r.status, 3);
   assert.equal(r.stdout, '--- FAIL: TestBad (0.00s)\nFAIL\n');
   assert.equal(r.stderr, 'warn: flaky\n');
+  // stdout and stderr into one place (2>&1): order kept, all on stdout.
+  fs.writeFileSync(script, `const w = (s, t) => new Promise(r => setTimeout(() => { s.write(t); r(); }, 20));
+(async () => { await w(process.stdout, 'out-1\\n'); await w(process.stderr, 'ERR-2\\n'); await w(process.stdout, 'out-3\\n'); process.exit(1); })();`);
+  const both = spawnSync('sh', ['-c', `"${process.execPath}" "${RUNNER}" -- go test ./... 2>&1`], {
+    encoding: 'utf8', env: { ...process.env, PATH: `${dir}${path.delimiter}${process.env.PATH}`, CLAUDE_CONFIG_DIR: dir },
+  });
+  assert.equal(both.status, 1);
+  assert.equal(both.stdout, 'out-1\nERR-2\nout-3\n');
   const missing = spawnSync(process.execPath, [RUNNER, '--', 'chisle-no-such-cmd'], { encoding: 'utf8' });
   assert.equal(missing.status, 127);
   assert.match(missing.stderr, /chisle-no-such-cmd: command not found/);

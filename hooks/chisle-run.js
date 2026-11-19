@@ -121,8 +121,13 @@ function hook(input) {
 function run(argv) {
   const command = argv.map(quote).join(' ');
   const child = spawn(argv[0], argv.slice(1), { stdio: ['inherit', 'pipe', 'pipe'] });
+  // With `2>&1` (or Claude Code capturing both into one file) stdout and
+  // stderr share a destination: keep them in one buffer, in arrival order,
+  // so an error line stays where it happened instead of trailing the output.
+  let merged = false;
+  try { const a = fs.fstatSync(1), b = fs.fstatSync(2); merged = a.dev === b.dev && a.ino === b.ino; } catch (_) {}
   const out = [];
-  const err = [];
+  const err = merged ? out : [];
   let failed = false;
   child.stdout.on('data', d => out.push(d));
   child.stderr.on('data', d => err.push(d));
@@ -134,7 +139,7 @@ function run(argv) {
   });
   child.on('close', (code, signal) => {
     if (failed) return;
-    const raw = [Buffer.concat(out), Buffer.concat(err)];
+    const raw = merged ? [Buffer.concat(out), Buffer.alloc(0)] : [Buffer.concat(out), Buffer.concat(err)];
     let res = raw;
     try {
       const { transform, limitsFor, recordSavings } = require('./chisle-compress-output');

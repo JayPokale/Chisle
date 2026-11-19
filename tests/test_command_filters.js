@@ -137,7 +137,7 @@ ${body.map(b => '    ' + b).join('\n')}
 
 test('git log: one line per commit header, single commit keeps its whole body', () => {
   const one = commit('a', 'Ada', ['b1', 'b2', 'b3', 'b4', 'b5']).replace(`${'a'.repeat(40)}`, `${'a'.repeat(40)} (HEAD -> main)`);
-  assert.equal(filterCommand('git show HEAD', one), `aaaaaaa (HEAD -> main) Subject a (2026-11-17 Ada)\n  b1\n  b2\n  b3\n  b4\n  b5`);
+  assert.equal(filterCommand('git show HEAD', one), `aaaaaaaaaa (HEAD -> main) Subject a (2026-11-17 Ada)\n  b1\n  b2\n  b3\n  b4\n  b5`);
   assert.equal(filterCommand('git log --oneline', one), null);
 });
 
@@ -145,11 +145,11 @@ test('git log: several commits cap bodies and stats, shared author named once', 
   const stat = Array.from({ length: 7 }, (_, i) => ` src/f${i}.js | ${i + 1} +`).join('\n') + '\n 7 files changed, 28 insertions(+)\n';
   const text = commit('a', 'Ada', ['b1', 'b2', 'b3', 'b4', 'b5']) + '\n' + stat + '\n' + commit('b', 'Ada', ['c1']);
   assert.equal(filterCommand('git log --stat', text), [
-    '(all by Ada)', 'aaaaaaa Subject a (2026-11-17)', '  b1', '  b2', '  b3', '  [+2 lines]',
+    '(all by Ada)', 'aaaaaaaaaa Subject a (2026-11-17)', '  b1', '  b2', '  b3', '  [+2 lines]',
     'src/f0.js | 1', 'src/f1.js | 2', 'src/f2.js | 3', 'src/f3.js | 4', '[+3 files]', '7 files +28',
-    'bbbbbbb Subject b (2026-11-17)', '  c1'].join('\n'));
+    'bbbbbbbbbb Subject b (2026-11-17)', '  c1'].join('\n'));
   const two = commit('a', 'Ada', ['x']) + '\n' + commit('b', 'Bo', ['y']);
-  assert.match(filterCommand('git log', two), /^aaaaaaa Subject a \(2026-11-17 Ada\)\n  x\nbbbbbbb Subject b \(2026-11-17 Bo\)\n  y$/);
+  assert.match(filterCommand('git log', two), /^a{10} Subject a \(2026-11-17 Ada\)\n  x\nb{10} Subject b \(2026-11-17 Bo\)\n  y$/);
 });
 
 test('git diff: headers become one path line, hunks untouched', () => {
@@ -177,6 +177,11 @@ old mode 100644
 new mode 100755`;
   assert.equal(filterCommand('git diff', text),
     'x.js\n@@ -1,2 +1,2 @@\n-old\n+new\n same\nn.js (new)\n@@ -0,0 +1 @@\n+hi\no.js -> p.js\ns.sh (mode 100644 -> 100755)');
+  // A context line that reads like a stat line is diff content, not a stat.
+  const table = 'diff --git a/t.md b/t.md\nindex 1..2 100644\n--- a/t.md\n+++ b/t.md\n@@ -1,2 +1,2 @@\n Total | 42\n-x\n+y';
+  assert.equal(filterCommand('git diff', table), 't.md\n@@ -1,2 +1,2 @@\n Total | 42\n-x\n+y');
+  assert.equal(filterCommand('git diff --stat', ' a.js | 3 ++-\n b.md | 10 +++++\n 2 files changed, 12 insertions(+), 1 deletion(-)'),
+    'a.js | 3\nb.md | 10\n2 files +12 -1');
 });
 
 test('git branch -a: remotes folded per remote; ls -l compacted', () => {
@@ -189,7 +194,12 @@ drwxr-xr-x  2 ada ada  4096 Nov 19 03:44 src
 -rwxr-xr-x  1 ada ada  1234 Nov 19 03:44 run.sh
 lrwxrwxrwx  1 ada ada     5 Nov 19 03:44 link -> run.sh
 -rw-r--r--  1 root root  10 Nov 19 03:44 my file.txt`;
-  assert.equal(filterCommand('ls -la', ls), '(owner ada:ada unless shown)\n755/ src/\n755 1234 run.sh\n777 5 link -> run.sh\n644 10 root:root my file.txt'.replace('755/ src/', '755 src/'));
+  assert.equal(filterCommand('ls -la', ls), '(owner ada:ada unless shown)\n755 ./\n755 src/\n755 1234 run.sh\n777 5 link -> run.sh\n644 10 root:root my file.txt');
+  // A single owner is named unless it is the current user.
+  const mine = require('os').userInfo().username;
+  const one = (who) => `-rw-r--r--+ 1 ${who} ${who} 10 Nov 19 03:44 a.txt\n-rw-r--r--  1 ${who} ${who} 20 Nov 19 03:44 b.txt`;
+  assert.equal(filterCommand('ls -l', one(mine)), '644+ 10 a.txt\n644 20 b.txt');
+  assert.equal(filterCommand('ls -l', one('root')), '(owner root:root)\n644+ 10 a.txt\n644 20 b.txt');
   assert.match(filterCommand('ls -lt', ls), /755 1234 Nov 19 03:44 run\.sh/);
   assert.equal(kindsFor('ls -a'), null);
 });
@@ -200,6 +210,38 @@ test('wc and grep -rn: padding and repeated paths dropped', () => {
   const g = 'src/a.js:3:const x = 1;\nsrc/a.js:9:  x += 2;\nsrc/b.js:1:import x';
   assert.equal(filterCommand('grep -rn x src', g), 'src/a.js\n3:const x = 1;\n9:  x += 2;\nsrc/b.js\n1:import x');
   assert.equal(filterCommand('grep -n x src/a.js', g), null);
+});
+
+test('go test -v: passing tests leave no orphan log lines; failing and skipped keep theirs', () => {
+  const text = `=== RUN   TestConnect
+    a_test.go:3: connecting
+--- PASS: TestConnect (0.00s)
+=== RUN   TestSkip
+    a_test.go:5: needs docker
+--- SKIP: TestSkip (0.00s)
+=== RUN   TestPar
+=== RUN   TestPar/x
+=== PAUSE TestPar/x
+=== RUN   TestPar/y
+=== PAUSE TestPar/y
+=== CONT  TestPar/x
+    a_test.go:8: sub x
+=== CONT  TestPar/y
+    a_test.go:8: y broke
+--- FAIL: TestPar (0.00s)
+    --- PASS: TestPar/x (0.00s)
+    --- FAIL: TestPar/y (0.00s)
+FAIL`;
+  assert.equal(filterCommand('go test -v ./...', text), `=== RUN   TestSkip
+    a_test.go:5: needs docker
+--- SKIP: TestSkip (0.00s)
+=== RUN   TestPar
+=== RUN   TestPar/y
+=== CONT  TestPar/y
+    a_test.go:8: y broke
+--- FAIL: TestPar (0.00s)
+    --- FAIL: TestPar/y (0.00s)
+FAIL`);
 });
 
 test('cargo test: banners, passes and the repeated failure list dropped, zero counts trimmed', () => {

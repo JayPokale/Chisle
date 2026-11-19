@@ -126,11 +126,29 @@ const DROP = [
   // docker pull / buildkit
   ['progress', /^[0-9a-f]{12}: (?:Pulling fs layer|Waiting|Verifying Checksum|Download complete|Pull complete|Already exists|Downloading|Extracting)|^#\d+ (?:sha256:[0-9a-f]+ [\d.]+[kMG]?B \/|transferring |extracting sha256:)/],
   // passing tests: pytest dots/-v, jest/vitest/mocha/node spec ticks, cargo, go
-  ['test', /^\S+\.py\s+[.sx]+\s*\[\s*\d+%\]$|^\S+::\S.*\sPASSED(?:\s+\[\s*\d+%\])?$|^\s*[✓✔√]\s|^\s*PASS\s+\S|^\s*▶\s|^test \S+ \.\.\. ok$|^=== (?:RUN|PAUSE|CONT|NAME)\s|^\s*--- PASS: |^\s*# Subtest: /],
+  ['test', /^\S+\.py\s+[.sx]+\s*\[\s*\d+%\]$|^\S+::\S.*\sPASSED(?:\s+\[\s*\d+%\])?$|^\s*[✓✔√]\s|^\s*PASS\s+\S|^\s*▶\s|^test \S+ \.\.\. ok$|^\s*--- PASS: |^\s*# Subtest: /],
   // cargo test scaffolding: build/run banners, per-suite headers, empty suites,
   // and the backtrace hint
-  ['test', /^\s+(?:Finished|Running|Doc-tests) \S|^running \d+ tests?$|^test result: ok\. 0 passed; 0 failed;|^note: run with `RUST_BACKTRACE=1`/],
+  ['test', /^\s+Finished `|^\s+Running \S.* \(target[\\/]|^\s+Doc-tests \S+$|^running \d+ tests?$|^test result: ok\. 0 passed; 0 failed;|^note: run with `RUST_BACKTRACE=1`/],
 ];
+
+// `go test -v`: a test's log lines sit between its `=== RUN`/`CONT` line and
+// the next marker. Passing tests go whole (header and logs), so no log line
+// is left orphaned beside a failure; failing and skipped tests keep theirs.
+function goVerbose(lines) {
+  if (!lines.some(l => /^=== RUN\s/.test(l))) return lines;
+  const keep = new Set(lines.map(l => l.match(/^\s*--- (?:FAIL|SKIP): (\S+)/)).filter(Boolean).map(m => m[1]));
+  const out = [];
+  let cur = null;
+  for (const l of lines) {
+    const m = l.match(/^=== (RUN|PAUSE|CONT|NAME)\s+(\S+)/);
+    if (m) { cur = m[2]; if (keep.has(cur) && m[1] !== 'PAUSE') out.push(l); continue; }
+    if (/^\s*--- (?:PASS|FAIL|SKIP): /.test(l)) cur = null;
+    else if (cur && !keep.has(cur)) continue;
+    out.push(l);
+  }
+  return out;
+}
 
 // node --test TAP: `ok N - name` plus its indented YAML block.
 function dropTapPasses(lines) {
@@ -236,14 +254,19 @@ function compactDiff(lines) {
   return out;
 }
 
-// --stat lines: drop the +/- bar and the alignment padding.
+// --stat blocks: drop the +/- bar and the alignment padding. Only lines in
+// the run right above a ` N files changed` summary count, so a diff context
+// line that happens to read ` Total | 42` is never touched.
+const STAT_RE = /^ (\S.*?)\s+\|\s+(\d+(?= ?[+-]*$)|Bin .*)/;
 function compactStat(lines) {
-  return lines.map(l => {
-    const m = l.match(/^ (\S.*?)\s+\|\s+(\d+)(?: [+-]*)?$/) || l.match(/^ (\S.*?)\s+\|\s+(Bin .*)$/);
-    if (m) return `${m[1]} | ${m[2]}`;
-    const t = l.match(/^ ?(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\))?$/);
-    return t ? `${t[1]} file${t[1] === '1' ? '' : 's'}${t[2] ? ` +${t[2]}` : ''}${t[3] ? ` -${t[3]}` : ''}` : l;
-  });
+  const out = lines.slice();
+  for (let i = 0; i < lines.length; i++) {
+    const t = lines[i].match(/^ (\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\))?$/);
+    if (!t) continue;
+    out[i] = `${t[1]} file${t[1] === '1' ? '' : 's'}${t[2] ? ` +${t[2]}` : ''}${t[3] ? ` -${t[3]}` : ''}`;
+    for (let j = i - 1, m; j >= 0 && (m = lines[j].match(STAT_RE)); j--) out[j] = `${m[1]} | ${m[2]}`;
+  }
+  return out;
 }
 
 const MONTHS = { Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06', Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12' };
@@ -251,7 +274,8 @@ const BODY_CAP = 3;
 const STAT_CAP = 4;
 
 // Default `git log`/`git show` blocks → `hash subject (date author)`, body
-// indented. Hash shortened to 7 (git's own default abbrev), email dropped,
+// indented. Hash shortened to 10 (unambiguous in all but the largest
+// repos; git's default 7 collides there), email dropped,
 // date to the day, an author shared by every commit named once. With more
 // than one commit, bodies and stats past a cap become a count: `git show
 // <hash>` has the rest.
@@ -284,7 +308,7 @@ function compactGitLog(lines) {
       if (lines[j].trim()) body.push(lines[j].slice(4));
       else if (j + 1 < lines.length && !lines[j + 1].startsWith('    ')) { j++; break; }
     }
-    out.push(`${m[1].slice(0, 7)}${m[2]}${merge} ${body.shift() || ''} (${meta.trim()})`);
+    out.push(`${m[1].slice(0, 10)}${m[2]}${merge} ${body.shift() || ''} (${meta.trim()})`);
     const keep = many ? body.slice(0, BODY_CAP) : body;
     for (const b of keep) out.push(`  ${b}`);
     if (keep.length < body.length) out.push(`  [+${body.length - keep.length} lines]`);
@@ -292,7 +316,7 @@ function compactGitLog(lines) {
     let n = 0;
     let hidden = 0;
     for (; j < lines.length && !/^commit [0-9a-f]{40}/.test(lines[j]); j++) {
-      const isStat = / \| (?:\d+|Bin )/.test(lines[j]) && !/^\d+ files? changed/.test(lines[j]);
+      const isStat = /^\S.* \| (?:\d+|Bin )/.test(lines[j]);
       if (isStat && many && ++n > STAT_CAP) { hidden++; continue; }
       if (hidden && !isStat) { out.push(`[+${hidden} files]`); hidden = 0; }
       if (many && !lines[j].trim()) continue;
@@ -317,10 +341,13 @@ function compactBranches(lines, allRemote) {
   return out.map(l => (remotes.has(l) && !l.startsWith(' ') ? `${l}/: ${remotes.get(l).join(', ')}` : l));
 }
 
-// `ls -l`: octal mode, size, name. Owner only where it differs from the
-// majority (named once up top), date only with -t (sorted by it), link count,
-// `total` and `.`/`..` dropped.
-const LS_RE = /^([-dlcbps])([rwxsStT-]{9})[.+@]?\s+\d+\s+(\S+)\s+(\S+)\s+(\d+|\d+,\s*\d+|[\d.]+[KMGTP]?)\s+(\w{3}\s+\d{1,2}\s+(?:\d{1,2}:\d{2}|\d{4})|\d{4}-\d{2}-\d{2}(?: [\d:.]+(?: [+-]\d{4})?)?)\s(.+)$/;
+// `ls -l`: octal mode, size, name. Owner named once up top unless it is you
+// for every entry, then only where an entry differs; date only with -t
+// (sorted by it). Link count, `total` and `..` dropped; `.` kept (the
+// directory's own mode); ACL/xattr marks (`+`, `@`) kept on the mode.
+const LS_RE = /^([-dlcbps])([rwxsStT-]{9})([.+@]?)\s+\d+\s+(\S+)\s+(\S+)\s+(\d+|\d+,\s*\d+|[\d.]+[KMGTP]?)\s+(\w{3}\s+\d{1,2}\s+(?:\d{1,2}:\d{2}|\d{4})|\d{4}-\d{2}-\d{2}(?: [\d:.]+(?: [+-]\d{4})?)?)\s(.+)$/;
+let me = null;
+try { me = require('os').userInfo().username; } catch (_) {}
 
 function octal(perm) {
   let special = 0;
@@ -338,21 +365,21 @@ function octal(perm) {
 function compactLs(lines, keepDate) {
   const parsed = lines.map(l => l.match(LS_RE));
   const owners = new Map();
-  for (const p of parsed) if (p) owners.set(`${p[3]}:${p[4]}`, (owners.get(`${p[3]}:${p[4]}`) || 0) + 1);
+  for (const p of parsed) if (p) owners.set(`${p[4]}:${p[5]}`, (owners.get(`${p[4]}:${p[5]}`) || 0) + 1);
   const main = [...owners.entries()].sort((a, b) => b[1] - a[1])[0];
   const out = [];
-  if (owners.size > 1) out.push(`(owner ${main[0]} unless shown)`);
+  if (main && (owners.size > 1 || main[0].split(':')[0] !== me)) out.push(`(owner ${main[0]}${owners.size > 1 ? ' unless shown' : ''})`);
   lines.forEach((l, i) => {
     const p = parsed[i];
     if (!p) { if (!/^total \d/.test(l)) out.push(l); return; }
-    let name = p[7];
-    if (name === '.' || name === '..') return;
-    const own = `${p[3]}:${p[4]}` === main[0] ? '' : ` ${p[3]}:${p[4]}`;
-    const date = keepDate ? ` ${p[6].replace(/\s+/g, ' ')}` : '';
+    let name = p[8];
+    if (name === '..') return;
+    const own = `${p[4]}:${p[5]}` === main[0] ? '' : ` ${p[4]}:${p[5]}`;
+    const date = keepDate ? ` ${p[7].replace(/\s+/g, ' ')}` : '';
     if (p[1] === 'd') name += '/';
-    const size = p[1] === 'd' ? '' : ` ${p[5]}`;
+    const size = p[1] === 'd' ? '' : ` ${p[6]}`;
     const type = '-dl'.includes(p[1]) ? '' : p[1];
-    out.push(`${type}${octal(p[2])}${size}${own}${date} ${name}`);
+    out.push(`${type}${octal(p[2])}${p[3] === '.' ? '' : p[3]}${size}${own}${date} ${name}`);
   });
   return out;
 }
@@ -401,7 +428,7 @@ function filterCommand(command, text) {
     const t = l.replace(/\r$/, '');
     return t.includes('\r') ? t.split('\r').filter(Boolean).pop() || '' : t;
   });
-  if (kinds.has('test')) lines = dropTapPasses(lines);
+  if (kinds.has('test')) lines = goVerbose(dropTapPasses(lines));
   lines = lines.filter(l => !DROP.some(([kind, re]) => kinds.has(kind) && re.test(l) && !(kind !== 'test' && PIPELINE_SAFE.test(l))));
   if (kinds.has('test')) lines = compactCargo(lines);
   if (kinds.has('git-status')) lines = shortStatus(lines);
