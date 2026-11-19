@@ -188,7 +188,7 @@ test('star prompt: never asked, never written, never calls gh without a terminal
   const env = { HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: path.join(home, 'xdg'), PATH: bin, CI: '' };
   const { status, out } = runCLI(['--only', 'claude', '--config-dir', cfg], { env });
   assert.equal(status, 0);
-  assert.doesNotMatch(out, /\[y\/N\]/);
+  assert.doesNotMatch(out, /\[l\]ater/);
   assert.match(out, /a star helps others find it: https:\/\/github\.com\/JayPokale\/Chisle/);
   assert.equal(fs.existsSync(log), false, 'gh never called');
   assert.equal(fs.existsSync(path.join(home, 'xdg', 'chisle', 'config.json')), false, 'nothing saved');
