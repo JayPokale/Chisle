@@ -1,0 +1,48 @@
+The user wants a database migration script that:
+1. Moves from a `full_name` column to `first_name`/`last_name` columns
+2. Backfills existing rows
+3. Is safely re-runnable (idempotent)
+
+This is a database migration task. I need to show code. The most common databases are PostgreSQL, MySQL, SQLite. Since no DB is specified, I'll go with PostgreSQL as the most common choice for new projects, but I could also show a generic approach.
+
+For a safely re-runnable migration, I should:
+- Check if columns exist before creating them
+- Handle the data migration safely
+- Not fail if run multiple times
+
+I'll write this in SQL with IF NOT EXISTS and other safeguards. I could also show it as a Python script using a migration framework, but raw SQL is more universal.
+
+Actually, thinking about what's most useful: a migration script could be:
+1. Raw SQL file (like in Alembic, Django, or standalone)
+2. Python script using a migration tool
+3. Shell script wrapping SQL
+
+I'll provide a SQL migration that's idempotent and handles:
+- Adding the new columns
+- Backfilling from full_name
+- Optionally dropping the old column (safe approach: in separate migration)
+
+Let me write this for PostgreSQL, the most common modern DB.
+
+This is Chisle mode - I should be terse. Code first, minimal explanation.
+
+The migration needs to be safely re-runnable. For PostgreSQL:
+- Use IF NOT EXISTS or check column existence
+- Split into logical steps
+- Handle the backfill safely (only if old column exists and new columns are empty)
+
+Let me think about the safest approach:
+1. Add first_name, last_name columns with defaults
+2. Migrate data from full_name (handle various splitting strategies)
+3. Mark as complete
+4. Later: drop full_name in a follow-up migration
+
+For re-runnability, I could use a flag column or just check if data is already migrated.
+Still writing the migration SQL...
+
+Still writing the migration SQL...
+
+Still writing the MySQL migration...
+
+Still writing the MySQL migration...
+

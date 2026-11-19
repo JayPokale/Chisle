@@ -1,0 +1,66 @@
+The user wants me to implement an order state machine with specific states:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+They want legal transitions to be enforced and invalid ones rejected. They want to see the code.
+
+Let me think about the typical valid transitions for an order:
+1. created → paid (normal flow)
+2. created → cancelled (can cancel before payment)
+3. paid → shipped (after payment)
+4. paid → refunded (refund without shipping)
+5. shipped → delivered (normal flow)
+6. shipped → cancelled (can cancel even after shipping in some cases)
+7. delivered → (end state, maybe refunded)
+8. Any state → cancelled in some cases
+9. Any state → refunded (maybe)
+
+Actually, let me think more carefully about typical order state machines:
+- created: order is placed
+- paid: payment received
+- shipped: order shipped
+- delivered: order delivered
+- cancelled: order cancelled (can be from created or paid state usually)
+- refunded: order refunded (from paid, shipped, or delivered state)
+
+Typical valid transitions:
+- created → paid
+- created → cancelled
+- paid → shipped
+- paid → refunded
+- paid → cancelled
+- shipped → delivered
+- shipped → refunded
+- shipped → cancelled (less common but possible)
+- delivered → refunded
+- cancelled → (terminal, no transitions)
+- refunded → (terminal, no transitions)
+
+I'll implement this in Python since it's a good language for this. I could also do it in JavaScript, Go, or other languages. Let me go with Python as it's clear and commonly used.
+
+I should create a clean implementation with:
+1. An enum or set of valid states
+2. A mapping of valid transitions
+3. A state machine class that enforces these transitions
+4. Methods to check if a transition is valid
+5. Methods to transition between states
+6. Examples/tests showing valid and invalid transitions
+
+Let me write this code:
+
+```python
+from enum import Enum
+Still writing the state machine class...
+
+Still writing the transition methods...
+
+Still writing the transition validation and state methods...
+
+Still writing the transition demo...
+
+The remaining code is the demo at the bottom, where I'm exercising a few transitions and catching the error for an invalid one.
+

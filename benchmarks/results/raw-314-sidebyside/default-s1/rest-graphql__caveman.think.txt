@@ -1,0 +1,27 @@
+User asking for a comparison of REST vs GraphQL. This is a summary/overview question about architectural tradeoffs.
+
+Caveman mode is ACTIVE. User said "Respond terse like smart caveman. All technical substance stay. Only fluff die."
+
+I should be concise, drop articles, filler, pleasantries. Use short synonyms. Keep technical terms exact. Fragments OK.
+
+Pattern: [thing] [action] [reason]. [next step].
+
+No need to cite memory or check files here - this is a general architectural question.
+
+Let me structure the main tradeoffs briefly:
+
+REST:
+- Simple, URL-based, easy to understand
+- Over/underfetching (you get what server sends, not what you need)
+- Many endpoints to manage
+- Good caching built-in (HTTP)
+
+GraphQL:
+- Query exactly what you need
+- Single endpoint, flexible queries
+- Steeper learning curve, N+1 problem if not careful
+- Caching harder
+
+Format for caveman: drop "the", "a", "etc" - use fragments. Short synonyms.
+
+Let me write this terse:

@@ -1,0 +1,8 @@
+The user is asking me to add a cache layer for user profile API responses. However, they haven't provided any existing code or context about what project/codebase they're working on.
+
+I need to:
+1. Check if there's existing code in the working directory
+2. Understand the structure to know what framework/language they're using
+3. Implement an appropriate cache layer
+
+Let me start by exploring the working directory to see what we're working with.

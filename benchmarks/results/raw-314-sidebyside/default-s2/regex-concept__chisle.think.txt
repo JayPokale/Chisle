@@ -1,0 +1,13 @@
+The user is asking for an explanation of regex backreferences with a short example. This is a straightforward technical question.
+
+I'm in Chisle mode (terse, maximum signal). I should:
+- Explain backreference concisely (what it is)
+- Give one short, clear example
+- No hedging, articles where unnecessary, or filler
+
+Backreference = a way to refer back to a captured group within the same regex pattern. Used to match repeated text or find duplicates.
+
+Example: matching doubled words like "hello hello" or "the the"
+Pattern: `(\w+)\s+\1` captures a word, matches spaces, then refers back to that same captured group.
+
+Let me write this in Chisle prose.

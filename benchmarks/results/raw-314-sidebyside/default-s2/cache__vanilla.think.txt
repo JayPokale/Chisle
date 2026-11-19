@@ -1,0 +1,3 @@
+The user is asking me to add a cache layer for user profile API responses. However, I need to check if there's a project/codebase in the current working directory first.
+
+Let me look at what's in the working directory to understand the project structure and what kind of application we're dealing with.

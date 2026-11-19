@@ -1,0 +1,17 @@
+The user is asking for guidance on migrating a monolith to microservices without doing a complete rewrite. This is a strategic/architectural question asking for an explanation of approach.
+
+They want:
+1. How to order the work
+2. Data ownership considerations
+3. How to maintain shippability throughout
+
+This is not a code task, so I should give them a terse but complete recommendation. Per Chisle, I should answer at the question's altitude - they're asking for high-level strategy, not an implementation walkthrough. I should cover the decisive facts and tradeoffs, not an exhaustive survey.
+
+Key points:
+- Start with I/O boundaries (APIs, services that consume/produce data)
+- Strangle pattern (wrap old code, route new requests to new service)
+- Data ownership: shared schema is a trap, migrate data as you go, keep old path working
+- Keep shippable: feature flags, canary, stay on main branch
+- Order: highest-value/lowest-risk services first
+
+Let me structure this tightly without unnecessary elaboration.

@@ -1,0 +1,33 @@
+This is a straightforward request for a CSV processing script. Let me think about what's needed:
+
+1. Read a large CSV
+2. Validate each row
+3. Aggregate totals per customer
+4. Write a report
+5. Handle malformed rows gracefully
+
+Since I'm in ponytail mode (lazy senior developer), I should:
+- Use stdlib only (csv module for reading, dict for aggregation)
+- Keep it minimal and focused
+- Skip over-engineering (no classes unless needed, no config, no abstractions)
+- Skip speculative features
+- Handle the malformed rows pragmatically but simply
+
+The user wants "Show the code" - they want to see it, not just an explanation.
+
+I'll write a straightforward script that:
+- Reads CSV using `csv.DictReader` (stdlib, handles headers)
+- Validates required fields exist
+- Skips/logs malformed rows instead of dying
+- Uses a dict to aggregate per customer
+- Writes a simple report
+
+No need for:
+- Fancy error recovery
+- Logging framework (simple print/file write)
+- Complex validation rules (I'll do basic ones and they can extend)
+- Multiple files
+- Tests (too simple, YAGNI)
+- Classes or abstractions
+
+Let me write this directly - it's a request for code, not a task in an existing project.

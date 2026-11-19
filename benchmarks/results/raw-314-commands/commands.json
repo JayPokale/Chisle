@@ -1,0 +1,631 @@
+[
+  {
+    "dir": "chisle",
+    "cmd": "git status",
+    "held": false,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 485,
+      "chisle-3.12": 485,
+      "chisle-prev": 285,
+      "chisle": 92,
+      "rtk": 92,
+      "rtk+chisle": 92
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "git log -n 15",
+    "held": false,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 6561,
+      "chisle-3.12": 6561,
+      "chisle-prev": 5653,
+      "chisle": 3784,
+      "rtk": 3984,
+      "rtk+chisle": 3984
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "git log --stat -n 5",
+    "held": false,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 4495,
+      "chisle-3.12": 4495,
+      "chisle-prev": 4203,
+      "chisle": 2482,
+      "rtk": 1383,
+      "rtk+chisle": 1383
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "git diff",
+    "held": false,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 480,
+      "chisle-3.12": 480,
+      "chisle-prev": 480,
+      "chisle": 273,
+      "rtk": 380,
+      "rtk+chisle": 380
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "git show --stat HEAD",
+    "held": false,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 1821,
+      "chisle-3.12": 1821,
+      "chisle-prev": 1821,
+      "chisle": 1160,
+      "rtk": 1821,
+      "rtk+chisle": 1821
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "git branch -a",
+    "held": false,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 396,
+      "chisle-3.12": 396,
+      "chisle-prev": 396,
+      "chisle": 221,
+      "rtk": 239,
+      "rtk+chisle": 239
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "ls -la",
+    "held": false,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 2227,
+      "chisle-3.12": 2227,
+      "chisle-prev": 2227,
+      "chisle": 692,
+      "rtk": 750,
+      "rtk+chisle": 750
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "ls -la hooks",
+    "held": false,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 708,
+      "chisle-3.12": 708,
+      "chisle-prev": 708,
+      "chisle": 297,
+      "rtk": 312,
+      "rtk+chisle": 312
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "grep -rn \"transform\" hooks tests",
+    "held": false,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 3851,
+      "chisle-3.12": 3851,
+      "chisle-prev": 3851,
+      "chisle": 2969,
+      "rtk": 3851,
+      "rtk+chisle": 3851
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "find . -name \"*.js\" -not -path \"./node_modules/*\" -not -path \"./site/*\"",
+    "held": false,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": true,
+    "failed": false,
+    "chars": {
+      "bare": 2798,
+      "chisle-3.12": 2798,
+      "chisle-prev": 2798,
+      "chisle": 2798,
+      "rtk": 2901,
+      "rtk+chisle": 2901
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "cat package.json",
+    "held": false,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 2335,
+      "chisle-3.12": 1799,
+      "chisle-prev": 1799,
+      "chisle": 1799,
+      "rtk": 2335,
+      "rtk+chisle": 1799
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "wc -l hooks/*.js",
+    "held": false,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 241,
+      "chisle-3.12": 241,
+      "chisle-prev": 241,
+      "chisle": 189,
+      "rtk": 178,
+      "rtk+chisle": 178
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "npm test",
+    "held": false,
+    "wrapped": true,
+    "rtk": false,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 19368,
+      "chisle-3.12": 4523,
+      "chisle-prev": 501,
+      "chisle": 445,
+      "rtk": 19368,
+      "rtk+chisle": 445
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "node --test tests/test_compress.js",
+    "held": false,
+    "wrapped": true,
+    "rtk": false,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 2696,
+      "chisle-3.12": 892,
+      "chisle-prev": 154,
+      "chisle": 99,
+      "rtk": 2696,
+      "rtk+chisle": 99
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "node --test --test-reporter=tap tests/test_installer.js",
+    "held": false,
+    "wrapped": true,
+    "rtk": false,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 6695,
+      "chisle-3.12": 6695,
+      "chisle-prev": 312,
+      "chisle": 257,
+      "rtk": 6695,
+      "rtk+chisle": 257
+    }
+  },
+  {
+    "dir": "gopass",
+    "cmd": "go test ./...",
+    "held": false,
+    "wrapped": true,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 15,
+      "chisle-3.12": 15,
+      "chisle-prev": 15,
+      "chisle": 15,
+      "rtk": 32,
+      "rtk+chisle": 32
+    }
+  },
+  {
+    "dir": "gopass",
+    "cmd": "go test -v ./...",
+    "held": false,
+    "wrapped": true,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 1220,
+      "chisle-3.12": 1220,
+      "chisle-prev": 75,
+      "chisle": 20,
+      "rtk": 61,
+      "rtk+chisle": 61
+    }
+  },
+  {
+    "dir": "gopass",
+    "cmd": "go vet ./...",
+    "held": false,
+    "wrapped": true,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 0,
+      "chisle-3.12": 0,
+      "chisle-prev": 0,
+      "chisle": 0,
+      "rtk": 23,
+      "rtk+chisle": 23
+    }
+  },
+  {
+    "dir": "gofail",
+    "cmd": "go test -v ./...",
+    "held": false,
+    "wrapped": true,
+    "rtk": true,
+    "rtkError": false,
+    "failed": true,
+    "chars": {
+      "bare": 1245,
+      "chisle-3.12": 1245,
+      "chisle-prev": 1245,
+      "chisle": 85,
+      "rtk": 195,
+      "rtk+chisle": 195
+    }
+  },
+  {
+    "dir": "cargopass",
+    "cmd": "cargo build --offline",
+    "held": false,
+    "wrapped": true,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 71,
+      "chisle-3.12": 71,
+      "chisle-prev": 71,
+      "chisle": 71,
+      "rtk": 99,
+      "rtk+chisle": 99
+    }
+  },
+  {
+    "dir": "cargopass",
+    "cmd": "cargo test --offline",
+    "held": false,
+    "wrapped": true,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 518,
+      "chisle-3.12": 518,
+      "chisle-prev": 442,
+      "chisle": 33,
+      "rtk": 38,
+      "rtk+chisle": 38
+    }
+  },
+  {
+    "dir": "cargofail",
+    "cmd": "cargo test --offline",
+    "held": false,
+    "wrapped": true,
+    "rtk": true,
+    "rtkError": false,
+    "failed": true,
+    "chars": {
+      "bare": 680,
+      "chisle-3.12": 680,
+      "chisle-prev": 680,
+      "chisle": 254,
+      "rtk": 371,
+      "rtk+chisle": 371
+    }
+  },
+  {
+    "dir": "noisylog",
+    "cmd": "npm test",
+    "held": false,
+    "wrapped": true,
+    "rtk": false,
+    "rtkError": false,
+    "failed": true,
+    "chars": {
+      "bare": 16107,
+      "chisle-3.12": 16107,
+      "chisle-prev": 16107,
+      "chisle": 309,
+      "rtk": 16107,
+      "rtk+chisle": 309
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "git show HEAD~2",
+    "held": true,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 30000,
+      "chisle-3.12": 6383,
+      "chisle-prev": 6383,
+      "chisle": 6691,
+      "rtk": 21077,
+      "rtk+chisle": 5800
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "git diff HEAD~3 --stat",
+    "held": true,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 2046,
+      "chisle-3.12": 2046,
+      "chisle-prev": 2046,
+      "chisle": 1183,
+      "rtk": 2045,
+      "rtk+chisle": 2045
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "git diff HEAD~1",
+    "held": true,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 30000,
+      "chisle-3.12": 7181,
+      "chisle-prev": 7181,
+      "chisle": 9353,
+      "rtk": 30000,
+      "rtk+chisle": 6145
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "git log -n 8 -- hooks",
+    "held": true,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 4443,
+      "chisle-3.12": 4443,
+      "chisle-prev": 3919,
+      "chisle": 2074,
+      "rtk": 2070,
+      "rtk+chisle": 2070
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "git branch",
+    "held": true,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 6,
+      "chisle-3.12": 6,
+      "chisle-prev": 6,
+      "chisle": 6,
+      "rtk": 239,
+      "rtk+chisle": 239
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "ls -l tests",
+    "held": true,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 754,
+      "chisle-3.12": 754,
+      "chisle-prev": 754,
+      "chisle": 343,
+      "rtk": 368,
+      "rtk+chisle": 368
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "ls -la bin",
+    "held": true,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 192,
+      "chisle-3.12": 192,
+      "chisle-prev": 192,
+      "chisle": 36,
+      "rtk": 32,
+      "rtk+chisle": 32
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "grep -rn \"require(\" bin hooks",
+    "held": true,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 2659,
+      "chisle-3.12": 2659,
+      "chisle-prev": 2659,
+      "chisle": 2020,
+      "rtk": 2659,
+      "rtk+chisle": 2659
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "wc -l tests/*.js",
+    "held": true,
+    "wrapped": false,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 384,
+      "chisle-3.12": 384,
+      "chisle-prev": 384,
+      "chisle": 280,
+      "rtk": 269,
+      "rtk+chisle": 269
+    }
+  },
+  {
+    "dir": "chisle",
+    "cmd": "node --test tests/test_command_filters.js",
+    "held": true,
+    "wrapped": true,
+    "rtk": false,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 872,
+      "chisle-3.12": 872,
+      "chisle-prev": 154,
+      "chisle": 99,
+      "rtk": 872,
+      "rtk+chisle": 99
+    }
+  },
+  {
+    "dir": "gofail",
+    "cmd": "go test ./...",
+    "held": true,
+    "wrapped": true,
+    "rtk": true,
+    "rtkError": false,
+    "failed": true,
+    "chars": {
+      "bare": 69,
+      "chisle-3.12": 69,
+      "chisle-prev": 69,
+      "chisle": 69,
+      "rtk": 166,
+      "rtk+chisle": 166
+    }
+  },
+  {
+    "dir": "gofail",
+    "cmd": "go vet ./...",
+    "held": true,
+    "wrapped": true,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 0,
+      "chisle-3.12": 0,
+      "chisle-prev": 0,
+      "chisle": 0,
+      "rtk": 23,
+      "rtk+chisle": 23
+    }
+  },
+  {
+    "dir": "cargofail",
+    "cmd": "cargo build --offline",
+    "held": true,
+    "wrapped": true,
+    "rtk": true,
+    "rtkError": false,
+    "failed": false,
+    "chars": {
+      "bare": 71,
+      "chisle-3.12": 71,
+      "chisle-prev": 71,
+      "chisle": 71,
+      "rtk": 99,
+      "rtk+chisle": 99
+    }
+  },
+  {
+    "dir": "cargofail",
+    "cmd": "cargo test --offline -- --test-threads=1",
+    "held": true,
+    "wrapped": true,
+    "rtk": true,
+    "rtkError": false,
+    "failed": true,
+    "chars": {
+      "bare": 680,
+      "chisle-3.12": 680,
+      "chisle-prev": 680,
+      "chisle": 254,
+      "rtk": 371,
+      "rtk+chisle": 371
+    }
+  }
+]

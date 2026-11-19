@@ -1,0 +1,16 @@
+The user is asking for an explanation of how to migrate a monolith to microservices incrementally, without doing a big-bang rewrite. This is a software architecture question asking for strategic guidance on:
+
+1. Ordering - which services to extract first
+2. Data ownership - how to handle data as services separate
+3. Keeping it shippable - maintaining continuous delivery throughout
+
+This is a conceptual/educational question, not a task to execute on their codebase. I should provide a clear, practical explanation that covers the key patterns and tradeoffs.
+
+Let me structure this around:
+- General strategy and philosophy
+- How to identify and order services to extract
+- Data migration patterns
+- Maintaining deployability throughout
+- Key techniques to keep the system coherent
+
+This is a solid question about system design, not a task on their specific code, so I'll give a direct, well-reasoned response.

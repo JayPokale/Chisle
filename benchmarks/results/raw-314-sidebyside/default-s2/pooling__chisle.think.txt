@@ -1,0 +1,10 @@
+The user is asking for an explanation of database connection pooling and why it's beneficial. This is a straightforward technical education question. 
+
+According to the Chisle rules, I should be terse and direct. The user is asking "how does X work and why does it help" - they want two things: mechanism and benefit. I should explain both concisely without unnecessary elaboration or structure markers (no "here's how it works" then "here's why it helps" sections).
+
+Let me think about the key signal:
+1. What connection pooling is fundamentally
+2. How it works mechanically
+3. Why this matters (performance, resource efficiency)
+
+I should use causality arrows and avoid filler. Code isn't needed here - it's explanation. Keep it tight.

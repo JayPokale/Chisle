@@ -1,0 +1,60 @@
+The user wants me to implement an order state machine with specific states:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+With legal transitions enforced and invalid ones rejected. They want to see the code.
+
+I need to think about valid transitions:
+1. created → paid (normal flow)
+2. created → cancelled (before payment)
+3. paid → shipped (after payment)
+4. paid → refunded (refund before shipment)
+5. shipped → delivered (delivery complete)
+6. shipped → cancelled (maybe cancel mid-delivery?)
+7. delivered → refunded (after delivery, refund)
+8. refunded → (end state, no transitions)
+9. cancelled → (end state, no transitions)
+
+Actually, let me think about realistic order transitions:
+- created: initial state, nothing has happened
+  - can go to: paid, cancelled
+- paid: payment received
+  - can go to: shipped, refunded (refund without shipping)
+- shipped: order is in transit
+  - can go to: delivered, cancelled (maybe not typical)
+- delivered: order received
+  - can go to: refunded (customer returns)
+- refunded: money returned
+  - end state
+- cancelled: order cancelled
+  - end state
+
+This is a common e-commerce flow. I'll implement it in a clean way.
+
+Language choice: The user didn't specify, but state machines are common in Python, Go, TypeScript, Java, etc. Python is good for clarity, TypeScript for type safety. I'll go with Python since it's simple and clear, but I could also do it in another language. Let me use Python for a clean, simple implementation.
+
+I should not ask for language confirmation - I'll just pick the most sensible default. Python is good for this.
+
+I'll create a simple state machine using an enum and a class with valid transitions defined.
+
+Let me write clean, minimal code:
+
+```python
+from enum import Enum
+from typing import Set
+
+class OrderState(Enum):
+Still writing the enum and transition table...
+
+I'm fleshing out the transition table and the transition and can_transition methods, with the terminal states left with no outgoing moves.
+
+Still writing the order class with its exception handling and transition table...
+
+Still writing the order class and its transition check methods...
+
+Now I'm wrapping up the order class with a helper that reports its current state as a readable string, and I'm deciding to keep the example minimal and skip any extra usage code.
+

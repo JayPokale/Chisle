@@ -1,0 +1,50 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle-hook",
+ "seed": 5,
+ "out_tokens": 934,
+ "input_tokens": 104609,
+ "cost_usd": 0.03904450000000001,
+ "turns": 5,
+ "answer": "Fixed. Session is now invalid when `now >= expiresAt` instead of only when `now > expiresAt`. Matches the comment's intent: session ends at the expiry instant, not after it.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find . -type f -name \"*.ts\" -o -name \"*.js\" -o -name \"*.tsx\" -o -name \"*.jsx\" | head -20",
+   "chars": 89
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Read",
+   "input": "middleware.js",
+   "chars": 330
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  }
+ ],
+ "request_prompts": [
+  23377,
+  26598,
+  27076,
+  27558
+ ],
+ "compressed_chars": 0,
+ "compress_events": 0,
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

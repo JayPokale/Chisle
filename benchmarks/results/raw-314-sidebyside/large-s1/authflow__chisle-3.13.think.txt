@@ -1,0 +1,56 @@
+The user wants me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They want to see the code. I need to understand what tech stack they're using. Since I don't see any existing code in the working directory (and it's not a git repo), I should assume a common default.
+
+Since they didn't specify a framework or tech stack, I should pick the most common default and name it. Modern default would be:
+- Node.js/Express with bcrypt for password hashing
+- In-memory or Redis for sessions (I'll go with in-memory for simplicity)
+- Rate limiting middleware for failed attempts
+
+Actually, let me think about what's most useful here. They could be building:
+1. A web app (Node.js, Python, etc.)
+2. A mobile backend
+3. A simple API
+
+Without more context, Node.js + Express is a reasonable modern default. But I should check if there's any existing code in the directory first.
+
+Let me verify the working directory is empty and then ask or just implement for Node.js/Express with bcrypt, JWT for sessions, and a simple in-memory rate limiter.
+
+Actually, the user said "Show the code" - they want implementation, not questions. So I should build it. Node.js/Express with bcrypt, JWT, and rate limiting is a solid, modern approach that's the current default for web APIs.
+
+I'll create:
+1. A simple Node.js/Express app
+2. Password hashing with bcrypt
+3. JWT-based sessions
+4. Rate limiting on login attempts (track failed attempts per IP/email)
+5. Signup and login endpoints
+
+Let me build this efficiently - minimal files, working code, no over-engineering.
+
+Files needed:
+- package.json (dependencies)
+- server.js (main app with auth routes)
+- Or split into routes and middleware if cleaner
+
+I'll keep it in one file for simplicity since it's not huge.
+I'm picking the dependencies for the auth setup: Express for the server, bcrypt for hashing, and jsonwebtoken for issuing sessions. For rate limiting I'll write a small in-memory limiter myself rather than add another package.
+
+Still writing the auth server...
+
+Still writing rate-limit helpers...
+
+Still writing the signup handler...
+
+Still writing the login handler, including the rate-limit check and the failed-attempt path...
+
+Still writing the login handler's error path and the token issuance...
+
+Still writing the profile route and the server startup...
+
+Still writing the package.json dependencies and the rate-limit summary...
+
+I'm deciding whether to explain the implementation or just show it, and since the user asked to see the code, I'll present it cleanly.
+

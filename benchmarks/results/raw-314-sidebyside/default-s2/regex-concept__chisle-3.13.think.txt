@@ -1,0 +1,11 @@
+The user is asking for an explanation of regex backreferences with an example. This is straightforward.
+
+I'm in Chisle mode (based on the preamble), so I should be terse and efficient. No pleasantries, fragments where possible, but complete on the facts.
+
+A backreference in regex refers back to a previously captured group in the same pattern. It's denoted as `\1`, `\2`, etc. (or `\g<1>`, `\g<name>` in some engines).
+
+One short example: matching repeated words, like "hello hello" or "world world".
+
+Pattern: `(\w+) \1` matches a word followed by itself (with space).
+
+Let me keep it tight.

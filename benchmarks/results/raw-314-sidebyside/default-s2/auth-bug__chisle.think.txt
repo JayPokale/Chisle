@@ -1,0 +1,7 @@
+The user is asking me to find and fix an auth middleware issue where valid tokens are being rejected at the exact expiry boundary due to a `currentTime > expiry` check.
+
+The user's working directory is `/tmp/chisle-ablation-work-03dXUv` and it's NOT a git repository.
+
+Let me start by understanding the structure and finding the auth middleware code.
+
+First, I should explore the directory to find where the auth middleware is located.

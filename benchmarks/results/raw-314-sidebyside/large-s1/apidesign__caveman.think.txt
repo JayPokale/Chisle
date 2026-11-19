@@ -1,0 +1,23 @@
+User wants me to design REST API for a multi-tenant document store. Need to cover:
+- Resources
+- Auth model
+- Pagination
+- Versioning
+- Error format
+
+They want explanations of decisions. This is a design task, not implementation. Should give them a solid, thoughtful design with clear reasoning.
+
+Caveman mode is on - be terse but clear. Keep technical substance, drop fluff.
+
+This is exploratory design work. I should give them a comprehensive design with decision explanations, not ask for confirmation first (they asked for the design, not "should we design this").
+
+Let me structure this clearly:
+1. Resource model
+2. Authentication & authorization
+3. Pagination
+4. Versioning
+5. Error format
+
+Each with rationale.
+
+No need for code implementation yet - just the design.

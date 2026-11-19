@@ -1,0 +1,5 @@
+The user wants me to add debounce to a search input that currently fires an API call on every keystroke. They want to see the code.
+
+However, I don't have context about what project or code they're working with. They haven't provided a file path or any existing code for me to modify. I should check if there's a git repository with files, or ask them to clarify which files they want me to look at.
+
+Let me first check the working directory to see if there's any code I can work with.

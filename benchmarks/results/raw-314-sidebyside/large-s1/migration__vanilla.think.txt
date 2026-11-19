@@ -1,0 +1,18 @@
+The user wants me to create a database migration script that:
+1. Moves from a single `full_name` column to `first_name` and `last_name` columns
+2. Backfills existing rows with the split names
+3. Is safely re-runnable (idempotent)
+
+This is a common database migration pattern. I should create a migration script that handles this gracefully. I'll assume this is for a typical SQL database (I could do PostgreSQL, MySQL, or SQLite - I'll go with PostgreSQL as it's common for migrations, but I could also do a generic SQL example or ask).
+
+Actually, let me think about what would be most useful. The user just asked me to "show the code" without specifying a database system. I should pick a reasonable default. PostgreSQL is widely used and has good support for migrations. Alternatively, I could do a generic approach that works with common ORMs like Alembic (SQLAlchemy) or similar.
+
+Let me create a PostgreSQL migration script that:
+1. Checks if the new columns already exist (for idempotency)
+2. Adds the new columns if they don't exist
+3. Populates them from the existing full_name column
+4. Optionally drops the old column (or leaves it for safety)
+
+I'll make it re-runnable by using IF NOT EXISTS where possible and checking for existing data.
+
+Since this is not in a git repository and not an existing project, I should just write out the code and show it to the user.

@@ -1,0 +1,37 @@
+User wants an order state machine with specific states and legal transitions. This is a classic state machine problem.
+
+States:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+Need to think about valid transitions:
+1. created → paid (normal flow)
+2. created → cancelled (can cancel before payment)
+3. paid → shipped (after payment, ship)
+4. shipped → delivered (after shipping)
+5. delivered → refunded (after delivery, can refund)
+6. paid → cancelled (can cancel after payment but before shipping)
+7. paid → refunded (can refund before shipping)
+8. delivered → (end state, no more transitions)
+9. cancelled → (end state)
+10. refunded → (end state)
+
+Actually, let me think more carefully about realistic transitions:
+- created → paid (customer pays)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order is shipped)
+- paid → cancelled (order cancelled after payment but before shipping - triggers refund)
+- paid → refunded (direct refund without shipping)
+- shipped → delivered (order delivered)
+- shipped → cancelled (cancel during shipping? Probably not ideal but possible)
+- delivered → refunded (customer requests refund after delivery)
+
+Let me implement this in Python with a clean state machine pattern. I'll use an enum for states and enforce transitions.
+
+The user asked for "show the code" so they want to see the implementation.
+
+Using caveman mode per system settings. Keep it terse but code blocks stay normal.

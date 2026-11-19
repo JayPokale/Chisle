@@ -1,0 +1,53 @@
+The user wants me to implement an order state machine with specific states and enforce valid transitions. This is a straightforward request to write code. Let me think about what's needed:
+
+States:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+Legal transitions (what makes sense):
+- created → paid (order gets paid)
+- created → cancelled (cancel before payment)
+- paid → shipped (order ships)
+- paid → refunded (refund after payment)
+- shipped → delivered (order arrives)
+- refunded → (terminal, no outgoing)
+- cancelled → (terminal, no outgoing)
+- delivered → (terminal, no outgoing)
+
+This is a classic state machine problem. I should implement it in a clean way. No repository context, so I'll create a standalone implementation. Python is a good choice for clarity, though I could do it in other languages. Let me go with Python since it's readable.
+
+I'll implement:
+1. A simple OrderStateMachine class with state transitions
+2. Valid transitions defined
+3. Methods to attempt transitions
+4. Clear rejection of invalid transitions
+
+Let me write minimal, clean code without extra abstractions.
+
+```python
+class OrderStateMachine:
+    # Define valid transitions
+    VALID_TRANSITIONS = {
+        'created': {'paid', 'cancelled'},
+        'paid': {'shipped', 'refunded'},
+        'shipped': {'delivered'},
+        'delivered': set(),
+        'cancelled': set(),
+        'refunded': set(),
+    }
+    
+    def __init__(self):
+        self.state = 'created'
+    
+    def transition(self, new_state):
+        if new_state not in self.VALID_TRANSITIONS[self.state]:
+            raise ValueError(f"Invalid transition: {self.state} → {new_state}")
+        self.state = new_state
+        return self.state
+```
+
+This is clean and minimal. Let me add some usage examples to show how it works and demonstrate that invalid transitions are rejected.

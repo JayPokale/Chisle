@@ -1,0 +1,11 @@
+The user is asking me to add debounce to a search input that currently fires an API call on every keystroke. They want to see the code.
+
+However, I need to first understand the context - what codebase are we working with? Let me check the working directory to see what files are there.
+
+Since they're asking for code and the working directory is `/tmp/chisle-ablation-work-03dXUv`, let me explore what's there. I should look at what files exist first.
+
+Actually, the user said "Show the code" - they want me to show the debounced implementation. But I need to either:
+1. See their existing code first to modify it
+2. Or provide a general example
+
+Let me check if there's existing code in the directory first.

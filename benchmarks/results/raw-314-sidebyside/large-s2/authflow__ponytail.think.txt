@@ -1,0 +1,42 @@
+The user is asking me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They want me to "show the code" - so they want a working implementation.
+
+This is a broad request without a specific context (what framework, language, etc.). I should check if there's already a project in the working directory that gives me clues about what to build.
+
+Let me first check the working directory to see what's there.
+
+Actually, looking at the context, it's not a git repository and I don't have visibility into what's in `/tmp/chisle-ablation-work-03dXUv`. I should check what's there first.
+
+Since the user is asking for a general implementation without specifying a framework or language, I need to:
+1. Check what's in the working directory
+2. If nothing specific, ask what framework/language they want, OR just pick something sensible
+
+Given the ponytail mode (lazy senior developer), I should:
+- Pick a reasonable tech stack
+- Build the minimum that works
+- Avoid over-engineering
+- Use stdlib/existing tools where possible
+
+A reasonable minimal choice would be:
+- Python with Flask (or FastAPI)
+- Or Node.js with Express
+- Or a simpler Python script with just stdlib
+
+Since I don't have context, let me check the directory first. If it's empty, I'll make a reasonable choice - probably Python with Flask or a simple script.
+
+Let me think about the lazy approach here:
+1. Use a framework that makes this simple
+2. Use bcrypt or similar for password hashing (stdlib doesn't have this, but it's already installed in most envs, or I can use hashlib)
+3. Session management - could use JWT or simple session storage
+4. Rate limiting - can be a simple in-memory dict or use a library
+
+Minimum viable approach:
+- Python Flask app
+- bcrypt for hashing (or if not available, use hashlib + salt)
+- Simple in-memory session storage with JWT or just random tokens
+Rate limiting will be a simple in-memory dict counting failed attempts per account. Next I'll look at the directory structure and build from there.
+

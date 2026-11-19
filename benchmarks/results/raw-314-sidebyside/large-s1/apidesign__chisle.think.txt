@@ -1,0 +1,47 @@
+The user is asking me to design a REST API for a multi-tenant document store. They want:
+1. Resources (what endpoints/entities)
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+
+And they want explanations for the decisions.
+
+This is a design task, not an implementation task. I should provide a comprehensive but concise design with clear reasoning.
+
+Let me think through each:
+
+**Resources:**
+- Tenants (org/workspace)
+- Documents (the core entity)
+- Collections/Folders (optional grouping)
+- Users/Members (tenant members)
+- Versions (document history)
+- Shares (access control beyond tenant)
+
+**Auth Model:**
+- Multi-tenant means tenant isolation is critical
+- Either:
+  - API key per tenant + user auth
+  - OAuth/JWT with tenant claim
+  - Tenant header + bearer token
+- Need to prevent tenant isolation bypass
+
+**Pagination:**
+- Cursor-based or offset-limit?
+- Cursor is better for large datasets
+- Simple offset/limit is fine for most cases
+
+**Versioning:**
+- API versioning strategy (URL, header, media type)
+- Document versioning (snapshots, diffs)
+- Separate concerns
+
+**Error Format:**
+- Standard error envelope
+- Error codes/types
+- Helpful messages
+
+I should write this in Chisle mode - maximum signal, minimum noise. No unnecessary preamble, structure by content not format.
+
+Let me organize this by topic in prose, not bullets/tables unless essential.

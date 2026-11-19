@@ -2,6 +2,51 @@
 
 Every result behind the [README](../README.md), in full. Each figure is recomputed from the committed raw cells by the scripts named beside it; nothing is estimated except where a section says "simulated". Earlier rounds (June–October 2026, rulesets up to v3.8) are retired; they stay in the git history.
 
+## Chisle 3.14 (2026-11-19)
+
+The full suite again, with Chisle 3.13 beside 3.14. The two ship the same ruleset (unchanged since 3.10), so wherever only the ruleset is measured, the gap between them is run-to-run noise; they differ only in the hooks, which the agentic and input-axis sections measure. Rivals: caveman `ef6050c5e184`, ponytail 4.8.3, as before. Some results go against Chisle and are reported as measured.
+
+**Output axis, side by side.** Haiku 4.5, Claude Code, tools off, the 13 `run-live.sh` prompts × 2 seeds, 26 answers per arm, all five arms in one session ([raw cells](../benchmarks/results/raw-314-sidebyside/), [every prompt and answer](../benchmarks/results/raw-314-sidebyside/ANSWERS.md)). Pooled sums vs the bare model, 95% bootstrap intervals ([`pooled.js`](../benchmarks/pooled.js)).
+
+| | billed | 95% CI | answer length | 95% CI | answer lines | reasoning | backfires | non-answers |
+|---|--:|--:|--:|--:|--:|--:|--:|--:|
+| caveman | 69% | 56–84% | 56% | 44–68% | 67% | 144% | 9 / 26 | 4 |
+| ponytail | 80% | 64–105% | 63% | 49–82% | 67% | 182% | 14 / 26 | 4 |
+| Chisle 3.13 | 70% | 57–87% | 47% | 38–59% | 49% | 204% | 8 / 26 | 3 |
+| **Chisle 3.14** | **69%** | **59–81%** | **51%** | **43–59%** | **46%** | **172%** | **7 / 26** | **0** |
+
+Billed tokens tie with caveman this run (69% each, against 87% for caveman in the 3.9 run). Chisle writes the shortest answers, backfires least and is the only arm that answered every prompt. On the 20 prompts every arm answered: billed Chisle 3.14 75%, caveman 77%, Chisle 3.13 80%, ponytail 92%. Hidden reasoning rises with every ruleset on Haiku, as before.
+
+**Sonnet 5.5.** Bare vs Chisle 3.14, 12 prompts × 2 seeds ([raw cells](../benchmarks/results/raw-314-sonnet/), [every prompt and answer](../benchmarks/results/raw-314-sonnet/ANSWERS.md)): billed **53%** (95% CI 44–63%), answer length 49% (40–59%), lines 51%, reasoning 102%, backfires 4 / 24. The 13th prompt, `authflow`, is out of both arms: the bare model's answer ran past the runner's 4-minute limit on three tries.
+
+**Accuracy.** Maths + coding, 52 problems × 3 seeds, Haiku 4.5 ([raw](../benchmarks/quality/raw-314/)): bare 156/156, Chisle 3.14 156/156, no item scored differently. Chisle used 85% of the bare model's output tokens and wrote answers 79% as long.
+
+**Agentic.** 7 fixtures × 5 seeds, Haiku 4.5, ruleset plus each version's own hooks, paired by fixture and seed ([raw cells](../benchmarks/agentic/raw-314/); the 3.13 arm ran from a `v3.13.0` checkout with its own runner and `plugin.json`). Ratios are pooled vs the bare agent with 95% paired-bootstrap intervals.
+
+| | passed | context / run | cost / run | turns | tool output read |
+|---|--:|--:|--:|--:|--:|
+| bare agent | 31 / 35 | 147.5k | $0.0487 | 5.80 | 6,924 chars |
+| Chisle 3.13 | 32 / 35 | 163.6k (111%, 95–127%) | $0.0531 (**109%, 102–117%**) | 6.17 | 7,442 chars |
+| **Chisle 3.14** | 31 / 35 | **143.3k (97%, 83–110%)** | $0.0510 (105%, 95–114%) | 5.46 | 5,965 chars |
+
+3.14 vs 3.13 directly: context **88%** (78–98%), tool output read **80%** (54–94%), turns 88% (77–100%), cost 96% (89–104%). The change is the PreToolUse wrapper: on `noisylog`, whose `npm test` fails, the agent read 76,111 chars of tool output bare, 57,548 with 3.13 and **6,862** with 3.14. Against the bare agent, 3.13 cost 9% more (an interval clear of 100%); 3.14's 5% is inside the noise. Pass rates do not separate (Fisher p = 1.0).
+
+**Input axis.** Deterministic, no model calls.
+
+- Command corpus, 37 commands (14 held out, written before the 3.14 filters), chars the model reads ([`replay-commands.js`](../benchmarks/replay-commands.js), `CHISLE_PREV=<v3.13.0 checkout>` for the 3.13 arm): bare 100%, Chisle 3.12 (no filters) 57%, Chisle 3.13 47%, **Chisle 3.14 28%**, RTK 0.42.4 84%, RTK + Chisle 3.14 27%. Held out only: 3.13 34%, 3.14 31%, RTK 84%. Failed runs: 3.13 100% (untouched), 3.14 5%, RTK 92%. Chisle 3.14's output is smaller than RTK's on 31 commands, RTK's on 5, and 1 ties; RTK's five are where it drops information (directory names in `wc`, `.` in `ls`, a 7-char hash, three missing commit headers in `git log --stat`). caveman and ponytail are rulesets with no tool-output hook, so they read 100% by construction. Per-command data: [`raw-314-commands/commands.json`](../benchmarks/results/raw-314-commands/commands.json); the README's terminal chart is built from it (`node scripts/build-chart.js`).
+- Real sessions, the maintainer's 33,449 tool results (50.8M chars), replayed through the compressor ([`replay-compress.js`](../benchmarks/replay-compress.js)): saved 3.70M chars with filters off, 3.71M with 3.13's filters, **3.85M** with 3.14's. Small, because those sessions already ran under RTK and most of their Bash calls are `python3`, `sed` and `cat`.
+
+```bash
+node benchmarks/run-ablation.js benchmarks/results/raw-314-sidebyside 2 4 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle-3.13=<v3.13.0 SKILL.md> chisle=skills/chisle/SKILL.md
+ARMS=vanilla,caveman,ponytail,chisle-3.13,chisle node benchmarks/pooled.js benchmarks/results/raw-314-sidebyside/*/
+MODEL=claude-sonnet-5-5 node benchmarks/run-ablation.js benchmarks/results/raw-314-sonnet 2 4 vanilla chisle=skills/chisle/SKILL.md
+RAW_DIR=benchmarks/quality/raw-314 node benchmarks/quality/run.js claude-haiku-4-5-20251001 3 4
+ARMS=vanilla,chisle-hook RAW_DIR=benchmarks/agentic/raw-314 node benchmarks/agentic/run.js claude-haiku-4-5-20251001 5 5
+ARMS=vanilla,chisle-hook-3.13,chisle-hook RAW_DIR=benchmarks/agentic/raw-314 node benchmarks/agentic/score.js
+CHISLE_PREV=<v3.13.0 checkout> node benchmarks/replay-commands.js <fixtures-dir>
+node benchmarks/answers.js benchmarks/results/raw-314-sidebyside
+```
+
 ## Output axis: Chisle 3.9 (2026-11-06)
 
 **Side by side.** Chisle 3.8.1 and 3.9 ran in the same session as caveman `ef6050c5e184` and ponytail 4.8.3: the 13 `run-live.sh` prompts on Haiku 4.5, Claude Code 2.1.285, tools off, 25 cells per arm where all five arms completed ([raw cells](../benchmarks/results/raw-nov-sidebyside/), runner [`run-ablation.js`](../benchmarks/run-ablation.js)). Percentages are pooled sums vs the bare model, intervals a 95% bootstrap over cells ([`pooled.js`](../benchmarks/pooled.js)).

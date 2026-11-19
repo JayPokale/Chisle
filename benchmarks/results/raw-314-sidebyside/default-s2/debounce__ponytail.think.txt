@@ -1,0 +1,33 @@
+The user wants me to add debounce to a search input that currently fires an API call on every keystroke. They want to see the code.
+
+However, I notice a few things:
+1. The working directory `/tmp/chisle-ablation-work-03dXUv` is not a git repository
+2. I haven't been given any files to look at
+3. This is a generic request without context about what tech stack they're using
+
+Since I don't have context about an existing codebase, I should ask what technology they're using (React, Vue, vanilla JS, etc.) OR I could provide a few quick examples for common scenarios.
+
+Actually, let me think about this in the context of Ponytail mode (lazy senior developer):
+
+1. **Does this need to exist at all?** No - they're asking for it, it's a valid request.
+2. **Already in this codebase?** I don't have access to their codebase, so I can't check.
+3. **Stdlib does it?** There's no built-in debounce in vanilla JS, but there are patterns.
+4. **Native platform feature?** Not really.
+5. **Already-installed dependency?** I don't know what dependencies they have.
+6. **Can it be one line?** Debounce isn't a one-liner in vanilla JS, but it can be very simple.
+7. **Only then:** the minimum code that works.
+
+The lazy approach here: I should ask what tech they're using (React/Vue/vanilla) so I can give the minimal solution for their context. OR I could give the simplest possible debounce implementation.
+
+Actually, the user said "Show the code" - they want to see code. So I should provide something. The laziest, most reusable approach is to give them the simplest debounce function that works everywhere.
+
+The absolute minimal debounce function:
+
+```javascript
+function debounce(func, delay) {
+  let timeout;
+  return function(...args) {
+Still writing the debounce helper and the search wiring... Next I need to figure out whether they're on React, Vue, or vanilla JS.
+
+I'm weighing whether to ask which framework they use or to just give a plain vanilla JS debounce with a search example, since they asked to see code. I'll keep the solution universal and offer to tailor it afterward.
+

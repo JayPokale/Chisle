@@ -1,0 +1,17 @@
+The user is asking for a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully (doesn't crash)
+
+This is a practical data processing task. I should write a production-quality script that handles edge cases. I'll use Python since it's well-suited for this. Let me create a script that:
+
+- Reads CSV efficiently (doesn't load everything into memory at once)
+- Validates rows with clear error handling
+- Logs/tracks malformed rows
+- Aggregates customer totals
+- Writes a summary report
+- Doesn't die on bad data
+
+I'll use Python's csv module and handle errors gracefully. Since this is not an untrusted file (the user is asking me to write it), I can write it directly in their working directory.

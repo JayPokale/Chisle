@@ -1,0 +1,57 @@
+The user wants me to implement an order state machine with these states:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+They want valid transitions enforced and invalid ones rejected.
+
+Let me think about valid transitions:
+- created → paid (payment made)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order shipped after payment)
+- paid → refunded (refund issued)
+- shipped → delivered (order delivered)
+- cancelled → (terminal, no transitions)
+- delivered → (terminal, no transitions)
+- refunded → (terminal, no transitions)
+
+Actually, let me reconsider - what are the realistic legal transitions?
+
+- created → paid (normal flow)
+- created → cancelled (cancel before payment)
+- paid → shipped (ship after payment)
+- paid → cancelled (cancel after payment but before shipping - this might be allowed)
+- paid → refunded (refund after payment)
+- shipped → delivered (normal delivery)
+- shipped → cancelled (cancel after shipping? less likely but maybe)
+- delivered → refunded (refund after delivery? maybe for returns)
+
+I'll go with a reasonable set:
+- created → paid
+- created → cancelled
+- paid → shipped
+- paid → cancelled
+- paid → refunded
+- shipped → delivered
+- delivered → refunded (for returns)
+
+Since this is a state machine, I should implement it in a clear way. The user just said "Show the code" - no language specified, so I'll assume Python as it's commonly used for this kind of thing. I could also do TypeScript/JavaScript. Let me go with Python for clarity, but I could ask or just pick one.
+
+Actually, the user said "Show the code" - they want to see it. They didn't specify language. I'll implement in Python since it's clear and concise for this pattern. If they want a different language, they can say so.
+
+Let me write a simple but complete implementation:
+
+```python
+from enum import Enum
+from typing import Set
+Still writing the state machine class...
+
+Still writing the state machine class...
+
+Still writing the state machine class...
+
+Now I'm reviewing the transitions I've listed, checking that the paid, shipped and cancelled states each have the right next steps and that the terminal states have none.
+

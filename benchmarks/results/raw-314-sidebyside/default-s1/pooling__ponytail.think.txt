@@ -1,0 +1,10 @@
+The user is asking for an explanation of database connection pooling - how it works and why it's beneficial. This is a straightforward educational question, not a task to implement or fix code.
+
+Since this is an explanatory question and not a software engineering task to perform, I should give a clear, concise explanation. The Ponytail style would be to keep it direct and minimal - no unnecessary elaboration, but complete enough to be useful.
+
+Let me structure this clearly:
+1. What connection pooling is
+2. How it works (the mechanism)
+3. Why it helps (the benefits)
+
+This is a straightforward explanation request, so I'll keep it clear and direct.

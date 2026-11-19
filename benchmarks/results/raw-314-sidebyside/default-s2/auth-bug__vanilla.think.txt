@@ -1,0 +1,3 @@
+The user is asking me to find and fix an auth middleware issue where valid tokens are being rejected at the exact expiry boundary due to a `currentTime > expiry` comparison. This is a classic off-by-one bug in token validation logic.
+
+Let me start by exploring the working directory to understand the structure and find the auth middleware code.

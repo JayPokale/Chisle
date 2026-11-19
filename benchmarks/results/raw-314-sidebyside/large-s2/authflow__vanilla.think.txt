@@ -1,0 +1,34 @@
+The user wants me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They want to see the code. I should build a complete, working implementation. This is a security-sensitive feature, so I need to:
+- Use proper password hashing (bcrypt, scrypt, argon2)
+- Implement secure session management
+- Add rate limiting for failed login attempts
+- Validate email format and password requirements
+- Handle edge cases properly
+
+Since this is a fresh directory (not a git repo), I should create a project structure. I'll ask what technology stack they prefer, or build a simple but complete implementation. Actually, looking at their email, they're from IITH (Indian Institute of Information Technology), so they're likely a student. I should provide a good educational example.
+
+Let me create a Node.js/Express implementation since it's commonly taught and has good libraries for this. I'll:
+1. Set up a basic Express server
+2. Use bcrypt for password hashing
+3. Implement simple file-based session storage (or in-memory for demo, but mention proper database)
+4. Add rate limiting with memory store for demo
+5. Provide email validation
+6. Include proper error handling
+
+Actually, they just said "Show the code" - so they want to see it. Let me implement a complete, working example. I'll start with a backend implementation.
+
+I should ask what tech stack they prefer, or just pick a sensible one (Node.js/Express is accessible). Let me go with that since it's clear and commonly used for learning.
+
+Let me create:
+1. A complete Node.js/Express backend with signup, login endpoints
+2. Password hashing with bcrypt
+3. Session management (JWT or simple session tokens)
+4. Rate limiting on failed attempts
+5. Proper validation and error handling
+
+I'll create this in the working directory.

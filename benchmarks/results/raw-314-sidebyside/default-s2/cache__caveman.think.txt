@@ -1,0 +1,7 @@
+The user is asking me to add a cache layer for user profile API responses. However, I'm looking at the working directory `/tmp/chisle-ablation-work-03dXUv` and I need to understand what project/code exists there first.
+
+Let me check what's in the directory to understand what we're working with. I should look at the structure of the project to see if there's already an API, what tech stack is being used, etc.
+
+Since the user didn't provide context and I need to see what code exists, I should first explore the directory structure.
+
+The user wants me to be in "full" caveman mode - drop articles, filler, fragments OK, short synonyms. I should stay terse but keep technical substance.

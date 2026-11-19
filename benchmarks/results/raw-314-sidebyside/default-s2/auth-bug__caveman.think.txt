@@ -1,0 +1,10 @@
+The user is saying that the auth middleware rejects valid tokens at the exact expiry boundary because it's using `currentTime > expiry` instead of `currentTime >= expiry`. This is a classic off-by-one bug. When the current time exactly equals the expiry time, the token should still be valid, but `>` will reject it.
+
+The user wants me to:
+1. Find the auth middleware code
+2. Identify where the boundary check happens
+3. Fix it
+
+Let me start by exploring the working directory to find the auth middleware.
+
+They're in "caveman" mode (terse response style), and this is a straightforward bug hunt and fix task.

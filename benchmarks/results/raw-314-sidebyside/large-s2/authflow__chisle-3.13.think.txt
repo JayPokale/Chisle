@@ -1,0 +1,35 @@
+The user wants me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They want to see the code. This is a backend authentication system implementation task. I should ask for clarification about the tech stack since it's not specified, but let me follow the chisle principle: "Unstated stack, DB, language or framework → most common default, named in one line, no deliberation."
+
+The most common modern default would be Node.js/Express with a database like PostgreSQL. I'll implement that and name it upfront in one line.
+
+Let me build a complete, working implementation with:
+- Express.js for HTTP server
+- bcryptjs for password hashing
+- In-memory session store (for simplicity, could swap for Redis)
+- Rate limiting on failed login attempts
+- PostgreSQL or SQLite for database (I'll use SQLite for no external dependencies, or use in-memory for minimal setup)
+
+Actually, for a self-contained example that works immediately, I should use SQLite with a simple schema.
+
+Let me structure this:
+1. User model/schema (email, hashed_password, created_at)
+2. Session model/schema (user_id, token, created_at, expires_at)
+3. Rate limiting store (failed attempts per IP/email)
+4. Signup endpoint: validate email, hash password, create user, issue session
+5. Login endpoint: find user, verify password, rate limit on failure, issue session
+6. Logout endpoint: delete session
+7. Middleware to verify session
+
+I'll write this as a complete working Express.js app with SQLite. Code-first per chisle.
+
+Actually, the user wants me to "show the code" - they want to see the implementation, not necessarily run it. Let me provide a complete, production-ready implementation with explanation.
+
+Let me write this step by step:
+1. Install dependencies: express, bcryptjs, better-sqlite3 or sqlite3, crypto for session tokens
+Next I'm laying out the rest of the build: the database schema, the rate-limiting logic, the auth routes, session middleware, and a usage example, all kept minimal.
+

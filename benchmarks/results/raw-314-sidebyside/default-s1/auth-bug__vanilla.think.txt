@@ -1,0 +1,29 @@
+The user is reporting an issue where auth middleware is rejecting valid tokens at the exact expiry boundary. They mention the problem is with using `currentTime > expiry` logic.
+
+This is a classic off-by-one error. If the token expires at time T, then:
+- At time T-1, the token should still be valid
+- At time T (the expiry boundary), the token is technically expired and should be rejected
+- At time T+1, the token is definitely expired
+
+However, the issue description says "rejects valid tokens at the exact expiry boundary". This suggests that tokens that SHOULD be valid are being rejected right at the boundary.
+
+Actually, let me reconsider. If the logic is `currentTime > expiry`, then:
+- When currentTime < expiry: valid (passes)
+- When currentTime == expiry: valid (passes, because > is false)
+- When currentTime > expiry: invalid (rejected)
+
+So `currentTime > expiry` should allow tokens at the exact boundary. The user says it's rejecting them. Let me think about this differently.
+
+Wait - maybe the issue is the opposite. If they're using `currentTime >= expiry` or similar, that would reject at the boundary. But the user explicitly says it uses `currentTime > expiry`.
+
+Let me reconsider the problem statement: "rejects valid tokens at the exact expiry boundary". 
+
+Hmm, there could be a few scenarios:
+1. The logic is actually `currentTime >= expiry` somewhere, not `currentTime > expiry`
+2. There's a timezone or clock skew issue
+3. The expiry is calculated incorrectly
+4. There's floating point precision issues
+
+The most likely root cause for an off-by-one error at the boundary is using `>=` instead of `>`. Let me start by looking at the code to see where this middleware is and what the actual logic is.
+
+I should ask the user for more context or search for the auth middleware in the codebase. Let me start by exploring the working directory.

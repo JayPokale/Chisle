@@ -1,0 +1,38 @@
+The user wants me to implement an order state machine with specific states and legal transitions. They want to see the code and have invalid transitions rejected.
+
+Let me think about the states:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+Legal transitions (what makes sense):
+- created → paid (order pays)
+- created → cancelled (cancels before payment)
+- paid → shipped (ships the order)
+- paid → refunded (refunds after payment but before shipping)
+- shipped → delivered (order is delivered)
+- shipped → cancelled (maybe? or should this not be allowed once shipped?)
+- delivered → refunded (customer can return/refund after delivery)
+- cancelled → refunded? (probably not, refund is for paid orders)
+- refunded → (terminal state, can't transition from here)
+
+I should ask myself per the ponytail approach:
+1. Does this need to exist? Yes, the user asked for it.
+2. Already in the codebase? No, it's a new project.
+3. Stdlib? Not really - we could use an enum but we need logic for transitions.
+4. Simple approach? Absolutely. This is a perfect use case for a simple class with an enum for states and a method that validates transitions.
+
+For the implementation, I'll keep it minimal:
+- An Enum for states
+- A class (Order or OrderStateMachine) that tracks state
+- A transition method that validates legal transitions
+- Clear definition of what transitions are allowed
+
+I could do this in Python since it's simple and clear. Let me write a minimal but complete implementation.
+
+No need for database, persistence, event sourcing, or any other complexity - just the state machine logic.
+
+Let me code this up - should be straightforward.

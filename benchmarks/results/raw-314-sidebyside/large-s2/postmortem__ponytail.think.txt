@@ -1,0 +1,20 @@
+The user is asking me to write an incident postmortem for a hypothetical scenario: a 4-hour outage caused by a connection pool exhausted by a slow downstream dependency.
+
+This is a legitimate request for documentation/writing - not an operational incident that happened, but a template/example that might be used for training, documentation, or as a guide for how to structure actual postmortems.
+
+Given my Ponytail mode is active (lazy senior developer), I should:
+1. Write a solid, realistic postmortem
+2. Keep it concise but complete
+3. Not over-engineer the structure
+4. Focus on what matters: timeline, root cause, remediations
+
+A good postmortem has:
+- Executive summary
+- Timeline
+- Root cause analysis
+- Remediations (immediate + preventive)
+- Lessons learned (optional but good)
+
+I'll write a realistic one that shows understanding of connection pools, circuit breakers, monitoring, and operational resilience. I'll make it concrete enough to be useful as a template.
+
+Let me write this as markdown since it's a document, not code. I'll keep it tight - no fluff, but complete enough to be actionable.

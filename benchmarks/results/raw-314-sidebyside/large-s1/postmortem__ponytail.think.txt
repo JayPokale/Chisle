@@ -1,0 +1,13 @@
+The user is asking me to write an incident postmortem for a hypothetical scenario: a four-hour outage caused by a connection pool exhausted by a slow downstream dependency. This is a reasonable request for creating documentation/template content.
+
+This isn't about their actual project (they said it's not a git repository). They're asking me to write a postmortem template/example.
+
+Let me think about the ponytail approach:
+1. Does this need to exist? Yes - they're asking for it
+2. Is there a template I should reference? Not in this repo
+3. Can this be minimal? Yes - a good postmortem has: timeline, root cause, impact, remediations. I should keep it realistic and concise, not over-detailed
+4. What format? Standard postmortem format
+
+I'll write a realistic, well-structured postmortem that covers all the key elements. I'll keep it concrete but not unnecessarily long.
+
+No need to access memory or save anything - this is a one-off writing task.

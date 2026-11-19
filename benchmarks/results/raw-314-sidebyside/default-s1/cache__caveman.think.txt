@@ -1,0 +1,17 @@
+User wants to add a cache layer for user profile API responses. They want to see the code.
+
+However, there's a problem: I need to understand what project/codebase we're working with. The working directory is `/tmp/chisle-ablation-work-03dXUv` and it's not a git repository.
+
+Let me check what's in that directory first to understand what we're working with.
+
+Also, the user wants me to respond in "caveman mode" (full). They said "Respond terse like smart caveman. All technical substance stay. Only fluff die."
+
+So I should:
+- Drop articles (a/an/the)
+- Drop filler words
+- Use fragments
+- Keep technical terms exact
+- Short synonyms
+- Code blocks unchanged
+
+Let me start by exploring the directory to see what we have.

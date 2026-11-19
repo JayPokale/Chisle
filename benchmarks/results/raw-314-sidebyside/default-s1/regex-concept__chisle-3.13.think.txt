@@ -1,0 +1,9 @@
+The user is asking for an explanation of regex backreferences with a short example. This is a straightforward technical question.
+
+I'm in Chisle mode, so I should be terse and direct. No unnecessary preamble or structure. Answer at the question's altitude - they asked for one short example, not a comprehensive guide.
+
+A backreference refers to a previously captured group in a regex pattern, typically written as `\1`, `\2`, etc., or in some languages `$1`, `$2`.
+
+Simple example: matching duplicate words like "hello hello" - the pattern would be `(\w+)\s+\1` where `\1` refers back to the first capture group.
+
+Let me keep it to one sentence explanation + one example.

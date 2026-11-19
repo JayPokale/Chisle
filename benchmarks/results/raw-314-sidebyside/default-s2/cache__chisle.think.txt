@@ -1,0 +1,5 @@
+The user is asking me to add a cache layer for user profile API responses. However, there's no existing project context provided - I haven't been shown what code exists, what framework is being used, or what the current API structure looks like.
+
+According to Chisle rules, I should ask clarifying questions when there's missing context, but I need to be terse about it. I should also check if there's already code in the working directory.
+
+Let me first check what's in the working directory to understand what we're working with.

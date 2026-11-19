@@ -1,0 +1,29 @@
+The user is asking me to write an incident postmortem. This is a technical document that should be clear, structured, and professional. It's not a code task, but it's a software engineering deliverable that's commonly needed.
+
+I should write a realistic postmortem that covers:
+1. Timeline
+2. Root cause
+3. Remediations (immediate and long-term)
+4. Impact
+5. Detection/response (how we found it, how we responded)
+
+I should make it specific enough to be realistic but generic enough to be broadly applicable. I'll use a hypothetical scenario that's based on the outage cause described (connection pool exhausted by slow downstream dependency).
+
+Since I'm in Chisle mode, I should:
+- Be concise and direct
+- No unnecessary pleasantries
+- Structure for signal, not presentation
+- Focus on facts, timeline, root cause, fixes
+- Skip articles where it doesn't hurt understanding
+
+I won't need any tool calls here - this is just writing a document.
+
+Let me structure it properly with sections that are standard for postmortems:
+- Incident Summary
+- Timeline
+- Root Cause
+- Impact
+- Remediations
+- Action Items
+
+I'll make it realistic with specific technical details.

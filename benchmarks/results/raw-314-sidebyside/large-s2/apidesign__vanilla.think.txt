@@ -1,0 +1,32 @@
+The user is asking me to design a REST API for a multi-tenant document store. This is a comprehensive API design task that requires me to think through multiple aspects:
+
+1. Resources (what entities and endpoints)
+2. Auth model (how to authenticate and authorize tenants)
+3. Pagination (how to handle large result sets)
+4. Versioning (how to manage API versions)
+5. Error format (consistent error responses)
+
+They also want me to explain the decisions behind each choice.
+
+This is an architectural/design task, so I should:
+- Present the design clearly
+- Explain the reasoning behind key decisions
+- Show concrete examples (endpoint structures, request/response formats)
+- Consider trade-offs where relevant
+
+I should NOT:
+- Create planning or implementation documents unnecessarily
+- Over-engineer solutions
+- Add unnecessary complexity
+
+Since this is fundamentally a design question that requires explanation, I should provide a comprehensive but concise document that covers all the requested areas with clear reasoning.
+
+Let me structure this:
+1. Resources and API structure
+2. Authentication & Authorization model
+3. Pagination strategy
+4. API Versioning approach
+5. Error response format
+6. Each with clear reasoning
+
+I'll make it practical and include examples.

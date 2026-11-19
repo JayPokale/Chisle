@@ -1,0 +1,15 @@
+The user is asking for an explanation of how to migrate a monolith to microservices without a big-bang rewrite. This is a technical architecture question that requires a comprehensive explanation covering:
+
+1. Ordering/sequencing of service extraction
+2. Data ownership principles
+3. Keeping things shippable/deployable throughout
+
+The user has requested "caveman mode" in the system instructions. I should respond tersely, dropping articles and unnecessary filler while keeping technical substance intact.
+
+Let me structure this clearly but concisely:
+- Key principle: iterate, extract gradually
+- Ordering strategy: identify seams, extract low-risk services first
+- Data ownership: establish clear boundaries, avoid distributed transactions
+- Shipping: keep deployability at every step
+
+No memory loading needed here - straightforward technical question.

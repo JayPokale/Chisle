@@ -1,0 +1,51 @@
+{
+ "fixture": "yagni",
+ "arm": "chisle-hook",
+ "seed": 3,
+ "out_tokens": 1205,
+ "input_tokens": 132227,
+ "cost_usd": 0.0438012,
+ "turns": 5,
+ "answer": "Done. `retries()` now reads from the `RETRY_COUNT` environment variable with a fallback to 3. Invalid values are ignored and default to 3.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-yagni-QM0652/repo -type f -name \"*.js\" -o -name \"*.ts\" -o -name \"*.py\" | head -20",
+   "chars": 39
+  },
+  {
+   "tool": "Read",
+   "input": "client.js",
+   "chars": 334
+  },
+  {
+   "tool": "Edit",
+   "input": "client.js",
+   "chars": 145
+  },
+  {
+   "tool": "Read",
+   "input": "client.js",
+   "chars": 491
+  }
+ ],
+ "request_prompts": [
+  23382,
+  26608,
+  26902,
+  27444,
+  27891
+ ],
+ "compressed_chars": 0,
+ "compress_events": 0,
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/client.js"
+ ],
+ "loc_before": 13,
+ "loc_after": 19,
+ "loc_delta": 6,
+ "deps_added": []
+}

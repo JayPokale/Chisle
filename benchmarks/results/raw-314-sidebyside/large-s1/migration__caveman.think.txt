@@ -1,0 +1,46 @@
+User wants a database migration script. They want to:
+1. Move from full_name to first_name/last_name columns
+2. Backfill existing rows
+3. Make it safely re-runnable
+
+They said "Show the code" so they want me to write this.
+
+They've set caveman mode to full, so I should be terse, drop articles, avoid filler. But for code, I should write normal (the instruction says "Code/commits/PRs: write normal").
+
+I don't know what database system they're using - could be PostgreSQL, MySQL, SQLite, etc. I should ask OR provide a common example. Actually, let me provide PostgreSQL as it's most common for migrations, and I can note it's adaptable.
+
+Actually, they said "Show the code" - pretty direct. Let me write a solid migration script. I'll do PostgreSQL which is standard for migrations. Can make it adaptable.
+
+Key requirements:
+- Split full_name to first_name/last_name
+- Backfill logic (handle names with spaces)
+- Idempotent/re-runnable
+- Safe (handle edge cases)
+
+Let me write this in SQL (PostgreSQL style) with comments minimal per instructions.
+
+For splitting: `first_name` = everything before first space, `last_name` = everything after first space. If no space, all goes to first_name, last_name empty or last_name same as first_name? Usually last_name empty string is safer.
+
+Idempotent approach:
+- Check if columns exist before creating
+- Only run data migration if full_name still exists and first_name is null
+- Drop full_name column only if safe to do
+
+Here's a solid approach:
+
+1. Create new columns if not exist (first_name, last_name)
+2. Backfill from full_name where first_name is null
+3. Drop full_name after verification
+
+```sql
+-- Idempotent migration: split full_name into first_name and last_name
+Still writing migration SQL...
+
+Still writing migration SQL...
+
+Still writing migration SQL...
+
+Still writing migration SQL...
+
+Still writing migration SQL...
+

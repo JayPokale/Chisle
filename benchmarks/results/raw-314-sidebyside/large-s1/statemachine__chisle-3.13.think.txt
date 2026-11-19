@@ -1,0 +1,61 @@
+The user wants me to implement an order state machine with specific states:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+They want:
+1. Legal transitions to be enforced
+2. Invalid transitions to be rejected
+3. Code implementation
+
+Let me think about valid transitions in a typical order lifecycle:
+
+```
+created → paid (payment successful)
+created → cancelled (before payment)
+paid → shipped (order dispatched)
+paid → cancelled (refund before shipping)
+paid → refunded (refund after payment)
+shipped → delivered
+cancelled → (terminal, no transitions)
+refunded → (terminal, no transitions)
+delivered → (terminal, no transitions)
+```
+
+I should implement this as a state machine. I'll use Python since it's versatile and clear. I could use a simple class-based approach or a more structured pattern. Given the user asked for code and enforced transitions, a simple class with a transition table would be effective.
+
+Let me create a clean state machine implementation:
+
+```python
+class OrderStateMachine:
+    # Define valid transitions
+    VALID_TRANSITIONS = {
+        'created': {'paid', 'cancelled'},
+        'paid': {'shipped', 'cancelled', 'refunded'},
+        'shipped': {'delivered'},
+        'delivered': set(),
+        'cancelled': set(),
+        'refunded': set(),
+    }
+    
+    def __init__(self):
+        self.state = 'created'
+    
+    def transition(self, new_state):
+        if new_state not in self.VALID_TRANSITIONS[self.state]:
+            raise ValueError(f"Cannot transition from '{self.state}' to '{new_state}'")
+        self.state = new_state
+        return self.state
+    
+    def __str__(self):
+        return self.state
+```
+
+This is clean and minimal. Let me show it with some examples of valid and invalid transitions.
+
+Actually, let me make this a bit more complete with error handling and example usage. The user said "Show the code" so they want to see it working.
+Next I'll write the code out and run it against some valid and invalid transitions to check it.
+

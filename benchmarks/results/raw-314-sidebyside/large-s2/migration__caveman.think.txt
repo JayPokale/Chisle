@@ -1,0 +1,22 @@
+User wants a database migration script that:
+1. Moves users table from full_name to first_name/last_name
+2. Backfills existing rows
+3. Safely re-runnable
+
+This is a classic database migration pattern. I should:
+- Show code (they asked for it)
+- Use safe, idempotent patterns (IF NOT EXISTS, checks before modifying)
+- Handle backfill of existing data
+- Make it re-runnable (can run multiple times without error)
+
+Since they didn't specify a database system, I'll provide SQL that works for most SQL databases (I'll use standard SQL that works with PostgreSQL, MySQL, SQLite). I could make it more database-agnostic or just pick one - I'll do PostgreSQL since it's common for serious projects.
+
+The pattern:
+1. Add new columns if they don't exist
+2. Backfill data from full_name to first/last (split on space)
+3. Drop old column (optional, or make it after verification)
+4. Make columns NOT NULL after backfill done
+
+Caveman mode active - but keeping code blocks normal, keeping technical clarity.
+
+Actually, I should ask - which database? Or provide a solid example. Let me provide PostgreSQL with comments on adaptability, and keep it caveman-tight.

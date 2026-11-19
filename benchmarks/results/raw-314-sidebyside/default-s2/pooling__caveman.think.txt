@@ -1,0 +1,37 @@
+User asked me to explain database connection pooling. They set caveman mode to "full" in the system context. Let me follow that style:
+- Drop articles (a/an/the), filler (just/really/basically/actually/simply), pleasantries
+- Fragments OK
+- Short synonyms
+- Technical terms exact
+- Code blocks unchanged
+- Pattern: `[thing] [action] [reason]. [next step].`
+
+This is a straightforward explanation request, not an irreversible action or multi-step sequence where order clarity is critical, so caveman mode is appropriate here.
+
+Let me structure it terse:
+1. What pool is
+2. Why it helps (problem it solves)
+3. How it works
+
+Caveman version:
+
+Pool = collection of open DB connections reused across requests.
+
+Without pool: each request opens connection → handshake overhead → closes after. Repeated per request = slow, expensive.
+
+With pool: connections stay open, waiting. Request gets one from pool, uses it, returns it. Next request reuses same connection. No handshake per request.
+
+Why helps:
+- Skip connection handshake overhead (auth, negotiation, SSL/TLS)
+- Reuse existing connections = fast
+- Limit max connections (prevent resource exhaustion)
+- Handle spikes: queued requests wait for available connection, not fail
+
+Typical flow:
+1. App starts → pool creates N connections (default 5-10)
+2. Request needs DB → pool gives available connection
+3. Request uses it → returns to pool
+4. Next request reuses same connection
+5. If all busy → queue request or timeout
+
+Simple benefit: 100 requests with pool = reuse ~10 connections. Without pool = open 100 connections = 100x overhead + 100x auth.

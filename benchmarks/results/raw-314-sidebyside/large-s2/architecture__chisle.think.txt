@@ -1,0 +1,16 @@
+This is a broad architectural question about migrating from a monolithic architecture to microservices. The user is asking for practical guidance on how to do this incrementally. They want to know about:
+1. Ordering (which services to extract first)
+2. Data ownership (how to handle data)
+3. Keeping it shippable throughout
+
+Since this is Chisle mode, I should:
+- Be terse, drop articles/filler
+- Use fragments and arrows for causality
+- Give practical, decisive guidance
+- No headings/bullet lists unless essential
+- Answer at the question's altitude
+- Keep it short but complete
+
+This is exploratory/architectural, so I should give a coherent approach (not 10 options), name the main tradeoff, let user redirect.
+
+I'll structure this as: the approach → ordering strategy → data ownership → keeping it shippable. All in prose, no bullet points.

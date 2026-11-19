@@ -1,0 +1,40 @@
+The user is asking for a design of a REST API for a multi-tenant document store. This is a comprehensive API design task covering:
+1. Resources (what endpoints and what models)
+2. Auth model (how to handle multi-tenant authorization)
+3. Pagination (how to handle large result sets)
+4. Versioning (API versioning strategy)
+5. Error format (consistent error responses)
+
+They also want me to explain the decisions. I should present this in Chisle mode - maximum signal, minimum noise. I'll design this thinking through the tradeoffs and explain why I chose each approach.
+
+Key considerations:
+- Multi-tenant isolation is critical (security boundary)
+- Document versioning suggests need for history/revision tracking
+- RESTful conventions
+- Practical scalability
+
+Let me design this systematically:
+
+**Resources:**
+- Tenants (org/workspace level)
+- Collections (grouping documents)
+- Documents (the core resource)
+- Versions/Revisions
+- Access controls/permissions
+
+**Auth Model:**
+- Need tenant isolation
+- Options: header-based tenant ID, URL path tenant ID, subdomain
+- API key auth or token-based
+
+**Pagination:**
+- Cursor-based or offset-based
+- Cursor is better for consistency with mutations
+
+**Versioning:**
+- API versioning strategy (URL path, header, query param)
+
+**Error Format:**
+- Consistent structure with status codes
+
+I should give the design with clear reasoning in Chisle style.

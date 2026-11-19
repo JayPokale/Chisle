@@ -1,0 +1,7 @@
+The user is asking me to explain database connection pooling and why it helps. This is a straightforward educational question about a database concept. I should provide a clear, concise explanation that covers:
+
+1. What connection pooling is
+2. How it works
+3. Why it's beneficial
+
+I'll keep it relatively concise and practical, without being overly verbose.

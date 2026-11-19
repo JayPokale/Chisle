@@ -1,0 +1,9 @@
+The user wants to add debouncing to a search input that's currently making API calls on every keystroke. They want me to show the code.
+
+However, they haven't provided any existing code. I should check if there's a project in the working directory that I need to look at, or if they want me to show a general example.
+
+Let me check the working directory first to see if there's any code I should be working with.
+
+Also, the user wants caveman mode - terse, no fluff. I should respond briefly and show code.
+
+Let me start by checking what's in the working directory to see if there's existing code to modify, or if I should provide an example.

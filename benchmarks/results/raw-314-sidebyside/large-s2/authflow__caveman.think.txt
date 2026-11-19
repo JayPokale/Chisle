@@ -1,0 +1,33 @@
+User wants me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They want to see the code. This is a pretty straightforward request for a backend auth system.
+
+Since no existing codebase is provided and working directory is not a git repo, I should create a simple, functional implementation. I'll use a popular stack that's pragmatic and clear.
+
+I'll go with:
+- Node.js/Express (or Python/Flask?) - Express is simpler for this
+- bcrypt for password hashing
+- JWT for sessions (stateless, simple)
+- Simple in-memory rate limiting (or Redis if they prefer persistence)
+
+Actually, let me reconsider - should I ask what framework they want? No, they said "Show the code" - they want implementation, not questions. I'll pick the most practical approach.
+
+I'll use:
+- **Node.js/Express** - straightforward, widely understood
+- **bcrypt** - standard for password hashing
+- **jsonwebtoken** - simple JWT session handling
+- **express-rate-limit** or manual rate limiting - I'll do manual rate limiting with in-memory tracking for clarity
+
+I should create:
+1. Auth routes (signup, login)
+2. Password hashing utility
+3. Session/JWT utility
+4. Rate limiting middleware
+5. Example user model/storage (in-memory for simplicity, they can swap to DB)
+
+Let me structure this clearly with separate files for modularity.
+
+Caveman mode is ON - I should be terse. But code stays normal. So my explanation will be terse, code will be clean.

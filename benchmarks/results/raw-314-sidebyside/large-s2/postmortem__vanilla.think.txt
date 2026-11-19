@@ -1,0 +1,14 @@
+The user is asking me to write an incident postmortem for a hypothetical scenario: a four-hour outage caused by a connection pool exhausted by a slow downstream dependency. This is a common incident type in production systems.
+
+I should write a realistic, well-structured postmortem that follows typical incident postmortem formats. This is a template/example that could be adapted to their actual incident if needed.
+
+Key sections to include:
+1. Summary/Overview
+2. Timeline
+3. Impact
+4. Root Cause Analysis
+5. Contributing Factors
+6. Remediation (immediate and long-term)
+7. Lessons Learned
+
+Let me create a realistic and detailed postmortem document.

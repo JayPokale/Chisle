@@ -1,0 +1,37 @@
+The user wants me to add debounce to a search input that currently fires an API call on every keystroke. They want to see the code.
+
+However, I don't see any existing code provided. This is a generic request without context about what framework/language they're using or what the current implementation looks like.
+
+According to the Chisle rules:
+- "Unstated stack, DB, language or framework → most common default, named in one line, no deliberation."
+- I should assume the most common default for a search input with API calls, which would be JavaScript/React (or vanilla JS).
+- Code first, then at most three short lines of explanation.
+
+Since they want to "Show the code" and it's about a search input, I should provide:
+1. A React example (most common for modern search inputs)
+2. Maybe show vanilla JS as well, or just pick one default
+
+Actually, let me think about what "most common default" is. Web search inputs with debounce are typically done in:
+- React (very common)
+- Vanilla JS with fetch
+- Vue
+- etc.
+
+React is probably the most common modern default. I'll show a React example with the `useEffect` + `setTimeout` pattern, which is the most common way to implement debounce without external libraries. I could also show it with a custom hook for reusability.
+
+Let me keep it minimal:
+- Show a simple React component with search input
+- Use setTimeout and cleanup to implement debounce
+- Keep it short and working
+
+Actually, I should ask or assume - but the user said "Add debounce to a search input that currently fires an API call" - they're asking me to modify existing code, but there's no existing code shown. This is ambiguous.
+
+Wait, re-reading the instructions: "When given an unclear or generic instruction, consider it in the context of these software engineering tasks and the current working directory."
+
+The current working directory is `/tmp/chisle-ablation-work-03dXUv` and it's NOT a git repository. So there's no existing code to look at.
+I'm settling on React as the default since no stack was named, and I'm writing a search component that uses a `useEffect` with `setTimeout` and cleanup to debounce the API call.
+
+Still writing the React component...
+
+Still writing the search component...
+

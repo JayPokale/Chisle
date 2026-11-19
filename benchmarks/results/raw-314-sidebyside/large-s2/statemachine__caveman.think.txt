@@ -1,0 +1,54 @@
+User wants an order state machine. They want:
+1. States: created, paid, shipped, delivered, cancelled, refunded
+2. Legal transitions enforced
+3. Invalid ones rejected
+4. Show the code
+
+Let me think about what valid transitions would be:
+- created → paid (payment made)
+- created → cancelled (cancelled before paying)
+- paid → shipped (order shipped)
+- paid → refunded (refund issued)
+- shipped → delivered (order arrives)
+- shipped → cancelled (this is debatable, but typically can't cancel after shipping - maybe no, or only partial)
+- delivered → refunded (customer can request refund after delivery, within return window)
+- cancelled → refunded (if already paid)
+
+Actually, let me think more carefully about typical e-commerce:
+- created → paid (normal flow)
+- created → cancelled (cancel before payment)
+- paid → shipped (normal flow)
+- paid → cancelled (cancel after payment but before shipping - rare but possible)
+- paid → refunded (refund without shipping)
+- shipped → delivered (normal flow)
+- shipped → cancelled (possibly, if not yet delivered)
+- delivered → refunded (return/refund request)
+- cancelled → refunded (if paid before cancelled)
+
+Actually, I should keep it simple and reasonable. Standard transitions:
+- created → paid
+- created → cancelled
+- paid → shipped
+- paid → refunded (direct refund)
+- paid → cancelled (cancel after payment)
+- shipped → delivered
+- shipped → cancelled (cancel during shipping - maybe not, let's keep it simple)
+- delivered → refunded
+- cancelled → (terminal state)
+- refunded → (terminal state)
+
+Let me implement this cleanly using Python with an enum or simple class-based approach.
+
+I'll use:
+1. An Enum for states
+2. A dictionary to define valid transitions
+3. An OrderStateMachine class that enforces transitions
+4. Clear rejection of invalid transitions
+
+Let me write tight, caveman-style code without comments.
+Still writing the state machine class...
+
+Still writing the state machine's transition table and methods...
+
+Now I'm finishing the order state machine class with its string representation. I want to test it with some examples so the user can see it work.
+

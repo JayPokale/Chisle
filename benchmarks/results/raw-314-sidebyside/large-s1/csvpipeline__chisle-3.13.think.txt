@@ -1,0 +1,24 @@
+The user wants a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully (doesn't crash)
+
+They want to see the code. No language specified, so I should pick the most common default - Python for data processing tasks.
+
+This is a solid practical task. I should write a complete, working script that:
+- Uses streaming/chunking for large files (not loading everything in memory)
+- Has clear validation logic
+- Logs/tracks malformed rows
+- Aggregates customer totals
+- Writes a report
+- Handles errors gracefully
+
+Let me keep it minimal and focused - no over-engineering. I'll use:
+- csv.DictReader for parsing
+- dict for aggregating
+- Simple validation (non-empty fields, numeric amounts)
+- Error handling that skips bad rows and logs them
+
+I'm in Chisle mode, so: code first, minimal explanation.

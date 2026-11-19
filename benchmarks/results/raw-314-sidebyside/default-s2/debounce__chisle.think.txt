@@ -1,0 +1,15 @@
+The user is asking me to add debounce to a search input that fires an API call on every keystroke. This is a common UI performance optimization pattern.
+
+Since they said "Show the code" and no specific codebase is mentioned, and this is a general request, I should provide example code. But wait - they're in a directory `/tmp/chisle-ablation-work-03dXUv`. Let me check if there's a search input in this directory first.
+
+Actually, looking at the instructions - they said "Show the code" which is a direct request. But I should check if there's existing code first by looking at the directory structure. However, the user might just be asking for a general implementation.
+
+Let me start by exploring what's in the working directory to see if there's existing code to modify.
+
+Actually, I'm in Chisle mode, which means: "Maximum signal. Minimum noise." I should:
+1. First check if there's existing code to modify (don't narrate, just do it)
+2. If not, provide a minimal working example
+3. No headings, no explanations longer than the code
+4. Fragments, exact terms
+
+Let me read the directory first to see what's there.

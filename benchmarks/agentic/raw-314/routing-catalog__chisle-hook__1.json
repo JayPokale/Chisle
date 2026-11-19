@@ -1,0 +1,77 @@
+{
+ "fixture": "routing-catalog",
+ "arm": "chisle-hook",
+ "seed": 1,
+ "out_tokens": 2015,
+ "input_tokens": 312209,
+ "cost_usd": 0.10045820000000001,
+ "turns": 9,
+ "answer": "Tests pass. The bug was the weight boundary check in `weightFits` (line 65): it was using `<` instead of `<=`, violating the documented inclusive behavior. With maxKg = 7, a 7kg shipment should match (7 ≤ 7) but was rejected (7 < 7 is false).",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-routing-catalog-rey0Mv/repo -type f -name \"*.json\" -o -name \"*.ts\" -o -name \"*.js\" | he",
+   "chars": 153
+  },
+  {
+   "tool": "Read",
+   "input": "repo",
+   "chars": 84,
+   "error": true
+  },
+  {
+   "tool": "Bash",
+   "input": "ls -la /tmp/wk-routing-catalog-rey0Mv/repo",
+   "chars": 46
+  },
+  {
+   "tool": "Read",
+   "input": "run.js",
+   "chars": 1236
+  },
+  {
+   "tool": "Read",
+   "input": "route-planner.js",
+   "chars": 33576
+  },
+  {
+   "tool": "Bash",
+   "input": "npm test 2>&1",
+   "chars": 868,
+   "error": true
+  },
+  {
+   "tool": "Edit",
+   "input": "route-planner.js",
+   "chars": 162
+  },
+  {
+   "tool": "Bash",
+   "input": "npm test",
+   "chars": 68
+  }
+ ],
+ "request_prompts": [
+  23381,
+  26605,
+  26812,
+  26971,
+  27632,
+  44202,
+  44685,
+  45830,
+  46091
+ ],
+ "compressed_chars": 178,
+ "compress_events": 1,
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/route-planner.js"
+ ],
+ "loc_before": 1444,
+ "loc_after": 1444,
+ "loc_delta": 0,
+ "deps_added": []
+}

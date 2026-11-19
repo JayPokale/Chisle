@@ -1,0 +1,15 @@
+The user is asking for a summary of main tradeoffs between REST and GraphQL for a new API.
+
+This is a straightforward comparison question. Following chisle mode:
+- No headings, bullets, numbered lists unless asked
+- Maximum signal per token - decisive facts
+- Two tight paragraphs beat five headed sections
+- Fragment-like prose, drop filler
+
+The user wants the tradeoffs for a *new* API - context matters. They're evaluating which to use.
+
+Main tradeoffs:
+1. REST: simpler to build/cache/understand, overfetch/underfetch issues, multiple endpoints
+2. GraphQL: flexible queries reduce overfetch, single endpoint, steeper learning curve, caching complexity
+
+Let me give them the decisive comparison in prose, end with verdict lean or context-dependent call.

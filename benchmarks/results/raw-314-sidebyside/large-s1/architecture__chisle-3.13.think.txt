@@ -1,0 +1,14 @@
+The user is asking for an explanation of how to migrate a monolith to services incrementally, without a big-bang rewrite. They want to understand:
+1. Ordering - which services to split out first
+2. Data ownership - how to handle data as services separate
+3. How to keep the system shippable throughout the process
+
+This is an architectural question, not a code task. They want an explanation/strategy. Per Chisle rules: answer at the question's altitude. No headings, bullets, or numbered steps unless asked. Tight prose, causality as arrows.
+
+Key concepts:
+- Strangler fig pattern
+- Ordering: start with low-coupling, low-traffic, high-pain services
+- Data: dual writes initially, eventual consistency
+- Shippability: feature flags, versioning, backward compat
+
+Let me write this in tight prose, maximum signal.

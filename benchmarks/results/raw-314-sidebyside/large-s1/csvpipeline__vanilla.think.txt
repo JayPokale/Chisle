@@ -1,0 +1,17 @@
+The user is asking for a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully (without crashing)
+6. Show the code
+
+This is a straightforward programming task. I should create a practical script that demonstrates good practices. I'll write this in Python as it's well-suited for CSV processing. I'll:
+- Use csv module for reading
+- Validate each row (checking for required fields, correct types)
+- Track malformed rows with logging
+- Aggregate totals in a dictionary
+- Write a report
+- Handle errors gracefully
+
+Let me create a complete, working example.

@@ -1,0 +1,18 @@
+The user is asking for a database migration script that:
+1. Modifies a users table to replace a single `full_name` column with separate `first_name` and `last_name` columns
+2. Backfills existing rows with the split names
+3. Is safely re-runnable (idempotent)
+
+This is a common database task. I should create a migration script that handles:
+- Checking if columns already exist (for idempotency)
+- Splitting the full_name into first and last names
+- Handling edge cases (names without spaces, NULL values, etc.)
+- Dropping the old column only after successful migration
+
+I'll write this in a SQL-based approach that works across common databases. I'll make it idempotent so it can be run multiple times safely. Let me create a comprehensive example.
+
+Since no specific database is mentioned, I'll provide a SQL migration that's database-agnostic but I'll note where there might be slight differences. I could also provide a Python-based migration script using something like Alembic if this is an SQLAlchemy project.
+
+Let me create both a raw SQL version and a Python version using common migration patterns. I'll default to showing a SQL version since the user asked for "a database migration script" and that's the most universal approach.
+
+Actually, let me create a well-structured migration that's idempotent and handles the data properly. I'll use a common pattern that works with most databases.

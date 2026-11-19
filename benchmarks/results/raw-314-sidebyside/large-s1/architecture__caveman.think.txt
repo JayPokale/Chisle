@@ -1,0 +1,14 @@
+User wants explanation on migrating monolith to microservices gradually. This is a strategic/architectural discussion, not an immediate code task. They want:
+1. Ordering (what to migrate first)
+2. Data ownership (how to handle shared state)
+3. Keeping shippable (incremental deployment)
+
+Caveman mode active. Keep it terse, technical, focused. No fluff. This is a complex topic but I should compress well.
+
+Let me structure:
+- Core principle (strangler pattern)
+- Order heuristic
+- Data ownership strategies
+- Deployment safety
+
+Should be 3-4 paragraphs max with caveman style.

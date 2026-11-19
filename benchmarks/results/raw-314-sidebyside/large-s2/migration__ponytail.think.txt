@@ -1,0 +1,39 @@
+The user wants a database migration script that:
+1. Moves from `full_name` column to `first_name` and `last_name` columns
+2. Backfills existing rows with the split names
+3. Is safely re-runnable (idempotent)
+
+This is a practical database task. I need to show actual working code. The user didn't specify a database system, but I should assume something common. I'll show a SQL-based migration that works with most systems (PostgreSQL, MySQL, SQLite) since it's the most common context. I could also show Python if they're using an ORM, but I'll start with raw SQL as that's the most universal.
+
+For safety and re-runability:
+- Check if columns exist before creating
+- Check if column exists before dropping
+- Handle the data migration carefully
+- Make it idempotent so it can be run multiple times without error
+
+The lazy approach here:
+1. No fancy migration framework unless needed
+2. No transaction wrapping unless necessary
+3. Just the SQL that works
+4. Make it re-runnable with simple IF EXISTS checks
+
+Let me write a clean migration script. I'll show both a SQL version and potentially a Python version if using an ORM like SQLAlchemy.
+
+For a truly re-runnable migration:
+- Use IF EXISTS checks
+- Or make the operations update/insert idempotent
+- Handle the case where the migration has already been partially applied
+
+I'll show SQL first (most universal), then mention if they need ORM-specific version.
+
+The key insight for re-runnable: 
+1. Check if new columns exist - if they do, we might be rerunning
+2. Add new columns if they don't exist
+3. Backfill with a WHERE clause to only update NULLs (so rerunning doesn't duplicate work)
+4. Only drop old column if we're confident in the data
+
+Actually, let me think about this more carefully. For a truly safe re-runnable migration:
+
+Option 1: Mark completion with a flag
+I'm settling on the approach now: rather than a flag or a state check, I'll make each operation idempotent with WHERE conditions and IF EXISTS. I want the script to stay SQL-dialect neutral so it runs on PostgreSQL, MySQL, or SQLite, and to be genuinely re-runnable. I'll deliver it as a single SQL file that can be executed repeatedly, alongside a one-shot version.
+

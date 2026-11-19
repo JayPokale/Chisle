@@ -1,0 +1,50 @@
+{
+ "fixture": "rootcause",
+ "arm": "vanilla",
+ "seed": 1,
+ "out_tokens": 1252,
+ "input_tokens": 122352,
+ "cost_usd": 0.0386293,
+ "turns": 5,
+ "answer": "The fix is applied. The session now properly rejects at the exact expiration moment using `>=` instead of `>`.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-0Sh8AN/repo -type f -name \"*.js\" -o -name \"*.ts\" -o -name \"*.jsx\" -o -name \"*",
+   "chars": 201
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  },
+  {
+   "tool": "Bash",
+   "input": "git add src/auth/session.js && git commit -m \"$(cat <<'EOF'\nFix session expiration comparison to rej",
+   "chars": 152,
+   "error": true
+  }
+ ],
+ "request_prompts": [
+  22828,
+  24316,
+  24572,
+  25076,
+  25560
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

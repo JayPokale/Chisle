@@ -1,0 +1,16 @@
+The user is asking me to summarize the main tradeoffs between REST and GraphQL for a new API. This is a straightforward comparison question.
+
+Given the Chisle mode is active (and I'm told it's active every response unless explicitly turned off), I should:
+1. Be terse, drop filler
+2. Present as fragments where it makes sense
+3. Give the decisive facts
+4. Keep it at the question's altitude - no unnecessary structure
+5. The user asks for a summary, so I should be concise
+
+This isn't a code task, it's a conceptual question. The user is likely deciding between the two for their project. I should give them the key tradeoffs clearly so they can make a decision.
+
+Let me think about the main tradeoffs:
+- REST: simple, cacheable, well-understood, cacheable at HTTP level, multiple round-trips for related data, versioning overhead
+- GraphQL: single request gets exactly what you need, reduces over/under-fetching, more complex server implementation, harder to cache, steeper learning curve, N+1 query problems if not careful
+
+I should present this in a way that helps them choose. Keep it tight, no unnecessary preamble.

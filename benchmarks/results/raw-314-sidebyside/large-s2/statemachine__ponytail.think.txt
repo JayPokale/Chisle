@@ -1,0 +1,49 @@
+The user wants me to implement an order state machine with:
+- States: created, paid, shipped, delivered, cancelled, refunded
+- Legal transitions enforced
+- Invalid ones rejected
+
+This is a classic state machine problem. Let me think about the valid transitions:
+
+```
+created → paid (customer pays)
+created → cancelled (before payment)
+paid → shipped (seller ships)
+paid → refunded (customer requests refund while paid, before shipping)
+shipped → delivered (delivery happens)
+shipped → cancelled (order cancelled after payment)
+delivered → refunded (customer requests refund after delivery, within return window)
+refunded → (terminal state, can't go anywhere)
+cancelled → (terminal state, can't go anywhere)
+```
+
+Actually, let me reconsider. What makes sense legally:
+- created: initial state
+- created → paid (payment made)
+- created → cancelled (cancel before payment)
+- paid → shipped (ship the order)
+- paid → cancelled (seller can cancel even after payment)
+- paid → refunded (immediate refund, no shipment)
+- shipped → delivered (order arrives)
+- shipped → cancelled (cancel after payment/ship)
+- delivered → refunded (customer return/refund)
+- cancelled → (end state)
+- refunded → (end state)
+
+For this Ponytail mode, I should use the simplest approach. No over-engineering. This is a perfect use case for a simple state machine. The ladder:
+
+1. Does this need to exist? Yes, the user asked for it.
+2. Already in codebase? No, fresh implementation.
+3. Stdlib does it? Python has `enum` for states. For state machine logic, we can use a simple dict of allowed transitions or a class.
+4. Native platform feature? Not really.
+5. Already-installed dependency? No external deps mentioned.
+6. Can it be one line? No, we need a few lines to define states and transitions.
+7. Minimum code that works: a simple OrderStateMachine class with state management.
+Still writing the parser...
+
+Still writing the transition table...
+
+Still writing the demo...
+
+Still writing the demo...
+

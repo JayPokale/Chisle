@@ -1,0 +1,15 @@
+The user is asking for an explanation of how to migrate a monolith to microservices gradually without a big-bang rewrite. They want coverage of:
+1. Ordering (what to extract first)
+2. Data ownership
+3. How to keep things deployable throughout
+
+This is a conceptual/architectural question asking for guidance. The Ponytail mode is active, so I should be efficient in explanation - avoid essays, be direct. But the user explicitly asked for an explanation here, so I should give it in full (the rule against unrequested prose applies to unexplained changes in code, not to questions where explanation is the whole point).
+
+Let me structure this cleanly:
+- The core pattern/philosophy
+- Ordering strategy (what to extract when)
+- Data ownership model
+- How to keep it shippable
+- Maybe a worked example
+
+I should be practical and avoid over-theorizing.

@@ -1,0 +1,9 @@
+The user wants me to add debounce functionality to a search input that currently fires API calls on every keystroke. However, they haven't shown me any existing code yet. I should ask them to provide the code they want to modify, or I can show them a common implementation of debouncing for a search input.
+
+Actually, let me reconsider - they said "Show the code", which suggests they want me to demonstrate the solution. Since they haven't provided existing code, I should either:
+1. Ask them to show their current code
+2. Provide a general example of debouncing a search input
+
+Given they said "Show the code", they seem to want to see a working example. I'll provide a practical implementation of a debounced search input. I can show it in different contexts (vanilla JS, React, Vue, etc.). I'll start with a common approach using vanilla JavaScript and also show a React example since that's very popular.
+
+Let me provide a clear, practical solution with code examples.

@@ -1,0 +1,9 @@
+The user is asking for a comprehensive explanation of how to migrate a monolith to microservices without a big-bang (complete) rewrite. This is a strategic architecture question that requires covering:
+
+1. Ordering/sequencing - what to migrate first
+2. Data ownership - how to handle data as services separate
+3. Keeping it shippable/maintainable - how to avoid getting stuck
+
+This is a good architecture discussion question. Let me provide a thoughtful explanation with practical guidance.
+
+This is not code-related, so I won't be doing tool calls. I should give a concise but comprehensive answer.

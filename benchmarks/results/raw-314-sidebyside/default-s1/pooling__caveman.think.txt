@@ -1,0 +1,48 @@
+User asked to explain database connection pooling. They set caveman mode to full, so I should be terse, drop articles, use fragments, short synonyms. But I need to check the auto-clarity rule: this is an explanation where clarity matters, but it's not a security warning, destructive action, or multi-step sequence where fragment order creates risk. So caveman full is fine.
+
+Pattern: [thing] [action] [reason]. [next step].
+
+Let me break it down:
+1. What is pooling
+2. Why it helps (problem it solves)
+3. How it works
+
+Caveman full approach:
+- Drop "the", "a", "an"
+- Drop filler (basically, really, just)
+- Fragments OK
+- Short synonyms
+
+Let me write this:
+
+Normal: "Database connection pooling reuses database connections instead of creating new ones for each request. This avoids the overhead of establishing new connections, which involves a handshake between the client and database server. Each connection setup is expensive and slow."
+
+Caveman full: "Pool reuses DB connections instead of creating new ones per request. Avoids handshake overhead on each query. Connection setup = expensive + slow."
+
+Actually, let me make it even tighter:
+
+"Pool reuses DB connections. Skip new handshake per request → fast. Creating connection expensive (network + auth overhead)."
+
+Let me structure better:
+
+Connection pooling = maintains cache of open DB connections. App borrows connection from pool for query, returns after done. Reuse = avoid repeated handshake (TCP setup + auth).
+
+Why it helps:
+- Skip handshake overhead
+- Handle many concurrent requests (limited connections, managed queue)
+- Reduce latency
+- Lower resource usage
+
+Caveman:
+
+---
+
+**How it works:**
+Pool maintains open DB connections ready. App borrows connection → runs query → returns to pool. Next app borrows same connection. Reuse = no new handshake.
+
+**Why it helps:**
+1. **Skip handshake overhead** — establishing new connection = TCP handshake + auth + negotiation. Expensive. Pooled connection already open.
+I'm listing the remaining benefits of pooling: fewer concurrent requests overwhelming the DB, lower latency from skipping setup, and efficient use of the database's connection limit. Now I'm tightening the whole answer into a short caveman-style summary of a cache of open connections that get borrowed, used, and returned.
+
+Finalizing the database pooling explanation now: a pool keeps connections open and lends them out per query, which skips the handshake, caps connections to protect the database, and keeps latency low.
+

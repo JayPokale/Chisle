@@ -1,0 +1,21 @@
+The user wants a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully (doesn't crash)
+
+They want to see the code. No language was specified, so I'll go with Python as it's most common for this kind of data processing. The chisle mode is on, so I should be terse but complete - show the working code, minimal explanation.
+
+Let me write a practical script that:
+- Handles CSV reading robustly
+- Validates row structure
+- Skips/logs malformed rows
+- Aggregates by customer
+- Writes output
+
+I'll make it straightforward, no fancy abstractions. Since it's not in chisle mode (wait, let me check - yes it says "chisle" is active), I should be direct and efficient with my prose.
+
+Actually, looking at the environment reminder, the user is in a non-git directory. This is just a request for a script, so I'll write one.
+
+Let me create a Python script that handles CSV transactions, validates them, aggregates by customer, and writes a report.

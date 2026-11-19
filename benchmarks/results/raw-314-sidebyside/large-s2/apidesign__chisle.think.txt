@@ -1,0 +1,50 @@
+The user is asking me to design a REST API for a multi-tenant document store. This is a architecture/design task. They want me to explain:
+1. Resources (endpoints, structure)
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+
+They also want me to explain my decisions. This is exactly the kind of thing where I should be terse but complete - give decisive design choices with rationale, not an exhaustive survey of options.
+
+Let me think about what a good REST API design would look like for a multi-tenant document store:
+
+**Resources:**
+- Tenants (org/workspace level)
+- Documents (the core resource)
+- Folders/Collections (organizational)
+- Access controls (sharing)
+- Revisions (versioning)
+
+**Auth:**
+- API keys + tenant context
+- Bearer token with tenant embedded or separate tenant header
+- Multi-tenant isolation is critical
+
+**Pagination:**
+- Offset-based or cursor-based?
+- Cursor is better for consistency when data changes
+- Offset simple but can have gaps
+
+**Versioning:**
+- API versioning strategy (URL path /v1, header, etc)
+- Document versioning (track changes over time)
+
+**Error format:**
+- Consistent error response schema
+- Include request ID for debugging in multi-tenant system
+
+This is a design task, not implementation. I should present the design cleanly, explain the key decisions and tradeoffs briefly. Use the chisle mode: fragments, drop filler, causality as arrows.
+
+Let me structure this as:
+1. Resource structure
+2. Authentication & tenant isolation
+3. Pagination
+4. Versioning strategy
+5. Error format
+
+Then explain key decisions.
+
+Actually, let me reconsider the structure. The user asked for a design. I should present it clearly but not over-structure with unnecessary headers. Chisle mode means fragments and causality, not elaborate sections. But they did ask to "explain the decisions" so I need to include reasoning.
+Now I'm deciding how to wrap up the structure so it reads cleanly without heavy headers.
+

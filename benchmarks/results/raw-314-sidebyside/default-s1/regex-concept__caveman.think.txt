@@ -1,0 +1,15 @@
+User wants a short explanation of regex backreferences with an example. They want it concise.
+
+Caveman mode is active (default: full). So I should:
+- Drop articles (a/an/the)
+- Drop filler words
+- Use fragments where natural
+- Keep technical terms exact
+- Short synonyms
+
+Let me structure this terse but clear:
+- What it is
+- How it works
+- Example
+
+Short example: `(\w+)\s+\1` matches repeated words like "hello hello"

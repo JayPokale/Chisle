@@ -1,0 +1,51 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle-hook",
+ "seed": 2,
+ "out_tokens": 906,
+ "input_tokens": 131484,
+ "cost_usd": 0.041384500000000005,
+ "turns": 5,
+ "answer": "Fixed: changed `now > expiresAt` to `now >= expiresAt` on line 3. Session now expires at the exact moment, not after.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-Jucrbo/repo -type f \\( -name \"*session*\" -o -name \"*auth*\" -o -name \"*expire*",
+   "chars": 49
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  },
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-Jucrbo/repo -type f \\( -name \"*test*\" -o -name \"*spec*\" \\) | grep -i session",
+   "chars": 31
+  }
+ ],
+ "request_prompts": [
+  23374,
+  26610,
+  26832,
+  27223,
+  27445
+ ],
+ "compressed_chars": 0,
+ "compress_events": 0,
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

@@ -1,0 +1,16 @@
+The user is asking me to write an incident postmortem for a four-hour outage. This is a straightforward request for a document that describes:
+1. Timeline of the incident
+2. Root cause analysis
+3. Remediations/action items
+
+This is a realistic scenario: a connection pool getting exhausted because a downstream dependency is slow, which is a common production issue.
+
+I should write a realistic postmortem template that includes all standard sections. Since this is a template/example, I should make it concrete and realistic but generic enough to be useful.
+
+In Chisle mode, I should:
+- Be direct and terse
+- No unnecessary pleasantries or structure beyond what's needed
+- Keep it signal-rich
+- Skip announcement of mode
+
+Let me write a realistic postmortem document.

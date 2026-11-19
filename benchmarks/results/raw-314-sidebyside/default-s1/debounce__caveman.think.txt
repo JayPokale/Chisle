@@ -1,0 +1,11 @@
+User wants to add debounce to a search input that fires API calls on every keystroke. They want to see the code.
+
+They're using caveman mode (default: full).
+
+First, I need to understand what they're working with. I should:
+1. Check if there's a React/frontend project in the working directory
+2. Find the search input component
+3. Add debounce functionality
+4. Show the code
+
+Let me start by exploring the working directory to see what we're dealing with.

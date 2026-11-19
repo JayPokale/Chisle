@@ -1,0 +1,10 @@
+The user is asking me to explain database connection pooling and why it helps. This is a technical explanation question. Let me think about the best way to answer this in a chisle mode (maximum signal, minimum noise).
+
+I should:
+1. Explain what connection pooling is
+2. Explain how it works
+3. Explain why it helps (the benefits)
+4. Keep it terse but complete
+5. Use technical accuracy and exact terms
+
+No code is needed here - just explanation. I should avoid unnecessary preambles and get straight to the point.

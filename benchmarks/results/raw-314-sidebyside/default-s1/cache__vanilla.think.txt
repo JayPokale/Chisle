@@ -1,0 +1,5 @@
+The user is asking me to add a cache layer for user profile API responses. However, I don't see any existing code in the working directory yet. Let me first check what files exist in the current working directory to understand the project structure.
+
+Since this is not a git repository, I should start by exploring what's in the working directory to see if there's any existing API code.
+
+Let me read the directory to understand what we're working with.

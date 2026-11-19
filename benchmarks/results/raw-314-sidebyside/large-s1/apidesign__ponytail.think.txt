@@ -1,0 +1,33 @@
+This is a comprehensive API design question. The user is asking me to design a REST API for a multi-tenant document store from scratch. They want:
+1. Resources (entities and endpoints)
+2. Auth model (how to authenticate and authorize)
+3. Pagination (how to handle large result sets)
+4. Versioning (how to handle API changes)
+5. Error format (consistent error responses)
+6. Explanation of decisions
+
+Given the Ponytail mode, I should:
+- Avoid over-engineering
+- Use established patterns from stdlib/standards where possible
+- Be lazy but correct
+- Explain decisions concisely
+- Focus on what's actually needed for a multi-tenant document store
+
+Let me think about the core requirements:
+- **Multi-tenant**: need to isolate data between tenants, auth needs to enforce this
+- **Document store**: CRUD operations on documents, likely need versioning/history
+- **REST API**: standard HTTP methods, resources, etc.
+
+I should design this clearly with actual endpoint examples, not just theory.
+
+This is a design/architectural question, not code implementation yet. The user wants explanation of decisions, so they're looking for reasoning, not just a spec. I should present the design clearly and justify each choice concisely.
+
+Let me structure this:
+1. Resources and endpoints
+2. Authentication/Authorization model
+3. Pagination strategy
+4. API versioning approach
+5. Error response format
+6. Brief explanation of key decisions
+
+I'll be practical and avoid over-engineering while still being correct.

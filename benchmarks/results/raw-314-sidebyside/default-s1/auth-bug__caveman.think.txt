@@ -1,0 +1,36 @@
+The user is saying they have an auth middleware bug where valid tokens are being rejected at the exact expiry boundary. The issue is that the middleware uses `currentTime > expiry` instead of `currentTime >= expiry` or similar.
+
+Wait, actually let me think about this. If a token expires at time T, and the check is `currentTime > expiry`:
+- At time T, `currentTime > expiry` is false (T is not > T), so token is VALID ✓
+- At time T + 1ms, `currentTime > expiry` is true, so token is INVALID ✓
+
+So actually `>` should be correct for a typical "token expires AT this time" scenario.
+
+But the user says it "rejects valid tokens at the exact expiry boundary". This could mean:
+1. Tokens ARE being rejected at exactly the expiry time when they shouldn't be
+2. The check is using `>` but should be using `>=`
+3. Or the inverse - maybe it's using `>=` when it should be `>`?
+
+Let me re-read: "rejects valid tokens at the exact expiry boundary (it uses currentTime > expiry)"
+
+So the middleware DOES use `>`, but it's REJECTING valid tokens. That means... hmm.
+
+Actually, wait. If `currentTime > expiry` is the condition for rejection, then:
+- At expiry time T, is `T > T`? No. So it's NOT rejected. Good.
+- Just after T, it IS rejected. Good.
+
+So that logic seems fine...
+
+Unless... Oh! Maybe the issue is that the token SHOULD be valid UP TO and INCLUDING the expiry time. So if a token "expires at 3pm", you should still be able to use it AT 3pm, but not AFTER 3pm.
+
+In that case:
+- Current check: `if (currentTime > expiry) reject` 
+- At expiry time T: `T > T` = false, so accepted ✓
+Checking the "just after expiry" case again, then reconsidering what the user might mean by the condition being backwards: if validity were tested as `currentTime > expiry`, every token would fail at the boundary, which doesn't match the earlier analysis.
+
+Now I'm checking the expiry logic against JWT conventions: the token should count as expired once the current time reaches `exp`, so a `>=` style comparison is what I'd expect. The user's report that valid tokens are rejected right at the boundary doesn't quite match the `>` check as I've been tracing it, so I'm going back to figure out what they actually mean.
+
+Now I'm checking whether the user's description of `currentTime > expiry` as a validity check would make the logic backwards at the boundary, and whether I'm misreading which direction the comparison runs.
+
+I'm going to search the codebase for the auth middleware, since the fix depends on where the expiry comparison actually lives. I'll start by looking at what's in the working directory.
+

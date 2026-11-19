@@ -42,7 +42,12 @@ bash benchmarks/run-live.sh claude-haiku-4-5-20251001 benchmarks/results/<dir>/d
 ARMS=vanilla,caveman,ponytail,chisle node benchmarks/pooled.js benchmarks/results/raw-nov/*/
 ```
 
-Cells: [`results/raw-nov-sidebyside/`](results/raw-nov-sidebyside/),
+`node benchmarks/answers.js <run-dir>` writes `<run-dir>/ANSWERS.md`: every prompt with each arm's
+verbatim answer and token counts.
+
+Cells: [`results/raw-314-sidebyside/`](results/raw-314-sidebyside/),
+[`results/raw-314-sonnet/`](results/raw-314-sonnet/),
+[`results/raw-nov-sidebyside/`](results/raw-nov-sidebyside/),
 [`results/raw-nov-sonnet/`](results/raw-nov-sonnet/),
 [`results/raw-nov/`](results/raw-nov/).
 

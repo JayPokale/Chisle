@@ -1,0 +1,20 @@
+User asking for explanation of regex backreferences with one example. They want it short.
+
+Caveman mode is active (persist across sessions unless stopped). So:
+- Drop articles (a/the)
+- Drop filler (just, really, etc)
+- Drop pleasantries
+- Fragments OK
+- Short synonyms
+- Technical terms exact
+- Code blocks unchanged
+
+This is a straightforward explanation request, not a destructive action or multi-step sequence where order matters, so caveman mode stays on.
+
+Pattern: [thing] [action] [reason]. [next step].
+
+Backreference = reference to captured group matched earlier in pattern. Used to match repeated text.
+
+Example: `(\w+)\s+\1` matches repeated word.
+
+Let me write this caveman style:

@@ -1,0 +1,8 @@
+The user is asking me to explain database connection pooling and its benefits. This is a straightforward educational question about a technical concept. The Chisle mode is active, so I should be terse and signal-focused.
+
+Key points to cover:
+1. What it is: maintaining a pool of pre-opened connections ready to use
+2. How it works: reuse instead of create/destroy on each request
+3. Why it helps: reduces latency, reduces resource overhead, improves throughput
+
+I should explain this in fragments, focusing on the essential mechanics and benefits without fluff.

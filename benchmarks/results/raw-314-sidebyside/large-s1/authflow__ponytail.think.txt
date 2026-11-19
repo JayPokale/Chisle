@@ -1,0 +1,12 @@
+The user is asking for email-and-password signup and login with password hashing, session issuing, and rate limiting on failed attempts. They want to see the code.
+
+This is a broad request without context about what framework/language/stack they're using. I should check what's in the working directory first to understand what tech stack is being used.
+
+Let me start by exploring the working directory to see what's there.
+
+Actually, let me think about this more carefully. The user said "Show the code" - this suggests they want me to implement it. But I need to know:
+1. What framework/language?
+2. What database?
+3. What's already in the codebase?
+
+Let me check the working directory first to understand the existing setup.

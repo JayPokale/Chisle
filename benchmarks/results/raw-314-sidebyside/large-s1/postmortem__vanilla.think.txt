@@ -1,0 +1,13 @@
+The user is asking me to write an incident postmortem for a hypothetical scenario involving a connection pool exhaustion due to a slow downstream dependency. This is a template/example postmortem that they likely want to use as reference or as a starting point for documenting a real incident.
+
+Since this is not about actual code in their repository and is more of a document creation task, I should create a well-structured postmortem document that follows best practices for incident documentation. I'll write it as a markdown file.
+
+I should include:
+1. Executive summary
+2. Timeline
+3. Root cause analysis
+4. Impact
+5. Remediations/Action items
+6. Prevention measures
+
+This is a straightforward request to create a document. I don't need to check memory or verify existing code. I'll create a comprehensive postmortem template based on common practices.

@@ -1,0 +1,5 @@
+The user is asking me to add a cache layer for user profile API responses. However, I need to understand the current state of the project first. They haven't provided any code context, and I don't see any existing project structure described.
+
+I should explore the working directory to understand what kind of project this is - what language, framework, what's the current API structure, etc.
+
+Let me check what's in the working directory first.

@@ -1,0 +1,15 @@
+The user is saying that the auth middleware rejects valid tokens at the exact expiry boundary. It uses `currentTime > expiry`, which means:
+- If currentTime equals expiry, the token is still valid (not rejected)
+- If currentTime > expiry, the token is rejected
+
+Wait, let me re-read this. "rejects valid tokens at the exact expiry boundary" - this means at the moment when currentTime == expiry, the token should still be valid but it's being rejected.
+
+If the check is `currentTime > expiry`:
+- currentTime = 100, expiry = 100: 100 > 100 = false, so token is VALID ✓
+- currentTime = 101, expiry = 100: 101 > 100 = true, so token is REJECTED ✓
+
+So if the logic is `currentTime > expiry` for rejection, it should handle the boundary correctly. But the user says it's rejecting valid tokens at the boundary.
+
+Actually, I should read the code first. The issue is likely that the comparison is using `>=` instead of `>`, or there's something about how time is being measured (milliseconds vs seconds, etc.).
+
+Let me start by exploring the working directory to find the auth middleware code.

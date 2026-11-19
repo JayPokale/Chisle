@@ -1,0 +1,38 @@
+The user is asking me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They want to see the code. This is a fairly comprehensive security feature request. I should create a complete working implementation.
+
+I'll need to decide:
+1. What tech stack to use - I should ask or assume a common one like Python with Flask/FastAPI or Node.js/Express. Since they didn't specify, I could build a backend solution. Let me create a Python-based solution using Flask since it's straightforward to understand.
+
+2. I'll need:
+   - User model with password hashing
+   - Signup endpoint
+   - Login endpoint
+   - Session management
+   - Rate limiting on failed login attempts
+   - Database (I'll use SQLite for simplicity)
+
+Let me build this out. I'll use:
+- Flask for the web framework
+- Werkzeug for password hashing (bcrypt alternative)
+- SQLite for database
+- Flask-Limiter for rate limiting
+- Flask-Login or custom session management
+
+Actually, let me think about what's the most practical and secure approach:
+- Use bcrypt or argon2 for password hashing
+- Use secure session tokens or JWT
+- Rate limit on /login endpoint based on IP or username
+
+I'll create a complete implementation with:
+1. Database models (using SQLAlchemy or raw SQLite)
+2. Password hashing with bcrypt
+3. Login/signup routes
+4. Rate limiting
+5. Session management
+
+Let me code this up. I'll use Flask with best practices.

@@ -1,0 +1,51 @@
+{
+ "fixture": "rootcause",
+ "arm": "chisle-hook",
+ "seed": 1,
+ "out_tokens": 1140,
+ "input_tokens": 132169,
+ "cost_usd": 0.043383,
+ "turns": 5,
+ "answer": "Fixed. Changed the comparison from `>` to `>=` so a session becomes invalid at the exact millisecond it expires, not after. Now `isExpired()` returns `true` when `now >= expiresAt`.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "find /tmp/wk-rootcause-GfjJRA/repo -type f \\( -name \"*.ts\" -o -name \"*.tsx\" -o -name \"*.js\" -o -name",
+   "chars": 201
+  },
+  {
+   "tool": "Read",
+   "input": "session.js",
+   "chars": 207
+  },
+  {
+   "tool": "Read",
+   "input": "middleware.js",
+   "chars": 330
+  },
+  {
+   "tool": "Edit",
+   "input": "session.js",
+   "chars": 155
+  }
+ ],
+ "request_prompts": [
+  23374,
+  26675,
+  26929,
+  27346,
+  27845
+ ],
+ "compressed_chars": 0,
+ "compress_events": 0,
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/auth/session.js"
+ ],
+ "loc_before": 24,
+ "loc_after": 24,
+ "loc_delta": 0,
+ "deps_added": []
+}

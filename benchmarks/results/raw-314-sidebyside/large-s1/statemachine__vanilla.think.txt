@@ -1,0 +1,35 @@
+The user wants me to implement an order state machine with the following states:
+1. created
+2. paid
+3. shipped
+4. delivered
+5. cancelled
+6. refunded
+
+And they want legal transitions enforced with invalid ones rejected.
+
+Let me think about what the legal transitions should be:
+- created → paid (payment made)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order is being shipped)
+- paid → refunded (refund issued before shipping)
+- paid → cancelled (order cancelled after payment but before shipping)
+- shipped → delivered (order delivered)
+- shipped → cancelled (not really valid, but sometimes allowed)
+- delivered → (terminal state, but maybe refund is possible)
+- cancelled → (terminal state)
+- refunded → (terminal state)
+
+A common valid transition model would be:
+- created → paid
+- created → cancelled
+- paid → shipped
+- paid → refunded
+- shipped → delivered
+- delivered → refunded (maybe, for returns)
+- cancelled → (terminal)
+- refunded → (terminal)
+
+I'll implement a state machine in Python since that's a common and clear approach. I'll create a class that manages the state and transitions with validation.
+
+Let me write clean Python code without over-engineering it.

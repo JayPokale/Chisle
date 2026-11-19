@@ -1,0 +1,14 @@
+The user is asking me to add debounce to a search input that currently fires an API call on every keystroke. They want to see the code.
+
+However, I don't have any existing code to work with. This is a new working directory with no git repository. I should ask for clarification about what code they're working with, or provide a minimal example implementation.
+
+Let me check what's in the working directory first to see if there's any existing code.
+
+Actually, ponytail mode is active. The user is asking me to "show the code" for debouncing a search input. I should:
+
+1. First understand: do they want me to fix existing code, or provide an example?
+2. Apply the ladder: Does debounce need to exist? Yes, hitting the API on every keystroke is wasteful. Already in codebase? Don't know yet. Stdlib? Depends on the framework. Already-installed dependency? Depends.
+
+Since I don't see any existing code, I should ask what framework/stack they're using, or provide a minimal example. But the instruction says "Show the code" - so they want to see implementation.
+
+Let me check if there's any code in the directory first.

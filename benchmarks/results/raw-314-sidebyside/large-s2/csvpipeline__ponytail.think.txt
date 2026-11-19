@@ -1,0 +1,33 @@
+The user wants a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully
+
+This is under ponytail (lazy) mode, so I need to:
+- Use stdlib only (CSV module)
+- No frameworks, no fancy libraries
+- Minimal, working code
+- Handle errors at boundaries (the CSV input)
+- Skip speculative features
+- One check/demo at the end
+
+The ladder:
+1. Does this need to exist? Yes, user asked for it.
+2. Already in codebase? No context given, so no.
+3. Stdlib does it? CSV module in Python does exactly this.
+4. Already-installed? CSV is stdlib.
+5. Can it be one line? No, there's real logic (validation, aggregation).
+6. Build the minimum.
+
+I'll write a Python script that:
+- Uses csv.DictReader to parse
+- Validates rows (check for required fields, numeric validation)
+- Skips/logs malformed rows
+- Uses a dict to aggregate per customer
+- Writes output
+
+No fancy classes, no config system, no retry logic, no speculative features. Just the working thing.
+
+Since I'm showing code, I'll create a file with the script and maybe a demo at the bottom.

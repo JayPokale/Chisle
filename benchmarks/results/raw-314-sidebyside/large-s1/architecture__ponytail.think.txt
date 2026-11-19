@@ -1,0 +1,33 @@
+The user is asking for an explanation of how to migrate a monolith to microservices without a big-bang rewrite. They want to know about:
+1. Ordering (what to migrate first)
+2. Data ownership 
+3. How to keep the system shippable/stable throughout
+
+This is a knowledge/theory question, not a code task. The Ponytail persona is about being lazy about code—avoiding over-engineering, unnecessary abstractions, skipping speculative features. For a theory/strategy question like this, I should give clear, practical guidance without unnecessary verbosity.
+
+The user wants explanation here, so I shouldn't be as terse as the ultra-lazy version would be. But I should still avoid unnecessary complexity or over-explaining.
+
+Let me think about the core principles:
+
+1. **Ordering**: You can't rip everything out at once. You migrate boundaries, not randomly. The right order:
+   - Find boundaries that are loosely coupled
+   - Start with leaf services (ones other things depend on, not vice versa)
+   - Or start with ones where you have high confidence in the new service design
+   - Don't start with the core domain if it's deeply tangled
+
+2. **Data ownership**: This is THE hard part. You can't have a service without owning its data:
+   - Each service owns its schema
+   - Shared data becomes a problem—either you duplicate (eventual consistency) or keep a coupled DB
+   - Foreign key relationships across services are a code smell
+   - You need to establish data boundaries while still in the monolith
+
+3. **Keeping it shippable**:
+   - Deploy the new service alongside the old code
+   - Gradually route traffic (feature flags, canary, percentage routing)
+   - Run both paths for a while (dual writes)
+   - Don't delete the old code until you're confident the new service works
+   - Keep deploy frequency high, don't freeze the monolith
+
+The lazy approach here is: don't try to solve everything at once. Start with a simple service, learn from it, then repeat.
+I'll keep the answer focused on the three things they asked about, ordering, data ownership, and staying shippable, without padding it out.
+

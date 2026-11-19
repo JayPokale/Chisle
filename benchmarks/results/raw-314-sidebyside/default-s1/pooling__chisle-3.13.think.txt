@@ -1,0 +1,17 @@
+The user is asking for an explanation of database connection pooling. This is a straightforward technical question asking for understanding/explanation.
+
+Given the Chisle mode is active, I need to:
+1. Be terse and avoid articles/filler
+2. Keep decisive facts, cut words around them
+3. Answer at the right altitude - no unnecessary structure
+4. Use causality (X → Y)
+5. Be technical and exact
+
+This is an explanatory question, not a task, so I should give a clear, concise explanation without unnecessary ceremony.
+
+Let me structure this efficiently:
+- What it is
+- How it works
+- Why it helps (the problems it solves)
+
+No headings needed - just tight prose.

@@ -1,0 +1,21 @@
+The user is asking me to add a cache layer for user profile API responses. Let me follow the ponytail approach here - I should check the ladder first before implementing:
+
+1. **Does this need to exist at all?** - They explicitly asked for a cache layer, so this passes.
+2. **Already in this codebase?** - I need to check if there's already a caching mechanism in place.
+3. **Stdlib does it?** - Python has `functools.lru_cache` built in.
+4. **Native platform feature?** - Not really applicable here.
+5. **Already-installed dependency?** - Need to check dependencies.
+6. **Can it be one line?** - Possibly with `@lru_cache`.
+7. **Only then:** minimum code.
+
+However, I first need to understand the current codebase structure. Let me look at what exists in the working directory. The user hasn't shown me any code yet, so I should:
+
+1. Check if there's a codebase to work with
+2. Find the user profile API
+3. Apply the simplest caching solution
+
+Let me start by exploring the working directory to understand what we're working with.
+
+---
+
+The directory appears to be empty or mostly empty. Let me check if there's any project structure at all.

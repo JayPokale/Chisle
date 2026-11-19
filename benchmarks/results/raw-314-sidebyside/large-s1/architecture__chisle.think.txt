@@ -1,0 +1,26 @@
+The user is asking about incremental migration from a monolith to microservices, specifically:
+1. How to order the migration
+2. Data ownership issues
+3. Keeping things shippable during the process
+
+This is a strategic architecture question. In Chisle mode, I should:
+- Be concise, precise
+- Use fragments and arrows
+- Hit the key facts that matter
+- No headings/bullets unless the question asks for structure
+- Technical terms exact
+- Drop filler
+
+The user didn't ask for a plan or exploratory feedback — they're asking for explanation. So I should give the core strategy and key gotchas.
+
+Let me think about the core points:
+1. Ordering: start with low-dependency services, work up
+2. Data ownership: strangler fig pattern, proxy at boundary, migrate data alongside services
+3. Shippability: deploy both old and new in production, feature flags/routing
+
+Key gotchas:
+- Distributed transactions
+- Data consistency during migration
+- Coordinating deploys across service boundaries
+
+I should avoid unnecessary structure and just explain the approach with the tradeoffs.

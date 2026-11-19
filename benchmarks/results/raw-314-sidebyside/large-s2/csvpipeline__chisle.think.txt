@@ -1,0 +1,58 @@
+The user is asking for a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully (doesn't crash)
+
+They want to see the code. Given they said "large CSV" and mentioned robustness, Python is a reasonable default for this kind of data processing task. No language specified, so I'll assume Python with standard lib.
+
+This is straightforward - build a working solution, minimal scaffolding. Key points:
+- Read CSV (use csv module)
+- Validate rows (check format, required fields)
+- Skip/log malformed rows instead of crashing
+- Aggregate totals per customer (dict or Counter)
+- Write report to file
+- Handle large files efficiently (don't load all in memory at once)
+
+Chisle mode: be terse, show the code first, minimal explanation. No headings, just the solution and brief notes on what it does.
+
+Let me write a clean, efficient script.
+
+```python
+import csv
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+def process_transactions(input_file, output_file):
+    """Read transactions CSV, validate, aggregate per customer, write report."""
+    
+    customer_totals = defaultdict(float)
+    valid_count = 0
+    invalid_count = 0
+    invalid_log = []
+    
+    # Read and validate transactions
+    with open(input_file, 'r', encoding='utf-8', errors='replace') as f:
+        reader = csv.DictReader(f)
+        
+        if not reader.fieldnames or 'customer_id' not in reader.fieldnames:
+            raise ValueError("CSV must have a 'customer_id' column")
+        
+        if 'amount' not in reader.fieldnames:
+            raise ValueError("CSV must have an 'amount' column")
+        
+        for row_num, row in enumerate(reader, start=2):  # start=2 for header
+Still writing the row validation and totals logic...
+
+Still writing the report output and the customer totals section...
+
+Still writing the report output, now the customer totals table and the grand total line...
+
+Still writing the invalid-row logging and the final report summary lines...
+
+I'm checking the memory trade-off here: one dict of customer totals stays efficient unless there are millions of unique customers. I'm also weighing the invalid-row list, which I'm already capping at 100 entries with a count of the rest. Next I'm confirming the requirements are covered, with the line-by-line reading, row validation, per-customer aggregation, and report output all in place.
+
+The script's checks are all in place now: it handles malformed rows without crashing, so I'm just confirming the final version is ready to show, with the code first and brief notes after.
+

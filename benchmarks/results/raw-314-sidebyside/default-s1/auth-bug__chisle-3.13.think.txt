@@ -1,0 +1,5 @@
+The user is asking me to find and fix an auth middleware bug where valid tokens are rejected at the exact expiry boundary due to using `currentTime > expiry` instead of `currentTime >= expiry`.
+
+Let me start by exploring the working directory to find the auth middleware code.
+
+First, I should check what's in the directory and find the auth middleware.

@@ -1,0 +1,18 @@
+The user wants a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully
+
+They want to see the code. I should write this in a practical, production-ready way.
+
+Since they didn't specify a language, I'll go with Python as it's common for data processing tasks. I'll make it:
+- Efficient for large files (streaming, not loading all into memory)
+- Robust error handling for malformed rows
+- Clear validation logic
+- Writes a clean report
+
+Let me write a complete, working script.
+
+For chisle mode: I should be terse but complete. Code first, minimal explanation. No headings or unnecessary preamble.

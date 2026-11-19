@@ -1,0 +1,64 @@
+The user is asking me to design a REST API for a multi-tenant document store. They want me to cover:
+1. Resources
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+
+And explain the decisions.
+
+This is a design question, not asking me to implement code yet. Per my instructions for exploratory questions: "respond in 2-3 sentences with a recommendation and the main tradeoff."
+
+However, this is a substantial design task that asks for specific components. The user is asking me to "design" and "explain the decisions" - so they want a thoughtful, structured response about how to approach this.
+
+I should provide:
+- A concrete API design
+- Explain why each choice was made
+- Tradeoffs where relevant
+
+I should be in Chisle mode (maximum signal, minimum noise). I should be terse but complete - keep every decisive fact, drop filler.
+
+Let me think about what a good multi-tenant document store API looks like:
+
+**Resources:**
+- Documents (the core resource)
+- Collections/Folders (organizing documents)
+- Versions (history)
+- Shares (access control)
+- Tenants (the accounts)
+
+**Auth Model:**
+- Tenant isolation is critical - no crosstenant leaks
+- Could be:
+  - API key per tenant
+  - Bearer token (JWT)
+  - OAuth2
+  - Custom tenant header
+
+**Pagination:**
+- Cursor-based vs offset
+- Cursor is better for large datasets, more stable
+
+**Versioning:**
+- API versioning strategy (URL path vs header)
+- Document versioning (tracking changes)
+
+**Error Format:**
+- Consistent error response structure
+- HTTP status codes + error codes
+
+Let me design a solid solution:
+
+**Base URLs:**
+- `/api/v1/documents` - multitenancy via auth (not URL), cleaner
+- Tenant identified via auth header/token
+
+**Resources:**
+
+```
+Documents:
+GET    /api/v1/documents              - list docs
+I'm now listing the REST endpoints for documents: create, read, update, delete, plus the version history and a specific version lookup. Auth is a bearer token, and I'm starting to sketch pagination.
+
+Now I'm filling in the rest of the design: pagination with a cursor and a limit, versioning via the URL path plus a version reference, and a consistent error body with a code, a message, and details.
+

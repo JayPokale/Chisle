@@ -1,0 +1,11 @@
+The user wants me to add debounce to a search input that fires an API call on every keystroke. They want to see the code.
+
+However, I don't have any context about what codebase this is, what framework they're using (React, Vue, vanilla JS, etc.), or even if there's existing code in the working directory.
+
+Let me first check what's in the working directory to see if there's existing code to modify.
+
+Since they said "add debounce" and "Show the code", they likely want me to either:
+1. Modify existing code if it exists
+2. Show an example implementation
+
+Let me start by checking the working directory.

@@ -1,0 +1,43 @@
+The user wants me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+This is a typical authentication system request. They haven't specified a tech stack, so I need to pick the most common default. Since no context was given about the project, I'll assume this is a Node.js/Express application with a database. That's a solid default for a web auth system.
+
+Key components:
+1. Signup: validate email/password, hash password, store in DB
+2. Login: validate credentials, hash input password, compare, create session
+3. Rate limiting: track failed attempts, block after N attempts
+4. Session management: issue tokens/sessions
+
+They said "Show the code" so they want the implementation, not explanation.
+
+Let me build this minimal but complete:
+- Express server
+- SQLite for simplicity (no external DB needed)
+- bcrypt for password hashing
+- Simple session/JWT system
+- In-memory rate limiting (could be Redis in production)
+
+Actually, let me think about what's the clearest, most minimal auth system:
+1. POST /signup - email, password → hash → store
+2. POST /login - email, password → find user → hash check → issue session token
+3. Rate limiting: track failed attempts per IP/email
+
+I'll use:
+- Node.js + Express
+- SQLite3 for DB (file-based, no setup)
+- bcrypt for password hashing
+- UUID for session tokens
+- Simple in-memory rate limiting with timestamps
+
+Let me write this as a single file or a minimal set of files. User said "show the code" so they want the implementation, complete enough to run.
+
+I should write:
+1. A complete Express server with auth routes
+2. Database initialization
+3. Rate limiting middleware
+4. Password hashing on signup and login
+
+Let me keep it minimal but complete.

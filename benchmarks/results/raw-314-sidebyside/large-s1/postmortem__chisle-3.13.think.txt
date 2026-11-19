@@ -1,0 +1,17 @@
+The user is asking for an incident postmortem for a hypothetical outage scenario. This is a template/example document, not related to actual work in their repo (which isn't even a git repo).
+
+Given the Chisle mode is active, I should:
+- Be concise but complete
+- Skip boilerplate, focus on signal
+- Structure it as tight prose where possible, not over-formatted
+- No unnecessary preamble
+- Clear facts: timeline, root cause, remediations
+
+A postmortem is inherently structured (timeline, root cause, etc.), so I can use those logical sections, but keep them lean.
+
+Let me write a realistic incident postmortem that:
+1. Establishes context quickly
+2. Provides a clear timeline with specific times and impacts
+3. Explains root cause in technical detail
+4. Lists concrete remediations with ownership/priority
+5. Avoids fluff
