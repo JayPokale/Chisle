@@ -204,4 +204,4 @@ irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
   <a href="https://github.com/JayPokale/Chisle/graphs/contributors"><img src="https://contrib.rocks/image?repo=JayPokale/Chisle" alt="Contributors"></a>
 </p>
 
-<p align="center"><sub><a href="../LICENSE">MIT</a> · <a href="../CONTRIBUTING.md">コントリビュート</a> · <a href="https://github.com/JuliusBrussee/caveman">caveman</a> と <a href="https://github.com/DietrichGebert/ponytail">ponytail</a> の統合から誕生（<a href="../NOTICE">表記</a>）</sub></p>
+<p align="center"><sub><a href="../LICENSE">MIT</a> · <a href="../CONTRIBUTING.md">コントリビュート</a> · <a href="https://github.com/JuliusBrussee/caveman">caveman</a> と <a href="https://github.com/DietrichGebert/ponytail">ponytail</a> の統合から誕生（<a href="../NOTICE">表記</a>）· コマンドフィルターは <a href="https://github.com/rtk-ai/rtk">RTK</a> の設計がベース</sub></p>

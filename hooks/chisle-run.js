@@ -3,7 +3,9 @@
 //
 // Claude Code hands a failed Bash call (exit != 0) to PostToolUseFailure,
 // which cannot rewrite output, so chisle-compress-output.js only ever filters
-// successful runs. This file closes that gap the way RTK does, with no binary:
+// successful runs. This file closes that gap the way RTK
+// (https://github.com/rtk-ai/rtk) does, rewriting the command in a PreToolUse
+// hook, but with no binary:
 //
 //   PreToolUse hook (no args, payload on stdin): rewrites test/build/install
 //     segments of a Bash command to run through this file:

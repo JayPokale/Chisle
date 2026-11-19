@@ -31,7 +31,7 @@ const QA = [
   },
   {
     q: "Do I still need RTK?",
-    a: "No. Since 3.13.0 the compressor knows the command too: it drops git hints and progress, passing tests (pytest, jest, vitest, mocha, node --test, go test, cargo test) and install noise (npm, pnpm, pip, uv, cargo, go, docker), with no extra binary, on any OS. RTK still covers more commands, and the two stack: commands already run through rtk are skipped.",
+    a: "Not for git, ls, grep, tests and installs. Chisle's command filters follow RTK's design, built into the same hook with no extra binary, on any OS, and on Claude Code a wrapper filters failed test and build runs too. On our 37-command benchmark the model reads 28% of the raw output with Chisle and 84% with RTK. RTK covers more tools (kubectl, curl, linters), and the two stack: commands already run through rtk are skipped.",
   },
   {
     q: "How do I turn it off?",

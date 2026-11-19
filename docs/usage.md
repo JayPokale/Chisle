@@ -180,7 +180,7 @@ Chisle borrows the best published token-saving techniques and implements the one
 | YAGNI/lazy-code ruleset | [ponytail](https://github.com/dietrichgebert/ponytail) | ✅ Chisle's code rules started from it |
 | Tool-output elision (head/tail) | [headroom](https://github.com/headroomlabs-ai/headroom)-style, proxy-free | ✅ hook, no proxy, works on subscription OAuth |
 | ANSI strip / log crush / dedup | headroom transforms | ✅ scrub + dedup tiers |
-| Command-aware output filters | [RTK](https://github.com/rtk-ai/rtk)-style ([writeup](https://andrewpatterson.dev/posts/token-savings-rtk-headroom/)) | ✅ same hook, no binary, any OS: git status/log/show/diff/branch, `ls -l`, `wc`, `grep -rn`, passing tests, install noise; on Claude Code a `PreToolUse` wrapper filters failed test/build runs too; skips commands already run through `rtk` |
+| Command-aware output filters | [RTK](https://github.com/rtk-ai/rtk)-style ([writeup](https://andrewpatterson.dev/posts/token-savings-rtk-headroom/)) | ✅ follows RTK's design (command rewriting, output shapes) in the same hook, no binary, any OS: git status/log/show/diff/branch, `ls -l`, `wc`, `grep -rn`, passing tests, install noise; on Claude Code a `PreToolUse` wrapper filters failed test/build runs too; skips commands already run through `rtk` |
 | MCP/codebase-graph indexing | context-mode, [token-optimizer-mcp](https://github.com/ooples/token-optimizer-mcp) | ❌ stacks, orthogonal layer |
 | CLAUDE.md dieting | [community guides](https://www.firecrawl.dev/blog/claude-code-token-efficiency) | ✅ `/chisle-audit` flags bloated docs/config prose |
 

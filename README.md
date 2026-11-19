@@ -203,4 +203,4 @@ Per-agent setup, upgrading and config: [docs/usage.md](docs/usage.md).
   <a href="https://github.com/JayPokale/Chisle/graphs/contributors"><img src="https://contrib.rocks/image?repo=JayPokale/Chisle" alt="Contributors"></a>
 </p>
 
-<p align="center"><sub><a href="LICENSE">MIT</a> · <a href="CONTRIBUTING.md">Contributing</a> · Began as a merge of <a href="https://github.com/JuliusBrussee/caveman">caveman</a> and <a href="https://github.com/DietrichGebert/ponytail">ponytail</a> (<a href="NOTICE">notices</a>)</sub></p>
+<p align="center"><sub><a href="LICENSE">MIT</a> · <a href="CONTRIBUTING.md">Contributing</a> · Began as a merge of <a href="https://github.com/JuliusBrussee/caveman">caveman</a> and <a href="https://github.com/DietrichGebert/ponytail">ponytail</a> (<a href="NOTICE">notices</a>) · Command filters follow <a href="https://github.com/rtk-ai/rtk">RTK</a>'s design</sub></p>

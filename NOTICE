@@ -10,3 +10,10 @@ Copyright (c) 2026 Julius Brussee
 
 ponytail — https://github.com/DietrichGebert/ponytail
 Copyright (c) 2026 DietrichGebert
+
+Design credit (no code copied): the command-aware output filters and the
+PreToolUse command wrapper (hooks/chisle-command-filters.js,
+hooks/chisle-run.js) follow the design of RTK, https://github.com/rtk-ai/rtk:
+rewriting test/build commands to run through a filter before they finish, and
+its output shapes for git status, git log, git branch, ls, wc and test
+summaries. Chisle reimplements them in JavaScript; no RTK source is included.

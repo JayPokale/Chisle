@@ -273,8 +273,8 @@ also reformat: long `git status` becomes the short `XY path` form, default `git 
 `git show` get one header line per commit, `git diff` headers shrink to a path line,
 `git branch -a` folds remotes onto one line, and `ls -l`, `wc` and `grep -rn` lose
 padding and repeated paths. Failures, errors and summaries are never dropped. With more
-than one commit, `git log` keeps 3 body lines and 4 `--stat` files per commit and
-counts the rest (`git show <hash>` has it all); `ls -l` drops dates unless sorted by
+than one commit, `git log` keeps 3 body lines per commit and counts the rest
+(`git show <hash>` has it all; `--stat` file lists are never cut); `ls -l` drops dates unless sorted by
 time (`-t`). A command piped into anything but `head`/`tail` is left alone, so
 `git status | cat` shows raw output; commands already run through `rtk` are skipped.
 

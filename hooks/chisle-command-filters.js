@@ -1,5 +1,9 @@
 // chisle — command-aware output filters (RTK-style, but post-hoc).
 //
+// Design credit: RTK (https://github.com/rtk-ai/rtk). The short git status,
+// one-line log headers with capped bodies, folded remote branches and compact
+// ls/wc/test output follow its output shapes; no RTK code is used.
+//
 // The size tiers in chisle-compress-output.js only start at 1k/8k chars and
 // know nothing about which command ran. Most shell noise is smaller and
 // command-specific: git's "(use git add ...)" hints, passing-test lines,
@@ -271,14 +275,14 @@ function compactStat(lines) {
 
 const MONTHS = { Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06', Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12' };
 const BODY_CAP = 3;
-const STAT_CAP = 4;
 
 // Default `git log`/`git show` blocks → `hash subject (date author)`, body
 // indented. Hash shortened to 10 (unambiguous in all but the largest
 // repos; git's default 7 collides there), email dropped,
 // date to the day, an author shared by every commit named once. With more
-// than one commit, bodies and stats past a cap become a count: `git show
-// <hash>` has the rest.
+// than one commit, bodies past a cap become a count (`git show <hash>` has
+// the rest). --stat file lists are never capped: a hidden file would read
+// as "this commit did not touch it".
 function compactGitLog(lines) {
   const commits = lines.filter(l => /^commit [0-9a-f]{40}/.test(l)).length;
   const many = commits > 1;
@@ -312,17 +316,11 @@ function compactGitLog(lines) {
     const keep = many ? body.slice(0, BODY_CAP) : body;
     for (const b of keep) out.push(`  ${b}`);
     if (keep.length < body.length) out.push(`  [+${body.length - keep.length} lines]`);
-    // Stat block (if any) follows; cap it the same way.
-    let n = 0;
-    let hidden = 0;
+    // Stat block or patch (if any) follows.
     for (; j < lines.length && !/^commit [0-9a-f]{40}/.test(lines[j]); j++) {
-      const isStat = /^\S.* \| (?:\d+|Bin )/.test(lines[j]);
-      if (isStat && many && ++n > STAT_CAP) { hidden++; continue; }
-      if (hidden && !isStat) { out.push(`[+${hidden} files]`); hidden = 0; }
       if (many && !lines[j].trim()) continue;
       out.push(lines[j]);
     }
-    if (hidden) out.push(`[+${hidden} files]`);
     i = j - 1;
   }
   return out;

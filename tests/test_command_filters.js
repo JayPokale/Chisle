@@ -141,12 +141,12 @@ test('git log: one line per commit header, single commit keeps its whole body', 
   assert.equal(filterCommand('git log --oneline', one), null);
 });
 
-test('git log: several commits cap bodies and stats, shared author named once', () => {
+test('git log: several commits cap bodies (never stats), shared author named once', () => {
   const stat = Array.from({ length: 7 }, (_, i) => ` src/f${i}.js | ${i + 1} +`).join('\n') + '\n 7 files changed, 28 insertions(+)\n';
   const text = commit('a', 'Ada', ['b1', 'b2', 'b3', 'b4', 'b5']) + '\n' + stat + '\n' + commit('b', 'Ada', ['c1']);
   assert.equal(filterCommand('git log --stat', text), [
     '(all by Ada)', 'aaaaaaaaaa Subject a (2026-11-17)', '  b1', '  b2', '  b3', '  [+2 lines]',
-    'src/f0.js | 1', 'src/f1.js | 2', 'src/f2.js | 3', 'src/f3.js | 4', '[+3 files]', '7 files +28',
+    ...Array.from({ length: 7 }, (_, i) => `src/f${i}.js | ${i + 1}`), '7 files +28',
     'bbbbbbbbbb Subject b (2026-11-17)', '  c1'].join('\n'));
   const two = commit('a', 'Ada', ['x']) + '\n' + commit('b', 'Bo', ['y']);
   assert.match(filterCommand('git log', two), /^a{10} Subject a \(2026-11-17 Ada\)\n  x\nb{10} Subject b \(2026-11-17 Bo\)\n  y$/);

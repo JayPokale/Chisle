@@ -204,4 +204,4 @@ irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
   <a href="https://github.com/JayPokale/Chisle/graphs/contributors"><img src="https://contrib.rocks/image?repo=JayPokale/Chisle" alt="Contributors"></a>
 </p>
 
-<p align="center"><sub><a href="../LICENSE">MIT</a> · <a href="../CONTRIBUTING.md">기여하기</a> · <a href="https://github.com/JuliusBrussee/caveman">caveman</a>과 <a href="https://github.com/DietrichGebert/ponytail">ponytail</a>을 합치며 시작 (<a href="../NOTICE">고지</a>)</sub></p>
+<p align="center"><sub><a href="../LICENSE">MIT</a> · <a href="../CONTRIBUTING.md">기여하기</a> · <a href="https://github.com/JuliusBrussee/caveman">caveman</a>과 <a href="https://github.com/DietrichGebert/ponytail">ponytail</a>을 합치며 시작 (<a href="../NOTICE">고지</a>) · 명령 필터는 <a href="https://github.com/rtk-ai/rtk">RTK</a>의 설계를 따름</sub></p>
