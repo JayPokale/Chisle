@@ -78,18 +78,36 @@ not ok 2 - breaks
 # pass 1
 # fail 1`;
 
-test('git status: hints dropped, files and branch kept', () => {
-  const out = filterCommand('git status', GIT_STATUS);
-  assert.ok(!out.includes('(use "git'));
-  for (const keep of ['On branch main', 'modified:   src/a.js', 'src/b.js', 'no changes added to commit']) {
-    assert.ok(out.includes(keep), keep);
-  }
-  assert.match(out, /\[chisle: hid 3 git hint lines/);
+test('git status: long format becomes the short one, nothing lost', () => {
+  assert.equal(filterCommand('git status', GIT_STATUS), '* main\n M src/a.js\n?? src/b.js');
+  const full = `On branch dev
+Your branch and 'origin/dev' have diverged,
+and have 1 and 2 different commits each, respectively.
+  (use "git pull" if you want to integrate the remote branch with yours)
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+\tnew file:   a.js
+\trenamed:    b.js -> c.js
+\tmodified:   d.js
+
+Changes not staged for commit:
+\tmodified:   d.js
+\tdeleted:    e.js
+
+Unmerged paths:
+\tboth modified:   f.js
+`;
+  assert.equal(filterCommand('git status', full),
+    '* dev...origin/dev [ahead 1, behind 2]\nA  a.js\nR  b.js -> c.js\nMM d.js\n D e.js\nUU f.js');
+  assert.equal(filterCommand('git status', "On branch main\nYour branch is ahead of 'origin/main' by 3 commits.\n  (use \"git push\" to publish your local commits)\n\nnothing to commit, working tree clean"),
+    '* main...origin/main [ahead 3]\nnothing to commit, working tree clean');
+  assert.equal(kindsFor('git status -s'), null);
 });
 
 test('pytest: passing dot lines dropped, the failing file line and failure kept', () => {
   const out = filterCommand('python -m pytest -q', PYTEST);
-  assert.ok(!out.includes('tests/test_a.py ....'));
+  assert.ok(!out.includes('tests/test_a1.py ....'));
   assert.ok(out.includes('tests/test_b.py .........F'));
   assert.ok(out.includes('E       assert 1 == 2'));
   assert.ok(out.includes('1 failed, 39 passed'));
@@ -108,17 +126,116 @@ test('spec reporters: ticks dropped, crosses kept', () => {
   assert.ok(!out.includes('✔') && out.includes('✖ broken') && out.includes('ℹ fail 1'));
 });
 
-test('git log: default blocks compacted, nothing but labels and the hash tail lost', () => {
-  const text = `commit ${'a'.repeat(40)} (HEAD -> main)
-Author: Ada <ada@x.dev>
+const commit = (h, who, body) => `commit ${h.repeat(40)}
+Author: ${who} <${who.toLowerCase()}@x.dev>
 Date:   Tue Nov 17 17:48:30 2026 +0530
 
-    Subject line
+    Subject ${h}
 
-    Body line`;
-  const out = filterCommand('git log -n 1', text);
-  assert.equal(out, `${'a'.repeat(12)} (HEAD -> main) · Ada <ada@x.dev> · Tue Nov 17 17:48:30 2026 +0530\n  Subject line\n\n  Body line`);
-  assert.equal(filterCommand('git log --oneline', text), null);
+${body.map(b => '    ' + b).join('\n')}
+`;
+
+test('git log: one line per commit header, single commit keeps its whole body', () => {
+  const one = commit('a', 'Ada', ['b1', 'b2', 'b3', 'b4', 'b5']).replace(`${'a'.repeat(40)}`, `${'a'.repeat(40)} (HEAD -> main)`);
+  assert.equal(filterCommand('git show HEAD', one), `aaaaaaa (HEAD -> main) Subject a (2026-11-17 Ada)\n  b1\n  b2\n  b3\n  b4\n  b5`);
+  assert.equal(filterCommand('git log --oneline', one), null);
+});
+
+test('git log: several commits cap bodies and stats, shared author named once', () => {
+  const stat = Array.from({ length: 7 }, (_, i) => ` src/f${i}.js | ${i + 1} +`).join('\n') + '\n 7 files changed, 28 insertions(+)\n';
+  const text = commit('a', 'Ada', ['b1', 'b2', 'b3', 'b4', 'b5']) + '\n' + stat + '\n' + commit('b', 'Ada', ['c1']);
+  assert.equal(filterCommand('git log --stat', text), [
+    '(all by Ada)', 'aaaaaaa Subject a (2026-11-17)', '  b1', '  b2', '  b3', '  [+2 lines]',
+    'src/f0.js | 1', 'src/f1.js | 2', 'src/f2.js | 3', 'src/f3.js | 4', '[+3 files]', '7 files +28',
+    'bbbbbbb Subject b (2026-11-17)', '  c1'].join('\n'));
+  const two = commit('a', 'Ada', ['x']) + '\n' + commit('b', 'Bo', ['y']);
+  assert.match(filterCommand('git log', two), /^aaaaaaa Subject a \(2026-11-17 Ada\)\n  x\nbbbbbbb Subject b \(2026-11-17 Bo\)\n  y$/);
+});
+
+test('git diff: headers become one path line, hunks untouched', () => {
+  const text = `diff --git a/x.js b/x.js
+index 1111111..2222222 100644
+--- a/x.js
++++ b/x.js
+@@ -1,2 +1,2 @@
+-old
++new
+ same
+diff --git a/n.js b/n.js
+new file mode 100644
+index 0000000..3333333
+--- /dev/null
++++ b/n.js
+@@ -0,0 +1 @@
++hi
+diff --git a/o.js b/p.js
+similarity index 90%
+rename from o.js
+rename to p.js
+diff --git a/s.sh b/s.sh
+old mode 100644
+new mode 100755`;
+  assert.equal(filterCommand('git diff', text),
+    'x.js\n@@ -1,2 +1,2 @@\n-old\n+new\n same\nn.js (new)\n@@ -0,0 +1 @@\n+hi\no.js -> p.js\ns.sh (mode 100644 -> 100755)');
+});
+
+test('git branch -a: remotes folded per remote; ls -l compacted', () => {
+  const br = '* main\n  dev\n  remotes/origin/HEAD -> origin/main\n  remotes/origin/main\n  remotes/origin/feat/x';
+  assert.equal(filterCommand('git branch -a', br), '* main\n  dev\norigin/: HEAD -> main, main, feat/x');
+  const ls = `total 12
+drwxr-xr-x  3 ada ada  4096 Nov 19 03:44 .
+drwxr-xr-x 26 ada ada  4096 Nov 19 03:44 ..
+drwxr-xr-x  2 ada ada  4096 Nov 19 03:44 src
+-rwxr-xr-x  1 ada ada  1234 Nov 19 03:44 run.sh
+lrwxrwxrwx  1 ada ada     5 Nov 19 03:44 link -> run.sh
+-rw-r--r--  1 root root  10 Nov 19 03:44 my file.txt`;
+  assert.equal(filterCommand('ls -la', ls), '(owner ada:ada unless shown)\n755/ src/\n755 1234 run.sh\n777 5 link -> run.sh\n644 10 root:root my file.txt'.replace('755/ src/', '755 src/'));
+  assert.match(filterCommand('ls -lt', ls), /755 1234 Nov 19 03:44 run\.sh/);
+  assert.equal(kindsFor('ls -a'), null);
+});
+
+test('wc and grep -rn: padding and repeated paths dropped', () => {
+  assert.equal(filterCommand('wc -l src/*.js', '   10 src/a.js\n  200 src/b.js\n  210 total'), 'src/\n10 a.js\n200 b.js\n210 total');
+  assert.equal(filterCommand('wc -l a.js lib/b.js', '   10 a.js\n  200 lib/b.js\n  210 total'), '10 a.js\n200 lib/b.js\n210 total');
+  const g = 'src/a.js:3:const x = 1;\nsrc/a.js:9:  x += 2;\nsrc/b.js:1:import x';
+  assert.equal(filterCommand('grep -rn x src', g), 'src/a.js\n3:const x = 1;\n9:  x += 2;\nsrc/b.js\n1:import x');
+  assert.equal(filterCommand('grep -n x src/a.js', g), null);
+});
+
+test('cargo test: banners, passes and the repeated failure list dropped, zero counts trimmed', () => {
+  const text = `    Finished \`test\` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running unittests src/lib.rs (target/debug/deps/rt-a01b)
+
+running 3 tests
+test t::a ... ok
+test t::b ... FAILED
+test t::c ... ok
+
+failures:
+
+---- t::b stdout ----
+thread 't::b' panicked at src/lib.rs:15:9:
+assertion failed
+note: run with \`RUST_BACKTRACE=1\` environment variable to display a backtrace
+
+
+failures:
+    t::b
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass \`--lib\``;
+  assert.equal(filterCommand('cargo test', text), `test t::b ... FAILED
+
+failures:
+
+---- t::b stdout ----
+thread 't::b' panicked at src/lib.rs:15:9:
+assertion failed
+
+test result: FAILED. 2 passed; 1 failed (0.00s)
+
+error: test failed, to rerun pass \`--lib\``);
 });
 
 test('progress: install noise dropped, errors among it kept', () => {
@@ -159,7 +276,7 @@ test('hook: small Bash output is filtered via tool_input.command', () => {
   delete process.env.CHISLE_COMPRESS_FILTERS;
   const payload = { tool_name: 'Bash', tool_input: { command: 'git status' }, tool_response: { stdout: GIT_STATUS, stderr: '' } };
   const out = processPayload(payload, 'on');
-  assert.ok(GIT_STATUS.length < 1024 && out && !out.includes('(use "git'));
+  assert.ok(GIT_STATUS.length < 1024 && out && !out.includes('(use "git') && out.includes('?? src/b.js'));
   process.env.CHISLE_COMPRESS_FILTERS = '0';
   assert.equal(processPayload(payload, 'on'), null);
   if (prev === undefined) delete process.env.CHISLE_COMPRESS_FILTERS; else process.env.CHISLE_COMPRESS_FILTERS = prev;

@@ -300,7 +300,7 @@ function installClaude(ctx) {
     else if (r === 'skip') results.skipped.push(['claude-hooks', 'already wired']);
     else results.failed.push(['claude-hooks', r]);
   } else {
-    note('  hooks: plugin manifest handles SessionStart + UserPromptSubmit + PostToolUse');
+    note('  hooks: plugin manifest handles SessionStart + UserPromptSubmit + PreToolUse + PostToolUse');
     // Plugin path won, so drop any standalone wiring left by an earlier run, or
     // both copies of every hook run on each event and the PostToolUse pair
     // dedups first-seen output against itself.
@@ -327,11 +327,11 @@ function installClaudeHooks(ctx) {
   const settingsPath = path.join(cfg, 'settings.json');
   const HOOK_FILES = ['package.json', 'chisle-config.js', 'chisle-activate.js',
                       'chisle-mode.js', 'chisle-mode-tracker.js', 'chisle-compress-output.js', 'chisle-command-filters.js',
-                      'chisle-statusline.sh', 'chisle-statusline.ps1'];
+                      'chisle-run.js', 'chisle-statusline.sh', 'chisle-statusline.ps1'];
 
   if (opts.dryRun) {
     note(`  would copy ${HOOK_FILES.length} hook files → ${hooksDst}`);
-    note(`  would merge SessionStart + UserPromptSubmit + PostToolUse + statusline → ${settingsPath}`);
+    note(`  would merge SessionStart + UserPromptSubmit + PreToolUse + PostToolUse + statusline → ${settingsPath}`);
     return 'ok';
   }
 
@@ -352,11 +352,16 @@ function installClaudeHooks(ctx) {
   const activate = path.join(hooksDst, 'chisle-activate.js');
   const tracker = path.join(hooksDst, 'chisle-mode-tracker.js');
   const compress = path.join(hooksDst, 'chisle-compress-output.js');
+  const runner = path.join(hooksDst, 'chisle-run.js');
 
   SETTINGS.addCommandHook(settings, 'SessionStart',
     { command: `"${node}" "${activate}"`, marker: 'chisle-activate', timeout: 5, statusMessage: 'Loading chisle mode...' });
   SETTINGS.addCommandHook(settings, 'UserPromptSubmit',
     { command: `"${node}" "${tracker}"`, marker: 'chisle-mode-tracker', timeout: 5, statusMessage: 'Tracking chisle mode...' });
+  if (!IS_WIN) {
+    SETTINGS.addCommandHook(settings, 'PreToolUse',
+      { command: `"${node}" "${runner}"`, marker: 'chisle-run', timeout: 5, matcher: 'Bash' });
+  }
   SETTINGS.addCommandHook(settings, 'PostToolUse',
     { command: `"${node}" "${compress}"`, marker: 'chisle-compress-output', timeout: 10,
       matcher: 'Bash|Agent|WebFetch|WebSearch|Grep|Glob|mcp__.*', statusMessage: 'Compressing tool output...' });

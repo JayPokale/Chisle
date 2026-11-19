@@ -250,6 +250,7 @@ Input-axis switches work across Claude Code, Pi, Copilot, and OpenCode where sup
 CHISLE_COMPRESS=0
 CHISLE_COMPRESS_SCRUB=0
 CHISLE_COMPRESS_FILTERS=0       # command-aware filters (git, tests, installs)
+CHISLE_COMPRESS_WRAP=0          # Claude Code: never wrap commands (=1: wrap in every permission mode)
 CHISLE_COMPRESS_DEDUP=0
 CHISLE_COMPRESS_MAX_CHARS=8000  # also the final OpenCode output bound
 CHISLE_COMPRESS_HEAD_LINES=60
@@ -260,10 +261,26 @@ CHISLE_COMPRESS_TOOLS=bash,grep
 Command-aware filters work like [RTK](https://github.com/rtk-ai/rtk) without a
 binary: when the shell command is known they drop `git status` hints, `git push`/`pull`
 progress, passing-test lines (pytest, jest, vitest, mocha, `node --test`, `go test`,
-`cargo test`) and install/download noise (npm, pnpm, pip, uv, cargo, go, docker), and
-compact default `git log`. Failures, errors and summaries are never dropped. A command
-piped into anything but `head`/`tail` is left alone, so `git status | cat` shows raw
-output; commands already run through `rtk` are skipped.
+`cargo test`) and install/download noise (npm, pnpm, pip, uv, cargo, go, docker). They
+also reformat: long `git status` becomes the short `XY path` form, default `git log` and
+`git show` get one header line per commit, `git diff` headers shrink to a path line,
+`git branch -a` folds remotes onto one line, and `ls -l`, `wc` and `grep -rn` lose
+padding and repeated paths. Failures, errors and summaries are never dropped. With more
+than one commit, `git log` keeps 3 body lines and 4 `--stat` files per commit and
+counts the rest (`git show <hash>` has it all); `ls -l` drops dates unless sorted by
+time (`-t`). A command piped into anything but `head`/`tail` is left alone, so
+`git status | cat` shows raw output; commands already run through `rtk` are skipped.
+
+Claude Code passes a failed command's output to `PostToolUseFailure`, which cannot
+rewrite it, so a `PreToolUse` hook (`hooks/chisle-run.js`) runs test, build and install
+commands through a small Node wrapper that filters their output even when they fail,
+and keeps the exit status. Claude Code checks permission rules against the rewritten
+command, so the wrapper is on only in `bypassPermissions` mode, never touches a
+program named by a deny or ask `Bash(...)` rule, and skips anything it cannot parse
+safely (subshells, `$(...)`, background jobs, watch mode). Output reaches Claude when
+the command ends, not as it streams. `CHISLE_COMPRESS_WRAP=1` turns it on in every
+permission mode (expect prompts for the wrapped command unless you allow it);
+`CHISLE_COMPRESS_WRAP=0` turns it off. Not on Windows.
 
 `CHISLE_COMPRESS_TOOLS` replaces the allowlist. OpenCode defaults to `bash`,
 `grep`, `glob`, `webfetch`, `websearch`, and `list`; configure read-only MCP

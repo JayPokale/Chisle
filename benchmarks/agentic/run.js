@@ -62,16 +62,17 @@ if (ARMS.includes('ponytail')) {
 }
 process.on('exit', () => fs.rmSync(ISO, { recursive: true, force: true }));
 
-// chisle-hook arm: the ruleset plus the shipped PostToolUse compressor, taken
-// verbatim from plugin.json so the arm cannot drift from what users install.
+// chisle-hook arm: the ruleset plus the shipped PreToolUse wrapper and
+// PostToolUse compressor, taken verbatim from plugin.json so the arm cannot
+// drift from what users install.
 const plugin = JSON.parse(fs.readFileSync(path.join(ROOT, '.claude-plugin', 'plugin.json'), 'utf8'));
 const TRIM_SETTINGS = JSON.stringify({ permissions: { deny: (process.env.TRIM_TOOLS || 'Workflow,ScheduleWakeup,ReportFindings,ShareOnboardingGuide,SendFeedback').split(',') } });
-const HOOK_SETTINGS = JSON.stringify({ hooks: { PostToolUse: plugin.hooks.PostToolUse } })
+const HOOK_SETTINGS = JSON.stringify({ hooks: { PreToolUse: plugin.hooks.PreToolUse, PostToolUse: plugin.hooks.PostToolUse } })
   .split('${CLAUDE_PLUGIN_ROOT}').join(ROOT);
 // RTK arms: the hook `rtk init -g` installs, so the arm matches a real RTK user.
 const RTK_HOOK = [{ matcher: 'Bash', hooks: [{ type: 'command', command: 'rtk hook claude' }] }];
 const RTK_SETTINGS = JSON.stringify({ hooks: { PreToolUse: RTK_HOOK } });
-const RTK_HOOK_SETTINGS = JSON.stringify({ hooks: { PreToolUse: RTK_HOOK, PostToolUse: plugin.hooks.PostToolUse } })
+const RTK_HOOK_SETTINGS = JSON.stringify({ hooks: { PreToolUse: RTK_HOOK.concat(plugin.hooks.PreToolUse), PostToolUse: plugin.hooks.PostToolUse } })
   .split('${CLAUDE_PLUGIN_ROOT}').join(ROOT);
 if (ARMS.some((a) => a.startsWith('rtk'))) {
   try { console.log('rtk: ' + execFileSync('rtk', ['--version'], { encoding: 'utf8' }).trim()); }

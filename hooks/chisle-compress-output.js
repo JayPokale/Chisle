@@ -54,6 +54,8 @@
 //
 // Command-aware filters (chisle-command-filters.js) run first, at any size,
 // when the shell command is known: git hints, passing tests, install progress.
+// On Claude Code, chisle-run.js runs the same pipeline inside a PreToolUse
+// wrapper so failed commands are filtered too (CHISLE_COMPRESS_WRAP).
 //
 // Savings accrue in <stateDir>/.chisle-compress-stats.json for the statusline
 // (Claude/Pi: <claudeDir>; Copilot: <copilotDir>, see chisle-config.js).
@@ -664,12 +666,14 @@ function transform(text, limits, toolName, stateDir, command) {
   if (!text) return null;
   let t = commandFilter(command, text) || text;
   if (t === text && text.length <= SCRUB_MIN) return null;
+  // A command filter's win counts at any size; MIN_WIN gates the generic tiers.
+  const filtered = t.length < text.length;
   if (t.length > SCRUB_MIN && process.env.CHISLE_COMPRESS_SCRUB !== '0') t = scrub(t);
   if (t.length > limits.maxChars) {
     const elided = compress(t, limits, toolName ? spill(text, toolName, stateDir) : null);
     if (elided != null) t = elided;
   }
-  return text.length - t.length >= MIN_WIN ? t : null;
+  return text.length - t.length >= MIN_WIN || (filtered && t.length < text.length) ? t : null;
 }
 
 // Put the compressed text back into the ORIGINAL response shape.
