@@ -22,11 +22,11 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/readme/stats-dark.svg">
-    <img src="assets/readme/stats-light.svg" width="880" alt="Chisle versus the same model with no ruleset: 29% fewer billed output tokens, answers 45% shorter, oversized tool output 48% smaller, accuracy 156 of 156 versus 154 of 156.">
+    <img src="assets/readme/stats-light.svg" width="880" alt="Chisle versus the same model with no ruleset: 31% fewer billed output tokens, answers 49% shorter, oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.">
   </picture>
 </p>
 
-<p align="center"><b>Fewer tokens than caveman and ponytail. No accuracy lost.</b></p>
+<p align="center"><b>Shorter answers than caveman and ponytail. No accuracy lost.</b></p>
 
 ```bash
 npx chisle
@@ -46,7 +46,7 @@ npx chisle
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/readme/race-dark.svg">
-    <img src="assets/readme/race-light.svg" width="880" alt="Same prompt, four rulesets, visible answer tokens: Chisle 530, caveman 604, ponytail 747, no ruleset 1,186. Chisle is 55% shorter than no ruleset.">
+    <img src="assets/readme/race-light.svg" width="880" alt="Same prompt, four rulesets, visible answer tokens: Chisle 567, ponytail 740, caveman 1,018, no ruleset 1,571. Chisle is 64% shorter than no ruleset.">
   </picture>
 </p>
 
@@ -54,45 +54,47 @@ npx chisle
 <summary><b>See both answers</b></summary>
 <br>
 
-The prompt: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* Excerpts from the verbatim committed answers in [`raw-nov-sidebyside/large-s2`](benchmarks/results/raw-nov-sidebyside/large-s2/):
+The prompt: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* Excerpts from the verbatim committed answers in [`raw-314-sidebyside/large-s2`](benchmarks/results/raw-314-sidebyside/large-s2/):
 
 <table>
-<tr><th align="left" width="50%">no ruleset: 121 lines, 1,186 answer tokens</th><th align="left" width="50%">Chisle: 62 lines, 530 answer tokens</th></tr>
+<tr><th align="left" width="50%">no ruleset: 126 lines, 1,571 answer tokens</th><th align="left" width="50%">Chisle: 58 lines, 567 answer tokens</th></tr>
 <tr valign="top"><td>
 
 ```python
-class OrderStateError(Exception):
-    """Raised when an invalid state transition is attempted."""
-    pass
-
-class Order:
-    # Define valid transitions: state -> list of allowed next states
-    VALID_TRANSITIONS = { … }
-    def transition_to(self, next_state):
-        """Transition to the next state. Raises OrderStateError if invalid."""
-    def can_transition_to(self, next_state):
-        """Check if a transition is allowed without performing it."""
+class OrderStateMachine:
+    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
+        OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
+        …
+    }
+    def can_transition_to(self, next_state: OrderState) -> bool:
+        """Check if transition from current state to next state is valid."""
+    def transition_to(self, next_state: OrderState) -> None:
+        """Transition to the next state. Raises ValueError if transition is invalid."""
+    def get_current_state(self) -> str:
+    def get_valid_next_states(self) -> Set[str]:
 ```
 
-…plus usage, tests, printed output and a recap of the transitions.
+…all inside a file-write tool call it could not make (tools were off), plus a four-scenario demo, a feature list and a recap of the transitions.
 
 </td><td>
 
 ```python
 class OrderStateMachine:
-    TRANSITIONS = {
-        "created": {"pay", "cancel"},
-        "paid": {"ship", "refund", "cancel"},
+    VALID_TRANSITIONS = {
+        OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
+        OrderState.PAID: {OrderState.SHIPPED, OrderState.CANCELLED, OrderState.REFUNDED},
         …
     }
-    def transition(self, event):
-        if event not in self.TRANSITIONS[self.state]:
-            raise ValueError(f"Cannot {event} from {self.state}. …")
-        self.state = self.STATE_MAP[(self.state, event)]
-        return self.state
+    def transition(self, new_state: OrderState) -> None:
+        """Transition to new_state or raise ValueError if invalid."""
+        if new_state not in self.VALID_TRANSITIONS[self.state]:
+            raise ValueError(
+                f"Cannot transition from {self.state.value} to {new_state.value}"
+            )
+        self.state = new_state
 ```
 
-Then a short usage block.
+Then a short usage block and a one-line recap of the transitions.
 
 </td></tr>
 </table>
@@ -104,7 +106,14 @@ Then a short usage block.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark.svg">
-    <img src="assets/benchmark-light.svg" width="860" alt="Claude Code benchmark, 25 tasks in one run, billed output tokens as percent of the same model with no ruleset. caveman 87%, ponytail 90%, Chisle 3.8.1 75%, Chisle 71%.">
+    <img src="assets/benchmark-light.svg" width="860" alt="Claude Code benchmark, 26 answers in one run, billed output tokens as percent of the same model with no ruleset. caveman 69%, ponytail 80%, Chisle 3.13 70%, Chisle 69%.">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark-terminal.svg">
+    <img src="assets/benchmark-terminal-light.svg" width="860" alt="Terminal output Claude reads across 37 shell commands, as percent of the raw output: caveman 100%, ponytail 100% (rulesets only, they never touch tool output), RTK 84%, Chisle 28%.">
   </picture>
 </p>
 
@@ -122,7 +131,7 @@ Then a short usage block.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/readme/filters-dark.svg">
-    <img src="assets/readme/filters-light.svg" width="880" alt="Command-aware filters on real output, raw characters to what Claude reads: npm test 19,450 → 503 (−97%), go test -v 1,219 → 74 (−94%), git status 629 → 442 (−30%), git log -n 15 5,773 → 4,897 (−15%). Errors, failures and summaries always stay.">
+    <img src="assets/readme/filters-light.svg" width="880" alt="Command-aware filters on real output, raw characters to what Claude reads: npm test 19,374 → 445 (−98%), a failing npm test 16,107 → 309 (−98%), git status 485 → 92 (−81%), git log -n 15 6,561 → 3,784 (−42%). Across 37 commands Claude reads 28% of the raw output with Chisle, 84% with RTK.">
   </picture>
 </p>
 

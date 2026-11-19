@@ -7,9 +7,8 @@ import SectionHead from "./SectionHead";
 
 // The one dark element on the page: the product doing its job. Every number
 // is the real hook run on a 411-line build log: 37,745 chars in, 8,756 out,
-// 312 lines elided, both mid-log warnings salvaged. A successful command on
-// purpose: Claude Code sends a failed one to PostToolUseFailure, which cannot
-// rewrite output, so no hook can shrink a failing test run.
+// 312 lines elided, both mid-log warnings salvaged. A successful command: a
+// failed one is only shrunk when chisle-run.js wrapped it (bypass mode).
 const HEAD = [
   "$ npm run build",
   "• Packages in scope: @shop/api, @shop/ui, @shop/web",
@@ -98,9 +97,10 @@ export default function Terminal() {
       <Reveal delay={0.15}>
         <p className="mt-4 text-xs text-dim">
           Deterministic: no LLM calls, no network, no dependencies. Allowlist: Bash, Agent,
-          WebFetch, WebSearch, Grep, Glob, mcp__*. Never Read/Edit/Write. Successful calls
-          only: Claude Code sends a failed command to PostToolUseFailure, which no hook can
-          rewrite, and truncates that output itself.
+          WebFetch, WebSearch, Grep, Glob, mcp__*. Never Read/Edit/Write. Claude Code sends a
+          failed command to PostToolUseFailure, which no hook can rewrite, so since 3.14 test,
+          build and install commands run through a small wrapper that filters them before they
+          exit (in bypass-permissions mode).
         </p>
       </Reveal>
     </section>

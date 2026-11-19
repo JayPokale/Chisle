@@ -6,29 +6,33 @@ import Reveal from "./Reveal";
 import SectionHead from "./SectionHead";
 
 // Billed output tokens as % of the bare model, every arm in one run (Claude
-// Code + Haiku 4.5, 25 tasks). Matches assets/benchmark.svg and the README.
+// Code + Haiku 4.5, 26 answers, 2026-11-19). Matches assets/benchmark.svg and
+// the README. 3.13 and 3.14 share one ruleset; the gap between them is noise.
 const ARMS = [
-  { name: "chisle", pct: 71, self: true },
-  { name: "chisle 3.8.1", pct: 75 },
-  { name: "caveman", pct: 87 },
-  { name: "ponytail", pct: 90 },
+  { name: "chisle", pct: 69, self: true },
+  { name: "caveman", pct: 69 },
+  { name: "chisle 3.13", pct: 70 },
+  { name: "ponytail", pct: 80 },
   { name: "bare model", pct: 100 },
 ];
 
-// % of the bare model; Chisle is lowest on every row. Claude Code rows from
-// benchmarks/results/raw-nov-sidebyside/ (Chisle 3.9, Haiku 4.5, 25 prompts in
-// one run, tools off).
+// % of the bare model. Claude Code rows from benchmarks/results/raw-314-sidebyside/
+// (Chisle 3.14, Haiku 4.5, 26 answers in one run, tools off). Billed tokens tie
+// with caveman; answers are shortest.
 const ROWS = [
-  { label: "billed tokens · Claude Code", caveman: "87%", ponytail: "90%", chisle: "71%" },
-  { label: "answer length · Claude Code", caveman: "59%", ponytail: "62%", chisle: "55%" },
-  { label: "answer lines · Claude Code", caveman: "55%", ponytail: "60%", chisle: "45%" },
+  { label: "billed tokens · Claude Code", caveman: "69%", ponytail: "80%", chisle: "69%" },
+  { label: "answer length · Claude Code", caveman: "56%", ponytail: "63%", chisle: "51%" },
+  { label: "answer lines · Claude Code", caveman: "67%", ponytail: "67%", chisle: "46%" },
+  // benchmarks/results/raw-314-commands/commands.json: 37 shell commands; caveman and
+  // ponytail are rulesets only, so they pass tool output through untouched.
+  { label: "terminal output read · 37 commands", caveman: "100%", ponytail: "100%", chisle: "28%" },
 ];
 
-// Correctness, Chisle 3.9+ vs bare, Haiku 4.5: benchmarks/quality/raw-nov/ and
-// benchmarks/agentic/raw-nov/.
+// Correctness, Chisle 3.14 vs bare, Haiku 4.5: benchmarks/quality/raw-314/ and
+// benchmarks/agentic/raw-314/.
 const CORRECT = [
-  { label: "maths + coding, 52 problems × 3 seeds", bare: "154 / 156", chisle: "156 / 156" },
-  { label: "real repos, hidden tests, 7 fixtures × 6 seeds", bare: "36 / 42", chisle: "38 / 42" },
+  { label: "maths + coding, 52 problems × 3 seeds", bare: "156 / 156", chisle: "156 / 156" },
+  { label: "real repos, hidden tests, 7 fixtures × 5 seeds", bare: "31 / 35", chisle: "31 / 35" },
 ];
 
 export default function Benchmarks() {
@@ -38,7 +42,7 @@ export default function Benchmarks() {
   return (
     <section id="numbers" className="border-y border-line bg-surface py-28">
       <div className="mx-auto max-w-6xl px-5">
-        <SectionHead eyebrow="Benchmarks" title="The lowest bill, measured">
+        <SectionHead eyebrow="Benchmarks" title="The shortest answers, measured">
           Same model, same prompts, one difference: the injected ruleset. Billed output tokens as a
           share of the bare model, every arm in one run on Claude Code + Haiku 4.5. Raw transcripts and the runner{" "}
           <a
@@ -73,10 +77,11 @@ export default function Benchmarks() {
         </div>
 
         <Reveal delay={0.1}>
-          <h3 className="mt-16 text-lg font-semibold tracking-tight">Leanest on every row</h3>
+          <h3 className="mt-16 text-lg font-semibold tracking-tight">Shortest answers, tied for the lowest bill</h3>
           <p className="mt-2 max-w-xl text-sm text-dim">
-            % of the bare model, current Chisle (ruleset unchanged since 3.9) on Haiku 4.5, 25 live
-            prompts in one run. On Sonnet 5.5, Chisle bills 57% of the bare model.
+            % of the bare model, Chisle 3.14 (ruleset unchanged since 3.10) on Haiku 4.5, 26 answers
+            in one run. On Sonnet 5.5, Chisle bills 53% of the bare model. Terminal output: caveman and
+            ponytail never touch it; RTK leaves Claude 84% of it to read, Chisle 28%.
           </p>
           <div className="pane-scroll mt-6 overflow-x-auto rounded-xl border border-line bg-bg px-5 py-2">
             <table className="w-full text-left text-sm">

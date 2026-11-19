@@ -119,7 +119,7 @@ export default function Hero() {
             className="flex flex-col items-center gap-5 text-center"
           >
             <h1 className="text-4xl font-semibold leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl">
-              Fewer tokens than caveman and ponytail.
+              Shorter answers than caveman and ponytail.
               <br />
               <span className="text-gradient">No accuracy lost.</span>
             </h1>

@@ -23,11 +23,11 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/stats-dark.svg">
-    <img src="../assets/readme/zh-CN/stats-light.svg" width="880" alt="Chisle 对比无规则集的同一模型：计费输出 token 减少 29%，回答缩短 45%，超大工具输出缩小 48%，准确率 156/156 对 154/156。">
+    <img src="../assets/readme/zh-CN/stats-light.svg" width="880" alt="Chisle 对比无规则集的同一模型：计费输出 token 减少 31%，回答缩短 49%，超大工具输出缩小 48%，准确率 156/156，与无规则集相同。">
   </picture>
 </p>
 
-<p align="center"><b>比 caveman 和 ponytail 更省 token，准确率不降。</b></p>
+<p align="center"><b>回答比 caveman 和 ponytail 更短，准确率不降。</b></p>
 
 ```bash
 npx chisle
@@ -47,7 +47,7 @@ npx chisle
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/race-dark.svg">
-    <img src="../assets/readme/zh-CN/race-light.svg" width="880" alt="同一个提示词，四种规则集，可见回答 token：Chisle 530，caveman 604，ponytail 747，无规则集 1,186。Chisle 比无规则集短 55%。">
+    <img src="../assets/readme/zh-CN/race-light.svg" width="880" alt="同一个提示词，四种规则集，可见回答 token：Chisle 567，ponytail 740，caveman 1,018，无规则集 1,571。Chisle 比无规则集短 64%。">
   </picture>
 </p>
 
@@ -55,45 +55,47 @@ npx chisle
 <summary><b>查看两个回答</b></summary>
 <br>
 
-提示词：*"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* 以下摘自已提交的原始回答 [`raw-nov-sidebyside/large-s2`](../benchmarks/results/raw-nov-sidebyside/large-s2/)：
+提示词：*"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* 以下摘自已提交的原始回答 [`raw-314-sidebyside/large-s2`](../benchmarks/results/raw-314-sidebyside/large-s2/)：
 
 <table>
-<tr><th align="left" width="50%">无规则集：121 行，1,186 个回答 token</th><th align="left" width="50%">Chisle：62 行，530 个回答 token</th></tr>
+<tr><th align="left" width="50%">无规则集：126 行，1,571 个回答 token</th><th align="left" width="50%">Chisle：58 行，567 个回答 token</th></tr>
 <tr valign="top"><td>
 
 ```python
-class OrderStateError(Exception):
-    """Raised when an invalid state transition is attempted."""
-    pass
-
-class Order:
-    # Define valid transitions: state -> list of allowed next states
-    VALID_TRANSITIONS = { … }
-    def transition_to(self, next_state):
-        """Transition to the next state. Raises OrderStateError if invalid."""
-    def can_transition_to(self, next_state):
-        """Check if a transition is allowed without performing it."""
+class OrderStateMachine:
+    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
+        OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
+        …
+    }
+    def can_transition_to(self, next_state: OrderState) -> bool:
+        """Check if transition from current state to next state is valid."""
+    def transition_to(self, next_state: OrderState) -> None:
+        """Transition to the next state. Raises ValueError if transition is invalid."""
+    def get_current_state(self) -> str:
+    def get_valid_next_states(self) -> Set[str]:
 ```
 
-……外加用法示例、测试、打印输出和状态转换总结。
+……全部写在一个无法执行的文件写入工具调用里（工具已关闭），外加四个场景的演示、功能列表和状态转换总结。
 
 </td><td>
 
 ```python
 class OrderStateMachine:
-    TRANSITIONS = {
-        "created": {"pay", "cancel"},
-        "paid": {"ship", "refund", "cancel"},
+    VALID_TRANSITIONS = {
+        OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
+        OrderState.PAID: {OrderState.SHIPPED, OrderState.CANCELLED, OrderState.REFUNDED},
         …
     }
-    def transition(self, event):
-        if event not in self.TRANSITIONS[self.state]:
-            raise ValueError(f"Cannot {event} from {self.state}. …")
-        self.state = self.STATE_MAP[(self.state, event)]
-        return self.state
+    def transition(self, new_state: OrderState) -> None:
+        """Transition to new_state or raise ValueError if invalid."""
+        if new_state not in self.VALID_TRANSITIONS[self.state]:
+            raise ValueError(
+                f"Cannot transition from {self.state.value} to {new_state.value}"
+            )
+        self.state = new_state
 ```
 
-然后是一段简短的用法示例。
+然后是一段简短的用法示例和一行状态转换总结。
 
 </td></tr>
 </table>
@@ -105,7 +107,14 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark.svg">
-    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code 基准测试，一次运行 25 个任务，计费输出 token 占无规则集同一模型的百分比。caveman 87%，ponytail 90%，Chisle 3.8.1 75%，Chisle 71%。">
+    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code 基准测试，一次运行 26 个回答，计费输出 token 占无规则集同一模型的百分比。caveman 69%，ponytail 80%，Chisle 3.13 70%，Chisle 69%。">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-terminal.svg">
+    <img src="../assets/benchmark-terminal-light.svg" width="860" alt="37 条 shell 命令中 Claude 读到的终端输出（占原始输出的百分比）：caveman 100%，ponytail 100%（只是规则集，不处理工具输出），RTK 84%，Chisle 28%。">
   </picture>
 </p>
 
@@ -123,7 +132,7 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/filters-dark.svg">
-    <img src="../assets/readme/zh-CN/filters-light.svg" width="880" alt="按命令过滤的真实输出，原始字符数 → Claude 读到的：npm test 19,450 → 503（−97%），go test -v 1,219 → 74（−94%），git status 629 → 442（−30%），git log -n 15 5,773 → 4,897（−15%）。错误、失败和汇总始终保留。">
+    <img src="../assets/readme/zh-CN/filters-light.svg" width="880" alt="按命令过滤的真实输出，原始字符数 → Claude 读到的：npm test 19,374 → 445（−98%），失败的 npm test 16,107 → 309（−98%），git status 485 → 92（−81%），git log -n 15 6,561 → 3,784（−42%）。37 条命令中，用 Chisle 时 Claude 读原始输出的 28%，用 RTK 时 84%。">
   </picture>
 </p>
 

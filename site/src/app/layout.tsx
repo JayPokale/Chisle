@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: "Chisle",
-    title: "Chisle: fewer tokens than caveman and ponytail, no accuracy lost",
+    title: "Chisle: shorter answers than caveman and ponytail, no accuracy lost",
     description:
       "The Claude Code plugin that makes coding answers about half as long. Terse persona + tool-output compressor + context diet.",
   },
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Chisle: a Claude Code plugin that cuts your token bill",
     description:
-      "Fewer tokens than caveman and ponytail, same accuracy as the bare model. Measured, not vibes: every number traces to a committed transcript.",
+      "Shorter answers than caveman and ponytail, same accuracy as the bare model. Measured, not vibes: every number traces to a committed transcript.",
   },
   robots: {
     index: true,

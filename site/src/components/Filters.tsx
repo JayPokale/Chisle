@@ -5,15 +5,15 @@ import { motion, useInView } from "motion/react";
 import Reveal from "./Reveal";
 import SectionHead from "./SectionHead";
 
-// Command-aware filters (hooks/chisle-command-filters.js) on real, successful
-// output: raw chars → what the model reads. Successful runs on purpose, see the
-// note in Terminal.tsx: Claude Code cannot rewrite a failed command's output.
+// Command-aware filters (hooks/chisle-command-filters.js) on real output, Chisle
+// 3.14: raw chars → what the model reads, from benchmarks/replay-commands.js. The
+// failing run goes through chisle-run.js, as on Claude Code in bypass mode.
 // Same numbers as the README's filters card (scripts/build-readme-art.js).
 const ROWS = [
-  { cmd: "npm test", raw: 19450, kept: 503, note: "256 passing tests hidden, summary kept" },
-  { cmd: "go test -v ./...", raw: 1219, kept: 74, note: "46 passing-test lines hidden" },
-  { cmd: "git status", raw: 629, kept: 442, note: "3 “(use git …)” hint lines hidden" },
-  { cmd: "git log -n 15", raw: 5773, kept: 4897, note: "commit headers folded to one line" },
+  { cmd: "npm test", raw: 19374, kept: 445, note: "256 passing tests hidden, summary kept" },
+  { cmd: "npm test  # 1 failing", raw: 16107, kept: 309, note: "400 passes hidden, the failure kept whole" },
+  { cmd: "git status", raw: 485, kept: 92, note: "long form rewritten in git's short form" },
+  { cmd: "git log -n 15", raw: 6561, kept: 3784, note: "one line per commit, long messages counted" },
 ];
 
 const fmt = (n: number) => n.toLocaleString("en-US");
@@ -62,9 +62,11 @@ export default function Filters() {
 
       <Reveal delay={0.1}>
         <p className="mt-4 text-xs text-dim">
-          Measured on real, successful runs, raw output → what the model reads. Output piped into
-          anything but head/tail is left alone, so <code>| cat</code> shows it raw; commands
-          already run through rtk are skipped. <code>CHISLE_COMPRESS_FILTERS=0</code> turns it off.
+          Across 37 commands Claude reads 28% of the raw output with Chisle and 84% with RTK.
+          Failed test and build runs are filtered too when Claude Code runs in bypass-permissions
+          mode. Output piped into anything but head/tail is left alone, so <code>| cat</code> shows
+          it raw; commands already run through rtk are skipped. <code>CHISLE_COMPRESS_FILTERS=0</code>{" "}
+          turns it off.
         </p>
       </Reveal>
     </section>

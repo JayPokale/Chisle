@@ -23,11 +23,11 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ko/stats-dark.svg">
-    <img src="../assets/readme/ko/stats-light.svg" width="880" alt="Chisle과 규칙 세트가 없는 같은 모델 비교: 과금 출력 토큰 29% 감소, 답변 길이 45% 감소, 큰 도구 출력 48% 감소, 정확도 156/156 대 154/156.">
+    <img src="../assets/readme/ko/stats-light.svg" width="880" alt="Chisle과 규칙 세트가 없는 같은 모델 비교: 과금 출력 토큰 31% 감소, 답변 길이 49% 감소, 큰 도구 출력 48% 감소, 정확도 156/156으로 규칙 없는 모델과 같음.">
   </picture>
 </p>
 
-<p align="center"><b>caveman과 ponytail보다 적은 토큰. 정확도 손실 없음.</b></p>
+<p align="center"><b>caveman과 ponytail보다 짧은 답변. 정확도 손실 없음.</b></p>
 
 ```bash
 npx chisle
@@ -47,7 +47,7 @@ npx chisle
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ko/race-dark.svg">
-    <img src="../assets/readme/ko/race-light.svg" width="880" alt="같은 프롬프트, 네 가지 규칙 세트, 보이는 답변 토큰: Chisle 530, caveman 604, ponytail 747, 규칙 없음 1,186. Chisle은 규칙 없음보다 55% 짧습니다.">
+    <img src="../assets/readme/ko/race-light.svg" width="880" alt="같은 프롬프트, 네 가지 규칙 세트, 보이는 답변 토큰: Chisle 567, ponytail 740, caveman 1,018, 규칙 없음 1,571. Chisle은 규칙 없음보다 64% 짧습니다.">
   </picture>
 </p>
 
@@ -55,45 +55,47 @@ npx chisle
 <summary><b>두 답변 보기</b></summary>
 <br>
 
-프롬프트: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* 커밋된 원본 답변에서 발췌했습니다: [`raw-nov-sidebyside/large-s2`](../benchmarks/results/raw-nov-sidebyside/large-s2/)
+프롬프트: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* 커밋된 원본 답변에서 발췌했습니다: [`raw-314-sidebyside/large-s2`](../benchmarks/results/raw-314-sidebyside/large-s2/)
 
 <table>
-<tr><th align="left" width="50%">규칙 없음: 121줄, 답변 토큰 1,186개</th><th align="left" width="50%">Chisle: 62줄, 답변 토큰 530개</th></tr>
+<tr><th align="left" width="50%">규칙 없음: 126줄, 답변 토큰 1,571개</th><th align="left" width="50%">Chisle: 58줄, 답변 토큰 567개</th></tr>
 <tr valign="top"><td>
 
 ```python
-class OrderStateError(Exception):
-    """Raised when an invalid state transition is attempted."""
-    pass
-
-class Order:
-    # Define valid transitions: state -> list of allowed next states
-    VALID_TRANSITIONS = { … }
-    def transition_to(self, next_state):
-        """Transition to the next state. Raises OrderStateError if invalid."""
-    def can_transition_to(self, next_state):
-        """Check if a transition is allowed without performing it."""
+class OrderStateMachine:
+    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
+        OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
+        …
+    }
+    def can_transition_to(self, next_state: OrderState) -> bool:
+        """Check if transition from current state to next state is valid."""
+    def transition_to(self, next_state: OrderState) -> None:
+        """Transition to the next state. Raises ValueError if transition is invalid."""
+    def get_current_state(self) -> str:
+    def get_valid_next_states(self) -> Set[str]:
 ```
 
-…여기에 사용 예시, 테스트, 출력 결과, 전이 요약까지.
+…모두 쓸 수 없는 파일 쓰기 도구 호출 안에(도구는 꺼짐). 여기에 네 가지 시나리오 데모, 기능 목록, 전이 요약까지.
 
 </td><td>
 
 ```python
 class OrderStateMachine:
-    TRANSITIONS = {
-        "created": {"pay", "cancel"},
-        "paid": {"ship", "refund", "cancel"},
+    VALID_TRANSITIONS = {
+        OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
+        OrderState.PAID: {OrderState.SHIPPED, OrderState.CANCELLED, OrderState.REFUNDED},
         …
     }
-    def transition(self, event):
-        if event not in self.TRANSITIONS[self.state]:
-            raise ValueError(f"Cannot {event} from {self.state}. …")
-        self.state = self.STATE_MAP[(self.state, event)]
-        return self.state
+    def transition(self, new_state: OrderState) -> None:
+        """Transition to new_state or raise ValueError if invalid."""
+        if new_state not in self.VALID_TRANSITIONS[self.state]:
+            raise ValueError(
+                f"Cannot transition from {self.state.value} to {new_state.value}"
+            )
+        self.state = new_state
 ```
 
-그다음 짧은 사용 예시.
+그다음 짧은 사용 예시와 한 줄 전이 요약.
 
 </td></tr>
 </table>
@@ -105,7 +107,14 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark.svg">
-    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code 벤치마크, 한 번의 실행에서 25개 작업, 규칙 세트가 없는 같은 모델 대비 과금 출력 토큰 비율. caveman 87%, ponytail 90%, Chisle 3.8.1 75%, Chisle 71%.">
+    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code 벤치마크, 한 번의 실행에서 답변 26개, 규칙 세트가 없는 같은 모델 대비 과금 출력 토큰 비율. caveman 69%, ponytail 80%, Chisle 3.13 70%, Chisle 69%.">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-terminal.svg">
+    <img src="../assets/benchmark-terminal-light.svg" width="860" alt="셸 명령 37개에서 Claude가 읽는 터미널 출력(원본 대비 비율): caveman 100%, ponytail 100%(규칙만 있고 도구 출력은 건드리지 않음), RTK 84%, Chisle 28%.">
   </picture>
 </p>
 
@@ -123,7 +132,7 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ko/filters-dark.svg">
-    <img src="../assets/readme/ko/filters-light.svg" width="880" alt="실제 출력에 적용한 명령 인식 필터, 원본 문자 수 → Claude가 읽는 양: npm test 19,450 → 503 (−97%), go test -v 1,219 → 74 (−94%), git status 629 → 442 (−30%), git log -n 15 5,773 → 4,897 (−15%). 오류, 실패, 요약은 항상 남긴다.">
+    <img src="../assets/readme/ko/filters-light.svg" width="880" alt="실제 출력에 적용한 명령 인식 필터, 원본 문자 수 → Claude가 읽는 양: npm test 19,374 → 445 (−98%), 실패하는 npm test 16,107 → 309 (−98%), git status 485 → 92 (−81%), git log -n 15 6,561 → 3,784 (−42%). 명령 37개에서 Claude가 읽는 원본 출력은 Chisle 28%, RTK 84%.">
   </picture>
 </p>
 

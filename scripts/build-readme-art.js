@@ -5,7 +5,7 @@
 // attribute holds the final frame, so a renderer without SMIL shows the result.
 //
 // The figures mirror the README's benchmark sections; change them together.
-// Race tokens: benchmarks/results/raw-nov-sidebyside/large-s2/statemachine__*.json
+// Race tokens: benchmarks/results/raw-314-sidebyside/large-s2/statemachine__*.json
 // (usage.output_tokens minus thinking_tokens).
 //
 // Run: node scripts/build-readme-art.js
@@ -39,7 +39,7 @@ const I18N = {
     pill: 'Claude Code plugin · 13 agents · 0 deps', tag1: 'Fewer tokens in. Fewer tokens out.', tag2: 'Same answers.',
     words: (a, b) => `${a} words → ${b} words`, same: '✓ same answer',
     statsTitle: 'Chisle vs the same model with no ruleset',
-    tiles: [['billed output tokens', '71% of the bare model'], ['answer length', '55% of the bare model'], ['oversized tool output', 'per trimmed tool output'], ['accuracy', 'bare model: 154/156']],
+    tiles: [['billed output tokens', '69% of the bare model'], ['answer length', '51% of the bare model'], ['oversized tool output', 'per trimmed tool output'], ['accuracy', 'bare model: 156/156']],
     raceTitle: 'Same prompt. Four answers.', raceNote: 'visible answer tokens · lower is leaner', bare: 'no ruleset', tokens: ' tokens',
     cut: (p) => `−${p}% vs no ruleset`, raceFoot: 'Claude Code + Haiku 4.5 · all four in one run · the verbatim answers are below',
     reads: 'what Claude reads', kept: '  ← error kept', foot1: 'Raw output is billed again on every later turn', foot2: 'Oversized tool output: ~48% smaller on average',
@@ -47,7 +47,7 @@ const I18N = {
     rungs: [['Does this need to exist at all?', 'skip it, say so in one line'], ['Already in this codebase?', 'reuse it'], ['Does the stdlib do it?', 'use the stdlib'], ['Native platform feature?', 'CSS over JS, DB constraint over code'], ['Already-installed dependency?', 'use it, never add a new one'], ['Can it be one line?', 'one line'], ['Only then', 'the minimum code that works']],
     request: 'Request:', reqs: ['deep-copy a config object', 'add a date picker', 'format a date for the UI'], answers: ['structuredClone(config)', '<input type="date">', 'reuse utils/formatDate()'], hit: (n, a) => `✓ rung ${n}: ${a}`,
     sheet: 'cheat sheet', notes: ['wire every agent on this machine', 'preview first', 'put everything back', 'pause it', 'over-engineering, one finding per line', 'bloated code and prose, biggest cut first', 'tool schemas you pay for but never use', 'trim MCP output in any agent'],
-    filtTitle: 'Knows the command. Drops the noise.', filtNote: 'raw output → what Claude reads', filtSub: 'Command-aware filters, built in: no extra binary, any OS. Errors, failures and summaries always stay.', filtNotes: ['256 passing tests hidden, summary kept', '46 passing-test lines hidden', '3 "(use git …)" hint lines hidden', 'commit headers folded to one line'], filtFoot: 'Piped into anything but head/tail, output is left alone: | cat shows it raw. Commands run through rtk are skipped.', chars: 'chars',
+    filtTitle: 'Knows the command. Drops the noise.', filtNote: 'raw output → what Claude reads', filtSub: 'Command-aware filters, built in: no extra binary, any OS. Errors, failures and summaries always stay.', filtNotes: ['256 passing tests hidden, summary kept', '400 passes hidden, the failure kept whole', "long form rewritten in git's short form", 'one line per commit, long messages counted'], filtFoot: '37 commands: Claude reads 28% of the raw output with Chisle, 84% with RTK. Failed runs filtered in bypass mode; | cat shows raw.', chars: 'chars',
     stripTitle: "Chisle is free. Its benchmarks aren't.", stripSub: 'Saved you tokens? A coffee pays for the next benchmark run.',
     free: 'Chisle is free.', notFree: "Its benchmarks aren't.", body1: 'Every benchmark run costs real API money.', body2: 'Saved you tokens? A coffee pays for the next run.', button: '☕ Buy me a coffee',
   },
@@ -55,7 +55,7 @@ const I18N = {
     pill: 'Plugin de Claude Code · 13 agentes · 0 deps', tag1: 'Menos tokens de entrada y de salida.', tag2: 'Las mismas respuestas.',
     words: (a, b) => `${a} palabras → ${b}`, same: '✓ misma respuesta',
     statsTitle: 'Chisle frente al mismo modelo sin ruleset',
-    tiles: [['tokens facturados', '71% del modelo sin reglas'], ['longitud de respuesta', '55% del modelo sin reglas'], ['salida de herramientas', 'por salida recortada'], ['precisión', 'sin reglas: 154/156']],
+    tiles: [['tokens facturados', '69% del modelo sin reglas'], ['longitud de respuesta', '51% del modelo sin reglas'], ['salida de herramientas', 'por salida recortada'], ['precisión', 'sin reglas: 156/156']],
     raceTitle: 'Mismo prompt. Cuatro respuestas.', raceNote: 'tokens de respuesta visibles · menos es mejor', bare: 'sin ruleset', tokens: ' tokens',
     cut: (p) => `−${p}% frente a sin ruleset`, raceFoot: 'Claude Code + Haiku 4.5 · los cuatro en una ejecución · las respuestas literales, abajo',
     reads: 'lo que lee Claude', kept: '  ← error conservado', foot1: 'La salida en bruto se vuelve a cobrar en cada turno', foot2: 'Salida enorme de herramientas: ~48% más pequeña de media',
@@ -63,7 +63,7 @@ const I18N = {
     rungs: [['¿Hace falta que exista?', 'sáltalo y dilo en una línea'], ['¿Ya está en este código?', 'reutilízalo'], ['¿Lo hace la biblioteca estándar?', 'usa la biblioteca estándar'], ['¿Una función nativa de la plataforma?', 'CSS antes que JS, restricción de BD antes que código'], ['¿Una dependencia ya instalada?', 'úsala, nunca añadas otra'], ['¿Cabe en una línea?', 'una línea'], ['Solo entonces', 'el código mínimo que funciona']],
     request: 'Petición:', reqs: ['copia profunda de un objeto de configuración', 'añadir un selector de fecha', 'formatear una fecha para la interfaz'], answers: ['structuredClone(config)', '<input type="date">', 'reutiliza utils/formatDate()'], hit: (n, a) => `✓ peldaño ${n}: ${a}`,
     sheet: 'chuleta', notes: ['configura cada agente de esta máquina', 'primero, una vista previa', 'lo deja todo como estaba', 'lo pausa', 'sobreingeniería, un hallazgo por línea', 'código y prosa inflados, el mayor recorte primero', 'esquemas de herramientas que pagas y no usas', 'recorta la salida MCP en cualquier agente'],
-    filtTitle: 'Conoce el comando. Quita el ruido.', filtNote: 'salida en bruto → lo que lee Claude', filtSub: 'Filtros por comando, integrados: sin binario extra, en cualquier SO. Errores, fallos y resúmenes siempre se quedan.', filtNotes: ['256 tests aprobados ocultos, resumen intacto', '46 líneas de tests aprobados ocultas', '3 líneas de pistas "(use git …)" ocultas', 'cabeceras de commit en una sola línea'], filtFoot: 'Con un pipe a algo que no sea head/tail, la salida no se toca: | cat la muestra en bruto. Lo que pasa por rtk se omite.', chars: 'caracteres',
+    filtTitle: 'Conoce el comando. Quita el ruido.', filtNote: 'salida en bruto → lo que lee Claude', filtSub: 'Filtros por comando, integrados: sin binario extra, en cualquier SO. Errores, fallos y resúmenes siempre se quedan.', filtNotes: ['256 tests aprobados ocultos, resumen intacto', '400 aprobados ocultos, el fallo entero', 'forma larga reescrita en la forma corta de git', 'una línea por commit, mensajes largos contados'], filtFoot: '37 comandos: Claude lee el 28% de la salida en bruto con Chisle, el 84% con RTK. Los fallos se filtran en modo bypass; | cat muestra el original.', chars: 'caracteres',
     stripTitle: 'Chisle es gratis. Sus benchmarks, no.', stripSub: '¿Te ahorró tokens? Un café paga la próxima ejecución del benchmark.',
     free: 'Chisle es gratis.', notFree: 'Sus benchmarks, no.', body1: 'Cada ejecución de benchmark cuesta dinero real de API.', body2: '¿Te ahorró tokens? Un café paga la próxima.', button: '☕ Invítame a un café',
   },
@@ -71,7 +71,7 @@ const I18N = {
     pill: 'Claude Code 플러그인 · 에이전트 13개 · 의존성 0', tag1: '입력 토큰도, 출력 토큰도 적게.', tag2: '답은 그대로.',
     words: (a, b) => `${a}단어 → ${b}단어`, same: '✓ 같은 답',
     statsTitle: '규칙 세트가 없는 같은 모델과 비교한 Chisle',
-    tiles: [['과금 출력 토큰', '규칙 없는 모델의 71%'], ['답변 길이', '규칙 없는 모델의 55%'], ['큰 도구 출력', '축소된 출력 기준'], ['정확도', '규칙 없음: 154/156']],
+    tiles: [['과금 출력 토큰', '규칙 없는 모델의 69%'], ['답변 길이', '규칙 없는 모델의 51%'], ['큰 도구 출력', '축소된 출력 기준'], ['정확도', '규칙 없음: 156/156']],
     raceTitle: '같은 프롬프트, 네 가지 답.', raceNote: '보이는 답변 토큰 · 낮을수록 간결', bare: '규칙 없음', tokens: ' 토큰',
     cut: (p) => `규칙 없음 대비 −${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 넷 다 한 번의 실행 · 원문 답변은 아래에',
     reads: 'Claude가 읽는 내용', kept: '  ← 오류는 유지', foot1: '원본 출력은 이후 매 턴마다 다시 과금됩니다', foot2: '큰 도구 출력: 평균 ~48% 감소',
@@ -79,7 +79,7 @@ const I18N = {
     rungs: [['꼭 있어야 하나?', '건너뛰고 한 줄로 알리기'], ['이미 코드베이스에 있나?', '재사용하기'], ['표준 라이브러리로 되나?', '표준 라이브러리 쓰기'], ['플랫폼 기본 기능이 있나?', 'JS보다 CSS, 앱 코드보다 DB 제약'], ['이미 설치된 의존성이 있나?', '그걸 쓰고, 새로 추가하지 않기'], ['한 줄로 되나?', '한 줄로'], ['그때서야', '동작하는 최소한의 코드']],
     request: '요청:', reqs: ['설정 객체 깊은 복사', '날짜 선택기 추가', 'UI용 날짜 서식 지정'], answers: ['structuredClone(config)', '<input type="date">', 'utils/formatDate() 재사용'], hit: (n, a) => `✓ ${n}단계: ${a}`,
     sheet: '치트 시트', notes: ['이 컴퓨터의 모든 에이전트 설정', '먼저 미리 보기', '전부 되돌리기', '일시 중지', '과잉 설계, 한 줄에 하나씩', '부풀려진 코드와 글, 큰 절감부터', '비용만 내고 안 쓰는 도구 스키마', '모든 에이전트에서 MCP 출력 축소'],
-    filtTitle: '명령을 알고, 잡음을 걷어낸다.', filtNote: '원본 출력 → Claude가 읽는 것', filtSub: '명령 인식 필터 내장: 추가 바이너리 없이 모든 OS에서. 오류, 실패, 요약은 항상 남긴다.', filtNotes: ['통과한 테스트 256개 숨김, 요약은 유지', '통과 테스트 줄 46개 숨김', '"(use git …)" 힌트 줄 3개 숨김', '커밋 헤더를 한 줄로 접음'], filtFoot: 'head/tail 외의 명령으로 파이프하면 그대로 둔다: | cat 이면 원본. rtk 로 실행한 명령은 건너뛴다.', chars: '자',
+    filtTitle: '명령을 알고, 잡음을 걷어낸다.', filtNote: '원본 출력 → Claude가 읽는 것', filtSub: '명령 인식 필터 내장: 추가 바이너리 없이 모든 OS에서. 오류, 실패, 요약은 항상 남긴다.', filtNotes: ['통과한 테스트 256개 숨김, 요약은 유지', '통과 400개 숨김, 실패는 전부 유지', '긴 형식을 git의 짧은 형식으로', '커밋당 한 줄, 긴 메시지는 줄 수만'], filtFoot: '명령 37개: Claude가 읽는 원본 출력은 Chisle 28%, RTK 84%. 실패한 실행도 bypass 모드에서 필터링; | cat 이면 원본.', chars: '자',
     stripTitle: 'Chisle은 무료입니다. 벤치마크는 아닙니다.', stripSub: '토큰을 아꼈나요? 커피 한 잔이 다음 벤치마크 비용이 됩니다.',
     free: 'Chisle은 무료입니다.', notFree: '벤치마크는 아닙니다.', body1: '벤치마크를 돌릴 때마다 실제 API 비용이 듭니다.', body2: '토큰을 아꼈나요? 커피 한 잔이 다음 실행 비용이 됩니다.', button: '☕ 커피 한 잔 사 주기',
   },
@@ -87,7 +87,7 @@ const I18N = {
     pill: 'Claude Code 插件 · 13 个智能体 · 零依赖', tag1: '输入更少 token，输出更少 token。', tag2: '答案不变。',
     words: (a, b) => `${a} 个词 → ${b} 个词`, same: '✓ 答案相同',
     statsTitle: 'Chisle 对比无规则集的同一模型',
-    tiles: [['计费输出 token', '无规则集模型的 71%'], ['回答长度', '无规则集模型的 55%'], ['超大工具输出', '按每个被精简的输出'], ['准确率', '无规则集：154/156']],
+    tiles: [['计费输出 token', '无规则集模型的 69%'], ['回答长度', '无规则集模型的 51%'], ['超大工具输出', '按每个被精简的输出'], ['准确率', '无规则集：156/156']],
     raceTitle: '同一个提示词，四个回答。', raceNote: '可见回答 token · 越低越精简', bare: '无规则集', tokens: ' token',
     cut: (p) => `比无规则集少 ${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 四者同一次运行 · 原始回答见下方',
     reads: 'Claude 读到的内容', kept: '  ← 保留错误', foot1: '原始输出会在之后每一轮被重新计费', foot2: '超大工具输出：平均缩小约 48%',
@@ -95,7 +95,7 @@ const I18N = {
     rungs: [['这真的需要存在吗？', '跳过，并用一句话说明'], ['代码库里已经有了吗？', '直接复用'], ['标准库能做吗？', '用标准库'], ['平台原生功能能做吗？', '能用 CSS 就不用 JS，能用数据库约束就不写代码'], ['已安装的依赖能做吗？', '用它，绝不新增依赖'], ['能写成一行吗？', '写成一行'], ['最后才', '写能工作的最少代码']],
     request: '请求：', reqs: ['深拷贝一个配置对象', '添加日期选择器', '为界面格式化日期'], answers: ['structuredClone(config)', '<input type="date">', '复用 utils/formatDate()'], hit: (n, a) => `✓ 第 ${n} 级：${a}`,
     sheet: '速查表', notes: ['配置本机所有智能体', '先预览', '全部还原', '暂停', '过度设计，每行一条', '臃肿的代码和文字，收益大的优先', '付了费却从不使用的工具 schema', '在任何智能体中精简 MCP 输出'],
-    filtTitle: '认得命令，滤掉噪音。', filtNote: '原始输出 → Claude 读到的', filtSub: '内置按命令过滤：无需额外二进制，任何系统可用。错误、失败和汇总始终保留。', filtNotes: ['隐藏 256 个通过的测试，保留汇总', '隐藏 46 行通过的测试', '隐藏 3 行 "(use git …)" 提示', '提交头折叠为一行'], filtFoot: '管道到 head/tail 以外的命令时不做处理：加 | cat 即看原始输出。经 rtk 运行的命令会跳过。', chars: '字符',
+    filtTitle: '认得命令，滤掉噪音。', filtNote: '原始输出 → Claude 读到的', filtSub: '内置按命令过滤：无需额外二进制，任何系统可用。错误、失败和汇总始终保留。', filtNotes: ['隐藏 256 个通过的测试，保留汇总', '隐藏 400 个通过，失败完整保留', '长格式改写为 git 短格式', '每个提交一行，长消息只计行数'], filtFoot: '37 条命令：用 Chisle 时 Claude 读原始输出的 28%，用 RTK 时 84%。失败的运行在 bypass 模式下也会过滤；加 | cat 看原始输出。', chars: '字符',
     stripTitle: 'Chisle 是免费的，基准测试可不是。', stripSub: '帮你省下了 token？一杯咖啡就能支付下一次基准测试。',
     free: 'Chisle 是免费的。', notFree: '基准测试可不是。', body1: '每次运行基准测试都要花真实的 API 费用。', body2: '帮你省下了 token？一杯咖啡就能支付下一次运行。', button: '☕ 请我喝杯咖啡',
   },
@@ -103,7 +103,7 @@ const I18N = {
     pill: 'Claude Code プラグイン · 13 エージェント · 依存ゼロ', tag1: '入力も出力も、トークンは少なく。', tag2: '答えは同じ。',
     words: (a, b) => `${a} 語 → ${b} 語`, same: '✓ 同じ答え',
     statsTitle: 'ルールなしの同じモデルと比べた Chisle',
-    tiles: [['課金出力トークン', 'ルールなしモデルの 71%'], ['回答の長さ', 'ルールなしモデルの 55%'], ['巨大なツール出力', '削減した出力あたり'], ['精度', 'ルールなし：154/156']],
+    tiles: [['課金出力トークン', 'ルールなしモデルの 69%'], ['回答の長さ', 'ルールなしモデルの 51%'], ['巨大なツール出力', '削減した出力あたり'], ['精度', 'ルールなし：156/156']],
     raceTitle: '同じプロンプト、4 つの回答。', raceNote: '表示される回答トークン · 低いほど簡潔', bare: 'ルールなし', tokens: ' トークン',
     cut: (p) => `ルールなしより −${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 4 つとも同じ実行 · 回答の原文は下に',
     reads: 'Claude が読む内容', kept: '  ← エラーは残す', foot1: '生の出力は以降のターンごとに再課金されます', foot2: '巨大なツール出力：平均で約 48% 縮小',
@@ -111,7 +111,7 @@ const I18N = {
     rungs: [['そもそも必要か？', '飛ばして、1 行でそう伝える'], ['すでにコードベースにあるか？', '再利用する'], ['標準ライブラリでできるか？', '標準ライブラリを使う'], ['プラットフォームの標準機能は？', 'JS より CSS、アプリより DB 制約'], ['インストール済みの依存関係は？', 'それを使い、新しく足さない'], ['1 行で書けるか？', '1 行で書く'], ['そこで初めて', '動く最小限のコード']],
     request: 'リクエスト：', reqs: ['設定オブジェクトをディープコピー', '日付ピッカーを追加', 'UI 用に日付を整形'], answers: ['structuredClone(config)', '<input type="date">', 'utils/formatDate() を再利用'], hit: (n, a) => `✓ ${n} 段目：${a}`,
     sheet: 'チートシート', notes: ['このマシンの全エージェントを設定', 'まずプレビュー', 'すべて元に戻す', '一時停止', '過剰設計を 1 行ずつ指摘', '膨らんだコードと文章、効果の大きい順', '払っているのに使わないツールスキーマ', 'どのエージェントでも MCP 出力を削減'],
-    filtTitle: 'コマンドを見て、ノイズを落とす。', filtNote: '生の出力 → Claude が読む内容', filtSub: 'コマンド別フィルターを内蔵：追加バイナリ不要、どの OS でも。エラー・失敗・要約は必ず残す。', filtNotes: ['成功したテスト 256 件を非表示、要約は残す', '成功テストの行 46 行を非表示', '"(use git …)" のヒント 3 行を非表示', 'コミットのヘッダーを 1 行に'], filtFoot: 'head/tail 以外にパイプした出力はそのまま：| cat で生の出力。rtk 経由のコマンドはスキップ。', chars: '文字',
+    filtTitle: 'コマンドを見て、ノイズを落とす。', filtNote: '生の出力 → Claude が読む内容', filtSub: 'コマンド別フィルターを内蔵：追加バイナリ不要、どの OS でも。エラー・失敗・要約は必ず残す。', filtNotes: ['成功したテスト 256 件を非表示、要約は残す', '成功 400 件を非表示、失敗はそのまま', '長い形式を git の短い形式に', 'コミットごとに 1 行、長いメッセージは行数のみ'], filtFoot: '37 コマンド：Claude が読む生の出力は Chisle で 28%、RTK で 84%。失敗した実行も bypass モードでフィルター；| cat で生の出力。', chars: '文字',
     stripTitle: 'Chisle は無料。ベンチマークは無料じゃない。', stripSub: 'トークンを節約できた？コーヒー 1 杯で次のベンチマークが回せます。',
     free: 'Chisle は無料。', notFree: 'ベンチマークは無料じゃない。', body1: 'ベンチマークを回すたびに実際の API 料金がかかります。', body2: 'トークンを節約できた？コーヒー 1 杯で次の実行が回せます。', button: '☕ コーヒーをおごる',
   },
@@ -260,8 +260,8 @@ function banner(t) {
 function stats(t) {
   const W = 880, H = 248;
   const tiles = [
-    ['−29%', ...L.tiles[0], 0.71],
-    ['−45%', ...L.tiles[1], 0.55],
+    ['−31%', ...L.tiles[0], 0.69],
+    ['−49%', ...L.tiles[1], 0.51],
     ['−48%', ...L.tiles[2], 0.52],
     ['156/156', ...L.tiles[3], 1],
   ];
@@ -278,13 +278,13 @@ function stats(t) {
       `<rect x="${x + 18}" y="${y0 + 138}" width="${fw}" height="8" rx="4" fill="${fc}">` +
       (p === 1 ? '' : anim('width', [[0, bw], [1, bw], [2.5, fw]], 5, { ease: true })) + '</rect></g>');
   });
-  return svg(t, W, H, 'Chisle versus the same model with no ruleset: 29% fewer billed output tokens, answers 45% shorter, oversized tool output 48% smaller, accuracy 156 of 156 versus 154 of 156.', o);
+  return svg(t, W, H, 'Chisle versus the same model with no ruleset: 31% fewer billed output tokens, answers 49% shorter, oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.', o);
 }
 
 // ── Race: one prompt, four rulesets, tokens streamed at the same speed ────────
 function race(t) {
   const W = 880, H = 304, D = 9, X = 150, MAXW = 560, T0 = 0.6, RUN = 4.4;
-  const arms = [['Chisle', 530], ['caveman', 604], ['ponytail', 747], [L.bare, 1186]];
+  const arms = [['Chisle', 567], ['ponytail', 740], ['caveman', 1018], [L.bare, 1571]];
   const max = Math.max(...arms.map((a) => a[1]));
   const o = [
     `<text x="28" y="42" font-size="${fit(L.raceTitle, 19, 420)}" font-weight="700" fill="${t.text}">${esc(L.raceTitle)}</text>`,
@@ -307,7 +307,7 @@ function race(t) {
   o.push(`<g>${shown(tEnd(max) + 0.2, D - 0.3, D)}<rect x="${px}" y="97" width="${r1(textW(cut, 12.5) * 1.12 + 24)}" height="22" rx="11" fill="${t.fill}" fill-opacity="0.12" stroke="${t.fill}" stroke-opacity="0.45"/>` +
     `<text x="${px + 12}" y="112.5" font-size="12.5" font-weight="700" fill="${t.accent}">${esc(cut)}</text></g>`,
     `<text x="28" y="${H - 22}"${mono(fit(L.raceFoot, 11.5, 824, true))} fill="${t.faint}">${esc(L.raceFoot)}</text>`);
-  return svg(t, W, H, 'Same prompt, four rulesets, visible answer tokens: Chisle 530, caveman 604, ponytail 747, no ruleset 1,186. Chisle is 55% shorter than no ruleset.', o);
+  return svg(t, W, H, 'Same prompt, four rulesets, visible answer tokens: Chisle 567, ponytail 740, caveman 1,018, no ruleset 1,571. Chisle is 64% shorter than no ruleset.', o);
 }
 
 // ── Trim: what the tool-output compressor does to one oversized output ───────
@@ -365,11 +365,12 @@ function trim(t) {
 }
 
 // ── Filters: command-aware filters on four real outputs ──────────────────────
-// Numbers are the hook run on real, successful output (Claude Code cannot
-// rewrite a failed command's output, so failing runs would overstate it).
+// Chisle 3.14 on real output, from benchmarks/replay-commands.js (the failing
+// jest run goes through the chisle-run.js wrapper, as on Claude Code in
+// bypassPermissions mode). The footnote is that script's 37-command total.
 function filters(t) {
   const W = 880, H = 340, D = 9, X = 330, MAXW = 420;
-  const rows = [['npm test', 19450, 503], ['go test -v ./...', 1219, 74], ['git status', 629, 442], ['git log -n 15', 5773, 4897]];
+  const rows = [['npm test', 19374, 445], ['npm test  # 1 failing', 16107, 309], ['git status', 485, 92], ['git log -n 15', 6561, 3784]];
   const o = [
     `<text x="28" y="42" font-size="${fit(L.filtTitle, 19, 470)}" font-weight="700" fill="${t.text}">${esc(L.filtTitle)}</text>`,
     `<text x="${W - 28}" y="42" font-size="${fit(L.filtNote, 13, 330)}" fill="${t.muted}" text-anchor="end">${esc(L.filtNote)}</text>`,
@@ -387,7 +388,7 @@ function filters(t) {
       `<text x="${W - 28}" y="${y + 17}" font-size="17" font-weight="700" fill="${t.accent}" text-anchor="end">${shown(t1, D - 0.3, D, 0.2)}${esc(pct)}</text>`);
   });
   o.push(`<text x="28" y="${H - 22}" font-size="${fit(L.filtFoot, 12.5, 824)}" fill="${t.faint}">${esc(L.filtFoot)}</text>`);
-  return svg(t, W, H, 'Command-aware filters on real output, raw characters to what Claude reads: npm test 19,450 to 503 (97% less), go test -v 1,219 to 74 (94% less), git status 629 to 442 (30% less), git log -n 15 5,773 to 4,897 (15% less). Errors, failures and summaries always stay.', o);
+  return svg(t, W, H, 'Command-aware filters on real output, raw characters to what Claude reads: npm test 19,374 to 445 (98% less), a failing npm test 16,107 to 309 (98% less), git status 485 to 92 (81% less), git log -n 15 6,561 to 3,784 (42% less). Across 37 commands Claude reads 28% of the raw output with Chisle and 84% with RTK. Errors, failures and summaries always stay.', o);
 }
 
 // ── Ladder: the efficiency ladder, walked for three requests ──────────────────

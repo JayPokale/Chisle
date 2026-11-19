@@ -23,11 +23,11 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/stats-dark.svg">
-    <img src="../assets/readme/ja/stats-light.svg" width="880" alt="Chisle とルールセットなしの同じモデルの比較：課金される出力トークン 29% 減、回答の長さ 45% 減、巨大なツール出力 48% 減、精度は 156/156 対 154/156。">
+    <img src="../assets/readme/ja/stats-light.svg" width="880" alt="Chisle とルールセットなしの同じモデルの比較：課金される出力トークン 31% 減、回答の長さ 49% 減、巨大なツール出力 48% 減、精度は 156/156 でルールなしと同じ。">
   </picture>
 </p>
 
-<p align="center"><b>caveman や ponytail よりトークンが少なく、精度はそのまま。</b></p>
+<p align="center"><b>caveman や ponytail より短い回答、精度はそのまま。</b></p>
 
 ```bash
 npx chisle
@@ -47,7 +47,7 @@ npx chisle
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/race-dark.svg">
-    <img src="../assets/readme/ja/race-light.svg" width="880" alt="同じプロンプト、4 つのルールセット、表示される回答トークン：Chisle 530、caveman 604、ponytail 747、ルールなし 1,186。Chisle はルールなしより 55% 短い。">
+    <img src="../assets/readme/ja/race-light.svg" width="880" alt="同じプロンプト、4 つのルールセット、表示される回答トークン：Chisle 567、ponytail 740、caveman 1,018、ルールなし 1,571。Chisle はルールなしより 64% 短い。">
   </picture>
 </p>
 
@@ -55,45 +55,47 @@ npx chisle
 <summary><b>両方の回答を見る</b></summary>
 <br>
 
-プロンプト：*"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* コミット済みの回答原文からの抜粋です：[`raw-nov-sidebyside/large-s2`](../benchmarks/results/raw-nov-sidebyside/large-s2/)
+プロンプト：*"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* コミット済みの回答原文からの抜粋です：[`raw-314-sidebyside/large-s2`](../benchmarks/results/raw-314-sidebyside/large-s2/)
 
 <table>
-<tr><th align="left" width="50%">ルールなし：121 行、回答トークン 1,186</th><th align="left" width="50%">Chisle：62 行、回答トークン 530</th></tr>
+<tr><th align="left" width="50%">ルールなし：126 行、回答トークン 1,571</th><th align="left" width="50%">Chisle：58 行、回答トークン 567</th></tr>
 <tr valign="top"><td>
 
 ```python
-class OrderStateError(Exception):
-    """Raised when an invalid state transition is attempted."""
-    pass
-
-class Order:
-    # Define valid transitions: state -> list of allowed next states
-    VALID_TRANSITIONS = { … }
-    def transition_to(self, next_state):
-        """Transition to the next state. Raises OrderStateError if invalid."""
-    def can_transition_to(self, next_state):
-        """Check if a transition is allowed without performing it."""
+class OrderStateMachine:
+    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
+        OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
+        …
+    }
+    def can_transition_to(self, next_state: OrderState) -> bool:
+        """Check if transition from current state to next state is valid."""
+    def transition_to(self, next_state: OrderState) -> None:
+        """Transition to the next state. Raises ValueError if transition is invalid."""
+    def get_current_state(self) -> str:
+    def get_valid_next_states(self) -> Set[str]:
 ```
 
-…さらに使用例、テスト、出力結果、遷移のまとめ。
+…すべて使えないファイル書き込みツール呼び出しの中（ツールは無効）。さらに 4 つのシナリオのデモ、機能一覧、遷移のまとめ。
 
 </td><td>
 
 ```python
 class OrderStateMachine:
-    TRANSITIONS = {
-        "created": {"pay", "cancel"},
-        "paid": {"ship", "refund", "cancel"},
+    VALID_TRANSITIONS = {
+        OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
+        OrderState.PAID: {OrderState.SHIPPED, OrderState.CANCELLED, OrderState.REFUNDED},
         …
     }
-    def transition(self, event):
-        if event not in self.TRANSITIONS[self.state]:
-            raise ValueError(f"Cannot {event} from {self.state}. …")
-        self.state = self.STATE_MAP[(self.state, event)]
-        return self.state
+    def transition(self, new_state: OrderState) -> None:
+        """Transition to new_state or raise ValueError if invalid."""
+        if new_state not in self.VALID_TRANSITIONS[self.state]:
+            raise ValueError(
+                f"Cannot transition from {self.state.value} to {new_state.value}"
+            )
+        self.state = new_state
 ```
 
-そのあとに短い使用例。
+そのあとに短い使用例と、遷移の 1 行まとめ。
 
 </td></tr>
 </table>
@@ -105,7 +107,14 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark.svg">
-    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code ベンチマーク、1 回の実行で 25 タスク、ルールセットなしの同じモデルに対する課金出力トークンの割合。caveman 87%、ponytail 90%、Chisle 3.8.1 75%、Chisle 71%。">
+    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code ベンチマーク、1 回の実行で 26 回答、ルールセットなしの同じモデルに対する課金出力トークンの割合。caveman 69%、ponytail 80%、Chisle 3.13 70%、Chisle 69%。">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-terminal.svg">
+    <img src="../assets/benchmark-terminal-light.svg" width="860" alt="37 のシェルコマンドで Claude が読むターミナル出力（生の出力に対する割合）：caveman 100%、ponytail 100%（ルールのみでツール出力には触れない）、RTK 84%、Chisle 28%。">
   </picture>
 </p>
 
@@ -123,7 +132,7 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/filters-dark.svg">
-    <img src="../assets/readme/ja/filters-light.svg" width="880" alt="実際の出力に対するコマンド別フィルター、生の文字数 → Claude が読む量：npm test 19,450 → 503（−97%）、go test -v 1,219 → 74（−94%）、git status 629 → 442（−30%）、git log -n 15 5,773 → 4,897（−15%）。エラー・失敗・要約は必ず残す。">
+    <img src="../assets/readme/ja/filters-light.svg" width="880" alt="実際の出力に対するコマンド別フィルター、生の文字数 → Claude が読む量：npm test 19,374 → 445（−98%）、失敗する npm test 16,107 → 309（−98%）、git status 485 → 92（−81%）、git log -n 15 6,561 → 3,784（−42%）。37 コマンドで Claude が読む生の出力は Chisle で 28%、RTK で 84%。">
   </picture>
 </p>
 

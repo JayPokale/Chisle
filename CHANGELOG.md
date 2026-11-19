@@ -5,6 +5,13 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+- The installer's star prompt gains "later": `[y]es / [N]o / [l]ater`. `l`, or an answer it can't read, saves nothing and asks again at the next install or update; Enter is still no.
+
+### Docs
+- Full benchmark suite re-run for 3.14 beside 3.13, caveman and ponytail (`docs/benchmarks.md`), raw cells committed, plus `ANSWERS.md` beside each side-by-side run with every prompt and every arm's verbatim answer (`benchmarks/answers.js`). Billed output on Haiku 4.5: Chisle 69%, caveman 69%, ponytail 80%; Chisle's answers are shortest (51%). Accuracy 156/156 for bare and Chisle. Agentic, 3.14 vs 3.13: context 88%, tool output read 80%.
+- README, translations and site move to these numbers. The tagline now says "Shorter answers than caveman and ponytail": billed tokens tie with caveman in this run. New README chart for the input axis: terminal output Claude reads over 37 commands, caveman and ponytail 100%, RTK 84%, Chisle 28%. The filter card shows a failing run filtered by the wrapper.
+
 ## [3.14.0] - 2026-11-19
 
 Minor: failed test and build runs filtered on Claude Code, and more RTK-style command filters (git, ls, wc, grep, go, cargo). The design follows [RTK](https://github.com/rtk-ai/rtk); no RTK code is used (see NOTICE).

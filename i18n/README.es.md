@@ -23,11 +23,11 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/stats-dark.svg">
-    <img src="../assets/readme/es/stats-light.svg" width="880" alt="Chisle frente al mismo modelo sin ruleset: 29% menos tokens de salida facturados, respuestas un 45% más cortas, salidas de herramientas enormes un 48% más pequeñas, precisión de 156 sobre 156 frente a 154 sobre 156.">
+    <img src="../assets/readme/es/stats-light.svg" width="880" alt="Chisle frente al mismo modelo sin ruleset: 31% menos tokens de salida facturados, respuestas un 49% más cortas, salidas de herramientas enormes un 48% más pequeñas, precisión de 156 sobre 156, igual que el modelo sin reglas.">
   </picture>
 </p>
 
-<p align="center"><b>Menos tokens que caveman y ponytail. Sin perder precisión.</b></p>
+<p align="center"><b>Respuestas más cortas que caveman y ponytail. Sin perder precisión.</b></p>
 
 ```bash
 npx chisle
@@ -47,7 +47,7 @@ npx chisle
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/race-dark.svg">
-    <img src="../assets/readme/es/race-light.svg" width="880" alt="Mismo prompt, cuatro rulesets, tokens de respuesta visibles: Chisle 530, caveman 604, ponytail 747, sin ruleset 1.186. Chisle es un 55% más corto que sin ruleset.">
+    <img src="../assets/readme/es/race-light.svg" width="880" alt="Mismo prompt, cuatro rulesets, tokens de respuesta visibles: Chisle 567, ponytail 740, caveman 1.018, sin ruleset 1.571. Chisle es un 64% más corto que sin ruleset.">
   </picture>
 </p>
 
@@ -55,45 +55,47 @@ npx chisle
 <summary><b>Ver ambas respuestas</b></summary>
 <br>
 
-El prompt: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* Extractos de las respuestas literales guardadas en [`raw-nov-sidebyside/large-s2`](../benchmarks/results/raw-nov-sidebyside/large-s2/):
+El prompt: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* Extractos de las respuestas literales guardadas en [`raw-314-sidebyside/large-s2`](../benchmarks/results/raw-314-sidebyside/large-s2/):
 
 <table>
-<tr><th align="left" width="50%">sin ruleset: 121 líneas, 1.186 tokens de respuesta</th><th align="left" width="50%">Chisle: 62 líneas, 530 tokens de respuesta</th></tr>
+<tr><th align="left" width="50%">sin ruleset: 126 líneas, 1.571 tokens de respuesta</th><th align="left" width="50%">Chisle: 58 líneas, 567 tokens de respuesta</th></tr>
 <tr valign="top"><td>
 
 ```python
-class OrderStateError(Exception):
-    """Raised when an invalid state transition is attempted."""
-    pass
-
-class Order:
-    # Define valid transitions: state -> list of allowed next states
-    VALID_TRANSITIONS = { … }
-    def transition_to(self, next_state):
-        """Transition to the next state. Raises OrderStateError if invalid."""
-    def can_transition_to(self, next_state):
-        """Check if a transition is allowed without performing it."""
+class OrderStateMachine:
+    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
+        OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
+        …
+    }
+    def can_transition_to(self, next_state: OrderState) -> bool:
+        """Check if transition from current state to next state is valid."""
+    def transition_to(self, next_state: OrderState) -> None:
+        """Transition to the next state. Raises ValueError if transition is invalid."""
+    def get_current_state(self) -> str:
+    def get_valid_next_states(self) -> Set[str]:
 ```
 
-…más ejemplos de uso, tests, salida impresa y un resumen de las transiciones.
+…todo dentro de una llamada a una herramienta de escritura que no podía hacer (las herramientas estaban desactivadas), más una demo de cuatro escenarios, una lista de características y un resumen de las transiciones.
 
 </td><td>
 
 ```python
 class OrderStateMachine:
-    TRANSITIONS = {
-        "created": {"pay", "cancel"},
-        "paid": {"ship", "refund", "cancel"},
+    VALID_TRANSITIONS = {
+        OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
+        OrderState.PAID: {OrderState.SHIPPED, OrderState.CANCELLED, OrderState.REFUNDED},
         …
     }
-    def transition(self, event):
-        if event not in self.TRANSITIONS[self.state]:
-            raise ValueError(f"Cannot {event} from {self.state}. …")
-        self.state = self.STATE_MAP[(self.state, event)]
-        return self.state
+    def transition(self, new_state: OrderState) -> None:
+        """Transition to new_state or raise ValueError if invalid."""
+        if new_state not in self.VALID_TRANSITIONS[self.state]:
+            raise ValueError(
+                f"Cannot transition from {self.state.value} to {new_state.value}"
+            )
+        self.state = new_state
 ```
 
-Después, un bloque corto de uso.
+Después, un bloque corto de uso y un resumen de las transiciones en una línea.
 
 </td></tr>
 </table>
@@ -105,7 +107,14 @@ Después, un bloque corto de uso.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark.svg">
-    <img src="../assets/benchmark-light.svg" width="860" alt="Benchmark de Claude Code, 25 tareas en una ejecución, tokens de salida facturados como porcentaje del mismo modelo sin ruleset. caveman 87%, ponytail 90%, Chisle 3.8.1 75%, Chisle 71%.">
+    <img src="../assets/benchmark-light.svg" width="860" alt="Benchmark de Claude Code, 26 respuestas en una ejecución, tokens de salida facturados como porcentaje del mismo modelo sin ruleset. caveman 69%, ponytail 80%, Chisle 3.13 70%, Chisle 69%.">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-terminal.svg">
+    <img src="../assets/benchmark-terminal-light.svg" width="860" alt="Salida de terminal que lee Claude en 37 comandos, como porcentaje de la salida en bruto: caveman 100%, ponytail 100% (solo reglas, no tocan la salida de herramientas), RTK 84%, Chisle 28%.">
   </picture>
 </p>
 
@@ -123,7 +132,7 @@ Después, un bloque corto de uso.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/filters-dark.svg">
-    <img src="../assets/readme/es/filters-light.svg" width="880" alt="Filtros por comando sobre salida real, caracteres en bruto frente a lo que lee Claude: npm test 19.450 → 503 (−97%), go test -v 1.219 → 74 (−94%), git status 629 → 442 (−30%), git log -n 15 5.773 → 4.897 (−15%). Errores, fallos y resúmenes siempre se quedan.">
+    <img src="../assets/readme/es/filters-light.svg" width="880" alt="Filtros por comando sobre salida real, caracteres en bruto frente a lo que lee Claude: npm test 19.374 → 445 (−98%), un npm test que falla 16.107 → 309 (−98%), git status 485 → 92 (−81%), git log -n 15 6.561 → 3.784 (−42%). En 37 comandos Claude lee el 28% de la salida en bruto con Chisle y el 84% con RTK.">
   </picture>
 </p>
 
