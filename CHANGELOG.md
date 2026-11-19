@@ -5,6 +5,10 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [3.14.2] - 2026-11-19
+
+Patch: the star prompt reports star and follow separately, and the site shows each agent's logo.
+
 ### Docs
 - Site: the "Thirteen agents, one install" grid shows each agent's logo (LobeHub Icons, MIT, `site/public/logos/LICENSE`) in the page's text color, instead of two-letter tiles.
 
