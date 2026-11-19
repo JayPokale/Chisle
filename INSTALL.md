@@ -245,12 +245,12 @@ export CHISLE_DEFAULT_MODE=off
 ```
 
 At the end of a first install or update in an interactive terminal, the installer asks
-once whether to star the repo and follow @JayPokale on GitHub (`[y]es / [N]o / [l]ater`),
+whether to star the repo and follow @JayPokale on GitHub (`[y]es / [n]o / [L]ater`),
 leading with the tokens Chisle has saved you when its ledger has any. Only a `y` does
 anything, and then your own `gh` login stars and follows (without `gh` it prints the
-links). Enter means no. Yes or no is saved as `"starPrompt"` in
-`~/.config/chisle/config.json` and never asked again; `l` (or anything else) saves
-nothing and asks at the next install or update. CI, `--dry-run` and piped runs never ask.
+links). Enter means later: nothing is saved and it asks at the next install or update.
+An explicit `y` or `n` is saved as `"starPrompt"` in `~/.config/chisle/config.json` and
+never asked again. CI, `--dry-run` and piped runs never ask.
 
 Input-axis switches work across Claude Code, Pi, Copilot, and OpenCode where supported:
 

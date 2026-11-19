@@ -961,10 +961,10 @@ function printList(c) {
 }
 
 // ── star prompt ─────────────────────────────────────────────────────────────
-// One-time and opt-in: asked only in an interactive terminal (not CI, not a
-// dry run), default No. Yes or no is saved in the Chisle config so reinstalls
-// and updates never ask again; "later" (or an answer we can't read, so a typo
-// never locks in a no) saves nothing and asks at the next install or update. Nothing touches GitHub without a
+// Opt-in: asked only in an interactive terminal (not CI, not a dry run).
+// Default is "later": Enter (or an answer we can't read) saves nothing and
+// asks at the next install or update. Only an explicit yes or no is saved in
+// the Chisle config, after which it is never asked again. Nothing touches GitHub without a
 // "y"; on yes the user's own `gh` login does the starring, Chisle never sees
 // a token. Without `gh` (or if it fails) it prints the links instead.
 const REPO_URL = 'https://github.com/JayPokale/Chisle';
@@ -1000,12 +1000,12 @@ async function askStar({ say, note, opts, c }) {
   const rl = require('readline').createInterface({ input: process.stdin, output: process.stdout });
   const answer = await new Promise(resolve => {
     rl.on('close', () => resolve(''));
-    rl.question(`  Star and follow on GitHub? ${c.dim('[y]es / [N]o / [l]ater')} `, resolve);
+    rl.question(`  Star and follow on GitHub? ${c.dim('[y]es / [n]o / [L]ater')} `, resolve);
   });
   rl.close();
   const a = answer.trim().toLowerCase();
   const yes = a === 'y' || a === 'yes';
-  if (!yes && a !== '' && a !== 'n' && a !== 'no') {
+  if (!yes && a !== 'n' && a !== 'no') {
     note("  Okay, we'll ask again next time you install or update.");
     return;
   }
