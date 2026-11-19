@@ -179,6 +179,22 @@ test('standalone Claude hook wiring merges + uninstalls cleanly', () => {
   for (const d of [cfg, home, emptyBin]) fs.rmSync(d, { recursive: true, force: true });
 });
 
+test('star prompt: never asked, never written, never calls gh without a terminal', { skip: process.platform === 'win32' }, () => {
+  const cfg = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-cfg-'));
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-home-'));
+  const bin = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-gh-'));
+  const log = path.join(bin, 'gh.log');
+  fs.writeFileSync(path.join(bin, 'gh'), `#!/bin/sh\necho "$*" >> "${log}"\n`, { mode: 0o755 });
+  const env = { HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: path.join(home, 'xdg'), PATH: bin, CI: '' };
+  const { status, out } = runCLI(['--only', 'claude', '--config-dir', cfg], { env });
+  assert.equal(status, 0);
+  assert.doesNotMatch(out, /\[y\/N\]/);
+  assert.match(out, /a star helps others find it: https:\/\/github\.com\/JayPokale\/Chisle/);
+  assert.equal(fs.existsSync(log), false, 'gh never called');
+  assert.equal(fs.existsSync(path.join(home, 'xdg', 'chisle', 'config.json')), false, 'nothing saved');
+  for (const d of [cfg, home, bin]) fs.rmSync(d, { recursive: true, force: true });
+});
+
 // Regression for #4: the plugin path and the standalone path both registering
 // the hooks made two copies run per tool call, and the shared dedup state file
 // then reported first-seen output as a duplicate of itself.

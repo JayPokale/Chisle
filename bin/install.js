@@ -33,7 +33,7 @@ const cp = require('child_process');
 const SETTINGS = require('./lib/settings');
 const MCP = require('./lib/mcp');
 const TOOLS = require('./lib/tools');
-const { getOpencodeDir, getOpencodeStateDir } = require('../hooks/chisle-config');
+const { getOpencodeDir, getOpencodeStateDir, getConfigDir } = require('../hooks/chisle-config');
 
 const REPO = 'JayPokale/Chisle';
 const IS_WIN = process.platform === 'win32';
@@ -957,6 +957,52 @@ function printList(c) {
   process.stdout.write('\nRun ' + c.orange('npx chisle') + ' to install for the detected (✓) agents.\n');
 }
 
+// ── star prompt ─────────────────────────────────────────────────────────────
+// One-time and opt-in: asked only in an interactive terminal (not CI, not a
+// dry run), default No, and the answer is saved in the Chisle config so
+// reinstalls and updates never ask again. Nothing touches GitHub without a
+// "y"; on yes the user's own `gh` login does the starring, Chisle never sees
+// a token. Without `gh` (or if it fails) it prints the links instead.
+const REPO_URL = 'https://github.com/JayPokale/Chisle';
+const STAR_ENDPOINTS = ['user/starred/JayPokale/Chisle', 'user/following/JayPokale'];
+
+function starPromptState() {
+  const file = path.join(getConfigDir(), 'config.json');
+  if (!fs.existsSync(file)) return { file, cfg: {} };
+  try {
+    const cfg = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return cfg && typeof cfg === 'object' && !Array.isArray(cfg) ? { file, cfg } : null;
+  } catch (_) { return null; } // unreadable config: never overwrite it
+}
+
+async function askStar({ say, note, opts, c }) {
+  const links = () => note(`Star: ${REPO_URL}  ·  Follow: https://github.com/JayPokale`);
+  const st = starPromptState();
+  if (st && st.cfg.starPrompt) return;
+  if (opts.dryRun || process.env.CI || !process.stdin.isTTY || !process.stdout.isTTY) {
+    note(`If Chisle earns its keep, a star helps others find it: ${REPO_URL}`);
+    return;
+  }
+  const rl = require('readline').createInterface({ input: process.stdin, output: process.stdout });
+  const answer = await new Promise(resolve => {
+    rl.on('close', () => resolve(''));
+    rl.question('Star Chisle and follow @JayPokale on GitHub? [y/N] ', resolve);
+  });
+  rl.close();
+  const yes = /^\s*y(es)?\s*$/i.test(answer);
+  if (st) {
+    try {
+      fs.mkdirSync(path.dirname(st.file), { recursive: true });
+      fs.writeFileSync(st.file, JSON.stringify({ ...st.cfg, starPrompt: yes ? 'yes' : 'no' }, null, 2) + '\n');
+    } catch (_) {}
+  }
+  if (!yes) return;
+  const done = hasCmd('gh') && STAR_ENDPOINTS.every(ep =>
+    cp.spawnSync('gh', ['api', '-X', 'PUT', ep, '--silent'], { stdio: 'ignore', timeout: 15000 }).status === 0);
+  if (done) say(c.orange('Thanks!') + ' Starred and following.');
+  else links();
+}
+
 // ── main ────────────────────────────────────────────────────────────────────
 function main() {
   if (process.argv[2] === 'mcp') return MCP.main(process.argv.slice(3));
@@ -1018,11 +1064,12 @@ function main() {
   if (results.skipped.length)   say(c.dim(`  skipped:   ${results.skipped.map(s => s[0]).join(', ')}`));
   if (results.failed.length)    say(c.red(`  failed:    ${results.failed.map(s => s[0] + ' (' + s[1] + ')').join(', ')}`));
   say('');
+  const code = results.failed.length ? 1 : 0;
   if (!opts.dryRun && results.installed.length) {
     say(c.orange('Done.') + ' Restart your agent. Type ' + c.orange('/chisle') + ' in Claude Code or Pi, or just start coding.');
-    note('If Chisle earns its keep, a star helps others find it: https://github.com/JayPokale/Chisle');
+    return askStar(ctx).catch(() => {}).then(() => process.exit(code));
   }
-  process.exit(results.failed.length ? 1 : 0);
+  process.exit(code);
 }
 
 main();
