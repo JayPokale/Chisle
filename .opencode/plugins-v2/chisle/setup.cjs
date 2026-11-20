@@ -153,10 +153,7 @@ module.exports = async function setup(ctx) {
           if (typeof text !== 'string') return text;
           if (text.includes(CHISLE_MARK) && text.length <= core.limitsFor().maxChars) return text;
           const updated = core.compressForOpencode(event.tool, text, {
-            mode,
-            sessionId: event.sessionID,
-            callId: event.id,
-            command: event.input && event.input.command,
+            mode, sessionId: event.sessionID, callId: event.id, command: event.input && event.input.command,
           });
           if (updated == null || updated.length >= text.length) return text;
           core.recordSavings(text.length - updated.length, config.getOpencodeStateDir());

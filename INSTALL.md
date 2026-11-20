@@ -98,16 +98,12 @@ excluded even when configured. `CHISLE_COMPRESS=0` disables compression only.
 `CHISLE_DEFAULT_MODE=off` sets the shared runtime default: in v1 it disables only
 compression; in untoggled v2 roots it also suppresses current Chisle system rules.
 
-V2 stores explicit mode per conversation in native plugin storage, without
-writing shared session metadata. Untoggled roots follow the runtime default.
-Children and forks snapshot their parent's mode on first mode-dependent use,
-not at creation; saved snapshots survive parent changes and reloads. Off removes
-only owned fenced rules and attributed Chisle skill text from current system
-instructions for context, compaction, generation, and titles. Unrelated
-instructions stay exact. Request hooks never rewrite message history, including
-previously loaded skills or compressed results; off does not restore old output.
-Oversized JSON text may be bounded into non-JSON text, with the original recovery
-copy retained and structured `result.output` untouched.
+V2 stores explicit mode per conversation. Untoggled roots follow the runtime
+default; children and forks snapshot the parent on first use, not at creation.
+Off suppresses owned current rules; history and prior compressed results stay.
+The shared JSON minifier preserves strings and large integers. Oversized JSON may
+be bounded as text; the original recovery copy and structured `result.output`
+remain unchanged.
 
 ## Manual Hermes Agent
 

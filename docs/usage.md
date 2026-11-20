@@ -56,16 +56,12 @@ The package loads the zero-dependency extension and `chisle` skill globally. Pi 
 
 ## OpenCode V2 controls
 
-Type `stop chisle` or `normal mode` to disable current Chisle system rules and
-future tool-output compression; type `activate chisle` to enable them. Explicit
-mode persists per conversation in native plugin storage. Untoggled roots follow
-the shared runtime default. Children and forks snapshot their parent's mode on
-first use, not at creation, then stay independent across parent changes and
-reloads. Prompt delivery and unrelated instructions remain unchanged.
-
-Request hooks never change message history. Previously loaded skills and
-compressed tool results stay as stored; off neither removes historical Chisle
-context nor restores old output. OpenCode v1 has no live toggle.
+`stop chisle` / `normal mode` disable current rules and future compression;
+`activate chisle` re-enables them. Mode persists per conversation; roots use the
+shared default, while children and forks snapshot the parent on first use.
+Unrelated instructions stay unchanged. History keeps loaded skills and prior
+compressed results.
+OpenCode v1 has no live toggle.
 
 ## Where the savings show up
 

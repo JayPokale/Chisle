@@ -70,17 +70,12 @@ test('opencodeToolAllowed allows only explicit read-heavy defaults', () => {
   }
 });
 
-test('opencodeToolAllowed excludes source-bearing and mutating tools', () => {
-  for (const t of [
+test('opencodeToolAllowed excludes source-bearing and mutating tools, even when explicitly allowed', () => {
+  const previous = process.env.CHISLE_COMPRESS_TOOLS;
+  const protectedTools = [
     'read', 'edit', 'write', 'patch', 'apply_patch', 'multiedit',
     'notebookedit', 'notebookread', 'notebook_write', 'notebook_edit',
     'create', 'str_replace', 'insert', 'todowrite', 'todoread',
-  ]) assert.equal(opencodeToolAllowed(t), false, t);
-});
-
-test('OpenCode source tools stay protected even in an explicit allowlist', () => {
-  const previous = process.env.CHISLE_COMPRESS_TOOLS;
-  const protectedTools = [
     'lsp',
     'github-tools_get_file_contents', 'github-tools_search_code',
     'github-com_get_file_contents', 'github-com_search_code',
