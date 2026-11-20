@@ -558,7 +558,10 @@ function copyOpencodePlugin(root, major) {
   const hooksDir = path.join(entryDir, 'chisle-hooks');
   const files = [
     [v2 ? '.opencode/plugins-v2/chisle/index.mjs' : '.opencode/plugins/chisle.mjs', path.join(entryDir, v2 ? 'index.js' : 'chisle.js')],
-    ...(v2 ? [['.opencode/plugins-v2/chisle/setup.cjs', path.join(entryDir, 'setup.cjs')]] : []),
+    ...(v2 ? [
+      ['.opencode/plugins-v2/chisle/setup.cjs', path.join(entryDir, 'setup.cjs')],
+      ['hooks/chisle-mode.js', path.join(hooksDir, 'chisle-mode.js')],
+    ] : []),
     ['hooks/chisle-compress-output.js', path.join(hooksDir, 'chisle-compress-output.js')],
     ['hooks/chisle-command-filters.js', path.join(hooksDir, 'chisle-command-filters.js')],
     ['hooks/chisle-config.js', path.join(hooksDir, 'chisle-config.js')],

@@ -170,7 +170,11 @@ const SAFE_TOOLS_OPENCODE = ['bash', 'shell', 'grep', 'glob', 'webfetch', 'webse
 const UNSAFE_TOOLS_OPENCODE = [
   'read', 'edit', 'write', 'patch', 'apply_patch', 'multiedit',
   'notebookedit', 'notebookread', 'notebook_write', 'notebook_edit',
-  'create', 'str_replace', 'insert', 'todowrite', 'todoread',
+  'create', 'str_replace', 'insert', 'todowrite', 'todoread', 'lsp',
+  'github-tools_get_file_contents', 'github-tools_search_code',
+  'github-com_get_file_contents', 'github-com_search_code',
+  'github_tools_get_file_contents', 'github_tools_search_code',
+  'github_com_get_file_contents', 'github_com_search_code',
 ];
 
 function opencodeToolAllowed(name) {

@@ -54,6 +54,19 @@ pi install npm:chisle
 
 The package loads the zero-dependency extension and `chisle` skill globally. Pi extensions run with your user permissions; review the source before installation. Project-local installs (`pi install -l npm:chisle`) load only after you trust that project.
 
+## OpenCode V2 controls
+
+Type `stop chisle` or `normal mode` to disable current Chisle system rules and
+future tool-output compression; type `activate chisle` to enable them. Explicit
+mode persists per conversation in native plugin storage. Untoggled roots follow
+the shared runtime default. Children and forks snapshot their parent's mode on
+first use, not at creation, then stay independent across parent changes and
+reloads. Prompt delivery and unrelated instructions remain unchanged.
+
+Request hooks never change message history. Previously loaded skills and
+compressed tool results stay as stored; off neither removes historical Chisle
+context nor restores old output. OpenCode v1 has no live toggle.
+
 ## Where the savings show up
 
 Two places, both measured rather than estimated:
@@ -168,7 +181,7 @@ read, so they can't honor this key.
 
 ## Multi-agent
 
-Ships to thirteen agents: Claude Code and Pi get both axes, live `/chisle` toggling, and a status badge; OpenCode gets both axes too — the global fenced ruleset, on-demand skills, and a native compression plugin — but no live toggle; Copilot CLI gets both axes through its global instructions file and a `postToolUse` hook, also without a live toggle; Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and Copilot get the always-on ruleset; Hermes gets the skills as `/chisle` commands. `npx chisle mcp wrap` adds MCP tool-output compression to Cursor, Windsurf, Cline, Kiro, Gemini, Qwen Code, Copilot CLI, Antigravity, Codex and GitHub Copilot in VS Code ([details](../INSTALL.md#mcp-output-compression-any-agent)). Per-agent static copies come from `scripts/build-rules.js`; Pi uses its package extension plus the Agent Skills standard. See [agent portability](agent-portability.md).
+Ships to thirteen agents: Claude Code and Pi get both axes, live `/chisle` toggling, and a status badge; OpenCode gets both axes through global fenced rules, on-demand skills, and a native compression plugin, with live natural-language toggling in V2 only; Copilot CLI gets both axes through its global instructions file and a `postToolUse` hook, without a live toggle; Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and Copilot get the always-on ruleset; Hermes gets the skills as `/chisle` commands. `npx chisle mcp wrap` adds MCP tool-output compression to Cursor, Windsurf, Cline, Kiro, Gemini, Qwen Code, Copilot CLI, Antigravity, Codex and GitHub Copilot in VS Code ([details](../INSTALL.md#mcp-output-compression-any-agent)). Per-agent static copies come from `scripts/build-rules.js`; Pi uses its package extension plus the Agent Skills standard. See [agent portability](agent-portability.md).
 
 ## Prior art & what stacks with it
 

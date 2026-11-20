@@ -465,6 +465,61 @@ test('opencode v2 install, update, dry-run, and uninstall use the v2 plugin dire
   }
 });
 
+test('installed OpenCode v2 uses the bundled mode parser and config-root skill without node_modules', () => {
+  const home = mkHome();
+  const root = path.join(home, '.config', 'opencode');
+  const env = isolatedOpencodeEnv(home, { PATH: fakeOpencode(home, '2.3.2') });
+  try {
+    const result = runCLI(['--only', 'opencode'], { env });
+    assert.equal(result.status, 0, result.out);
+    fs.writeFileSync(path.join(root, 'package.json'), '{ "type": "module" }\n');
+    const skill = '---\nname: chisle\n---\n# Chisle\nInstalled rules, not repo fallback.\n';
+    fs.writeFileSync(path.join(root, 'skills', 'chisle', 'SKILL.md'), skill);
+    const setupPath = path.join(root, 'plugins', 'chisle', 'setup.cjs');
+    const probe = `
+      const assert = require('node:assert/strict');
+      const setup = require(${JSON.stringify(setupPath)});
+      const hooks = {};
+      const storage = new Map();
+      const session = { id: 'installed', metadata: { foreign: 7 } };
+      const register = async (name, callback) => { hooks[name] = callback; return { dispose: async () => {} }; };
+      setup({
+        tool: { hook: register },
+        storage: { get: async key => storage.get(key), set: async (key, value) => { storage.set(key, value); } },
+        session: {
+          hook: register,
+          get: async () => structuredClone(session),
+          update: async () => assert.fail('shared metadata must stay untouched'),
+        },
+      }).then(async () => {
+        assert.equal(typeof hooks.prompt, 'function');
+        await hooks.prompt({ sessionID: session.id, prompt: { text: 'normal mode' }, delivery: 'queue' });
+        assert.deepEqual(session.metadata, { foreign: 7 });
+        assert.equal(storage.get('mode/installed'), 'off');
+        const skill = ${JSON.stringify(skill.trim())};
+        const body = '# Chisle\\nInstalled rules, not repo fallback.';
+        for (const kind of ['context', 'compaction', 'generate', 'title']) {
+          const event = { sessionID: session.id, system: [
+            { type: 'text', text: 'User\\nInstructions from: ' + ${JSON.stringify(path.join(root, 'skills', 'chisle', 'SKILL.md'))} + '\\n' + skill + '\\nEnd' },
+            { type: 'text', text: 'User\\nInstructions from: ' + ${JSON.stringify(path.join(root, 'skills', 'chisle', 'SKILL.md'))} + '\\n' + body + '\\nEnd', metadata: { experimental: { instructions: [
+              { key: ${JSON.stringify(path.join(root, 'skills', 'chisle', 'SKILL.md'))}, text: body },
+            ] } } },
+          ], messages: [] };
+          await hooks[kind](event);
+          assert.deepEqual(event.system.map(part => part.text), ['User\\n\\nEnd', 'User\\n\\nEnd']);
+        }
+        process.stdout.write('VERIFIED');
+      }).catch(error => { console.error(error); process.exitCode = 1; });
+    `;
+    const out = execFileSync(process.execPath, ['-e', probe], {
+      encoding: 'utf8', env: { ...process.env, ...env, OPENCODE_CONFIG_DIR: root, NODE_PATH: '' },
+    });
+    assert.equal(out, 'VERIFIED');
+  } finally {
+    fs.rmSync(home, { recursive: true, force: true });
+  }
+});
+
 test('opencode install appends fenced ruleset, preserves user content, copies skills', () => {
   const home = mkHome();
   const env = isolatedOpencodeEnv(home);

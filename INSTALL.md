@@ -78,8 +78,10 @@ Writes the fenced Chisle ruleset into the global OpenCode config root
 bundled skills into its `skills/` directory for on-demand loading through
 OpenCode's native `skill` tool. The root follows `OPENCODE_CONFIG_DIR`, then
 `$XDG_CONFIG_HOME/opencode`, then `~/.config/opencode`. No `instructions` entry
-is added, so nothing loads twice. The ruleset is always on; `/chisle` loads the
-skill but does not toggle the global instructions.
+is added, so nothing loads twice. OpenCode v1 keeps the ruleset always on;
+loading `/chisle` does not toggle its global instructions. V2 supports live
+natural-language controls: `stop chisle` / `normal mode` disable Chisle, and
+`activate chisle` enables it. Prompt delivery stays unchanged.
 
 It also installs the tool-output compression plugin into that root's `plugins/`.
 OpenCode v1 keeps `chisle.js` plus `chisle-hooks/`; v2 gets the directory plugin
@@ -87,11 +89,25 @@ OpenCode v1 keeps `chisle.js` plus `chisle-hooks/`; v2 gets the directory plugin
 `opencode --version`. The v1 hooks remain unchanged. The v2 entrypoint uses
 `Plugin.define({ id, setup })` and `ctx.tool.hook("execute.after", ...)`, eliding
 oversized model-visible text while preserving structured output and metadata.
-Both reuse the same compressor and configuration code. MCP tools are not
-assumed safe from their names; add known read-only tools with
-`CHISLE_COMPRESS_TOOLS`. Source-bearing and mutating tools remain excluded even
-when configured. Disable compression with `CHISLE_COMPRESS=0` or
-`CHISLE_DEFAULT_MODE=off`; this does not remove the always-on instructions.
+Both reuse the same compressor and configuration code, including pretty-JSON
+minification that preserves string contents and large integer literals. V2
+changes only `result.content` text, leaving `result.output`, metadata, and files
+untouched. MCP tools are not assumed safe from their names; add known read-only
+tools with `CHISLE_COMPRESS_TOOLS`. Protected source and mutation tools remain
+excluded even when configured. `CHISLE_COMPRESS=0` disables compression only.
+`CHISLE_DEFAULT_MODE=off` sets the shared runtime default: in v1 it disables only
+compression; in untoggled v2 roots it also suppresses current Chisle system rules.
+
+V2 stores explicit mode per conversation in native plugin storage, without
+writing shared session metadata. Untoggled roots follow the runtime default.
+Children and forks snapshot their parent's mode on first mode-dependent use,
+not at creation; saved snapshots survive parent changes and reloads. Off removes
+only owned fenced rules and attributed Chisle skill text from current system
+instructions for context, compaction, generation, and titles. Unrelated
+instructions stay exact. Request hooks never rewrite message history, including
+previously loaded skills or compressed results; off does not restore old output.
+Oversized JSON text may be bounded into non-JSON text, with the original recovery
+copy retained and structured `result.output` untouched.
 
 ## Manual Hermes Agent
 
@@ -291,7 +307,8 @@ permission mode (expect prompts for the wrapped command unless you allow it);
 `CHISLE_COMPRESS_WRAP=0` turns it off. Not on Windows.
 
 `CHISLE_COMPRESS_TOOLS` replaces the allowlist. OpenCode defaults to `bash`,
-`grep`, `glob`, `webfetch`, `websearch`, and `list`; configure read-only MCP
-tools explicitly. The override cannot enable source-bearing or mutating tools
-such as `read`, `edit`, `write`, `patch`, or notebook edits. Their output can
-feed later exact-match edits, so this is a correctness guarantee, not a default.
+`shell`, `grep`, `glob`, `webfetch`, `websearch`, and `list`; configure read-only MCP
+tools explicitly. The override cannot enable `read`, `edit`, `write`, `patch`,
+notebook tools, `lsp`, or known GitHub `get_file_contents` / `search_code` tools.
+Their output can feed later exact-match edits. This protects tool names, not
+content: shell and grep output may still contain source; `glob` remains allowed.
