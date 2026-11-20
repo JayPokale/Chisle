@@ -460,6 +460,25 @@ test('OpenCode v2 shell compression preserves spill, metadata, safety, stats, an
   }
 });
 
+test('OpenCode v2 filters small shell output using input.command', async () => {
+  const original = [
+    'On branch main',
+    'Changes not staged for commit:',
+    '  (use "git add <file>..." to update what will be committed)',
+    '  (use "git restore <file>..." to discard changes in working directory)',
+    '\tmodified:   src/example.js',
+    'no changes added to commit',
+  ].join('\n');
+  const after = await loadV2Plugin();
+  const event = {
+    tool: 'shell', sessionID: 'v2-command', id: 'status', status: 'completed',
+    input: { command: 'git status' }, result: { content: original, metadata: { exit: 0 } },
+  };
+  await after(event);
+  assert.equal(event.result.content, '* main\n M src/example.js');
+  assert.deepEqual(event.result.metadata, { exit: 0 });
+});
+
 test('OpenCode v2 plugin fails open when compression throws', async () => {
   const originalCompress = opencodeCore.compressForOpencode;
   opencodeCore.compressForOpencode = () => { throw new Error('compressor failed'); };
