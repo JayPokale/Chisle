@@ -70,12 +70,30 @@ test('opencodeToolAllowed allows only explicit read-heavy defaults', () => {
   }
 });
 
-test('opencodeToolAllowed excludes source-bearing and mutating tools', () => {
-  for (const t of [
+test('opencodeToolAllowed excludes source-bearing and mutating tools, even when explicitly allowed', () => {
+  const previous = process.env.CHISLE_COMPRESS_TOOLS;
+  const protectedTools = [
     'read', 'edit', 'write', 'patch', 'apply_patch', 'multiedit',
     'notebookedit', 'notebookread', 'notebook_write', 'notebook_edit',
     'create', 'str_replace', 'insert', 'todowrite', 'todoread',
-  ]) assert.equal(opencodeToolAllowed(t), false, t);
+    'lsp',
+    'github-tools_get_file_contents', 'github-tools_search_code',
+    'github-com_get_file_contents', 'github-com_search_code',
+    'github_tools_get_file_contents', 'github_tools_search_code',
+    'github_com_get_file_contents', 'github_com_search_code',
+  ];
+  process.env.CHISLE_COMPRESS_TOOLS = [...protectedTools, 'glob', 'custom_report'].join(',');
+  try {
+    for (const tool of protectedTools) {
+      assert.equal(opencodeToolAllowed(tool), false, tool);
+      assert.equal(compressForOpencode(tool, bigOutput(500), { mode: 'on' }), null, tool);
+    }
+    assert.equal(opencodeToolAllowed('glob'), true);
+    assert.equal(opencodeToolAllowed('custom_report'), true);
+  } finally {
+    if (previous === undefined) delete process.env.CHISLE_COMPRESS_TOOLS;
+    else process.env.CHISLE_COMPRESS_TOOLS = previous;
+  }
 });
 
 test('opencodeToolAllowed does not infer safety from underscores', () => {
@@ -400,13 +418,45 @@ test('OpenCode truncation is Unicode-safe', () => {
 
 // ── plugin hook wiring ───────────────────────────────────────────────────────
 
+async function v2Hooks(sessions = new Map(), storage = new Map()) {
+  const hooks = { tool: {}, session: {} };
+  const register = domain => async (name, callback) => {
+    const names = domain === 'tool' ? ['execute.after'] : ['prompt', 'context', 'compaction', 'generate', 'title'];
+    assert.ok(names.includes(name), `unexpected ${domain} hook: ${name}`);
+    hooks[domain][name] = callback;
+    return { dispose: async () => { delete hooks[domain][name]; } };
+  };
+  const context = {
+    tool: { hook: register('tool') },
+    storage: {
+      get: async key => structuredClone(storage.get(key)),
+      set: async (key, value) => { storage.set(key, structuredClone(value)); },
+    },
+    session: {
+      hook: register('session'),
+      get: async ({ sessionID }) => {
+        if (!sessions.has(sessionID)) sessions.set(sessionID, { id: sessionID, metadata: {} });
+        return structuredClone(sessions.get(sessionID));
+      },
+      update: async () => { assert.fail('Chisle must not write shared session metadata'); },
+    },
+  };
+  hooks.context = context;
+  hooks.cleanup = await require('../.opencode/plugins-v2/chisle/setup.cjs')(context);
+  return hooks;
+}
+
 async function loadV2Plugin() {
-  const hooks = [];
-  const setup = require('../.opencode/plugins-v2/chisle/setup.cjs');
-  await setup({ tool: { hook: async (name, callback) => hooks.push([name, callback]) } });
-  assert.equal(hooks.length, 1);
-  assert.equal(hooks[0][0], 'execute.after');
-  return hooks[0][1];
+  const hooks = await v2Hooks();
+  assert.equal(typeof hooks.tool['execute.after'], 'function');
+  return hooks.tool['execute.after'];
+}
+
+function v2ToolEvent(sessionID, id, text = bigOutput(500, 'v2-mode')) {
+  return {
+    tool: 'shell', sessionID, id, status: 'completed', input: {},
+    result: { content: text, metadata: { exit: 0 } },
+  };
 }
 
 test('OpenCode v2 plugin uses Plugin.define and registers execute.after', async () => {
@@ -414,6 +464,476 @@ test('OpenCode v2 plugin uses Plugin.define and registers execute.after', async 
   assert.match(entry, /import \{ Plugin \} from '@opencode\/plugin'/);
   assert.match(entry, /Plugin\.define\(\{ id: 'chisle', setup \}\)/);
   assert.equal(typeof await loadV2Plugin(), 'function');
+});
+
+test('OpenCode v2 mode persists per conversation without changing prompt delivery', async () => {
+  const sessions = new Map([['a', { id: 'a', metadata: { other: { keep: true } } }]]);
+  const storage = new Map([['foreign-plugin-state', { keep: true }]]);
+  const hooks = await v2Hooks(sessions, storage);
+  assert.equal(typeof hooks.session.prompt, 'function');
+  const prompt = {
+    sessionID: 'a', messageID: 'prompt-a',
+    prompt: Object.freeze({ text: 'stop chisle', files: Object.freeze([]) }),
+    metadata: Object.freeze({ source: 'user' }), delivery: 'queue',
+  };
+  const original = structuredClone(prompt);
+  await hooks.session.prompt(prompt);
+  assert.deepEqual(prompt, original);
+  assert.deepEqual(sessions.get('a').metadata, { other: { keep: true } });
+  assert.equal(storage.get('mode/a'), 'off');
+  assert.deepEqual(storage.get('foreign-plugin-state'), { keep: true });
+
+  const off = v2ToolEvent('a', 'off');
+  const text = off.result.content;
+  await hooks.tool['execute.after'](off);
+  assert.equal(off.result.content, text);
+  const other = v2ToolEvent('b', 'other');
+  await hooks.tool['execute.after'](other);
+  assert.ok(other.result.content.length < text.length);
+  assert.equal(process.env.CHISLE_DEFAULT_MODE, undefined);
+  const shortened = other.result.content;
+  await hooks.session.prompt({ sessionID: 'b', prompt: { text: 'stop chisle' } });
+  await hooks.tool['execute.after'](other);
+  assert.equal(other.result.content, shortened);
+
+  const reloaded = await v2Hooks(sessions, storage);
+  await reloaded.session.prompt({ sessionID: 'a', prompt: { text: 'continue the task' }, delivery: 'steer' });
+  const stillOff = v2ToolEvent('a', 'reloaded');
+  await reloaded.tool['execute.after'](stillOff);
+  assert.equal(stillOff.result.content, text);
+  await reloaded.session.prompt({ sessionID: 'a', prompt: { text: '/chisle on' } });
+  const on = v2ToolEvent('a', 'on');
+  await reloaded.tool['execute.after'](on);
+  assert.ok(on.result.content.length < text.length);
+  assert.deepEqual(sessions.get('a').metadata, { other: { keep: true } });
+  assert.equal(storage.get('mode/a'), 'on');
+});
+
+test('OpenCode v2 untoggled roots follow runtime defaults while explicit modes persist', async () => {
+  const previous = process.env.CHISLE_DEFAULT_MODE;
+  process.env.CHISLE_DEFAULT_MODE = 'off';
+  const sessions = new Map();
+  const storage = new Map();
+  try {
+    const hooks = await v2Hooks(sessions, storage);
+    const off = v2ToolEvent('default', 'first');
+    const original = off.result.content;
+    await hooks.tool['execute.after'](off);
+    assert.equal(off.result.content, original);
+    assert.equal(storage.has('mode/default'), false);
+    process.env.CHISLE_DEFAULT_MODE = 'on';
+    const dynamic = v2ToolEvent('default', 'second');
+    await hooks.tool['execute.after'](dynamic);
+    assert.ok(dynamic.result.content.length < original.length);
+    await hooks.session.prompt({ sessionID: 'default', prompt: { text: 'stop chisle' } });
+    assert.equal(storage.get('mode/default'), 'off');
+    const reloaded = await v2Hooks(sessions, storage);
+    const retained = v2ToolEvent('default', 'third');
+    await reloaded.tool['execute.after'](retained);
+    assert.equal(retained.result.content, original);
+    const fresh = v2ToolEvent('unrelated', 'first');
+    await reloaded.tool['execute.after'](fresh);
+    assert.ok(fresh.result.content.length < original.length);
+    await reloaded.session.prompt({ sessionID: 'default', prompt: { text: 'activate chisle' } });
+    assert.equal(storage.get('mode/default'), 'on');
+    process.env.CHISLE_DEFAULT_MODE = 'off';
+    const explicit = v2ToolEvent('default', 'fourth');
+    await reloaded.tool['execute.after'](explicit);
+    assert.ok(explicit.result.content.length < original.length);
+  } finally {
+    if (previous === undefined) delete process.env.CHISLE_DEFAULT_MODE;
+    else process.env.CHISLE_DEFAULT_MODE = previous;
+  }
+});
+
+test('OpenCode v2 children and forks snapshot parent mode at first use and survive reload', async () => {
+  const sessions = new Map([
+    ['parent', { id: 'parent', metadata: { other: 7 } }],
+    ['child', { id: 'child', parentID: 'parent', metadata: { source: 'subagent' } }],
+    ['fork', { id: 'fork', fork: { sessionID: 'parent', boundary: { type: 'through', messageID: 'old' } }, metadata: { other: 8 } }],
+  ]);
+  const storage = new Map([['mode/parent', 'on']]);
+  const hooks = await v2Hooks(sessions, storage);
+  await hooks.session.prompt({ sessionID: 'parent', prompt: { text: 'stop chisle' } });
+  for (const sessionID of ['child', 'fork']) {
+    const event = v2ToolEvent(sessionID, 'first');
+    const text = event.result.content;
+    await hooks.tool['execute.after'](event);
+    assert.equal(event.result.content, text);
+    assert.equal(storage.get(`mode/${sessionID}`), 'off');
+  }
+  assert.deepEqual(sessions.get('child').metadata, { source: 'subagent' });
+  assert.deepEqual(sessions.get('fork').metadata, { other: 8 });
+  await hooks.session.prompt({ sessionID: 'parent', prompt: { text: 'turn on chisle' } });
+  const reloaded = await v2Hooks(sessions, storage);
+  for (const sessionID of ['child', 'fork']) {
+    const event = v2ToolEvent(sessionID, 'later');
+    const text = event.result.content;
+    await reloaded.tool['execute.after'](event);
+    assert.equal(event.result.content, text);
+  }
+  await reloaded.session.prompt({ sessionID: 'fork', prompt: { text: '/chisle on' } });
+  const fork = v2ToolEvent('fork', 'on');
+  await reloaded.tool['execute.after'](fork);
+  assert.ok(fork.result.content.length < bigOutput(500, 'v2-mode').length);
+  sessions.set('middle', { id: 'middle', parentID: 'fork', metadata: {} });
+  sessions.set('grandchild', { id: 'grandchild', parentID: 'middle', metadata: {} });
+  const grandchild = v2ToolEvent('grandchild', 'first');
+  await reloaded.tool['execute.after'](grandchild);
+  assert.ok(grandchild.result.content.length < bigOutput(500, 'v2-mode').length);
+  assert.equal(storage.get('mode/middle'), 'on');
+  assert.equal(storage.get('mode/grandchild'), 'on');
+  assert.equal(storage.get('mode/parent'), 'on');
+});
+
+for (const kind of ['context', 'compaction', 'generate', 'title']) {
+  test(`OpenCode v2 ${kind} removes only current Chisle system rules when off`, async () => {
+    const hooks = await v2Hooks(new Map(), new Map([['mode/off', 'off']]));
+    assert.equal(typeof hooks.session[kind], 'function');
+    const skillPath = path.join(__dirname, '..', 'skills', 'chisle', 'SKILL.md');
+    const skill = fs.readFileSync(skillPath, 'utf8').trim();
+    const skillBody = skill.replace(/^---[\s\S]*?---\s*/, '');
+    const block = '<!-- chisle-begin -->\n# Chisle\nOnly Chisle rules.\n<!-- chisle-end -->';
+    const before = '# User instructions\r\n\r\nKeep  spacing.\r\n';
+    const after = '\r\n\r\nProject policy stays.\n';
+    const foreign = Object.freeze({ key: 'core/environment', text: 'Unrelated  rules.\n\nKeep blanks.' });
+    const instructions = Object.freeze([
+      foreign,
+      Object.freeze({ key: 'core/instructions', text: before + block + after, owner: 'user' }),
+      Object.freeze({ key: skillPath, text: skillBody }),
+    ]);
+    const metadata = Object.freeze({
+      provider: Object.freeze({ keep: 'exact' }),
+      experimental: Object.freeze({ instructions, extra: 42 }),
+    });
+    const mixed = Object.freeze({ type: 'text', text: before + block + after, cache: '1h', metadata });
+    const loaded = Object.freeze({ type: 'text', text: `Instructions from: ${skillPath}\n${skill}`, cache: '5m' });
+    const bodyOnly = Object.freeze({ type: 'text', text: skillBody, metadata: Object.freeze({
+      experimental: Object.freeze({ instructions: Object.freeze([Object.freeze({ key: skillPath, text: skillBody })]) }),
+    }) });
+    const unrelated = Object.freeze({ type: 'text', text: '# Chisle\nMy unrelated project policy.\n\n', metadata: { keep: true } });
+    const unowned = Object.freeze({ type: 'text', text: skillBody, metadata: Object.freeze({
+      experimental: Object.freeze({ instructions: Object.freeze([Object.freeze({ key: '/project/policy.md', text: skillBody })]) }),
+    }) });
+    const incomplete = Object.freeze({ type: 'text', text: 'User policy\n<!-- chisle-begin -->\nUnclosed marker stays intact.' });
+    const messages = Object.freeze([
+      Object.freeze({ role: 'tool', metadata: Object.freeze({ stored: true }), content: Object.freeze([
+        Object.freeze({ type: 'tool-result', name: 'shell', result: Object.freeze({ type: 'text', value: bigOutput(500) }) }),
+        Object.freeze({ type: 'tool-result', name: 'shell', result: Object.freeze({ type: 'text', value: 'already shortened [chisle: elided]' }) }),
+      ]) }),
+    ]);
+    const event = { sessionID: 'off', system: Object.freeze([mixed, loaded, bodyOnly, unrelated, unowned, incomplete]), messages, options: { temperature: 0 } };
+    const history = structuredClone(messages);
+    await hooks.session[kind](event);
+    assert.equal(event.system.length, 4);
+    assert.equal(event.system[0].text, before + after);
+    assert.equal(event.system[0].cache, '1h');
+    assert.deepEqual(event.system[0].metadata, {
+      provider: { keep: 'exact' }, experimental: { instructions: [foreign, { key: 'core/instructions', text: before + after, owner: 'user' }], extra: 42 },
+    });
+    assert.equal(event.system[0].metadata.experimental.instructions[0], foreign);
+    assert.equal(event.system[1], unrelated);
+    assert.equal(event.system[2], unowned);
+    assert.equal(event.system[3], incomplete);
+    assert.equal(mixed.text, before + block + after);
+    assert.equal(mixed.metadata, metadata);
+    assert.equal(event.messages, messages);
+    assert.deepEqual(event.messages, history);
+    assert.deepEqual(event.options, { temperature: 0 });
+
+    await hooks.session.prompt({ sessionID: 'off', prompt: { text: '/chisle' } });
+    const assembled = Object.freeze([mixed, loaded, bodyOnly, unrelated]);
+    const on = { sessionID: 'off', system: assembled, messages };
+    await hooks.session[kind](on);
+    assert.equal(on.system, assembled);
+    assert.equal(on.messages, messages);
+  });
+}
+
+test('OpenCode v2 filters current aggregated instructions without restoring stale source text', async () => {
+  const hooks = await v2Hooks(new Map(), new Map([['mode/off', 'off']]));
+  assert.equal(typeof hooks.session.context, 'function');
+  const root = require('../hooks/chisle-config').getOpencodeDir();
+  const fence = '<!-- chisle-begin -->\n# Chisle\nRules.\n<!-- chisle-end -->';
+  const old = `Instructions from: ${path.join(root, 'AGENTS.md')}\nGlobal policy.\n${fence}\n\nInstructions from: /project/AGENTS.md\nProject  policy.\n\n`;
+  const current = old.replace('Global policy.', 'Global policy edited by another hook.');
+  const foreign = Object.freeze({ key: 'core/date', text: 'Date stays exact.\n\n' });
+  const part = Object.freeze({ type: 'text', text: current, metadata: Object.freeze({
+    experimental: Object.freeze({ instructions: Object.freeze([
+      Object.freeze({ key: 'core/instructions', text: old }), foreign,
+    ]) }),
+  }) });
+  const event = { sessionID: 'off', system: Object.freeze([part]), messages: [] };
+  await hooks.session.context(event);
+  assert.equal(event.system[0].text, current.replace(fence, ''));
+  assert.equal(event.system[0].metadata.experimental.instructions[0].text, old.replace(fence, ''));
+  assert.equal(event.system[0].metadata.experimental.instructions[1], foreign);
+  assert.equal(part.text, current);
+});
+
+test('OpenCode v2 unmatched earlier fences preserve intervening policies and later complete blocks', async () => {
+  const hooks = await v2Hooks(new Map(), new Map([['mode/off', 'off']]));
+  const prefix = 'Instructions from: /project/AGENTS.md\r\n<!-- chisle-begin -->\r\nSECURITY_POLICY_KEEP\r\n\r\n';
+  const fence = '<!-- chisle-begin -->\n# Chisle\nOwned rules.\n<!-- chisle-end -->';
+  const suffix = '\n\nUSER_POLICY_AFTER\n<!-- chisle-end -->\n';
+  const original = prefix + fence + suffix;
+  const metadata = Object.freeze({ experimental: Object.freeze({ instructions: Object.freeze([
+    Object.freeze({ key: 'core/instructions', text: original }),
+  ]) }) });
+  const part = Object.freeze({ type: 'text', text: original, metadata });
+  for (const kind of ['context', 'compaction', 'generate', 'title']) {
+    const event = { sessionID: 'off', system: Object.freeze([part]), messages: [] };
+    await hooks.session[kind](event);
+    assert.equal(event.system[0].text, prefix + suffix);
+    assert.equal(event.system[0].metadata.experimental.instructions[0].text, prefix + suffix);
+    assert.equal(part.text, original);
+    assert.equal(part.metadata, metadata);
+  }
+});
+
+test('OpenCode v2 JSON uses shared minification without altering strings or big integers', async () => {
+  const after = await loadV2Plugin();
+  const padding = ' '.repeat(1600);
+  const original = `{\n${padding}"id": 900719925474099312345,\n${padding}"text": "keep  spaces, \\\"quotes\\\" and \\\\slashes",\n${padding}"items": [ true, null, 1e+30 ]\n}`;
+  const expected = '{"id":900719925474099312345,"text":"keep  spaces, \\\"quotes\\\" and \\\\slashes","items":[true,null,1e+30]}';
+  const output = Object.freeze({ id: '900719925474099312345', text: 'structured value' });
+  const metadata = Object.freeze({ keep: { exact: true } });
+  const files = Object.freeze([{ uri: 'file:///tool/output.json' }]);
+  const image = Object.freeze({ type: 'image', data: 'unchanged', mime: 'image/png' });
+  const file = Object.freeze({ type: 'file', url: 'file:///tool/source.js', mime: 'text/javascript', filename: 'source.js' });
+  const event = {
+    tool: 'shell', sessionID: 'json', id: 'pretty', status: 'completed', input: {},
+    result: { output, metadata, files, content: [{ type: 'text', text: original, extra: 7 }, image, file] },
+  };
+  await after(event);
+  assert.equal(event.result.content[0].text, expected);
+  assert.equal(event.result.content[0].extra, 7);
+  assert.equal(event.result.content[1], image);
+  assert.equal(event.result.content[2], file);
+  assert.equal(event.result.output, output);
+  assert.equal(event.result.metadata, metadata);
+  assert.equal(event.result.files, files);
+});
+
+test('OpenCode v2 oversized JSON retains byte-identical recovery and structured result', async () => {
+  const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-oc-v2-json-'));
+  const previous = process.env.CHISLE_STATE_DIR;
+  process.env.CHISLE_STATE_DIR = stateDir;
+  try {
+    const after = await loadV2Plugin();
+    const original = JSON.stringify({ payload: 'x'.repeat(16000) }, null, 2);
+    const output = Object.freeze({ payload: 'structured result stays full' });
+    const event = v2ToolEvent('large-json', 'first', original);
+    event.result.output = output;
+    await after(event);
+    assert.ok(event.result.content.length <= THRESHOLDS.maxChars);
+    assert.deepEqual(fs.readFileSync(recoveryPath(event.result.content)), Buffer.from(original));
+    assert.equal(event.result.output, output);
+  } finally {
+    if (previous === undefined) delete process.env.CHISLE_STATE_DIR;
+    else process.env.CHISLE_STATE_DIR = previous;
+    fs.rmSync(stateDir, { recursive: true, force: true });
+  }
+});
+
+test('OpenCode v2 ignores malformed events without writing missing session keys', async () => {
+  const storage = new Map();
+  const hooks = await v2Hooks(new Map(), storage);
+  assert.equal(typeof hooks.session.prompt, 'function');
+  for (const event of [undefined, null, {}, { prompt: { text: 'stop chisle' } }, { sessionID: 'odd', prompt: null }, { sessionID: 'odd', prompt: { text: [] } }]) {
+    await assert.doesNotReject(hooks.session.prompt(event));
+  }
+  for (const event of [undefined, null, {}, { status: 'completed', result: null }, { tool: 'shell', status: 'completed', result: { content: null } }, v2ToolEvent(undefined, 'missing')]) {
+    await assert.doesNotReject(hooks.tool['execute.after'](event));
+  }
+  for (const kind of ['context', 'compaction', 'generate', 'title']) {
+    for (const event of [undefined, null, {}, { sessionID: 'odd', system: null }]) {
+      await assert.doesNotReject(hooks.session[kind](event));
+    }
+  }
+  assert.deepEqual([...storage], []);
+});
+
+test('OpenCode v2 session or storage failures fall back to the runtime default', async () => {
+  const previous = process.env.CHISLE_DEFAULT_MODE;
+  try {
+    for (const failure of ['get', 'storage', 'write']) {
+      const hooks = await v2Hooks();
+      assert.equal(typeof hooks.session.prompt, 'function');
+      if (failure === 'get') hooks.context.session.get = async () => { throw new Error('session unavailable'); };
+      if (failure === 'storage') hooks.context.storage.get = async () => { throw new Error('storage unavailable'); };
+      if (failure === 'write') hooks.context.storage.set = async () => { throw new Error('storage unavailable'); };
+      if (failure !== 'get') await assert.doesNotReject(hooks.session.prompt({ sessionID: failure, prompt: { text: 'stop chisle' } }));
+      for (const mode of ['off', 'on']) {
+        process.env.CHISLE_DEFAULT_MODE = mode;
+        const event = v2ToolEvent(failure, mode);
+        const original = event.result.content;
+        await assert.doesNotReject(hooks.tool['execute.after'](event));
+        if (mode === 'off') assert.equal(event.result.content, original);
+        else assert.ok(event.result.content.length < original.length);
+      }
+    }
+  } finally {
+    if (previous === undefined) delete process.env.CHISLE_DEFAULT_MODE;
+    else process.env.CHISLE_DEFAULT_MODE = previous;
+  }
+});
+
+test('OpenCode v2 serializes initialization and toggles without stale inherited writes', async () => {
+  const sessions = new Map([['child', { id: 'child', parentID: 'parent' }]]);
+  const storage = new Map([['mode/parent', 'on']]);
+  const hooks = await v2Hooks(sessions, storage);
+  assert.equal(typeof hooks.session.prompt, 'function');
+  const get = hooks.context.storage.get;
+  let reached;
+  let release;
+  const entered = new Promise(resolve => { reached = resolve; });
+  const blocked = new Promise(resolve => { release = resolve; });
+  let first = true;
+  hooks.context.storage.get = async key => {
+    const value = await get(key);
+    if (key === 'mode/child' && first) {
+      first = false;
+      reached();
+      await blocked;
+    }
+    return value;
+  };
+  const initializing = hooks.tool['execute.after'](v2ToolEvent('child', 'first'));
+  await entered;
+  const off = hooks.session.prompt({ sessionID: 'child', prompt: { text: 'stop chisle' } });
+  release();
+  await Promise.all([initializing, off]);
+  assert.equal(storage.get('mode/child'), 'off');
+  await Promise.all([
+    hooks.session.prompt({ sessionID: 'child', prompt: { text: '/chisle on' } }),
+    hooks.session.prompt({ sessionID: 'child', prompt: { text: '/chisle off' } }),
+  ]);
+  const event = v2ToolEvent('child', 'after');
+  const original = event.result.content;
+  await hooks.tool['execute.after'](event);
+  assert.equal(event.result.content, original);
+});
+
+test('OpenCode v2 corrupted ancestry and mode values fall back without persisting guesses', async () => {
+  const sessions = new Map([
+    ['a', { id: 'a', parentID: 'b' }], ['b', { id: 'b', parentID: 'a' }],
+    ['self', { id: 'self', parentID: 'self' }],
+  ]);
+  for (let i = 0; i < 80; i++) sessions.set(`deep-${i}`, { id: `deep-${i}`, parentID: `deep-${i + 1}` });
+  const storage = new Map([['mode/corrupt', { mode: 'off' }]]);
+  const hooks = await v2Hooks(sessions, storage);
+  assert.equal(typeof hooks.session.prompt, 'function');
+  const previous = process.env.CHISLE_DEFAULT_MODE;
+  process.env.CHISLE_DEFAULT_MODE = 'off';
+  try {
+    for (const sessionID of ['a', 'b', 'self', 'deep-0', 'corrupt']) {
+      const event = v2ToolEvent(sessionID, 'first');
+      const original = event.result.content;
+      await assert.doesNotReject(hooks.tool['execute.after'](event));
+      assert.equal(event.result.content, original);
+    }
+    assert.deepEqual([...storage], [['mode/corrupt', { mode: 'off' }]]);
+    await hooks.session.prompt({ sessionID: 'corrupt', prompt: { text: '/chisle on' } });
+    assert.equal(storage.get('mode/corrupt'), 'on');
+  } finally {
+    if (previous === undefined) delete process.env.CHISLE_DEFAULT_MODE;
+    else process.env.CHISLE_DEFAULT_MODE = previous;
+  }
+});
+
+test('OpenCode v2 kill switch disables compression without changing explicit mode', async () => {
+  const storage = new Map([['mode/enabled', 'on']]);
+  const hooks = await v2Hooks(new Map(), storage);
+  const previous = process.env.CHISLE_COMPRESS;
+  process.env.CHISLE_COMPRESS = '0';
+  try {
+    const event = v2ToolEvent('enabled', 'first');
+    const original = event.result.content;
+    await hooks.tool['execute.after'](event);
+    assert.equal(event.result.content, original);
+    assert.equal(storage.get('mode/enabled'), 'on');
+    const system = Object.freeze([{ type: 'text', text: '<!-- chisle-begin -->rules<!-- chisle-end -->' }]);
+    const request = { sessionID: 'enabled', system, messages: [] };
+    assert.equal(typeof hooks.session.context, 'function');
+    await hooks.session.context(request);
+    assert.equal(request.system, system);
+  } finally {
+    if (previous === undefined) delete process.env.CHISLE_COMPRESS;
+    else process.env.CHISLE_COMPRESS = previous;
+  }
+});
+
+test('OpenCode v2 unload disposes every hook and preserves persisted mode', async () => {
+  const storage = new Map([['mode/a', 'off']]);
+  const hooks = await v2Hooks(new Map(), storage);
+  assert.equal(typeof hooks.cleanup, 'function');
+  await Promise.all([hooks.cleanup(), hooks.cleanup()]);
+  assert.deepEqual(hooks.tool, {});
+  assert.deepEqual(hooks.session, {});
+  assert.equal(storage.get('mode/a'), 'off');
+});
+
+for (const operation of ['toggle', 'inheritance']) {
+  test(`OpenCode v2 unload drains blocked ${operation} before a replacement plugin writes`, async () => {
+    const sessions = new Map([['child', { id: 'child', parentID: 'parent' }]]);
+    const storage = new Map([['mode/parent', 'off']]);
+    const hooks = await v2Hooks(sessions, storage);
+    let reached;
+    let release;
+    const entered = new Promise(resolve => { reached = resolve; });
+    const blocked = new Promise(resolve => { release = resolve; });
+    if (operation === 'toggle') {
+      const set = hooks.context.storage.set;
+      hooks.context.storage.set = async (key, value) => {
+        reached();
+        await blocked;
+        await set(key, value);
+      };
+    } else {
+      const get = hooks.context.storage.get;
+      hooks.context.storage.get = async key => {
+        if (key === 'mode/child') {
+          reached();
+          await blocked;
+        }
+        return get(key);
+      };
+    }
+    const active = operation === 'toggle'
+      ? hooks.session.prompt({ sessionID: 'child', prompt: { text: 'stop chisle' } })
+      : hooks.session.context({ sessionID: 'child', system: [], messages: [] });
+    await entered;
+    const stalePrompt = hooks.session.prompt;
+    let unloaded = false;
+    const unloading = hooks.cleanup().then(() => { unloaded = true; });
+    const concurrentCleanup = hooks.cleanup();
+    // Let disposal complete without a timer; cleanup must still await the hook.
+    await new Promise(resolve => setImmediate(resolve));
+    const returnedBeforeDrain = unloaded;
+    release();
+    await Promise.all([active, unloading, concurrentCleanup]);
+    assert.equal(returnedBeforeDrain, false);
+    assert.deepEqual(hooks.session, {});
+    assert.deepEqual(hooks.tool, {});
+    const reloaded = await v2Hooks(sessions, storage);
+    await reloaded.session.prompt({ sessionID: 'child', prompt: { text: 'activate chisle' } });
+    await stalePrompt({ sessionID: 'child', prompt: { text: 'stop chisle' } });
+    assert.equal(storage.get('mode/child'), 'on');
+    await reloaded.cleanup();
+  });
+}
+
+test('OpenCode v2 failed registration disposes hooks already registered', async () => {
+  const registered = new Set();
+  const hook = async name => {
+    if (name === 'generate') throw new Error('registration failed');
+    registered.add(name);
+    return { dispose: async () => { registered.delete(name); } };
+  };
+  const setup = require('../.opencode/plugins-v2/chisle/setup.cjs');
+  await assert.rejects(setup({ session: { hook }, tool: { hook } }), /registration failed/);
+  assert.deepEqual([...registered], []);
 });
 
 test('OpenCode v2 shell compression preserves spill, metadata, safety, stats, and idempotency', async () => {
@@ -458,6 +978,25 @@ test('OpenCode v2 shell compression preserves spill, metadata, safety, stats, an
     else process.env.CHISLE_COMPRESS_TOOLS = previousTools;
     fs.rmSync(stateDir, { recursive: true, force: true });
   }
+});
+
+test('OpenCode v2 filters small shell output using input.command', async () => {
+  const original = [
+    'On branch main',
+    'Changes not staged for commit:',
+    '  (use "git add <file>..." to update what will be committed)',
+    '  (use "git restore <file>..." to discard changes in working directory)',
+    '\tmodified:   src/example.js',
+    'no changes added to commit',
+  ].join('\n');
+  const after = await loadV2Plugin();
+  const event = {
+    tool: 'shell', sessionID: 'v2-command', id: 'status', status: 'completed',
+    input: { command: 'git status' }, result: { content: original, metadata: { exit: 0 } },
+  };
+  await after(event);
+  assert.equal(event.result.content, '* main\n M src/example.js');
+  assert.deepEqual(event.result.metadata, { exit: 0 });
 });
 
 test('OpenCode v2 plugin fails open when compression throws', async () => {
