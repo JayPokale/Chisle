@@ -26,6 +26,10 @@ const ROWS = [
   // benchmarks/results/raw-314-commands/commands.json: 37 shell commands; caveman and
   // ponytail are rulesets only, so they pass tool output through untouched.
   { label: "terminal output read · 37 commands", caveman: "100%", ponytail: "100%", chisle: "28%" },
+  // benchmarks/agentic/raw-noisylog/: one real task (fix a failing npm test,
+  // 17k-char log), mean $ per fix, 3 runs per arm, every run fixed it.
+  // Matches assets/benchmark-cost.svg.
+  { label: "cost per fix · real failing-test task", caveman: "109%", ponytail: "93%", chisle: "73%" },
 ];
 
 // Correctness, Chisle 3.14 vs bare, Haiku 4.5: benchmarks/quality/raw-314/ and
@@ -77,11 +81,13 @@ export default function Benchmarks() {
         </div>
 
         <Reveal delay={0.1}>
-          <h3 className="mt-16 text-lg font-semibold tracking-tight">Shortest answers, tied for the lowest bill</h3>
+          <h3 className="mt-16 text-lg font-semibold tracking-tight">Shortest answers, cheapest fix</h3>
           <p className="mt-2 max-w-xl text-sm text-dim">
             % of the bare model, Chisle 3.14 (ruleset unchanged since 3.10) on Haiku 4.5, 26 answers
             in one run. On Sonnet 5.5, Chisle bills 53% of the bare model. Terminal output: caveman and
-            ponytail never touch it; RTK leaves Claude 84% of it to read, Chisle 28%.
+            ponytail never touch it; RTK leaves Claude 84% of it to read, Chisle 28%. On a real
+            agent task, fixing a failing npm test, a fix costs 73% of the bare agent with Chisle
+            (RTK 96%), 47% less than with Chisle 3.13.
           </p>
           <div className="pane-scroll mt-6 overflow-x-auto rounded-xl border border-line bg-bg px-5 py-2">
             <table className="w-full text-left text-sm">

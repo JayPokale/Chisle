@@ -118,6 +118,13 @@ class OrderStateMachine:
   </picture>
 </p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="실제 에이전트 작업(17k자 로그를 출력하며 실패하는 npm test 수정)에서 수정 1회당 비용, 규칙 없는 같은 에이전트 대비 비율: caveman 109%, ponytail 93%, RTK 96%, Chisle 73%. 모든 실행이 버그를 수정. Chisle 3.14는 3.13보다 47% 저렴.">
+  </picture>
+</p>
+
 <p align="center"><sub>진 결과까지 포함해 모든 원본 기록이 커밋되어 있습니다. <a href="../docs/benchmarks.md">방법과 데이터</a> · <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">진 결과를 공개하는 이유</a></sub></p>
 
 <p align="center"><img src="../assets/readme/line.svg" width="100%" height="4" alt=""></p>

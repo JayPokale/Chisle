@@ -118,6 +118,13 @@ Después, un bloque corto de uso y un resumen de las transiciones en una línea.
   </picture>
 </p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="Coste por arreglo en una tarea real de agente (arreglar un npm test que falla, con un log de 17k caracteres), como porcentaje del mismo agente sin reglas: caveman 109%, ponytail 93%, RTK 96%, Chisle 73%. Todas las ejecuciones arreglaron el fallo. Chisle 3.14 es un 47% más barato que 3.13.">
+  </picture>
+</p>
+
 <p align="center"><sub>Todas las transcripciones originales están en el repo, derrotas incluidas. <a href="../docs/benchmarks.md">Método y datos</a> · <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">por qué publicamos las derrotas</a></sub></p>
 
 <p align="center"><img src="../assets/readme/line.svg" width="100%" height="4" alt=""></p>

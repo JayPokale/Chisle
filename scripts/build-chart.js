@@ -14,6 +14,8 @@
 // --json). caveman and ponytail are rulesets with no tool-output hook, so
 // they read 100% by construction; RTK is the measured rival there.
 //
+// A third chart, assets/benchmark-cost(-light).svg: see collectCost().
+//
 // Run:  node scripts/build-chart.js          (write svg)
 //       node scripts/build-chart.js --check   (fail if stale; for CI)
 //       node scripts/build-chart.js --json
@@ -53,6 +55,27 @@ function collectTerminal() {
   const sum = (k) => rows.reduce((s, r) => s + r.chars[k], 0);
   const pct = (k) => Math.round((100 * sum(k)) / sum('bare'));
   return { n: rows.length, held: rows.filter((r) => r.held).length, caveman: 100, ponytail: 100, rtk: pct('rtk'), [SELF]: pct(SELF) };
+}
+
+// Third chart, assets/benchmark-cost(-light).svg: cost per fix on one real
+// agent task (noisylog: a failing npm test with a 17k-char log, real repo,
+// hidden test), mean $ per run as % of the bare agent, all arms in one session.
+// Source: benchmarks/agentic/raw-noisylog/<fixture>__<arm>__<seed>.json
+const COST_DIR = path.join(ROOT, 'benchmarks', 'agentic', 'raw-noisylog');
+function collectCost() {
+  const runs = {};
+  for (const f of fs.readdirSync(COST_DIR)) {
+    const r = JSON.parse(fs.readFileSync(path.join(COST_DIR, f), 'utf8'));
+    (runs[r.arm] ||= []).push(r);
+  }
+  const mean = (a) => runs[a].reduce((s, r) => s + r.cost_usd, 0) / runs[a].length;
+  const pct = (a) => Math.round((100 * mean(a)) / mean('vanilla'));
+  return {
+    n: runs.vanilla.length,
+    allPassed: Object.values(runs).every((a) => a.every((r) => r.pass)),
+    vsPrev: 100 - Math.round((100 * mean('chisle-hook')) / mean('chisle-hook-3.13')),
+    caveman: pct('caveman'), ponytail: pct('ponytail'), rtk: pct('rtk'), [SELF]: pct('chisle-hook'),
+  };
 }
 
 function collect() {
@@ -98,11 +121,14 @@ function buildSvg(stat, th, spec) {
     const fill = self ? th.accent : th.text;
     const w = Math.max(2, v * px);
     const delay = (0.12 * i).toFixed(2);
+    // A value label that would straddle the dashed 100% line goes just past it.
+    let lx = left + w + 9;
+    if (lx < line100 && lx + 36 > line100) lx = line100 + 8;
     body +=
       `<text x="${left - 12}" y="${y + 21}" font-size="14" fill="${fill}" text-anchor="end"${bold}>${a.label}</text>` +
       `<rect x="${left}" y="${y + 2}" width="${w}" height="28" rx="5" fill="${(spec.bars ? spec.bars(th) : th.bars)[i]}">` +
       `<animate attributeName="width" values="0;${w}" dur="0.9s" begin="${delay}s" fill="freeze" calcMode="spline" keySplines="0.2 0.7 0.2 1"/></rect>` +
-      `<text x="${left + w + 9}" y="${y + 21}" font-size="13" fill="${fill}"${bold}>${v}%</text>`;
+      `<text x="${lx}" y="${y + 21}" font-size="13" fill="${fill}"${bold}>${v}%</text>`;
   });
 
   const aria = spec.aria(stat) + ' ' + ARMS.map((a) => `${a.label} ${stat[a.key]}%`).join(', ') + '.';
@@ -125,6 +151,11 @@ const CHARTS = [
     title: 'Terminal output Claude reads, % of the raw output',
     sub: (s) => `${s.n} shell commands (${s.held} held out), Claude Code limits; caveman and ponytail never touch tool output`,
     aria: (s) => `Terminal output Claude reads across ${s.n} shell commands, as percent of the raw output.` },
+  { collect: collectCost, arms: TERM_ARMS, suffix: '-cost', line: '100% = no ruleset',
+    bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]],
+    title: 'Cost per fix on a real agent task, % of the same agent with no ruleset',
+    sub: (s) => `Fix a failing npm test (17k-char log) in a real repo, Haiku 4.5, ${s.n} runs per arm${s.allPassed ? ', every run fixed it' : ''}; Chisle 3.14 is ${s.vsPrev}% cheaper than 3.13`,
+    aria: (s) => `Cost per fix on a real agent task, fixing a failing npm test, as percent of the same agent with no ruleset. Chisle 3.14 is ${s.vsPrev}% cheaper than 3.13.` },
 ];
 
 function main() {

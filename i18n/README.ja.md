@@ -118,6 +118,13 @@ class OrderStateMachine:
   </picture>
 </p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="実際のエージェントタスク（17k 文字のログを出して失敗する npm test の修正）での修正 1 回あたりのコスト、ルールなしの同じエージェントに対する割合：caveman 109%、ponytail 93%、RTK 96%、Chisle 73%。全実行でバグを修正。Chisle 3.14 は 3.13 より 47% 安い。">
+  </picture>
+</p>
+
 <p align="center"><sub>負けた実行も含め、生のログはすべてコミット済みです。<a href="../docs/benchmarks.md">手法とデータ</a> · <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">負けた結果も公開する理由</a></sub></p>
 
 <p align="center"><img src="../assets/readme/line.svg" width="100%" height="4" alt=""></p>

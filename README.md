@@ -117,6 +117,13 @@ Then a short usage block and a one-line recap of the transitions.
   </picture>
 </p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark-cost.svg">
+    <img src="assets/benchmark-cost-light.svg" width="860" alt="Cost per fix on a real agent task, fixing a failing npm test with a 17k-character log, as percent of the same agent with no ruleset: caveman 109%, ponytail 93%, RTK 96%, Chisle 73%. Every run fixed the bug. Chisle 3.14 is 47% cheaper than 3.13.">
+  </picture>
+</p>
+
 <p align="center"><sub>Every raw transcript is committed, losses included. <a href="docs/benchmarks.md">Method and data</a> · <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">why we publish the losses</a></sub></p>
 
 <p align="center"><img src="assets/readme/line.svg" width="100%" height="4" alt=""></p>

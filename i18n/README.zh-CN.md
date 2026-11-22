@@ -118,6 +118,13 @@ class OrderStateMachine:
   </picture>
 </p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="真实智能体任务（修复一个失败的 npm test，日志 17k 字符）中每次修复的成本，占无规则同一智能体的百分比：caveman 109%，ponytail 93%，RTK 96%，Chisle 73%。每次运行都修复了 bug。Chisle 3.14 比 3.13 便宜 47%。">
+  </picture>
+</p>
+
 <p align="center"><sub>所有原始记录都已提交，包括输掉的那些。<a href="../docs/benchmarks.md">方法与数据</a> · <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">为什么公开输掉的结果</a></sub></p>
 
 <p align="center"><img src="../assets/readme/line.svg" width="100%" height="4" alt=""></p>
