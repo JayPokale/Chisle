@@ -7,12 +7,12 @@
 // sees the test: test.js is copied in AFTER the run and decides pass/fail.
 //
 // Usage: node benchmarks/agentic/run.js [model] [seeds] [parallel]
-//   ARMS=vanilla,chisle,chisle-hook,chisle-trim,ponytail,rtk,rtk-chisle-hook  arms to run (default: vanilla,chisle)
+//   ARMS=vanilla,chisle,chisle-hook,chisle-trim,ponytail,caveman,rtk,rtk-chisle-hook  arms to run (default: vanilla,chisle)
 //   rtk = bare agent plus RTK's PreToolUse rewrite hook (`rtk hook claude`);
 //   rtk-chisle-hook = chisle-hook plus that same rtk hook
 //   chisle-trim = chisle plus the deny list `npx chisle tools trim` writes for
 //   tools a coding loop never calls (TRIM_TOOLS overrides the list)
-//   PONYTAIL_SKILL=path              ponytail SKILL.md (default: installed plugin cache)
+//   PONYTAIL_SKILL, CAVEMAN_SKILL=path  rival SKILL.md (default: installed plugin cache)
 //   CHISLE_SKILL=path                candidate ruleset for the chisle arms (default: skills/chisle/SKILL.md)
 //   FIXTURES=noisylog,reuse          run only these fixtures (default: all)
 //   RAW_DIR=path                     where cells go (default: ./raw); use a fresh
@@ -30,7 +30,7 @@ const MODEL = process.argv[2] || 'claude-haiku-4-5-20251001';
 const SEEDS = Number(process.argv[3] || 3);
 const PAR = Number(process.argv[4] || 5);
 
-const KNOWN_ARMS = ['vanilla', 'chisle', 'chisle-hook', 'chisle-trim', 'ponytail', 'rtk', 'rtk-chisle-hook'];
+const KNOWN_ARMS = ['vanilla', 'chisle', 'chisle-hook', 'chisle-trim', 'ponytail', 'caveman', 'rtk', 'rtk-chisle-hook'];
 const ARMS = (process.env.ARMS || 'vanilla,chisle').split(',').map((a) => a.trim()).filter(Boolean);
 const unknown = ARMS.filter((a) => !KNOWN_ARMS.includes(a));
 if (unknown.length) { console.error(`unknown arm(s): ${unknown.join(', ')}; known: ${KNOWN_ARMS.join(', ')}`); process.exit(1); }
@@ -47,18 +47,20 @@ const skill = fs.readFileSync(process.env.CHISLE_SKILL || path.join(HERE, '..', 
 const body = skill.split(/^---\s*$/m).slice(2).join('---').trim();
 if (!body) { console.error('empty chisle system prompt'); process.exit(1); }
 fs.writeFileSync(path.join(ISO, 'chisle.txt'), body + '\n');
-// ponytail arm (#37): the rival's skill body, appended the same way.
-if (ARMS.includes('ponytail')) {
-  const cache = path.join(os.homedir(), '.claude', 'plugins', 'cache', 'ponytail', 'ponytail');
-  let src = process.env.PONYTAIL_SKILL;
+// Rival arms (ponytail #37, caveman): the rival's skill body, appended the same way.
+const RIVALS = ['ponytail', 'caveman'];
+for (const rival of RIVALS.filter((r) => ARMS.includes(r))) {
+  const cache = path.join(os.homedir(), '.claude', 'plugins', 'cache', rival, rival);
+  const env = rival.toUpperCase() + '_SKILL';
+  let src = process.env[env];
   if (!src) {
-    try { src = fs.readdirSync(cache).map((v) => path.join(cache, v, 'skills', 'ponytail', 'SKILL.md')).find((f) => fs.existsSync(f)); } catch (_) {}
+    try { src = fs.readdirSync(cache).map((v) => path.join(cache, v, 'skills', rival, 'SKILL.md')).find((f) => fs.existsSync(f)); } catch (_) {}
   }
-  if (!src) { console.error('ponytail SKILL.md not found; set PONYTAIL_SKILL'); process.exit(1); }
+  if (!src) { console.error(`${rival} SKILL.md not found; set ${env}`); process.exit(1); }
   const pt = fs.readFileSync(src, 'utf8').split(/^---\s*$/m).slice(2).join('---').trim();
-  if (!pt) { console.error('empty ponytail system prompt'); process.exit(1); }
-  fs.writeFileSync(path.join(ISO, 'ponytail.txt'), pt + '\n');
-  console.log('ponytail skill: ' + src);
+  if (!pt) { console.error(`empty ${rival} system prompt`); process.exit(1); }
+  fs.writeFileSync(path.join(ISO, rival + '.txt'), pt + '\n');
+  console.log(`${rival} skill: ${src}`);
 }
 process.on('exit', () => fs.rmSync(ISO, { recursive: true, force: true }));
 
@@ -122,7 +124,7 @@ function runCell(c) {
     // stream-json, so each cell also records the tool calls it made, not only totals.
     const args = ['-p', task, '--model', MODEL, '--output-format', 'stream-json', '--verbose', '--dangerously-skip-permissions'];
     const hooked = c.arm === 'chisle-hook' || c.arm === 'rtk-chisle-hook';
-    if (c.arm !== 'vanilla' && c.arm !== 'rtk') args.push('--append-system-prompt-file', path.join(ISO, c.arm === 'ponytail' ? 'ponytail.txt' : 'chisle.txt'));
+    if (c.arm !== 'vanilla' && c.arm !== 'rtk') args.push('--append-system-prompt-file', path.join(ISO, RIVALS.includes(c.arm) ? c.arm + '.txt' : 'chisle.txt'));
     if (c.arm === 'chisle-trim') args.push('--settings', TRIM_SETTINGS);
     let cfg = ISO;
     if (c.arm === 'rtk') args.push('--settings', RTK_SETTINGS);
