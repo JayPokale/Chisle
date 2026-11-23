@@ -28,9 +28,9 @@ const ROWS = [
   { label: "terminal output read · 37 commands", caveman: "100%", ponytail: "100%", chisle: "28%" },
   // benchmarks/agentic/raw-{noisylog,commands}/: three real tasks with noisy
   // commands (failing test, 391-test green suite, bug in a big commit), total $,
-  // 3 runs per arm per task, no RTK in any arm, every run fixed its task.
-  // Matches assets/benchmark-cost.svg.
-  { label: "cost · 3 real agent tasks", caveman: "123%", ponytail: "109%", chisle: "90%" },
+  // 3 runs per arm per task, no RTK in any arm, every run fixed its task; each
+  // ruleset's own cached prompt not counted. Matches assets/benchmark-cost.svg.
+  { label: "cost · 3 real agent tasks", caveman: "120%", ponytail: "104%", chisle: "87%" },
 ];
 
 // Correctness, Chisle 3.14 vs bare, Haiku 4.5: benchmarks/quality/raw-314/ and
@@ -89,8 +89,8 @@ export default function Benchmarks() {
             ruleset adds hidden thinking, so the same answers save less: Chisle 91%, caveman 96%,
             ponytail 115%. Terminal output: caveman and
             ponytail never touch it; Chisle leaves Claude 28% of it to read. Across three real
-            agent tasks with noisy test and git output, Chisle costs 90% of the bare agent,
-            caveman 123%, ponytail 109%. On the failing-test task alone, Chisle 3.14 costs 47%
+            agent tasks with noisy test and git output, Chisle costs 87% of the bare agent,
+            caveman 120%, ponytail 104% (each ruleset's own cached prompt not counted). On the failing-test task alone, Chisle 3.14 costs 47%
             less than 3.13.
           </p>
           <div className="pane-scroll mt-6 overflow-x-auto rounded-xl border border-line bg-bg px-5 py-2">

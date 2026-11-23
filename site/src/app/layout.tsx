@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s · Chisle",
   },
   description:
-    "Chisle is a Claude Code plugin that cuts token usage three ways: a terse dev persona, a tool-output compression hook, and context-diet rules. Claude's answers come back about half as long, shorter than caveman and ponytail, with every number traced to a committed transcript. Also runs on Pi, OpenCode, Antigravity and eight more agents.",
+    "Chisle is a Claude Code plugin that cuts token usage three ways: a terse dev persona, a tool-output compression hook, and context-diet rules. Claude's answers come back about 40% shorter, shorter than caveman and ponytail, with every number traced to a committed transcript. Also runs on Pi, OpenCode, Antigravity and eight more agents.",
   keywords: [
     "claude code plugin",
     "token optimization",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     siteName: "Chisle",
     title: "Chisle: shorter answers than caveman and ponytail, no accuracy lost",
     description:
-      "The Claude Code plugin that makes coding answers about half as long. Terse persona + tool-output compressor + context diet.",
+      "The Claude Code plugin that makes coding answers about 40% shorter. Terse persona + tool-output compressor + context diet.",
   },
   twitter: {
     card: "summary_large_image",

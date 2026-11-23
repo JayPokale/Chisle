@@ -91,6 +91,8 @@ Billed tokens tie with caveman this run (69% each, against 87% for caveman in th
 | `greensuite` | 16,656 | 17,320 | 17,450 | **2,024** |
 | `gitregress` | 18,379 | 36,228 | 27,399 | **9,177** |
 
+The README's cost chart leaves each ruleset's own prompt out, for every arm alike: it is a fixed per-session overhead held in the prompt cache. On Haiku 4.5 the prompts are 838 tokens (Chisle), 968 (caveman) and 1,536 (ponytail), measured in [`raw-314-direct`](../benchmarks/results/raw-314-direct/) as each arm's single-request prompt minus the bare model's; per run they bill as one 1-hour cache write ($2/M) plus a cache read ($0.10/M) on every later request, which comes to $0.0025 (Chisle), $0.0027 (caveman) and $0.0042 (ponytail) per run. Without them the totals are caveman 120%, ponytail 104%, Chisle 87%; per task, Chisle 70% (`noisylog`), 77% (`greensuite`) and 108% (`gitregress`), caveman 105%, 94% and 152%, ponytail 87%, 106% and 115%.
+
 Chisle is the cheapest ruleset on all three tasks but costs more than the bare agent on `gitregress`. No run there read the whole diff (each went file by file), so the filters saved mainly on `npm test` (11,555 → 103 chars); two of the three Chisle runs first opened the wrong commit and took 20 and 18 turns ($0.129, $0.117), the third 9 ($0.060). With 3 seeds a cell, per-task gaps under about 20% are noise.
 
 **Input axis.** Deterministic, no model calls.

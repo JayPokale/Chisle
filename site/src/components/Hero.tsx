@@ -126,7 +126,7 @@ export default function Hero() {
             <p className="max-w-2xl text-base leading-relaxed text-fg/85 sm:text-lg">
               Built for Claude Code. One command, thirteen agents.
               <br className="hidden sm:block" />{" "}
-              Answers about half as long, same pass rate as the bare model. Every number traces to a
+              Answers about 40% shorter, same pass rate as the bare model. Every number traces to a
               committed transcript.
             </p>
           </motion.div>

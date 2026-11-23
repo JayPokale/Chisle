@@ -136,7 +136,7 @@ Then a short example and a five-line list of the transitions.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark-cost.svg">
-    <img src="assets/benchmark-cost-light.svg" width="860" alt="Total cost of three real agent tasks with noisy commands (fix a failing npm test, add a feature that keeps a 391-test suite green, find a bug in a large commit), as percent of the same agent with no ruleset, no RTK in any arm: caveman 123%, ponytail 109%, Chisle 90%. Every run fixed its task.">
+    <img src="assets/benchmark-cost-light.svg" width="860" alt="Total cost of three real agent tasks with noisy commands (fix a failing npm test, add a feature that keeps a 391-test suite green, find a bug in a large commit), as percent of the same agent with no ruleset, no RTK in any arm, each ruleset's own cached prompt not counted: caveman 120%, ponytail 104%, Chisle 87%. Every run fixed its task.">
   </picture>
 </p>
 

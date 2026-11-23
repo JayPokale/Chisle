@@ -69,6 +69,14 @@ function collectTerminal() {
 // Source: benchmarks/agentic/raw-{noisylog,commands}/<fixture>__<arm>__<seed>.json
 const COST_DIRS = ['raw-noisylog', 'raw-commands'].map((d) => path.join(ROOT, 'benchmarks', 'agentic', d));
 const COST_ARMS = { bare: 'vanilla', caveman: 'caveman', ponytail: 'ponytail', [SELF]: 'chisle-hook' };
+// Each ruleset's own prompt is left out of its cost, for every arm alike: it is a
+// fixed per-session overhead that sits in the prompt cache. Sizes are Haiku 4.5
+// tokens, measured in benchmarks/results/raw-314-direct (single-request prompt
+// minus the bare model's on the same prompt). It is billed as one 1-hour cache
+// write ($2/M) plus a cache read ($0.10/M) on every later request, the prices
+// Claude Code's own costUSD uses for Haiku 4.5.
+const RULESET_TOKENS = { caveman: 968, ponytail: 1536, 'chisle-hook': 838 };
+const ownCost = (r) => ((RULESET_TOKENS[r.arm] || 0) * (2 + 0.1 * (r.request_prompts.length - 1))) / 1e6;
 function collectCost() {
   const runs = {};
   for (const dir of COST_DIRS) {
@@ -78,7 +86,7 @@ function collectCost() {
     }
   }
   // Every arm has the same cells (task x seed), so a mean ranks like a total.
-  const mean = (a) => runs[a].reduce((s, r) => s + r.cost_usd, 0) / runs[a].length;
+  const mean = (a) => runs[a].reduce((s, r) => s + r.cost_usd - ownCost(r), 0) / runs[a].length;
   const stat = {
     n: runs.vanilla.length / new Set(runs.vanilla.map((r) => r.fixture)).size,
     tasks: new Set(runs.vanilla.map((r) => r.fixture)).size,
@@ -170,8 +178,8 @@ const CHARTS = [
   { collect: collectCost, arms: TERM_ARMS, suffix: '-cost', line: '100% = no ruleset',
     bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]],
     title: 'Cost of real agent tasks, % of the same agent with no ruleset',
-    sub: (s) => `${s.tasks} tasks with noisy commands (failing test, 391-test suite, bug in a big commit), Haiku 4.5, ${s.n} runs each${s.allPassed ? ', all fixed' : ''}; no RTK`,
-    aria: (s) => `Total cost of ${s.tasks} real agent tasks with noisy commands, as percent of the same agent with no ruleset, no RTK in any arm.` },
+    sub: (s) => `${s.tasks} noisy-command tasks (failing test, 391-test suite, bug in a big commit), Haiku 4.5, ${s.n} runs each${s.allPassed ? ', all fixed' : ''}; no RTK; cached ruleset prompts not counted`,
+    aria: (s) => `Total cost of ${s.tasks} real agent tasks with noisy commands, as percent of the same agent with no ruleset, no RTK in any arm, each ruleset's own cached prompt not counted.` },
 ];
 
 function main() {

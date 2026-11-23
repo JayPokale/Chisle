@@ -6,7 +6,7 @@ import SectionHead from "./SectionHead";
 import Markdown from "./Markdown";
 import samples from "@/data/samples.json";
 
-// Live before/after built from benchmarks/results/raw-nov/default-s1/ via scripts/build-samples.js.
+// Live before/after built from benchmarks/results/raw-314-sonnet-direct/default-s1/ via scripts/build-samples.js.
 // Every word and number below is the committed transcript. No mock-ups, no
 // hand-written "illustrative" rewrites. That is the whole differentiator, so the
 // basis label stays visible at all times.
@@ -141,20 +141,12 @@ export default function Compare() {
               basis: measured
             </span>
             {samples.suite} Percentages are answer tokens against the bare model&apos;s.{" "}
-            {task.id === "cache" && (
-              <>
-                <strong className="text-fg">Read this one carefully:</strong> the prompt ships with
-                no codebase attached, so every arm, the bare model included, asks for the stack
-                instead of writing a cache. This cell measures how briefly each one asks, not how
-                much code it writes.{" "}
-              </>
-            )}
             Browse every cell in{" "}
             <a
               className="text-accent underline-offset-4 hover:underline"
-              href="https://github.com/JayPokale/Chisle/tree/main/benchmarks/results/raw-nov/default-s1"
+              href="https://github.com/JayPokale/Chisle/tree/main/benchmarks/results/raw-314-sonnet-direct/default-s1"
             >
-              benchmarks/results/raw-nov/default-s1
+              benchmarks/results/raw-314-sonnet-direct/default-s1
             </a>
             .
           </p>

@@ -137,7 +137,7 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
-    <img src="../assets/benchmark-cost-light.svg" width="860" alt="ノイズの多いコマンドを伴う実際のエージェントタスク 3 つ（失敗する npm test の修正、391 件のテストを緑のまま保つ機能追加、大きなコミットに埋もれたバグの発見）の合計コスト、ルールなしの同じエージェントに対する割合、どのアームも RTK なし：caveman 123%、ponytail 109%、Chisle 90%。全実行でタスクを完了。">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="ノイズの多いコマンドを伴う実際のエージェントタスク 3 つ（失敗する npm test の修正、391 件のテストを緑のまま保つ機能追加、大きなコミットに埋もれたバグの発見）の合計コスト、ルールなしの同じエージェントに対する割合、どのアームも RTK なし、各ルールセット自身のプロンプト（キャッシュ済み）は除外：caveman 120%、ponytail 104%、Chisle 87%。全実行でタスクを完了。">
   </picture>
 </p>
 

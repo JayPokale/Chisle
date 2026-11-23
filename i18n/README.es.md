@@ -137,7 +137,7 @@ Luego un ejemplo breve y una lista de cinco líneas con las transiciones.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
-    <img src="../assets/benchmark-cost-light.svg" width="860" alt="Coste total de tres tareas reales de agente con comandos ruidosos (arreglar un npm test que falla, añadir una función sin romper una suite de 391 tests, encontrar un fallo en un commit grande), como porcentaje del mismo agente sin reglas, sin RTK en ningún caso: caveman 123%, ponytail 109%, Chisle 90%. Todas las ejecuciones resolvieron su tarea.">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="Coste total de tres tareas reales de agente con comandos ruidosos (arreglar un npm test que falla, añadir una función sin romper una suite de 391 tests, encontrar un fallo en un commit grande), como porcentaje del mismo agente sin reglas, sin RTK en ningún caso y sin contar el prompt propio de cada ruleset (en caché): caveman 120%, ponytail 104%, Chisle 87%. Todas las ejecuciones resolvieron su tarea.">
   </picture>
 </p>
 

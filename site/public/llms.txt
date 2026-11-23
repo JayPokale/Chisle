@@ -3,10 +3,10 @@
 > Chisle is a token-efficiency plugin for AI coding agents that cuts LLM token usage on three axes: (1) a terse senior-dev persona that writes maximum-signal prose and YAGNI-first code, (2) a post-tool hook that compresses tool output (ANSI scrub, head+tail elide with error-line salvage, same-session dedup) before it enters the context window, and (3) context-diet rules that teach the model to read less (grep before Read, slice reads, filter at source). Claude Code and Pi run all three axes plus live /chisle toggling and a savings badge; Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and GitHub Copilot receive the ruleset via generated rule files; OpenCode gets the global fenced ruleset plus on-demand skills; Hermes Agent gets the skills as /chisle commands in ~/.hermes/skills.
 
 Key measured results (same model and prompts, only the injected ruleset differs; reproducible via benchmarks/ in the repo):
-- Claude Code (Haiku 4.5, 26 live prompts, tools off): answer length Chisle 56% of a bare model, ponytail 58%, caveman 65%. Answer lines Chisle 52%, ponytail 54%, caveman 66%.
+- Claude Code + Sonnet 5.5 (13 prompts x 3 runs, every arm answered every prompt): billed output tokens Chisle 61% of a bare model, ponytail 73%, caveman 78%; answer length Chisle 57%, ponytail 64%, caveman 77%. On Haiku 4.5 every ruleset adds hidden thinking: billed Chisle 91%, caveman 96%, ponytail 115%; answer length Chisle 61%, ponytail 70%, caveman 76%.
 - Pi + GPT-5.5 (6 tasks): answer length Chisle 37%, ponytail 49%, caveman 56%. Billed tokens on explanation prompts Chisle 39%, caveman 43%, ponytail 76%.
 - Tool output is 67.5% of session content across 171 real Claude Code transcripts; the compressor trims eligible outputs ~46%. On OpenCode a 30 KB log cut fresh input tokens 87%.
-- Quality: 156/156 on auto-graded maths and coding problems (bare model 155/156).
+- Quality: 156/156 on auto-graded maths and coding problems (bare model 156/156).
 
 Safety/correctness: the compressor runs behind an allowlist (Claude Code: Bash, Agent, WebFetch, WebSearch, Grep, Glob, mcp__*; Pi: bash, powershell, grep, find, ls, mcp__*; Copilot CLI: bash, powershell, grep, glob, web_fetch, web_search, task; MCP proxy: any tool not named like read/view/file/edit/write/patch) and never modifies Read/Edit/Write results, whose exact bytes feed later edits. Deterministic, zero dependencies, zero network calls, zero LLM calls. One mode, no intensity levels. Kill switches: CHISLE_COMPRESS=0, "stop chisle", /chisle off, npx chisle --uninstall.
 

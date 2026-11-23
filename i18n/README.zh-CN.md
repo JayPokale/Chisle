@@ -137,7 +137,7 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
-    <img src="../assets/benchmark-cost-light.svg" width="860" alt="三个带嘈杂命令的真实智能体任务（修复失败的 npm test、在 391 个测试保持通过的前提下加功能、在一个大提交里找 bug）的总成本，占无规则同一智能体的百分比，所有组都不用 RTK：caveman 123%，ponytail 109%，Chisle 90%。每次运行都完成了任务。">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="三个带嘈杂命令的真实智能体任务（修复失败的 npm test、在 391 个测试保持通过的前提下加功能、在一个大提交里找 bug）的总成本，占无规则同一智能体的百分比，所有组都不用 RTK，不计各规则集自身已缓存的提示词：caveman 120%，ponytail 104%，Chisle 87%。每次运行都完成了任务。">
   </picture>
 </p>
 

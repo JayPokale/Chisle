@@ -1,10 +1,10 @@
 // Each figure carries where it comes from. The point of the site is that the
 // numbers survive being checked, so the source sits right under the number.
 const STATS = [
-  { v: "−45%", k: "answer length in Claude Code, shorter than caveman and ponytail", src: "25 live prompts in one run, Claude Code 2.1.285 + Haiku 4.5, tools off; benchmarks/results/raw-nov-sidebyside/" },
-  { v: "−43%", k: "billed output tokens on Sonnet 5.5 vs the same model bare", src: "34 live prompts, Claude Code + Sonnet 5.5, tools off; benchmarks/results/raw-nov-sonnet/" },
+  { v: "−43%", k: "answer length on Sonnet 5.5; caveman −23%, ponytail −36%", src: "13 prompts × 3 runs in one session, Claude Code + Sonnet 5.5, every arm answered every prompt; benchmarks/results/raw-314-sonnet-direct/" },
+  { v: "−39%", k: "billed output tokens on Sonnet 5.5; caveman −22%, ponytail −27%", src: "same run; on Haiku 4.5 every ruleset adds hidden thinking, Chisle −9%; benchmarks/results/raw-314-direct/" },
   { v: "−48%", k: "per oversized tool output, before Claude reads it", src: "PostToolUse hook replayed over the maintainer's recent Claude Code sessions; Read/Edit never touched" },
-  { v: "156/156", k: "auto-graded maths and coding answers correct; the bare model got 154", src: "52 problems × 3 seeds, hidden tests, no judge model; benchmarks/quality/raw-nov/" },
+  { v: "156/156", k: "auto-graded maths and coding answers correct, same as the bare model", src: "52 problems × 3 seeds, Haiku 4.5, hidden tests, no judge model; benchmarks/quality/raw-314/" },
 ];
 
 export default function Stats() {

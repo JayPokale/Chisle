@@ -137,7 +137,7 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
-    <img src="../assets/benchmark-cost-light.svg" width="860" alt="잡음 많은 명령이 나오는 실제 에이전트 작업 3개(실패하는 npm test 수정, 테스트 391개를 통과 상태로 유지하며 기능 추가, 큰 커밋에 묻힌 버그 찾기)의 총비용, 규칙 없는 같은 에이전트 대비 비율, 모든 실행에서 RTK 없음: caveman 123%, ponytail 109%, Chisle 90%. 모든 실행이 작업을 완료.">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="잡음 많은 명령이 나오는 실제 에이전트 작업 3개(실패하는 npm test 수정, 테스트 391개를 통과 상태로 유지하며 기능 추가, 큰 커밋에 묻힌 버그 찾기)의 총비용, 규칙 없는 같은 에이전트 대비 비율, 모든 실행에서 RTK 없음, 각 규칙 세트 자체의 캐시된 프롬프트는 제외: caveman 120%, ponytail 104%, Chisle 87%. 모든 실행이 작업을 완료.">
   </picture>
 </p>
 
