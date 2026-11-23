@@ -1,0 +1,47 @@
+The user is asking for code to group orders by customer ID and total each customer's spend. They haven't provided any data or specified a language/format.
+
+Let me think about the defaults here:
+- No language specified → most common would be JavaScript/Python. For data operations, Python is very natural.
+- No data format specified → likely a list of order objects with customer_id and amount/price fields
+- Output: "Show the code" - they want working code
+
+I should provide a minimal working example. Let me assume Python with a simple list of order dictionaries, since that's the most straightforward.
+
+Chisle mode: be terse, no articles, show the code first. No preamble.
+
+Languages to pick from: Python is natural for this. Could be JavaScript, SQL, etc. - but Python is probably most common for "group by and total" work.
+
+Let me write minimal Python code:
+
+```python
+from collections import defaultdict
+
+orders = [
+    {"customer_id": 1, "amount": 50},
+    {"customer_id": 2, "amount": 30},
+    {"customer_id": 1, "amount": 20},
+    {"customer_id": 3, "amount": 100},
+    {"customer_id": 2, "amount": 15},
+]
+
+totals = defaultdict(float)
+for order in orders:
+    totals[order["customer_id"]] += order["amount"]
+
+for customer_id, total in sorted(totals.items()):
+    print(f"Customer {customer_id}: ${total:.2f}")
+```
+
+Or with dict.setdefault, or groupby from itertools. The defaultdict approach is clean.
+
+Actually, I could also use pandas since groupby is so natural there:
+
+```python
+import pandas as pd
+
+orders = [
+    {"customer_id": 1, "amount": 50},
+    {"customer_id": 2, "amount": 30},
+    {"customer_id": 1, "amount": 20},
+I'm settling on the standard library approach rather than pandas, since it's more universal and clear for this problem.
+

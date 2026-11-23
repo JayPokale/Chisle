@@ -1,0 +1,36 @@
+The user is asking me to show code that reads an API base URL and request timeout from environment variables, with sensible defaults.
+
+This is a straightforward request. They want to see code that:
+1. Reads API base URL from an environment variable
+2. Reads request timeout from an environment variable
+3. Has sensible defaults for both
+
+They didn't specify a language, so I should ask or assume the most common default. Actually, looking at the context, they're in `/tmp/chisle-ablation-work-115o5S` and it's not a git repository. No files mentioned. I should give them a reasonable default language.
+
+Given the lack of context about what language they're using, I should probably provide a common example. Python is very common for this, but they might want Node.js, Go, etc. I'll go with Python since it's widely used and the syntax is clear.
+
+Actually, wait - I'm in Chisle mode. Let me re-read the rules:
+- Maximum signal, minimum noise
+- Fragments, drop articles, filler
+- Causality as arrows
+- Terse but complete
+- Code first, then at most three short lines of explanation
+- No unrequested context
+
+They asked to "Show the code" - they want to see the code. They didn't specify a language. Most common default → Python. I'll provide a clean example with defaults.
+
+Let me write clean, minimal Python code that reads from environment variables with defaults.
+
+```python
+import os
+
+API_BASE_URL = os.getenv('API_BASE_URL', 'https://api.example.com')
+REQUEST_TIMEOUT = float(os.getenv('REQUEST_TIMEOUT', '30'))
+```
+
+That's the absolute minimum. But I should show it in context of actual usage, maybe a requests example. Let me think about what "sensible defaults" means - typically API base URL might be a production URL or localhost, timeout might be 30 seconds.
+
+Actually, they just said "Show the code" - they want to see it. I'm settling on a minimal Python example that reads the base URL and timeout from environment variables, with defaults. Since no language was named, I'm going with Python and planning to add a brief usage example on top of the bare version.
+
+I'm weighing whether to put the config in a module or at module level, and I'll show a minimal version first. Since they said "the code," singular, I'll go with one basic approach that works across most setups.
+

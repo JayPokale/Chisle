@@ -1,0 +1,34 @@
+The user wants to see code that converts an ISO timestamp from an API to a localized date format like "Nov 23, 2026" in a web app. They haven't specified the language/framework, but given this is a web app context, I should assume JavaScript/TypeScript since that's the most common for web frontends.
+
+However, before I write code, I should check the ladder (Ponytail mode is ACTIVE - "full" by default):
+
+1. **Does this need to exist at all?** No - this is a standard requirement for web apps.
+2. **Already in this codebase?** I don't have access to their codebase yet.
+3. **Stdlib does it?** Yes! JavaScript has `Intl.DateTimeFormat` and `Date.toLocaleDateString()` built-in.
+4. **Native platform feature?** `toLocaleDateString()` is native.
+5. **Already-installed dependency?** Not needed.
+6. **Can it be one line?** Pretty much.
+
+The lazy solution here is to use the built-in `toLocaleDateString()` with appropriate options. No external library needed.
+
+Since they said "Show the code", they want a working example. Let me give them a minimal, complete solution using the Intl API or toLocaleDateString.
+
+The simplest approach:
+```javascript
+const isoString = "2026-11-23T10:30:00Z";
+const date = new Date(isoString);
+const formatted = date.toLocaleDateString('en-US', { 
+  year: 'numeric', 
+  month: 'short', 
+  day: 'numeric' 
+});
+console.log(formatted); // "Nov 23, 2026"
+```
+
+Or even simpler with Intl:
+```javascript
+const formatter = new Intl.DateTimeFormat('en-US', { 
+  year: 'numeric', 
+  month: 'short', 
+I'm wrapping up with a simple JavaScript formatter using Intl.DateTimeFormat, and I'll note that no library is needed. Since the user didn't name a framework, I'll give a plain vanilla JS version that they can adapt.
+

@@ -1,0 +1,5 @@
+The user is asking me to show code that reads an API base URL and request timeout from environment variables with sensible defaults. This is a straightforward programming task.
+
+They haven't specified a language, so I should probably ask - but actually, looking at the working directory `/tmp/chisle-ablation-work-115o5S`, I should check if there's existing code there first to understand what language they're using.
+
+Let me start by checking what's in the working directory to get context about the project.

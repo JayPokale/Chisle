@@ -1,0 +1,10 @@
+The user is asking me to group a list of orders by customer id and calculate total spend per customer. They want to see the code.
+
+However, they haven't provided:
+1. The data (list of orders)
+2. The programming language they want to use
+3. The structure of the orders data
+
+I should ask for clarification. But given the "caveman mode" instruction to be terse, I should be direct and minimal.
+
+Let me ask what I need to know to write the code.

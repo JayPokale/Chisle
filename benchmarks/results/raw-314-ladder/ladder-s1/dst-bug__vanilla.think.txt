@@ -1,0 +1,28 @@
+The user is describing a nightly job that drifts by an hour after daylight saving time (DST) changes. The job is scheduled with `setInterval(run, 24 * 60 * 60 * 1000)`.
+
+This is a classic problem with DST and scheduling. The issue is:
+
+`24 * 60 * 60 * 1000 = 86,400,000 milliseconds = exactly 24 hours in wall-clock time`
+
+However, when daylight saving time changes occur, a day is NOT 24 hours in absolute time:
+- When clocks spring forward (spring DST): 23 hours pass
+- When clocks fall back (fall DST): 25 hours pass
+
+The root cause is that `setInterval` uses absolute elapsed time (milliseconds), not wall-clock time. So when DST happens:
+- After spring forward: the job runs 1 hour early (because only 23 hours have actually elapsed, but the wall clock shows 24 hours have passed)
+- After fall back: the job runs 1 hour late (because 25 hours have actually elapsed, but the wall clock shows 24 hours have passed)
+
+Actually, let me think about this more carefully. If the job is set to run every 24 hours using `setInterval(run, 86400000)`:
+
+- The timer counts 86,400,000 milliseconds of real time
+- When DST happens, the wall clock jumps forward 1 hour (spring) or back 1 hour (fall)
+- But the timer doesn't know about DST - it just counts milliseconds
+
+So if the job was supposed to run at midnight (00:00), and we have spring forward DST:
+- After 86,400,000 ms of real time, it would run
+- But the wall clock has jumped forward 1 hour
+- So instead of running at midnight, it runs at 1am (or 11pm the previous day, depending on direction)
+Next I'm going to suggest the fix: replace the recurring `setInterval` with a `setTimeout` that is recalculated from the wall-clock time of each next run. Then I'm thinking about asking the user to share the actual implementation so I can give a specific fix, but I'm not sure yet whether that's needed.
+
+The user wants the root cause found and fixed, and since they haven't shared any code yet, I'm weighing whether to explain the problem and ask for the implementation or offer a general fix.
+

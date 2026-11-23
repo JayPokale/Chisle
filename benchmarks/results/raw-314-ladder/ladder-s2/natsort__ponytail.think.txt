@@ -1,0 +1,39 @@
+The user is asking how to sort a list of filenames so that natural sorting occurs (where "file2" comes before "file10" rather than lexicographic sorting where "file10" would come before "file2").
+
+This is a straightforward request. I need to show code that does natural/numeric sorting of filenames.
+
+In Python, the simplest approach is to use `natsort` if it's available, but that requires an external package. Following the ponytail principle (lazy = efficient), I should check the ladder:
+
+1. Does this need to exist at all? Yes, sorting is a real need.
+2. Already in codebase? N/A
+3. Stdlib does it? Not directly for natural sorting in the standard library.
+4. Native platform feature? N/A
+5. Already-installed dependency? The user hasn't said natsort is installed.
+6. Can it be one line? For basic natural sorting, we could use a custom key function in `sorted()`.
+7. Minimum code that works.
+
+The key insight is that we need a custom sort key that extracts numbers and strings separately. The simplest approach without external dependencies is to use a regex-based key function.
+
+Here's the minimal solution:
+
+```python
+import re
+
+files = ['file1', 'file10', 'file2', 'file20', 'file3']
+files.sort(key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
+```
+
+Or even simpler with a helper:
+
+```python
+import re
+
+def natural_sort_key(s):
+    return [int(text) if text.isdigit() else text for text in re.split(r'(\d+)', s)]
+
+files = ['file1', 'file10', 'file2', 'file20', 'file3']
+files.sort(key=natural_sort_key)
+```
+
+Actually, the user might just want a quick example. I'm going to offer a quick one-liner alongside a sturdier helper-based version, since the user likely just wants a fast example.
+

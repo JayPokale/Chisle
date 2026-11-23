@@ -1,0 +1,3 @@
+The user is asking me to add a confirmation modal before deleting an item in their web app. However, they haven't shown me the code yet. I need to explore the working directory to understand the structure of their web app and find the delete functionality.
+
+Let me start by looking at the directory structure to understand what we're working with.

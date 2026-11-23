@@ -1,0 +1,41 @@
+The user wants me to parse `--port` and `--verbose` command-line flags in a Node.js script. This is straightforward - they just want the code.
+
+For command-line parsing in Node.js, there are several approaches:
+1. Manual parsing of `process.argv`
+2. Using `minimist` or other libraries
+3. Using `process.argv.slice(2)` and simple parsing
+
+Since I'm in ponytail mode (lazy/efficient), I should:
+1. Check if something simpler/native exists (there's no built-in Node flag parser)
+2. minimist is small and commonly used, but custom parsing is simpler for just 2 flags
+3. For just 2 flags, custom parsing is one-liner territory
+
+Actually, for just `--port` and `--verbose`, custom parsing is super simple and requires zero dependencies. Let me write the minimal version:
+
+```javascript
+const args = process.argv.slice(2);
+const port = args.find(arg => arg.startsWith('--port'))?.split('=')[1] || 3000;
+const verbose = args.includes('--verbose');
+```
+
+Or more explicit:
+
+```javascript
+const args = process.argv.slice(2);
+let port = 3000;
+let verbose = false;
+
+for (const arg of args) {
+  if (arg.startsWith('--port=')) {
+    port = parseInt(arg.split('=')[1], 10);
+  } else if (arg === '--verbose') {
+    verbose = true;
+  }
+}
+```
+
+I could also show the minimist approach as an alternative. But the ladder says: stdlib/native first, then one-liners if they work. For 2 flags, manual parsing is the right rung.
+
+Let me give the simple version that actually works well and is readable. I'll show the most straightforward approach.
+
+Since the user just said "Show the code", they want minimal explanation. Ponytail mode: code first, then one line about alternatives if relevant.

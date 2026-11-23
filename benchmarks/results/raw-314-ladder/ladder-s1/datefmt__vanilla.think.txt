@@ -1,0 +1,21 @@
+The user wants to see code that converts an ISO timestamp from an API to a localized date format like "Nov 23, 2026" for display in a web app.
+
+This is a general web development question. They're not asking about a specific codebase - they want to see example code showing how to do this. I should provide code examples for common approaches.
+
+The most straightforward approaches would be:
+1. JavaScript (most common for web apps) - using `Intl.DateTimeFormat` or libraries like `date-fns` or `day.js`
+2. Python (if they're using a framework like Django/Flask for templating)
+3. Other common languages
+
+Since they said "web app" I'll default to JavaScript, and show a few approaches. I could show:
+1. Native JavaScript with `Intl.DateTimeFormat`
+2. Using `Intl.DateTimeFormat` with explicit options
+3. Using a library like `date-fns` or `day.js` (more concise)
+
+Let me show the native approach first, then mention libraries as alternatives.
+
+The ISO format from APIs is typically something like "2026-11-23T14:30:00Z".
+
+The format "Nov 23, 2026" uses a medium-ish date format.
+
+I'll provide multiple options.

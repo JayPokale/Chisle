@@ -1,0 +1,8 @@
+The user wants to sort a list of file names so that "file2" comes before "file10". This is about natural/numeric sorting rather than lexicographic sorting.
+
+In lexicographic sorting, "file10" would come before "file2" because "1" < "2" in string comparison.
+With numeric sorting, we extract the numeric parts and compare them numerically, so "file2" (number 2) comes before "file10" (number 10).
+
+The user wants code showing this. I should provide a simple example. Let me think about what language to use - they didn't specify. Python is common and clear.
+
+I'm in caveman mode (full), so I should be terse but keep code blocks normal.

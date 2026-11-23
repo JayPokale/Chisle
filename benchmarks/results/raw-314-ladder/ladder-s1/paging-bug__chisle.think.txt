@@ -1,0 +1,12 @@
+The user is reporting a pagination bug where there's a skip of one item between pages. The formula given is: `offset = page * pageSize + 1` with pages starting at 0.
+
+Let me think about this:
+- Page 0 (first page): offset = 0 * pageSize + 1 = 1 (should be 0)
+- Page 1 (second page): offset = 1 * pageSize + 1 = pageSize + 1 (should be pageSize)
+- Page 2: offset = 2 * pageSize + 1 = 2*pageSize + 1 (should be 2*pageSize)
+
+So the problem is the `+ 1` in the formula. The correct formula should be `offset = page * pageSize` (with 0-indexed pages).
+
+But I need to find this in their codebase first. Let me search for pagination-related code.
+
+Since this is not a git repo yet, I should first explore the directory structure to find where the pagination code might be.

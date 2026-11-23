@@ -1,0 +1,13 @@
+The user is asking me to show code that makes a deep copy of a nested settings object before editing it, to avoid mutating the original. This is a programming task where they want me to demonstrate how to do this.
+
+Since they didn't specify a programming language, I should ask which language they prefer, or I could show a few common approaches. However, let me think - they said "show the code" which suggests they want to see it. The most common context for this would be JavaScript (which has many ways to do deep copying), Python, or other languages.
+
+Actually, let me reconsider - they might be working on a specific project in this directory. Let me check if there's any context about what language they're using. The working directory is `/tmp/chisle-ablation-work-115o5S` and it's not a git repository.
+
+Since they haven't specified a language, I should ask them which language they want this in, OR I could provide examples in the most common languages (JavaScript, Python, etc.). Given the instruction to be direct and concise, I should probably ask what language they're using.
+
+However, looking at the instructions again, it says "assume users can't see most tool calls or thinking — only your text output" and to give direct answers to simple questions. The user is asking for code to deep copy a settings object. They probably want to see it immediately rather than answer clarifying questions.
+
+Let me provide examples in a couple of common languages with a brief intro asking if they need a different language.
+
+Actually, I should be more concise. Let me provide one or two good examples, probably JavaScript since that's very common for this type of question.

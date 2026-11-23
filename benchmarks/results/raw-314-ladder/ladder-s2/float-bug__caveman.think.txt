@@ -1,0 +1,11 @@
+The user is describing a classic floating-point precision issue. When adding 0.10 + 0.20 in JavaScript (or many other languages), you get 0.30000000000000004 due to how floating-point numbers are represented in binary.
+
+Let me first check what we're working with. I need to:
+1. Look at the project structure
+2. Find the cart total calculation code
+3. Identify where the floating-point arithmetic is happening
+4. Fix it properly
+
+Let me start by exploring the working directory.
+
+The user wants me to be terse (caveman mode), so I should drop articles, filler, and keep it short.

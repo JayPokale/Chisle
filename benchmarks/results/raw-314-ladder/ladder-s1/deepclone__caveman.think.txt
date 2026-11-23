@@ -1,0 +1,17 @@
+User wants me to create code that makes a deep copy of a nested settings object before editing it, so the original isn't mutated. They want to see the code.
+
+They're in caveman mode, so I should be terse. But they're asking for code/explanation, so I should provide clear examples.
+
+Let me show solutions in a few common languages/contexts since they didn't specify. Actually, let me ask or just show the most common approach. Given they're using Claude Code and the context mentions tech, I'll probably show JavaScript/TypeScript first (most common for settings), but could also show Python or others.
+
+Actually, let me just provide a solid JavaScript/TypeScript solution with deep copy, since that's most likely what they need. I'll keep explanation terse per caveman mode.
+
+Let me write actual working code showing:
+1. The problem (shallow copy mutation)
+2. Deep copy solution
+
+I'll show a few approaches:
+- Using structuredClone (modern)
+- Using JSON.parse/stringify (simple but limited)
+- Using lodash (popular)
+- Manual recursive deep copy (educational)

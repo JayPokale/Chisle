@@ -1,0 +1,20 @@
+This is a classic issue with daylight saving time (DST) transitions. Let me understand the problem:
+
+1. A nightly job is scheduled using `setInterval(run, 24 * 60 * 60 * 1000)` - this repeats every 24 hours (in milliseconds)
+2. After every daylight saving time change, the job drifts by an hour
+
+The root cause: `setInterval` doesn't account for daylight saving time. When DST transitions happen:
+- In spring (clocks go forward): The day is effectively 23 hours, but `setInterval` still waits 24 hours of wall-clock time, so the job runs an hour later.
+- In fall (clocks go back): The day is effectively 25 hours, but `setInterval` still waits 24 hours of wall-clock time, so the job runs an hour earlier.
+
+Actually, let me think about this more carefully. `setInterval(run, 24 * 60 * 60 * 1000)` schedules the function to run every 86,400,000 milliseconds. This is an absolute time interval - it doesn't depend on what the clock says.
+
+When DST happens:
+- Spring forward (2:00 AM → 3:00 AM): The wall clock jumps forward an hour, but the interval is still 86,400,000 ms. So the job, which was scheduled to run at midnight, will run an hour later (1 AM instead of midnight).
+- Fall back (2:00 AM → 1:00 AM): The wall clock goes back an hour, but the interval is still 86,400,000 ms. So the job might run an hour earlier.
+
+Wait, let me reconsider. If a job is scheduled to run every 24 hours (86,400,000 ms):
+- Day 1: runs at 00:00
+- After 86,400,000 ms: runs at 00:00 (should be) but if DST happened in between, it might run at 01:00 or 23:00
+I need to work out a reliable way to fire at the same wall-clock time each night, so I'm planning to calculate the next midnight, set a timeout for the gap, and reschedule after each run. Before changing anything, I want to look at the existing code to see how the job is set up now.
+

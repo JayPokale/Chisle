@@ -1,0 +1,28 @@
+The user is asking me to show how to make a deep copy of a nested settings object before editing it, so the original is never mutated. They want me to show code.
+
+They haven't specified a language, so I should ask or assume the most common default. Actually, looking at the working directory and context, there's no indication of what language they're using. JavaScript/TypeScript is probably the most common for this kind of "settings object" manipulation, so I'll default to that.
+
+Actually, wait - they said "Show the code" which suggests they want me to write it. Let me provide a solution.
+
+In Chisle mode: be terse, code first, minimal explanation. No preamble about being happy to help. Just the solution.
+
+I should show:
+1. The problem (mutating original)
+2. The solution (deep copy before editing)
+
+Language: JavaScript is the default for settings objects. If they want another language, they'll say.
+
+Methods for deep copy:
+1. `JSON.parse(JSON.stringify())` - simple but doesn't handle functions, dates, undefined, symbols
+2. `structuredClone()` - modern, handles most types
+3. Manual recursive function
+4. Libraries like lodash `_.cloneDeep()`
+
+I'll show the most practical approaches:
+- `structuredClone()` for modern code (it's native now, no dependency)
+- Maybe mention the JSON method as a fallback
+- Maybe show manual if they need custom handling
+
+Since they didn't specify, I'll go with `structuredClone()` as it's native and handles most cases. If they need more control, I can show alternatives.
+
+Code first, then brief explanation per Chisle.

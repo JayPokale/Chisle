@@ -1,0 +1,25 @@
+The user is reporting a pagination bug where it skips one item between pages. The offset is computed as `offset = page * pageSize + 1` with pages starting at 0.
+
+Let me think about this:
+- Page 0: offset = 0 * pageSize + 1 = 1 (should be 0)
+- Page 1: offset = 1 * pageSize + 1 (if pageSize is 10, offset = 11, skips items 10)
+
+The issue is the `+ 1`. When pages start at 0:
+- Page 0 should give offset 0
+- Page 1 should give offset pageSize
+- Page 2 should give offset 2 * pageSize
+
+So correct formula is: `offset = page * pageSize`
+
+The `+ 1` is the bug. It causes:
+1. Page 0 to start at offset 1 instead of 0, skipping the first item
+2. Each subsequent page to have an extra offset, missing items
+
+I need to find where this calculation is in the code and fix it.
+
+User wants caveman mode (terse). I should:
+1. Find the pagination code
+2. Identify the bug (the + 1)
+3. Fix it
+
+Let me start by exploring the codebase.

@@ -1,0 +1,17 @@
+The user wants me to add a confirmation modal before deleting an item in their web app. They want to see the code.
+
+However, I don't have context about:
+1. What web app this is
+2. What framework/library they're using
+3. Where the delete functionality is
+4. What the current code looks like
+
+I should start by exploring the directory to understand what we're working with. Let me check what's in the working directory first.
+
+Since this is Chisle mode and the user wants code shown, I should:
+1. Find the web app files
+2. Look at the delete functionality
+3. Add a confirmation modal
+4. Show the working code
+
+Let me start by exploring the directory structure.

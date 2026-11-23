@@ -1,0 +1,40 @@
+The user wants to sort a list of filenames so that natural sorting happens (file2 before file10, not lexicographic where file10 would come before file2).
+
+This is a straightforward request for code showing how to sort filenames with natural/numeric sorting.
+
+Let me think about the best approach for different languages:
+
+Python has `natsort` library, but that requires installation. The ladder says:
+1. Does this need to exist? Yes, sorting filenames
+2. Already in this codebase? No codebase context here
+3. Stdlib does it? No built-in natural sort
+4. Native platform feature? No
+5. Already-installed dependency? Unlikely `natsort` is installed
+6. Can it be one line? Could be with regex/key function
+7. Only then: minimum code that works
+
+Since ponytail is active (full mode), I should provide the most practical solution. I can:
+- Use `natsort` if available (but requires install)
+- Use a custom key function with regex
+
+A simple, working solution using stdlib is to write a key function that extracts numbers and sorts naturally. This is the lazy solution - no dependency, works with stdlib.
+
+Let me provide code in Python since that's most common, but I can show alternatives.
+
+```python
+import re
+
+files = ['file1', 'file2', 'file10', 'file20', 'file3']
+
+def natural_sort_key(filename):
+    return [int(text) if text.isdigit() else text.lower() 
+            for text in re.split(r'(\d+)', filename)]
+
+sorted_files = sorted(files, key=natural_sort_key)
+print(sorted_files)
+# Output: ['file1', 'file2', 'file3', 'file10', 'file20']
+```
+
+This is the minimal stdlib solution. No dependencies, works, handles the case.
+
+I could mention `natsort` as the "if you use it in production, consider this library" note, but the core solution should be the one-liner key function.

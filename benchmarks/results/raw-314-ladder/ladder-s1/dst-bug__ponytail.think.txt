@@ -1,0 +1,24 @@
+The user is describing a classic daylight saving time (DST) bug. They have a nightly job scheduled with `setInterval(run, 24 * 60 * 60 * 1000)` and it drifts by an hour after every DST change.
+
+The root cause here is that `setInterval` with a fixed millisecond interval doesn't account for daylight saving time changes. When a DST transition occurs:
+- Spring forward: 1 hour is "skipped" - clocks jump ahead, so the interval actually covers 25 hours of wall-clock time
+- Fall back: 1 hour is repeated - clocks fall back, so the interval covers 23 hours of wall-clock time
+
+This causes the job to drift relative to the wall-clock time it's supposed to run.
+
+Before I even look at any code, let me think about the lazy approach here:
+
+1. **Does this need to exist at all?** No - this is a real bug that's happening.
+2. **Already in this codebase?** Need to look at the code.
+3. **Stdlib does it?** Not really - this is a scheduling problem.
+4. **Native platform feature?** Cron does it correctly. If this is Node.js, we could use a proper scheduling library. But the user is asking me to fix it, so I should understand what's there.
+5. **Already-installed dependency?** Could use `node-cron` or similar, but might not be installed.
+6. **Can it be one line?** Not really - this needs a proper solution.
+7. **Minimum code that works:** Instead of using `setInterval` with a fixed interval, we should:
+   - Calculate the next run time (e.g., tomorrow at 2am)
+   - Set a timeout to that time
+   - After running, recalculate the next run time
+
+Actually, wait. I need to see the code first. The user is asking me to find and fix the root cause, so I need to look at what code they have.
+I'll start by looking through the working directory to find where this nightly job gets scheduled.
+

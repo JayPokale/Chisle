@@ -1,0 +1,3 @@
+The user is asking me to add a confirmation modal before deleting an item in their web app. However, they haven't provided any code context yet, and I'm not in a git repository. I need to first understand what the web app looks like and where the delete functionality is.
+
+Let me check what's in the working directory to understand the project structure.

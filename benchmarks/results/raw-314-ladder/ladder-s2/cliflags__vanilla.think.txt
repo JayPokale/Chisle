@@ -1,0 +1,5 @@
+The user wants me to show how to parse `--port` and `--verbose` command-line flags in a Node.js script. This is a straightforward request for code demonstration.
+
+I'll show a simple, clean example using the built-in `process.argv` approach, and optionally mention `minimist` or other libraries. Let me provide the most common approaches.
+
+Since this is not in a git repository and the user is asking for code examples, I should just show them the code directly without creating files unless they ask. Let me provide clear examples.

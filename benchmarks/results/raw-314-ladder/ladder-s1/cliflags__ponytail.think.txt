@@ -1,0 +1,50 @@
+The user wants me to show them how to parse `--port` and `--verbose` command-line flags in a Node.js script.
+
+This is a straightforward request. I should show them code that parses these flags. Let me think about the lazy approach here:
+
+1. Does this need to exist? Yes, they asked for it.
+2. Already in this codebase? No codebase context.
+3. Stdlib does it? Node.js has `process.argv`, but parsing is minimal.
+4. Can it be one line? Not really for robust parsing, but very minimal.
+5. What's the simplest working solution?
+
+Options:
+- Manual `process.argv` parsing (simple, works, ~10 lines)
+- Use a library like `yargs`, `commander`, `minimist` (overkill for 2 flags)
+- Use `process.argv` with a small helper
+
+For just 2 flags, manual parsing is the lazy solution. No dependency, no bloat, clear code.
+
+Let me write the simplest working version that handles:
+- `--port 3000` or `--port=3000`
+- `--verbose` (boolean flag)
+- Default values
+
+```javascript
+const args = process.argv.slice(2);
+let port = 3000;
+let verbose = false;
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--port' && args[i + 1]) {
+    port = parseInt(args[i + 1], 10);
+    i++;
+  } else if (args[i].startsWith('--port=')) {
+    port = parseInt(args[i].split('=')[1], 10);
+  } else if (args[i] === '--verbose') {
+    verbose = true;
+  }
+}
+
+console.log('Port:', port);
+console.log('Verbose:', verbose);
+```
+
+This is minimal, works, and handles both `--port 3000` and `--port=3000` formats. Still writing the flag parser...
+
+Still refining the flag parser with a simpler loop...
+
+Still writing the flag parser...
+
+I'm finishing the flag parser and checking that it handles both `--port` formats and the `--verbose` flag. Next I'll add the console output and a note that I skipped a CLI library for just two flags.
+

@@ -1,0 +1,10 @@
+The user is asking me to add a confirmation modal before deleting an item in their web app. However, I need to understand the current codebase first to see what exists.
+
+Since I'm in ponytail mode (lazy senior developer mode), I should:
+1. First understand what web app they have and what code currently exists
+2. Check if there's already a modal/confirmation pattern in place
+3. Use the ladder - do they already have a modal library? Can I reuse it? Should I use native browser confirmation?
+4. Find the deletion code and add confirmation there
+5. Keep it minimal - no over-engineering
+
+Let me start by exploring the working directory to see what's there.

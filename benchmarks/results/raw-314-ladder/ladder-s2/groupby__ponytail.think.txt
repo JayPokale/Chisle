@@ -1,0 +1,46 @@
+The user is asking me to group a list of orders by customer ID and total each customer's spend. They want to see the code.
+
+However, they haven't provided:
+1. The data/list of orders
+2. The programming language they want to use
+3. The structure of the orders
+
+Since they said "Show the code," they want a working example. I should ask for clarification on what data they have and what language they prefer. But let me think about this under the Ponytail lazy principle...
+
+Actually, the most useful response would be to show a simple example in a commonly-used language (Python is most likely given the context) with sample data. I should keep it minimal - just the core logic needed to group and sum.
+
+Let me provide a simple, practical solution. I'll assume Python since it's versatile and commonly used. I'll show:
+1. Sample data
+2. The grouping/summing code
+
+The simplest approach using stdlib:
+- Dictionary with groupby, or 
+- Just iterate and accumulate
+
+Using itertools.groupby requires sorted data first.
+Using defaultdict is simpler and cleaner.
+Or just a plain dict.
+
+The laziest is probably just:
+```python
+from itertools import groupby
+
+orders = [
+    {"customer_id": 1, "amount": 50},
+    {"customer_id": 2, "amount": 100},
+    {"customer_id": 1, "amount": 75},
+]
+
+totals = {}
+for order in orders:
+    customer_id = order["customer_id"]
+    totals[customer_id] = totals.get(customer_id, 0) + order["amount"]
+
+print(totals)  # {1: 125, 2: 100}
+```
+
+This is vanilla Python, no imports needed beyond basic dict operations.
+
+Alternatively with pandas if they have it, but that's adding a dependency.
+
+Let me show the simplest working solution. Since they didn't specify language or data structure, I should show a practical example with explanation of what's happening.

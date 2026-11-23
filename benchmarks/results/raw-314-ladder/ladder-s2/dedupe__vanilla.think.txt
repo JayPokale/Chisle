@@ -1,0 +1,18 @@
+The user wants me to write code that removes duplicate emails from a list of users, keeping the first occurrence and maintaining the original order. They want to see the code.
+
+This is a straightforward programming task. I should provide a clean implementation. The user didn't specify a language, so I'll provide a few common options or ask - actually, let me provide a good general solution. Since no language was specified, I'll provide Python as it's commonly used and clear, but I can also show other approaches if needed.
+
+The key requirements:
+1. Remove duplicates
+2. Keep first occurrence
+3. Maintain original order
+
+I should write clean, efficient code without over-commenting.
+
+Let me provide a Python solution with a few approaches:
+
+Approach 1: Using a set to track seen emails (O(n) time, O(n) space)
+Approach 2: Using dict.fromkeys() (Python 3.7+ maintains insertion order)
+Approach 3: Using a dictionary to track first indices
+
+I'll show the most practical approaches.

@@ -1,0 +1,13 @@
+The user is describing a classic floating-point arithmetic issue. The problem is that decimal numbers like 0.10 and 0.20 cannot be represented exactly in binary floating-point (IEEE 754), which is what JavaScript (and most languages) use for the `number` type.
+
+When you add:
+- 0.10 (which is actually slightly more than 0.10 in binary representation)
+- 0.20 (which is also slightly more than 0.20)
+- Result: 0.30000000000000004
+
+This is a fundamental issue with floating-point arithmetic. The fix depends on the codebase, but common solutions are:
+1. Use integer arithmetic (store amounts in cents, not dollars)
+2. Use a decimal/arbitrary precision library
+3. Round the result appropriately for display
+
+First, I need to find the code that handles cart totals. This is likely in a web application, probably JavaScript. Let me start by exploring the directory structure to understand what we're working with.

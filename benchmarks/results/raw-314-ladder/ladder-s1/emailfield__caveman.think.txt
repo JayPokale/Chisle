@@ -1,0 +1,11 @@
+The user wants me to validate the email field on a signup form before submission. However, they haven't shown me any code yet. I need to:
+
+1. First check if there's a signup form in the working directory
+2. Find the relevant code
+3. Add email validation
+
+Let me start by exploring the working directory to find the signup form code.
+
+The user is in caveman mode (default "full"), so I should be terse. They asked to "Show the code" - want to see the implementation.
+
+Let me first look around to find the signup form.

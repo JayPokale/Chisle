@@ -1,0 +1,9 @@
+The user wants me to show code that parses `--port` and `--verbose` command-line flags in a Node.js script. This is a straightforward request for example code.
+
+I should show a simple, practical example. There are several ways to do this in Node.js:
+1. Manual parsing of `process.argv`
+2. Using a library like `yargs` or `commander`
+
+Since they asked for "the code" (simple), I'll start with a manual approach that's clear and doesn't require dependencies, and I can mention library alternatives.
+
+Let me write a clean example that handles both flags properly.

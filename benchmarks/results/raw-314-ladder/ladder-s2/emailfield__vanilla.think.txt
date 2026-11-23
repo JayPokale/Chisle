@@ -1,0 +1,3 @@
+The user is asking me to validate an email field on a signup form. However, they haven't provided any code yet, and I'm not in a git repository. I need to first check what files exist in the working directory to understand what project we're working with.
+
+Let me start by exploring the working directory to see what's available.

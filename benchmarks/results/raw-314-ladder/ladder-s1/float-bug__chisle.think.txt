@@ -1,0 +1,17 @@
+The user is reporting a classic floating-point arithmetic issue. When working with decimals in most programming languages, especially JavaScript, floating-point numbers can have precision errors due to how they're represented in binary.
+
+The issue: 0.1 + 0.2 ≠ 0.3 in binary floating-point arithmetic. This is a well-known problem. The sum $0.10 + $0.20 should be $0.30, but due to floating-point precision errors, it becomes something like 0.30000000000000004.
+
+I need to:
+1. Find the code that's doing the cart total calculation
+2. Identify where floating-point arithmetic is happening
+3. Fix it using proper decimal handling
+
+First, let me explore the working directory to understand what kind of project this is and find the cart calculation code.
+
+Since this is about cart totals and pricing, it's likely a web application (frontend or full-stack). The issue is classic JavaScript floating-point. I should look for:
+- Cart/checkout code
+- Price calculation logic
+- Item addition logic
+
+Let me start by exploring the directory structure.

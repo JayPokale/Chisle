@@ -1,0 +1,18 @@
+The user is asking me to read the API base URL and request timeout from environment variables with sensible defaults, and show the code.
+
+This is a straightforward request for code that handles environment variables. I should provide a simple, practical implementation.
+
+Since I'm in ponytail mode (lazy senior developer), I should:
+1. Provide the minimal working code
+2. Use stdlib only (no extra dependencies)
+3. Not over-engineer it
+4. Show sensible defaults
+
+The user didn't specify a language, but given this is about environment variables and APIs, I'll provide Python since it's most common for this use case. If they need a different language, they'll say so.
+
+Let me write minimal, clean code that:
+- Reads from environment variables
+- Has sensible defaults
+- Works immediately
+
+I'll use `os.getenv()` which is stdlib and idiomatic Python.

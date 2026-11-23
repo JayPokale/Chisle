@@ -1,0 +1,17 @@
+User wants to see code for making a deep copy of a nested settings object before editing it, so the original isn't mutated. They want me to show the code.
+
+This is a straightforward coding request. They're in caveman mode ("Respond terse like smart caveman"). They want:
+1. Code that makes a deep copy of a nested settings object
+2. Explanation that original won't be mutated
+3. Show the code
+
+Since they didn't specify a language, I should probably provide common approaches. JavaScript/Python are most common. Let me provide both or focus on the most versatile.
+
+Actually, let me keep it simple - show JavaScript (most common for settings) and Python. Keep caveman mode tight but code blocks normal.
+
+Let me structure:
+- Brief intro
+- Code examples
+- Quick note on why this matters
+
+Caveman mode means: drop articles, filler, keep it tight. But code blocks stay normal.

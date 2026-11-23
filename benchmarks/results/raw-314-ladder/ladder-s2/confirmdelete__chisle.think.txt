@@ -1,0 +1,5 @@
+The user is asking to add a confirmation modal before deleting an item in their web app. They want to see the code.
+
+However, I need to first understand what web app they're talking about. I don't have any context about what files or project are in the working directory. I should check what's in the current directory to understand what framework they're using (React, Vue, vanilla JS, etc.) and what the deletion code currently looks like.
+
+Let me start by exploring the working directory to see what we're working with.

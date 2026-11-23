@@ -19,6 +19,16 @@ Billed tokens tie with caveman this run (69% each, against 87% for caveman in th
 
 **Sonnet 5.5.** Bare vs Chisle 3.14, 12 prompts × 2 seeds ([raw cells](../benchmarks/results/raw-314-sonnet/), [every prompt and answer](../benchmarks/results/raw-314-sonnet/ANSWERS.md)): billed **53%** (95% CI 44–63%), answer length 49% (40–59%), lines 51%, reasoning 102%, backfires 4 / 24. The 13th prompt, `authflow`, is out of both arms: the bare model's answer ran past the runner's 4-minute limit on three tries.
 
+**Ladder suite (2026-11-23).** Twelve coding asks where the platform already has the answer (dedupe, deep copy, group-by, date formatting, natural sort, CLI flags, email field, confirm dialog, env config) plus three root-cause bug fixes, picked because they target what the ruleset's ladder claims and a prose-only ruleset does not. The prompts (`SUITES=ladder`, in `run-live.sh`) were committed before the first run. Haiku 4.5, tools off, 2 seeds, 24 answers per arm ([raw cells](../benchmarks/results/raw-314-ladder/), [every prompt and answer](../benchmarks/results/raw-314-ladder/ANSWERS.md)).
+
+| | billed | 95% CI | answer length | 95% CI | answer lines | reasoning | backfires | non-answers |
+|---|--:|--:|--:|--:|--:|--:|--:|--:|
+| caveman | **73%** | 59–89% | 64% | 47–86% | 65% | **95%** | **2 / 24** | 1 |
+| ponytail | 95% | 74–119% | 66% | 46–92% | 55% | 167% | 14 / 24 | 6 |
+| Chisle 3.14 | 85% | 68–104% | **55%** | 40–75% | **44%** | 159% | 10 / 24 | 2 |
+
+The suite went to caveman on billed tokens, and more clearly on the 15 prompts every arm answered (72% vs Chisle 93%). Chisle wrote the shortest answers, but on most prompts it thought 1.5–2.9× as much as caveman: its hidden reasoning restates the request, lists the rules and drafts the code it then writes again, all of which the ruleset's "Thinking is billed too" section forbids. On Haiku, that reasoning is what keeps Chisle's billed savings level with caveman's despite shorter answers.
+
 **Accuracy.** Maths + coding, 52 problems × 3 seeds, Haiku 4.5 ([raw](../benchmarks/quality/raw-314/)): bare 156/156, Chisle 3.14 156/156, no item scored differently. Chisle used 85% of the bare model's output tokens and wrote answers 79% as long.
 
 **Agentic.** 7 fixtures × 5 seeds, Haiku 4.5, ruleset plus each version's own hooks, paired by fixture and seed ([raw cells](../benchmarks/agentic/raw-314/); the 3.13 arm ran from a `v3.13.0` checkout with its own runner and `plugin.json`). Ratios are pooled vs the bare agent with 95% paired-bootstrap intervals.
@@ -56,6 +66,7 @@ Chisle is the cheapest ruleset on all three tasks but costs more than the bare a
 ```bash
 node benchmarks/run-ablation.js benchmarks/results/raw-314-sidebyside 2 4 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle-3.13=<v3.13.0 SKILL.md> chisle=skills/chisle/SKILL.md
 ARMS=vanilla,caveman,ponytail,chisle-3.13,chisle node benchmarks/pooled.js benchmarks/results/raw-314-sidebyside/*/
+SUITES=ladder node benchmarks/run-ablation.js benchmarks/results/raw-314-ladder 2 6 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle=skills/chisle/SKILL.md
 MODEL=claude-sonnet-5-5 node benchmarks/run-ablation.js benchmarks/results/raw-314-sonnet 2 4 vanilla chisle=skills/chisle/SKILL.md
 RAW_DIR=benchmarks/quality/raw-314 node benchmarks/quality/run.js claude-haiku-4-5-20251001 3 4
 ARMS=vanilla,chisle-hook RAW_DIR=benchmarks/agentic/raw-314 node benchmarks/agentic/run.js claude-haiku-4-5-20251001 5 5

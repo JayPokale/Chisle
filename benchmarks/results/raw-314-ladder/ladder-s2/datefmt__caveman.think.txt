@@ -1,0 +1,16 @@
+The user is asking me to show how to convert an ISO timestamp from an API to a localized date format like "Nov 23, 2026" in a web app. They want to see the code.
+
+They're using the "caveman" mode (terse communication). Let me keep it brief and direct.
+
+This is a straightforward web development task. I should show JavaScript code that:
+1. Takes an ISO timestamp
+2. Converts it to a localized date format
+
+I'll provide a simple, direct example using JavaScript's built-in Intl API or Date formatting.
+
+Let me give them a few options:
+- Using `Intl.DateTimeFormat` (modern, recommended)
+- Using `Date.toLocaleDateString()` (simple)
+- Using a library like date-fns or moment (if needed)
+
+Since they want it terse and direct, I'll show the simplest approach first.

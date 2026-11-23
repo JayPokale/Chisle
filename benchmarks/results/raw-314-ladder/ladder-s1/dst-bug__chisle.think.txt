@@ -1,0 +1,31 @@
+This is a classic daylight saving time (DST) bug. Let me analyze the problem:
+
+The user has a nightly job scheduled with `setInterval(run, 24 * 60 * 60 * 1000)` that drifts by an hour after every DST change.
+
+The root cause is that DST doesn't affect milliseconds directly—it affects the actual wall-clock time. When you use `setInterval` with a fixed interval in milliseconds, you're measuring elapsed real time (since epoch), not wall-clock time.
+
+Here's the problem:
+- When DST ends (fall back): the clock goes from 2am to 1am, so there's an extra hour in that day. The job still runs every 24 hours of real time, but the wall clock has "gone back" by 1 hour.
+- When DST begins (spring forward): the clock jumps from 2am to 3am, so there's one less hour in that day. The job still runs every 24 hours of real time, but it's now offset from the intended wall-clock time.
+
+The fix is to schedule based on wall-clock time (a specific time each day) rather than a fixed millisecond interval. This requires either:
+1. Calculate when the next scheduled time is and use `setTimeout` with that delay
+2. Use a cron library
+3. Schedule it to run at a specific time each day using setTimeout that recalculates
+
+The most straightforward fix without adding dependencies would be to calculate the next scheduled time and use setTimeout recursively.
+
+Actually, let me think about this more carefully. The issue states "drifts by an hour after every daylight saving change". This suggests:
+- After spring forward (lose an hour): job runs 1 hour earlier wall-clock time
+- After fall back (gain an hour): job runs 1 hour later wall-clock time
+
+This happens because setInterval measures elapsed time, not wall-clock time.
+
+The fix: instead of setInterval with a fixed millisecond duration, calculate when the job should run next (e.g., "every day at 3am local time") and use setTimeout to schedule until that time, then reschedule.
+Since no code was shown, I'll look through the working directory for the scheduler before suggesting a fix. Checking which files are there now.
+
+
+
+---
+
+The directory is empty or doesn't have files. Let me ask the user to either show me the code or create a minimal example to fix.

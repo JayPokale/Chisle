@@ -1,0 +1,24 @@
+The user wants to show an ISO timestamp from an API as a localized date like "Nov 23, 2026" in their web app. They want to see the code.
+
+This is a straightforward request - they want to know how to format an ISO timestamp for display in a web app.
+
+However, I need to understand their context better:
+1. I don't know if this is React, Vue, vanilla JS, etc.
+2. I don't know if there's existing code in the directory
+3. The user hasn't provided any context about what framework they're using
+
+Let me check the working directory to see what kind of project this is.
+
+According to the system reminder, the working directory is `/tmp/chisle-ablation-work-115o5S` and it's not a git repository.
+
+The user is asking for code to display an ISO timestamp as a localized date. The most straightforward approach would be:
+
+1. Using JavaScript's built-in `Intl.DateTimeFormat` or `toLocaleDateString()`
+2. Using a library like `date-fns` or `moment.js` if already installed
+3. Using native Date object methods
+
+Since they haven't specified a framework or shown me existing code, I should:
+1. First check what's in the directory
+2. Provide the simplest solution that works
+
+Let me start by exploring the directory to understand what kind of project this is.

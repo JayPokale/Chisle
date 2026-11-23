@@ -1,0 +1,25 @@
+The user is describing a problem where a nightly job drifts by an hour after every daylight saving time (DST) change. The job is scheduled using `setInterval(run, 24 * 60 * 60 * 1000)`.
+
+Let me think about this:
+
+The root cause is that `setInterval(run, 24 * 60 * 60 * 1000)` schedules the job to run every 24 hours in clock time (milliseconds). However, when DST changes:
+- When clocks spring forward (spring forward 1 hour): the day is only 23 hours long
+- When clocks fall back (fall back 1 hour): the day is 25 hours long
+
+So if you schedule something to run every 24 * 60 * 60 * 1000 milliseconds, it will drift relative to the wall-clock time you want it to run.
+
+For example:
+- Job is scheduled to run at 2 AM every day
+- DST change happens (spring forward): clocks jump from 2 AM to 3 AM
+- The next 24-hour interval from before the change would have been 2 AM the next day, but because the clocks jumped forward, the actual wall clock time is 3 AM
+- If you don't account for this, you're now running at 3 AM instead of 2 AM
+- This repeats: after fall back (fall back 1 hour), you'd be running at 1 AM if you don't account for it
+
+The fix is to schedule the job to run at a specific wall-clock time each day, not just every 24 hours. Common approaches:
+
+1. Calculate time until next run (e.g., next 2 AM), schedule with setTimeout, then reschedule after each run
+2. Use a cron-like library that handles DST
+3. Store the target hour/minute and check it periodically
+
+Since this is JavaScript and they're using setInterval, I need to find their code first to see the actual implementation. I can't see any files in the working directory yet, so I'll look for scheduling code there. The user is working in a non-git folder, so I'll search it for `setInterval` or similar scheduling logic.
+

@@ -1,0 +1,5 @@
+The user is asking me to validate the email field on a signup form before it submits, and show the code. However, I need to first understand what project I'm working with. Let me check the working directory to see what files exist.
+
+The user hasn't provided any existing code, so I need to explore the working directory first to understand the project structure and find the signup form.
+
+Let me start by checking what's in the current directory.

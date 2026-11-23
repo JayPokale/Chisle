@@ -1,0 +1,11 @@
+User wants Node.js code to parse command-line flags `--port` and `--verbose`. They want caveman mode (terse).
+
+Simple, direct: show the code with minimal explanation.
+
+Two approaches:
+1. `process.argv` manual parsing
+2. Use a library like `yargs` or `minimist`
+
+Since they asked to "show the code", I'll provide both a simple built-in approach and mention library options. Keep it terse.
+
+Caveman mode: drop articles, filler, keep it tight. Code blocks stay normal.

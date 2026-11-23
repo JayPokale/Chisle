@@ -1,0 +1,3 @@
+The user is reporting a classic floating-point arithmetic issue where $0.10 + $0.20 = $0.30000000000000004 instead of exactly $0.30. This is a well-known floating-point precision problem in JavaScript (and many other languages) caused by how decimal numbers are represented in binary.
+
+Let me first explore the current working directory to understand the codebase structure and find where the cart total calculation happens.

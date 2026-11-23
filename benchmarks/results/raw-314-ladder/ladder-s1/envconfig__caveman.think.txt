@@ -1,0 +1,25 @@
+User wants me to show code that reads API base URL and request timeout from environment variables with sensible defaults. They want it in caveman mode (terse).
+
+Since it's not specified what language, I should probably ask or assume a common one. But they said "show the code" - they want me to write it. Let me assume Python since that's common, but I could do multiple languages. Actually, let me just do Python first since it's most common for this use case. If they want another language they'll ask.
+
+Caveman mode active - drop articles, filler, fragments OK.
+
+```python
+import os
+
+API_BASE_URL = os.getenv('API_BASE_URL', 'https://api.example.com')
+REQUEST_TIMEOUT = int(os.getenv('REQUEST_TIMEOUT', '30'))
+```
+
+That's the core. Could add more context. Let me show a fuller example with how to use it.
+
+Actually, let me verify - they said "environment variables" - so I should use os.getenv or similar. Python is good for this.
+
+Caveman response:
+- Drop "Sure, here's..." 
+- Drop "Let me show you..."
+- Just: "Read API config from env"
+- Show code
+- Brief explanation if needed
+
+Let me write it terse.

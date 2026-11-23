@@ -1,0 +1,17 @@
+The user is asking me to show code that converts an ISO timestamp from an API into a localized date format like "Nov 23, 2026" for display in a web app.
+
+This is a straightforward web development question. I should provide code that:
+1. Takes an ISO timestamp (like "2026-11-23T12:34:56Z")
+2. Converts it to a localized format like "Nov 23, 2026"
+
+Since they said "our web app", I should provide both frontend code examples. The most common approach would be JavaScript/TypeScript, but I could also show examples for different frameworks.
+
+Let me provide a few practical examples:
+
+1. Using native JavaScript Date and Intl API
+2. Using a library like date-fns or day.js (if they prefer)
+3. Maybe a framework-specific example if they're using React
+
+I'll start with vanilla JavaScript since that's most universal, then show alternatives.
+
+The user hasn't indicated what tech stack they're using, so I'll provide flexible examples. The date they want is "Nov 23, 2026" format.

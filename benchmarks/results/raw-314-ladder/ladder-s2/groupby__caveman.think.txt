@@ -1,0 +1,11 @@
+User wants to group orders by customer ID and sum up each customer's spend. They want to see code.
+
+This is a straightforward programming task. They haven't specified a language, so I should ask or provide a common example. Actually, looking at the context, there's no indication of what tech stack they're using. I should probably ask what language they prefer, OR provide a Python example since it's very common for data tasks.
+
+Actually, let me check if there are any files in the working directory first to understand what they're working with.
+
+Wait, the user is asking me to show code for grouping orders by customer and totaling spend. This is likely a data manipulation task. They haven't specified a language, but I can provide common examples. Python with pandas is very common for this. SQL is also very common.
+
+Let me provide both Python and SQL examples since those are the most common approaches for this task. I'll keep it terse per the caveman mode.
+
+Actually, I should check the directory first to see if there's existing code I should work with.

@@ -1,0 +1,17 @@
+The user wants to see code that:
+1. Takes an ISO timestamp from an API
+2. Converts it to a localized date format like "Nov 23, 2026"
+3. Display it in a web app
+
+This is a web development task. They're asking for the code pattern to do this.
+
+Since they said "caveman mode" is active by default, I should be terse. But they're asking to "show the code" - this is the kind of situation where I should provide a working example.
+
+I should provide a few options depending on what framework they're using (vanilla JS, React, etc.). I'll start with vanilla JS since it's most universal, and maybe show React since that's common.
+
+Let me show:
+1. Vanilla JS with Intl.DateTimeFormat (most reliable, no deps)
+2. Maybe React hook version
+3. Brief explanation if needed
+
+Keep it caveman terse but code stays normal.

@@ -1,0 +1,3 @@
+The user is asking me to add a confirmation modal before deleting an item in a web app. They want to see the code. However, I don't have context about what web app they're working on. I should explore the working directory to understand the structure of their project.
+
+Let me start by checking what files are in the working directory to understand what kind of web app this is.

@@ -1,0 +1,28 @@
+The user is asking me to read the API base URL and request timeout from environment variables with sensible defaults. They want me to show the code.
+
+This is a straightforward request. I need to:
+1. Read environment variables
+2. Provide sensible defaults
+3. Show the code
+
+Since no specific language is mentioned, I should ask or assume Python (most common), but actually the user might be working in any language. Let me check the context - there's a git repository mentioned as "false", so I'm not in an existing project. The user is just asking for code to show.
+
+I should ask what language they want, or just provide a common example. Actually, looking at the ponytail guidance - "Code first" - I should just provide code. Python is a safe default for this kind of utility code.
+
+Let me write clean Python code that:
+1. Reads environment variables
+2. Uses sensible defaults
+3. Is simple and straightforward
+
+This is lazy/efficient code - just use `os.getenv()` with defaults. No need for a configuration file, a class, a factory, nothing fancy. Just the code.
+
+```python
+import os
+
+API_BASE_URL = os.getenv('API_BASE_URL', 'http://localhost:8000')
+REQUEST_TIMEOUT = int(os.getenv('REQUEST_TIMEOUT', '30'))
+```
+
+That's it. Simple, works, done. I should show it and maybe mention the defaults chosen.
+
+Ponytail says "Code first. Then at most three short lines." So I'll show the code and briefly explain the defaults.

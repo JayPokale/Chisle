@@ -1,0 +1,38 @@
+User wants to parse `--port` and `--verbose` command-line flags in a Node.js script. They want to see the code.
+
+Caveman mode is active (they set it earlier but didn't turn it off). I should respond tersely, dropping articles and filler.
+
+This is a straightforward request - no complexity, just show the code for parsing CLI flags.
+
+I can use `process.argv` directly or recommend using a library. Since they just asked for "the code" without specifying, I'll show a simple native approach first, maybe mention a library alternative.
+
+Simple approach:
+```javascript
+const args = process.argv.slice(2);
+let port = 3000;
+let verbose = false;
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--port' && args[i + 1]) {
+    port = parseInt(args[i + 1], 10);
+    i++;
+  } else if (args[i] === '--verbose') {
+    verbose = true;
+  }
+}
+
+console.log(`Port: ${port}, Verbose: ${verbose}`);
+```
+
+Or using a library like `minimist`:
+```javascript
+const minimist = require('minimist');
+const argv = minimist(process.argv.slice(2));
+
+const port = argv.port || 3000;
+const verbose = argv.verbose || false;
+
+console.log(`Port: ${port}, Verbose: ${verbose}`);
+```
+
+Caveman mode - be terse. Drop articles. Keep technical substance.

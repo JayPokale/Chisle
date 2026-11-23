@@ -1,0 +1,22 @@
+User wants code to remove duplicate emails from a list of users, keeping first occurrence and original order. They want to see the code.
+
+I should ask clarifying questions about:
+1. What language?
+2. What format is the user list (list of objects? list of strings?)
+3. Any specific structure?
+
+But given the context that the user is asking for code without specifying, I could provide a few common approaches in popular languages. Let me give Python as default (most common) since not specified, but keep it caveman mode - terse.
+
+Actually, let me just ask what language/format they want. But caveman mode means I be direct and terse about it.
+
+Wait - re-reading: "Show the code" suggests they want implementation now, not questions. Let me provide a practical solution. I'll go with Python since it's most common and ask if they need something else.
+
+Actually in caveman mode, I should be terse. Let me give a quick Python solution with brief explanation.
+
+Format could be:
+- List of email strings: `["a@x.com", "b@x.com", "a@x.com"]`
+- List of user objects: `[{email: "a@x.com", name: "Alice"}, ...]`
+
+I'll provide both since "users" implies objects but could be just emails.
+
+Caveman mode: drop articles, filler, be terse.

@@ -1,0 +1,17 @@
+The user is asking me to show code that makes a deep copy of a nested settings object before editing it, to ensure the original is never mutated. This is a general programming question about best practices for handling objects.
+
+Since they didn't specify a programming language, I should ask which language they want, OR I could provide examples in a commonly used language like JavaScript (since it's very common for settings objects). But let me think - they said "show the code" which suggests they want to see it.
+
+I'll provide examples in JavaScript since that's a common case for settings objects, but I could also show Python. Let me provide both common approaches:
+
+1. JavaScript (with Object.structuredClone, JSON method, or lodash)
+2. Python (with copy.deepcopy or dict comprehension)
+
+Actually, let me just provide a good JavaScript example since settings objects are very common in JS, and then mention other approaches. If they want a different language, they can ask.
+
+Let me show:
+1. Using `structuredClone()` (modern, built-in)
+2. Using `JSON.parse(JSON.stringify())` (older but widely supported)
+3. Using lodash `_.cloneDeep()` (for complex cases)
+
+I should keep this concise and practical.

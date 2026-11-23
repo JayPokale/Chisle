@@ -1,0 +1,20 @@
+The user is asking me to make a deep copy of a nested settings object before editing it, so the original is never mutated. They want to see the code.
+
+This is a straightforward request. They want code that demonstrates deep copying a nested settings object to avoid mutating the original.
+
+Let me think about the best approach here given the ponytail philosophy:
+1. Does this need to exist at all? Yes, the user is asking for it
+2. Already in this codebase? They haven't mentioned a codebase, so I don't have context
+3. Stdlib does it? Yes - Python has `copy.deepcopy()`
+4. Can it be one line? Pretty much - `deepcopy(obj)`
+
+I should provide a simple, practical example. No frameworks, no over-engineering. Just show the ladder in action.
+
+Since there's no git repo context, I'll just provide example code showing how to deep copy a nested settings object. I'll show both the problem (mutation) and the solution (deep copy).
+
+Python's `copy.deepcopy()` is the standard way. I should show:
+1. The problem - what happens without deep copy
+2. The solution - with deep copy
+3. Brief explanation of why
+
+No test file needed since the user just asked for the code and this is trivial to verify by reading.

@@ -1,0 +1,16 @@
+The user is reporting a floating-point precision bug in their cart total calculation. When they add $0.10 and $0.20, they expect $0.30 but get $0.30000000000000004 instead. This is a classic IEEE 754 floating-point arithmetic issue where decimal values can't be represented exactly in binary.
+
+Let me start by understanding what I'm working with. The user hasn't provided any code, so I need to explore the working directory first to find the cart implementation.
+
+Since I'm in ponytail mode (lazy, efficient approach), I need to:
+1. Find the code that handles cart totals
+2. Understand the root cause (floating-point precision)
+3. Apply the minimal, correct fix
+
+The root cause is almost certainly that someone is using floating-point arithmetic for money. The lazy fix depends on what's already in the codebase:
+- Ladder rung 2: Check if there's already a utility/helper for handling money
+- Ladder rung 3: Check stdlib solutions
+- Ladder rung 4: Native platform features
+- For web apps: might have a money library or be using integers (cents)
+
+Let me explore the directory structure first to understand what we're working with.

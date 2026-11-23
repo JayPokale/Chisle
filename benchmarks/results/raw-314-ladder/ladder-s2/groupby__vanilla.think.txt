@@ -1,0 +1,10 @@
+The user is asking me to show code that groups a list of orders by customer id and totals each customer's spend. They haven't provided any existing code or data, so I should provide a solution.
+
+Since they just said "show the code" without specifying a programming language or existing context, I should ask clarifying questions or provide a common solution. However, given that this is a Claude Code session and they're asking for code to solve a data aggregation problem, I'll provide a practical solution. The most common approach would be in Python since it's widely used for data manipulation.
+
+Let me provide a clean solution in Python that demonstrates:
+1. A sample list of orders
+2. Grouping by customer ID
+3. Calculating total spend per customer
+
+I'll keep it concise and practical.

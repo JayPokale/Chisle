@@ -16,7 +16,7 @@ if (!dir) { console.error('usage: node benchmarks/answers.js <run-dir> [arm ...]
 const live = fs.readFileSync(path.join(__dirname, 'run-live.sh'), 'utf8').replace(/\r\n/g, '\n');
 const heredoc = (v) => live.match(new RegExp(`\\n${v}=\\$\\(cat <<'EOF'\\n([\\s\\S]*?)\\nEOF`))[1];
 const prompts = {};
-for (const line of (heredoc('TASKS') + '\n' + heredoc('TASKS_LARGE')).split('\n')) {
+for (const line of ['TASKS', 'TASKS_LARGE', 'TASKS_LADDER'].map(heredoc).join('\n').split('\n')) {
   const [task, kind, prompt] = line.split('\t');
   prompts[task] = { kind, prompt };
 }

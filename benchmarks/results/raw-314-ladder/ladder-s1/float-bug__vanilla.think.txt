@@ -1,0 +1,19 @@
+This is a classic floating-point precision issue in JavaScript. The problem occurs because decimal numbers like 0.1, 0.2, and 0.3 cannot be represented exactly in binary floating-point (IEEE 754), which causes rounding errors when doing arithmetic.
+
+0.1 + 0.2 = 0.30000000000000004 (in JavaScript)
+
+The user is reporting that their cart total sometimes shows this value. Let me first explore the working directory to understand the codebase and find where the cart calculation is happening.
+
+I should:
+1. Look at the current working directory structure
+2. Find the cart-related code
+3. Identify where the total is being calculated
+4. Fix the floating-point precision issue
+
+Common solutions for this:
+1. Use integer arithmetic (store amounts in cents, not dollars)
+2. Use a decimal library like `decimal.js` or `big.js`
+3. Round the result to a fixed number of decimal places
+4. Use `toFixed()` and parse back
+
+Let me start by exploring the directory.

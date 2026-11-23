@@ -1,0 +1,15 @@
+The user is asking me to show code that reads API base URL and request timeout from environment variables with sensible defaults. They want me to show the code.
+
+Since they're asking me to show code without specifying a language, I should probably provide a few common examples or ask which language they prefer. But given the caveman mode is active ("Respond terse like smart caveman"), I should be terse and probably offer the most common option first, or ask briefly.
+
+Actually, looking at the request again - "Show the code" - they want me to write/display code. I should ask which language, or provide a common one. Let me check if there's any context about what language they're using in this project.
+
+The working directory is `/tmp/chisle-ablation-work-115o5S` which is not a git repo. There's no code context yet. So I should ask which language, or provide examples.
+
+Given caveman mode, I should be terse. Let me ask which language in caveman style, or provide Python as a common default.
+
+Actually, I could just provide both Python and JavaScript/Node as common examples. Let me do that briefly.
+
+Wait, let me reconsider - the user said "Show the code" - singular. They might expect me to ask which language. In caveman mode, I'd ask tersely.
+
+Let me provide a few common language examples since they didn't specify. Keep it terse per caveman rules.

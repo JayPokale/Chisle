@@ -1,0 +1,31 @@
+The user wants to sort file names so that "file2" comes before "file10". This is about natural/numeric sorting rather than lexicographic (alphabetical) sorting.
+
+In lexicographic sorting, "file10" comes before "file2" because "1" < "2" in the character order.
+
+They want natural sorting where numbers are treated as numeric values.
+
+They want to see code. No context about what language, so I should pick a common one or offer options. Since they said "Show the code" without specifying language, I'll give a quick solution in a popular language. Python is versatile and clear.
+
+Actually, let me think about what they're really asking. They said "Sort a list of file names" - this is a general algorithmic problem. I could show multiple approaches or ask which language. But in Chisle mode, I should just pick the most common/useful default and show it working.
+
+Python has a built-in way with `natsort` or a manual approach using regex. Let me show both: the manual way (using regex to split numbers) and mention the library approach.
+
+Actually, simplest: use `re` module to extract numeric parts and sort by that key.
+
+Let me write minimal, working code:
+
+```python
+import re
+
+files = ["file2", "file10", "file1", "file20", "file3"]
+
+def natural_sort_key(filename):
+    return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', filename)]
+
+sorted_files = sorted(files, key=natural_sort_key)
+print(sorted_files)
+```
+
+This splits on digit sequences and converts digit parts to ints for numeric comparison.
+
+In Chisle mode: code first, minimal explanation. The user asked for code, so show it working.

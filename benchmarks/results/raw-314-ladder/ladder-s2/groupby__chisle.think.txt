@@ -1,0 +1,21 @@
+The user is asking me to show code that groups orders by customer ID and calculates the total spend per customer. They want the code shown.
+
+Since they haven't specified a language or provided data, I need to pick the most common default. Given no context, I'll default to Python since it's widely used for data manipulation tasks like this.
+
+However, I should also check if there's any existing code in this directory first - let me keep that in mind. But the user is asking me to "show the code" for a general task, not necessarily something that exists. They want me to demonstrate how to do this.
+
+I should provide a simple, working example. The user said "show the code" - they want to see it. No unnecessary abstractions, no boilerplate. Just the core logic.
+
+Let me write a minimal Python example that:
+1. Takes a list of orders with customer_id and amount
+2. Groups by customer_id
+3. Totals the spend
+
+I could use:
+- Pandas (common for data manipulation)
+- Dict comprehension (pure Python, no deps)
+- SQL (if using a database)
+
+Since no dependency or framework is mentioned, dict/groupby is most direct. But if they're doing data analysis, pandas is the standard. Let me give a simple, concrete example using Python standard library first, then mention pandas as an alternative.
+
+Actually, in Chisle mode, I should just give them what works with minimal explanation. Code first, brief context.

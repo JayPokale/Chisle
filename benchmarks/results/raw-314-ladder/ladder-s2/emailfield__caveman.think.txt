@@ -1,0 +1,20 @@
+User wants me to validate email field on signup form. They want to see the code. Let me first check what files are in the working directory to understand the current state of the project.
+
+They want it terse (caveman mode is active by default). I need to:
+1. Find the signup form
+2. Add email validation
+3. Show them the code
+
+Let me start by exploring the directory structure.
+
+---
+
+Let me see what's in the directory first.
+
+---
+
+Let me try a different approach to see what's in the directory.
+
+---
+
+Let me check what files exist in the directory first.

@@ -1,0 +1,8 @@
+This is a classic floating-point arithmetic issue in JavaScript (or similar language). The user is seeing `0.30000000000000004` instead of `0.30` when adding `0.10 + 0.20`. This is due to how binary floating-point numbers can't exactly represent decimal fractions.
+
+This is definitely the kind of problem where I should:
+1. First understand the codebase and find where the cart total calculation happens
+2. Find the root cause in the actual code, not just the symptoms
+3. Apply the lazy approach: what's the simplest fix that works?
+
+Let me start by exploring the repository structure to understand what we're working with.

@@ -1,0 +1,39 @@
+The user wants to show an ISO timestamp from an API as a localized date in a web app. They want to see the code for this.
+
+This is a straightforward request. I need to show how to convert an ISO timestamp to a localized date format. The most common approach is using JavaScript's `Intl.DateTimeFormat` or `toLocaleDateString()`.
+
+Given the Chisle mode is active (default), I should:
+1. Show the code first
+2. Keep explanation terse
+3. No unnecessary preamble
+
+Let me think about the best approach:
+- Input: ISO timestamp from API (e.g., "2026-11-23T14:30:00Z")
+- Output: Localized date string (e.g., "Nov 23, 2026")
+- Best native approach: `Intl.DateTimeFormat` or `toLocaleDateString()`
+
+The simplest one-liner approach using native JS:
+
+```javascript
+new Date("2026-11-23T14:30:00Z").toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+```
+
+Or more reusable as a function/component.
+
+React component example would be most practical for a web app:
+
+```jsx
+export function FormattedDate({ isoTimestamp }) {
+  return new Date(isoTimestamp).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+```
+
+Usage: `<FormattedDate isoTimestamp="2026-11-23T14:30:00Z" />`
+
+Let me provide both the basic approach and a React example since they said "web app".
+
+Since I don't know their exact stack, I'll default to vanilla JS + show React pattern. Keep it minimal per Chisle.

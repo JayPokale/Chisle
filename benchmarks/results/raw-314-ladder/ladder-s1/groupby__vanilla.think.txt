@@ -1,0 +1,15 @@
+The user is asking me to group a list of orders by customer ID and calculate the total spend per customer, and show the code for it.
+
+However, they haven't provided:
+1. The programming language they want to use
+2. The data structure/format of the orders
+3. Any existing code or file to work with
+
+Since this is a general request without context about what they're working with, I should ask for clarification about:
+- What programming language they want
+- What format the orders are in (array of objects, CSV, database query, etc.)
+- Whether they have existing code or data to work with
+
+Alternatively, I could provide a few common examples in popular languages. But the user said "Show the code" - they want to see it, not explanations of multiple options. Let me ask what they're working with so I can provide the most relevant solution.
+
+Actually, wait - let me check if there are any files in the working directory that might give me context about what they're working on.

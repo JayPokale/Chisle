@@ -1,0 +1,11 @@
+The user is asking me to show code that reads an API base URL and request timeout from environment variables with sensible defaults. This is a straightforward request for code.
+
+Since no language was specified, I should default to the most common default - likely Python given the context. Let me check if there's any indication of what language they're using... The environment is linux/zsh, but no indication of which language. Python is a reasonable default.
+
+However, they might want multiple languages. Let me provide Python as the primary example since it's most common, but I could also offer JavaScript/Node since that's also very common for API work.
+
+Actually, let me just go with Python as the default and show a clean implementation. If they want another language, they'll ask.
+
+In Chisle mode: be terse, show the code first, minimal explanation.
+
+Code first. Environment variable reading is straightforward - `os.environ.get()` with defaults. That's it.

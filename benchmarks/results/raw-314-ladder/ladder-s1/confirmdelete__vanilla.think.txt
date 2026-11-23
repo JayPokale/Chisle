@@ -1,0 +1,8 @@
+The user is asking me to add a confirmation modal before deleting an item in their web app. However, they haven't shown me any code yet or provided details about their web app.
+
+I need to:
+1. First, explore the working directory to understand what web app they're working with
+2. Find the deletion code
+3. Add a confirmation modal before the deletion
+
+Let me start by checking what's in the working directory.

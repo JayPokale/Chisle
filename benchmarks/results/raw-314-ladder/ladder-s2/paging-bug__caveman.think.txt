@@ -1,0 +1,25 @@
+The user is saying there's a pagination bug where one item is skipped between pages. The offset is computed as `page * pageSize + 1` with pages starting at 0.
+
+Let me think about this:
+- Page 0: offset = 0 * pageSize + 1 = 1 (should be 0)
+- Page 1: offset = 1 * pageSize + 1 = pageSize + 1 (should be pageSize)
+- Page 2: offset = 2 * pageSize + 1 = 2*pageSize + 1 (should be 2*pageSize)
+
+So the problem is the `+ 1` in the formula. That's causing an off-by-one error. Each page starts one position too far.
+
+If pages are 0-indexed and pageSize is, say, 10:
+- Page 0 should show items 0-9 (offset 0, limit 10)
+- Page 1 should show items 10-19 (offset 10, limit 10)
+- etc.
+
+But with offset = page * pageSize + 1:
+- Page 0: offset = 1, so it shows items 1-10 (skips item 0)
+- Page 1: offset = 11, so it shows items 11-20 (skips item 10)
+
+So the fix is to remove the `+ 1`.
+
+The root cause is that the formula has an unnecessary `+ 1` that shouldn't be there.
+
+Since this isn't a git repository, I should look for files in the working directory that might contain pagination code. Let me search for pagination-related code.
+
+User wants caveman mode (terse). I should be direct and find the bug quickly.

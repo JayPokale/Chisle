@@ -1,0 +1,27 @@
+The user wants me to write code that removes duplicate emails from a list of users, keeping the first occurrence and maintaining the original order. They want to see the code.
+
+This is a straightforward programming task. I should provide a clear, concise solution. I'll provide solutions in a commonly-used language - I'll go with Python since it's widely used and clear, but I could also offer other languages if they ask.
+
+The key requirements:
+1. Remove duplicates
+2. Keep the first occurrence
+3. Maintain original order
+
+A simple approach is to use a set to track seen emails, and iterate through the list once, keeping items whose emails haven't been seen before.
+
+Let me write a clean Python solution:
+
+```python
+def remove_duplicate_emails(users):
+    seen = set()
+    result = []
+    for user in users:
+        if user['email'] not in seen:
+            seen.add(user['email'])
+            result.append(user)
+    return result
+```
+
+This assumes users is a list of dictionaries with an 'email' key. I could also show alternative approaches like using `dict.fromkeys()` if users are just emails, or using list comprehension with enumerate for a more Pythonic approach.
+
+Let me provide a few variations to be helpful.

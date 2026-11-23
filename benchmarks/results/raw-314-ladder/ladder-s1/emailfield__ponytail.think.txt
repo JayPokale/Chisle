@@ -1,0 +1,13 @@
+The user is asking me to validate an email field on a signup form before submission. However, they haven't provided any code yet. I need to ask them for the code first - either the HTML form or the JavaScript that handles the form submission.
+
+Since this is a vague request and I don't have context about what project this is or what framework they're using, I should ask them to show me the signup form code first.
+
+Actually, wait - let me check if there's already a project in the working directory that I should look at. The working directory is `/tmp/chisle-ablation-work-115o5S` and it's NOT a git repository. Let me check what files are there.
+
+I should explore the directory first to understand what code exists, then I can help them add email validation to the signup form.
+
+But the instructions say I need to validate by showing code - so I need to either:
+1. See their existing form and add validation to it
+2. Ask them to show me their form
+
+Let me start by checking what's in the directory.

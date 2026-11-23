@@ -1,0 +1,22 @@
+The user is reporting a bug in pagination where there's a skip of one item between pages. They've identified that the issue is in how the offset is computed: `offset = page * pageSize + 1` with pages starting at 0.
+
+Let me think about this:
+- If pages start at 0 and we have pageSize items per page
+- Page 0 should show items 0 to pageSize-1 (or 1 to pageSize if 1-indexed)
+- Page 1 should show items pageSize to 2*pageSize-1
+
+The formula `offset = page * pageSize + 1` means:
+- Page 0: offset = 0 * pageSize + 1 = 1 (starts at item 1, skipping item 0)
+- Page 1: offset = 1 * pageSize + 1 = pageSize + 1 (should start at pageSize, not pageSize + 1)
+
+So the issue is that `+ 1` shouldn't be there if pages start at 0 and we're using 0-indexed offsets.
+
+The correct formula should be:
+- `offset = page * pageSize` (for 0-indexed)
+
+Or if the system uses 1-indexed pages:
+- `offset = (page - 1) * pageSize`
+
+But the user said "pages starting at 0", so it should be `offset = page * pageSize`.
+
+Let me search through the codebase to find where this pagination logic is implemented.

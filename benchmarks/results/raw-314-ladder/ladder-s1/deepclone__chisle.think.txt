@@ -1,0 +1,23 @@
+The user is asking for code to make a deep copy of a nested settings object before editing it, so the original is never mutated. This is a straightforward request for code that demonstrates deep copying.
+
+Since they didn't specify a language, I should use the most common default. Given the context is about settings objects and web development patterns, JavaScript is a reasonable default. But they might want multiple languages or a specific one. I'll start with JavaScript since it's common and the deep copy pattern is particularly important there.
+
+Actually, looking at the chisle mode requirements - I should be terse, avoid unnecessary explanation, and just show the code with minimal context. The user asked "Show the code" explicitly.
+
+Let me provide practical deep copy solutions in the most common language(s):
+
+1. JavaScript (most common for settings)
+2. Maybe also show Python since it was mentioned in the environment
+
+For JavaScript:
+- Structured clone: `structuredClone()` - modern, works for most cases
+- JSON method: `JSON.parse(JSON.stringify())` - older, doesn't handle functions/symbols
+- Lodash: `_.cloneDeep()` - if they use it
+- Manual recursion
+
+For Python:
+- `copy.deepcopy()`
+
+Since they asked for "the code" (singular), I should probably lead with the most practical modern approach. Let me show JavaScript with structuredClone, then mention alternatives.
+
+Chisle mode: No preamble, code first, minimal explanation after. No "Sure!", no "Here's how", no announcements.

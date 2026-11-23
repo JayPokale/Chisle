@@ -1,0 +1,38 @@
+The user wants me to remove duplicate emails from a list of users, keeping the first occurrence and maintaining original order. This is a classic problem.
+
+They explicitly asked to "Show the code" - they want to see the solution.
+
+Let me think about the ladder here (ponytail mode is active):
+
+1. Does this need to exist? They asked for code, so yes, needs to exist.
+2. Already in this codebase? This is a new request with no context of an existing codebase - they just asked for code to show. No existing codebase mentioned.
+3. Stdlib does it? Python has `dict.fromkeys()` which preserves insertion order (in Python 3.7+) and removes duplicates. This is a one-liner approach. Or we could use a set with a loop.
+4. This is straightforward enough.
+
+The laziest approach that works:
+- In Python 3.7+, `dict.fromkeys()` preserves insertion order and removes duplicates. For emails: `list(dict.fromkeys(emails))`
+- Or if we need objects/users: iterate with a set to track seen emails
+
+Since they said "list of users" - could be just emails or objects. I'll show both interpretations, keeping it simple.
+
+The simplest solution:
+```python
+def remove_duplicate_emails(emails):
+    return list(dict.fromkeys(emails))
+```
+
+For a list of user objects with an email field:
+```python
+def remove_duplicate_users(users):
+    seen = set()
+    result = []
+    for user in users:
+        if user['email'] not in seen:
+            seen.add(user['email'])
+            result.append(user)
+    return result
+```
+
+Ponytail approach: The dict.fromkeys one-liner is the laziest for a simple email list. For objects, the loop is minimal - no classes, no fancy data structures.
+
+Let me show both cases since "list of users" could mean either.

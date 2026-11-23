@@ -1,0 +1,35 @@
+The user is asking me to group a list of orders by customer ID and total each customer's spend, and show the code.
+
+They haven't provided any code or existing context. This seems like a straightforward request to write code that groups orders by customer and sums their spending.
+
+Since they haven't provided data format or language preference, I should:
+1. Ask what language/format they want, OR
+2. Just provide a practical solution (probably Python given it's common)
+
+Actually, looking at the instruction "When given an unclear or generic instruction, consider it in the context of these software engineering tasks and the current working directory." - but there's no code in the working directory mentioned to give me context.
+
+Given they said "Show the code" definitively, they want me to write code. The most reasonable assumption is Python since it's very common for data manipulation tasks.
+
+Let me check Ponytail rules:
+- Does this need to exist? Yes, they asked for it
+- Already in codebase? Not mentioned
+- Stdlib does it? Python has groupby and dict operations built in
+- Shortest code that works?
+
+I should write the simplest, most practical solution using Python. I could use:
+1. groupby (needs sorted data)
+2. defaultdict
+3. Simple dict
+
+For a general case, I'd use defaultdict as it's clean and doesn't require pre-sorting.
+
+Let me provide a few approaches from simplest to most flexible:
+
+Actually - they haven't given me any data. So I should:
+1. Show a working example with sample data
+2. Keep it minimal
+3. Explain briefly
+
+Ponytail style: code first, minimal explanation. "skipped: X, add when Y"
+
+Let me write clean Python code with sample data.

@@ -1,0 +1,21 @@
+The user is saying there's a pagination bug where one item is skipped between pages. The formula they gave is `offset = page * pageSize + 1` with pages starting at 0.
+
+Let me think about how pagination should work:
+- Page 0, pageSize 10: should get items 0-9. offset should be 0.
+- Page 1, pageSize 10: should get items 10-19. offset should be 10.
+- Page 2, pageSize 10: should get items 20-29. offset should be 20.
+
+The correct formula is: `offset = page * pageSize`
+
+But they're using: `offset = page * pageSize + 1`
+
+Let me verify this causes skipping:
+- Page 0: offset = 0 * 10 + 1 = 1. Gets items 1-10 (skips item 0).
+- Page 1: offset = 1 * 10 + 1 = 11. Gets items 11-20 (skips item 10).
+- Page 2: offset = 2 * 10 + 1 = 21. Gets items 21-30 (skips item 20).
+
+Yes, the `+ 1` is the problem. It's skipping one item at the start of every page.
+
+The root cause is the `+ 1` in the offset calculation. Need to find where this is in the code and fix it.
+
+Since this is Chisle mode, I should be terse and direct. Let me start by finding where this pagination code is.

@@ -1,0 +1,44 @@
+The user wants to remove duplicate emails from a list of users, keeping the first occurrence and the original order. They want to see the code.
+
+This is a straightforward task. Let me think about what the user is asking for:
+1. Remove duplicates from a list of users
+2. Keep the first occurrence
+3. Maintain the original order
+4. Show the code
+
+This is a common operation. I need to know:
+- What language? They didn't specify, so I should probably ask OR just provide a general solution. Since they didn't specify, I'll provide Python as it's most commonly used for this kind of task. Actually, they said "Show the code" - they want code. Let me just provide a clean Python solution.
+
+The lazy approach here (ponytail mode is ACTIVE):
+- Rung 1: Does this need to exist? It's a utility function. User is asking for code, so yes.
+- Rung 2: Already in codebase? No codebase yet, fresh request.
+- Rung 3: Stdlib does it? Python's `dict` preserves insertion order (3.7+), so we can use that. Set doesn't preserve order, so we need to track seen.
+- Rung 4-5: Covered by stdlib.
+
+The simplest working solution in Python:
+
+```python
+def remove_duplicate_emails(users):
+    seen = set()
+    result = []
+    for user in users:
+        email = user['email'] if isinstance(user, dict) else user
+        if email not in seen:
+            seen.add(email)
+            result.append(user)
+    return result
+```
+
+But wait - what's the structure of "users"? Could be:
+- List of dicts with 'email' key
+- List of email strings
+- List of tuples
+- Objects with email attribute
+
+The user didn't specify. Let me ask OR provide multiple examples. Actually, in ponytail lite/full mode, I should ask what the structure is OR provide the most general case.
+I'm settling on a dict-based version as the most likely case, with the email read from each user and only the first occurrence kept. I'm now writing out that Python function, and I'm also considering an even shorter version without a function wrapper.
+
+Now I'm weighing a shorter route: if the input is just emails, `dict.fromkeys()` removes duplicates while keeping order, at the cost of changing the return type. For user objects, I'd keep the set-and-list loop that checks each user's email as it goes.
+
+I'll keep it simple, with code first and at most three short lines of commentary. I'm going to give the dict-based version as the main answer, since "users" most often means records with an email field, and then mention the plain-string version as the alternative.
+

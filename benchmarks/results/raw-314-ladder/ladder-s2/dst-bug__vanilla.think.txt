@@ -1,0 +1,24 @@
+The user is describing a problem where a nightly job drifts by an hour after every daylight saving time (DST) change. The job is scheduled using `setInterval(run, 24 * 60 * 60 * 1000)`, which schedules it to run every 86,400,000 milliseconds.
+
+This is a classic DST bug. The issue is that `setInterval` doesn't account for daylight saving time changes. When DST changes occur:
+
+1. When clocks "spring forward" (lose an hour), the actual elapsed time for a 24-hour period in wall-clock time is actually 25 hours (86,400,000 ms represents 24 hours of actual time, but on a DST change day, 24 hours of actual time spans more than 24 hours of wall-clock time)
+
+2. When clocks "fall back" (gain an hour), the opposite happens - 24 hours of actual time spans less than 24 hours of wall-clock time
+
+Actually, let me reconsider. The issue is more subtle:
+
+If the job is supposed to run at a specific wall-clock time (like 2 AM every night), using `setInterval` with a fixed millisecond interval will cause drift because:
+- `setInterval` uses actual elapsed time (milliseconds), not wall-clock time
+- When DST changes, there's a discontinuity in wall-clock time
+- The job will continue on the same millisecond-based schedule, but wall-clock time will have shifted by an hour
+
+So if you want the job to run at 2 AM every day:
+- Day 1: runs at 2 AM (correct)
+- DST change happens (spring forward)
+- Day 2: runs at 3 AM instead of 2 AM (drifted by an hour)
+
+The fix is to not use `setInterval` with a fixed millisecond value. Instead, you should:
+1. Calculate when the next scheduled time should be
+The fix is to stop relying on a fixed interval: work out the next wall-clock run time, schedule it with `setTimeout`, and recalculate after each run. I also want to see whether the user's working directory has the actual code, so I'll look at the workspace first.
+

@@ -1,0 +1,42 @@
+The user wants code to remove duplicate emails from a list of users, keeping the first occurrence and maintaining original order.
+
+This is a straightforward task. I need to:
+1. Take a list of users (presumably with email addresses)
+2. Remove duplicates based on email
+3. Keep the first occurrence
+4. Maintain original order
+
+They want the code shown. The user hasn't specified a language, so I should ask or assume Python as the most common default for data processing tasks. Actually, let me check the environment - it's Linux, zsh shell. No specific language context. I'll default to Python as it's most common for this type of task.
+
+The simplest approach is to track seen emails in a set and iterate through the list, only keeping users whose email hasn't been seen before.
+
+In Chisle mode:
+- Code first, no preamble
+- No abstractions beyond what's needed
+- Shortest working solution
+- One approach is enough
+
+Let me write clean, simple Python code that does this.
+
+```python
+def remove_duplicate_emails(users):
+    seen = set()
+    result = []
+    for user in users:
+        if user['email'] not in seen:
+            seen.add(user['email'])
+            result.append(user)
+    return result
+```
+
+Or more concise with a dict comprehension if users is a list of dicts keyed by email, but the above is clearer.
+
+Actually, there are multiple ways depending on the data structure. Let me provide the most general solution that works for a list of user objects/dicts.
+
+Let me think about what format makes most sense. The most common would be a list of dicts with an 'email' key, or a list of tuples, or just a list of email strings.
+
+I'll provide:
+1. A simple version for a list of email strings
+2. A version for list of dicts/user objects with email field
+
+Chisle: code first, minimal explanation.

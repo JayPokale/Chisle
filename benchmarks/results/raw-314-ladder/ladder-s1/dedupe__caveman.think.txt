@@ -1,0 +1,20 @@
+User wants to remove duplicate emails from a list of users, keeping the first occurrence and maintaining original order. They want to see the code.
+
+They didn't specify a language, but given the context of Claude Code and common use cases, I should ask or assume Python (most common for data processing). Since they said "Show the code" without specifying language, I'll go with Python as it's the most common default for this type of task.
+
+I need to:
+1. Create a solution that removes duplicates while preserving order
+2. Keep first occurrence
+3. Show the code
+
+In Python, I can use a set to track seen emails and build a new list. This is O(n) time and space.
+
+Also - the user has caveman mode ON ("Respond terse like smart caveman"). I should follow the caveman rules:
+- Drop articles (a/an/the)
+- Drop filler
+- Fragments OK
+- Short synonyms
+- Keep code/technical terms exact
+- Pattern: [thing] [action] [reason]. [next step]
+
+Let me write this in caveman mode (full level - which is the default).

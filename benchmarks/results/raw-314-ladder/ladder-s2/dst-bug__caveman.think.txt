@@ -1,0 +1,17 @@
+The user is describing a nightly job that drifts by an hour after every daylight saving time (DST) change, and it's scheduled with `setInterval(run, 24 * 60 * 60 * 1000)`.
+
+The root cause here is that `24 * 60 * 60 * 1000` is 86,400,000 milliseconds, which is exactly 24 hours. However, when daylight saving time changes occur, a day is NOT 24 hours:
+- When DST starts (spring forward): clocks move forward 1 hour, so the day is 23 hours long
+- When DST ends (fall back): clocks move back 1 hour, so the day is 25 hours long
+
+Using a fixed 24-hour interval means:
+- After spring forward (day is 23 hours): the job runs 1 hour earlier than expected
+- After fall back (day is 25 hours): the job runs 1 hour later than expected
+
+The drift accumulates with each DST change.
+
+The fix is to NOT use `setInterval` for scheduling daily jobs. Instead, use a scheduler that understands calendar dates and can reschedule based on when the next calendar day occurs, independent of wall-clock time.
+
+Since the user didn't provide code, I need to ask them to share the code or suggest a solution. Let me first check if there are any files in the working directory that might contain this job.
+
+Actually, the user said "find and fix the root cause" - they might want me to explain the root cause, and then they'd provide the code. But they might also have code in the directory. Let me check first.

@@ -1,0 +1,41 @@
+The user wants me to show how to parse `--port` and `--verbose` command-line flags in a Node.js script. This is a straightforward request for code.
+
+I should provide the simplest, working solution. For Node.js CLI flag parsing, the most common approaches are:
+1. Manual parsing (parse `process.argv`)
+2. Using a library like `minimist`, `yargs`, or `commander`
+
+Given the "maximum signal, minimum noise" principle (Chisle mode), I should:
+- Show code first
+- Keep it minimal
+- Use the simplest approach that works
+- No unnecessary abstractions
+
+Manual parsing with `process.argv` is the most basic and doesn't require dependencies. For just two flags, that's reasonable. But a minimal library approach might be clearer. Let me check what's most common and practical.
+
+Actually, for just `--port` and `--verbose`, manual parsing is probably fine and shows what's happening. But I could also show using a small library.
+
+Let me provide the manual approach first since it's the simplest (no dependencies) and works well for 1-2 flags. Then I could mention library alternatives in one line.
+
+```javascript
+const args = process.argv.slice(2);
+let port = 3000; // default
+let verbose = false;
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--port' && args[i + 1]) {
+    port = parseInt(args[i + 1], 10);
+    i++;
+  } else if (args[i] === '--verbose') {
+    verbose = true;
+  }
+}
+
+console.log('Port:', port);
+console.log('Verbose:', verbose);
+```
+
+Usage: `node script.js --port 8080 --verbose`
+
+I could also show a cleaner version using `--port=8080` syntax, or mention using a library like minimist/yargs for more complex cases.
+I'll keep it simple: manual parsing first, then a brief mention of library options. Code first, short explanation, done.
+

@@ -1,0 +1,9 @@
+This is a classic floating-point arithmetic issue in JavaScript (or similar languages). When you add 0.10 + 0.20, you don't get exactly 0.30 due to how floating-point numbers are represented in binary. This is a well-known issue.
+
+Let me first check what files are in the working directory to understand what we're dealing with.
+
+The user wants me to:
+1. Find the root cause of the floating-point precision issue
+2. Fix it
+
+Since caveman mode is active, I should be terse but keep all technical substance. Let me start by exploring the directory structure.

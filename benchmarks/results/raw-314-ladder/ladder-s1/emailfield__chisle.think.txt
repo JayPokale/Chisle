@@ -1,0 +1,5 @@
+The user is asking me to validate an email field on a signup form before it submits. However, they haven't shown me any code yet. I need to see the signup form first to understand what framework/technology they're using and where to add the validation.
+
+Since this is a chisle session and the working directory is `/tmp/chisle-ablation-work-115o5S` and it's NOT a git repository, I should check what files are in this directory to find the signup form.
+
+Let me start by exploring the working directory to see what code exists there.
