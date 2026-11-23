@@ -23,7 +23,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/stats-dark.svg">
-    <img src="../assets/readme/es/stats-light.svg" width="880" alt="Chisle frente al mismo modelo sin ruleset: 9% menos tokens de salida facturados, respuestas un 39% más cortas, salidas de herramientas enormes un 48% más pequeñas, precisión de 156 sobre 156, igual que el modelo sin reglas.">
+    <img src="../assets/readme/es/stats-light.svg" width="880" alt="Chisle frente al mismo modelo sin ruleset, en Sonnet 5.5: 39% menos tokens de salida facturados (Haiku 4.5: 9%), respuestas un 43% más cortas (Haiku 4.5: 39%), salidas de herramientas enormes un 48% más pequeñas, precisión de 156 sobre 156, igual que el modelo sin reglas.">
   </picture>
 </p>
 
@@ -115,8 +115,15 @@ Luego un ejemplo breve y una lista de cinco líneas con las transiciones.
 
 <p align="center">
   <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-sonnet.svg">
+    <img src="../assets/benchmark-sonnet-light.svg" width="860" alt="Claude Code con Sonnet 5.5, 39 respuestas (13 prompts, 3 ejecuciones) en una sesión, tokens de salida facturados como porcentaje del mismo modelo sin ruleset: caveman 78%, ponytail 73%, Chisle 61%.">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark.svg">
-    <img src="../assets/benchmark-light.svg" width="860" alt="Benchmark de Claude Code, 39 respuestas (13 prompts, 3 ejecuciones) en una sesión, tokens de salida facturados como porcentaje del mismo modelo sin ruleset: caveman 96%, ponytail 115%, Chisle 91%.">
+    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code con Haiku 4.5, los mismos prompts: caveman 96%, ponytail 115%, Chisle 91%. En Haiku todo ruleset añade razonamiento oculto, que se come casi todo lo que acortan las respuestas.">
   </picture>
 </p>
 

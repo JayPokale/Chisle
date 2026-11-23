@@ -23,7 +23,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/stats-dark.svg">
-    <img src="../assets/readme/ja/stats-light.svg" width="880" alt="Chisle とルールセットなしの同じモデルの比較：課金される出力トークン 9% 減、回答の長さ 39% 減、巨大なツール出力 48% 減、精度は 156/156 でルールなしと同じ。">
+    <img src="../assets/readme/ja/stats-light.svg" width="880" alt="Chisle とルールセットなしの同じモデルの比較（Sonnet 5.5）：課金される出力トークン 39% 減（Haiku 4.5 は 9%）、回答の長さ 43% 減（Haiku 4.5 は 39%）、巨大なツール出力 48% 減、精度は 156/156 でルールなしと同じ。">
   </picture>
 </p>
 
@@ -115,8 +115,15 @@ class OrderStateMachine:
 
 <p align="center">
   <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-sonnet.svg">
+    <img src="../assets/benchmark-sonnet-light.svg" width="860" alt="Sonnet 5.5 の Claude Code、1 セッションで 39 回答（13 プロンプト × 3 回）、ルールセットなしの同じモデルに対する課金出力トークンの割合：caveman 78%、ponytail 73%、Chisle 61%。">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark.svg">
-    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code ベンチマーク、1 セッションで 39 回答（13 プロンプト × 3 回）、ルールセットなしの同じモデルに対する課金出力トークンの割合：caveman 96%、ponytail 115%、Chisle 91%。">
+    <img src="../assets/benchmark-light.svg" width="860" alt="Haiku 4.5 の Claude Code、同じプロンプト：caveman 96%、ponytail 115%、Chisle 91%。Haiku ではどのルールセットも隠れた思考を増やし、短くなった回答の分をほとんど打ち消す。">
   </picture>
 </p>
 

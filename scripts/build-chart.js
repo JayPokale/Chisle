@@ -6,6 +6,7 @@
 // task where all arms have a cell, the same method as benchmarks/pooled.js.
 //
 // Source: benchmarks/results/raw-314-direct/<suite>-s<seed>/<task>__<arm>.json
+// (Haiku) and raw-314-sonnet-direct/ (the same run on Sonnet 5.5, its own chart).
 // Data-driven + CI-checkable: same cells in → same chart out.
 //
 // A second chart, assets/benchmark-terminal(-light).svg, shows the input
@@ -25,6 +26,8 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const RAW_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw-314-direct');
+// Same suite and arms on Sonnet 5.5: assets/benchmark-sonnet(-light).svg.
+const SONNET_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw-314-sonnet-direct');
 const SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif";
 // The README swaps these with <picture>. Bar tones: rivals and the bare model share one tone,
 // Chisle gets its own.
@@ -85,12 +88,12 @@ function collectCost() {
   return stat;
 }
 
-function collect() {
+function collect(root = RAW_DIR) {
   const rows = [];
   let dirs = [];
-  try { dirs = fs.readdirSync(RAW_DIR); } catch (_) {}
+  try { dirs = fs.readdirSync(root); } catch (_) {}
   for (const d of dirs) {
-    const dir = path.join(RAW_DIR, d);
+    const dir = path.join(root, d);
     let files = [];
     try { files = fs.readdirSync(dir); } catch (_) { continue; }
     const cells = {};
@@ -149,11 +152,16 @@ ${body}</svg>
 }
 
 const CHARTS = [
-  { collect, arms: ARMS, suffix: '', line: '100% = no ruleset',
+  { collect: () => collect(SONNET_DIR), arms: ARMS, suffix: '-sonnet', line: '100% = no ruleset',
     bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]],
-    title: 'Claude Code — billed output tokens, % of the same model with no ruleset',
-    sub: (s) => `Haiku 4.5, ${s.n} answers (13 prompts × 3 runs), all arms in one session, every arm answered every prompt; lower = cheaper`,
-    aria: (s) => `Claude Code benchmark, ${s.n} answers in one run, billed output tokens as percent of the same model with no ruleset.` },
+    title: 'Claude Code + Sonnet 5.5: billed output tokens, % of the same model with no ruleset',
+    sub: (s) => `${s.n} answers (13 prompts × 3 runs), all arms in one session, every arm answered every prompt; lower = cheaper`,
+    aria: (s) => `Claude Code with Sonnet 5.5, ${s.n} answers in one session, billed output tokens as percent of the same model with no ruleset.` },
+  { collect: () => collect(), arms: ARMS, suffix: '', line: '100% = no ruleset',
+    bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]],
+    title: 'Claude Code + Haiku 4.5: billed output tokens, % of the same model with no ruleset',
+    sub: (s) => `${s.n} answers, same prompts; on Haiku every ruleset adds hidden thinking, which eats most of the shorter answers`,
+    aria: (s) => `Claude Code with Haiku 4.5, ${s.n} answers in one session, billed output tokens as percent of the same model with no ruleset.` },
   { collect: collectTerminal, arms: TERM_ARMS, suffix: '-terminal', line: '100% = raw output',
     bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]], // rivals, not older Chisles
     title: 'Terminal output Claude reads, % of the raw output',

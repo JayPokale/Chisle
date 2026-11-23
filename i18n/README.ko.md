@@ -23,7 +23,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ko/stats-dark.svg">
-    <img src="../assets/readme/ko/stats-light.svg" width="880" alt="Chisle과 규칙 세트가 없는 같은 모델 비교: 과금 출력 토큰 9% 감소, 답변 길이 39% 감소, 큰 도구 출력 48% 감소, 정확도 156/156으로 규칙 없는 모델과 같음.">
+    <img src="../assets/readme/ko/stats-light.svg" width="880" alt="Chisle과 규칙 세트가 없는 같은 모델 비교(Sonnet 5.5): 과금 출력 토큰 39% 감소(Haiku 4.5는 9%), 답변 길이 43% 감소(Haiku 4.5는 39%), 큰 도구 출력 48% 감소, 정확도 156/156으로 규칙 없는 모델과 같음.">
   </picture>
 </p>
 
@@ -115,8 +115,15 @@ class OrderStateMachine:
 
 <p align="center">
   <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-sonnet.svg">
+    <img src="../assets/benchmark-sonnet-light.svg" width="860" alt="Sonnet 5.5를 쓰는 Claude Code, 한 세션에서 답변 39개(프롬프트 13개 × 3회), 규칙 세트가 없는 같은 모델 대비 과금 출력 토큰 비율: caveman 78%, ponytail 73%, Chisle 61%.">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark.svg">
-    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code 벤치마크, 한 세션에서 답변 39개(프롬프트 13개 × 3회), 규칙 세트가 없는 같은 모델 대비 과금 출력 토큰 비율: caveman 96%, ponytail 115%, Chisle 91%.">
+    <img src="../assets/benchmark-light.svg" width="860" alt="Haiku 4.5를 쓰는 Claude Code, 같은 프롬프트: caveman 96%, ponytail 115%, Chisle 91%. Haiku에서는 어떤 규칙 세트든 숨은 추론이 늘어 짧아진 답변의 이득을 대부분 상쇄한다.">
   </picture>
 </p>
 

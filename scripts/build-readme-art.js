@@ -39,7 +39,7 @@ const I18N = {
     pill: 'Claude Code plugin · 13 agents · 0 deps', tag1: 'Fewer tokens in. Fewer tokens out.', tag2: 'Same answers.',
     words: (a, b) => `${a} words → ${b} words`, same: '✓ same answer',
     statsTitle: 'Chisle vs the same model with no ruleset',
-    tiles: [['billed output tokens', '91% of the bare model'], ['answer length', '61% of the bare model'], ['oversized tool output', 'per trimmed tool output'], ['accuracy', 'bare model: 156/156']],
+    tiles: [['billed output tokens', 'on Sonnet 5.5; Haiku 4.5: −9%'], ['answer length', 'on Sonnet 5.5; Haiku 4.5: −39%'], ['oversized tool output', 'per trimmed tool output'], ['accuracy', 'bare model: 156/156']],
     raceTitle: 'Same prompt. Four answers.', raceNote: 'visible answer tokens · lower is leaner', bare: 'no ruleset', tokens: ' tokens',
     cut: (p) => `−${p}% vs no ruleset`, raceFoot: 'Claude Code + Haiku 4.5 · mean of 3 runs · one run\'s verbatim answers are below',
     reads: 'what Claude reads', kept: '  ← error kept', foot1: 'Raw output is billed again on every later turn', foot2: 'Oversized tool output: ~48% smaller on average',
@@ -55,7 +55,7 @@ const I18N = {
     pill: 'Plugin de Claude Code · 13 agentes · 0 deps', tag1: 'Menos tokens de entrada y de salida.', tag2: 'Las mismas respuestas.',
     words: (a, b) => `${a} palabras → ${b}`, same: '✓ misma respuesta',
     statsTitle: 'Chisle frente al mismo modelo sin ruleset',
-    tiles: [['tokens facturados', '91% del modelo sin reglas'], ['longitud de respuesta', '61% del modelo sin reglas'], ['salida de herramientas', 'por salida recortada'], ['precisión', 'sin reglas: 156/156']],
+    tiles: [['tokens facturados', 'en Sonnet 5.5; Haiku 4.5: −9%'], ['longitud de respuesta', 'en Sonnet 5.5; Haiku 4.5: −39%'], ['salida de herramientas', 'por salida recortada'], ['precisión', 'sin reglas: 156/156']],
     raceTitle: 'Mismo prompt. Cuatro respuestas.', raceNote: 'tokens de respuesta visibles · menos es mejor', bare: 'sin ruleset', tokens: ' tokens',
     cut: (p) => `−${p}% frente a sin ruleset`, raceFoot: 'Claude Code + Haiku 4.5 · media de 3 ejecuciones · las respuestas literales de una, abajo',
     reads: 'lo que lee Claude', kept: '  ← error conservado', foot1: 'La salida en bruto se vuelve a cobrar en cada turno', foot2: 'Salida enorme de herramientas: ~48% más pequeña de media',
@@ -71,7 +71,7 @@ const I18N = {
     pill: 'Claude Code 플러그인 · 에이전트 13개 · 의존성 0', tag1: '입력 토큰도, 출력 토큰도 적게.', tag2: '답은 그대로.',
     words: (a, b) => `${a}단어 → ${b}단어`, same: '✓ 같은 답',
     statsTitle: '규칙 세트가 없는 같은 모델과 비교한 Chisle',
-    tiles: [['과금 출력 토큰', '규칙 없는 모델의 91%'], ['답변 길이', '규칙 없는 모델의 61%'], ['큰 도구 출력', '축소된 출력 기준'], ['정확도', '규칙 없음: 156/156']],
+    tiles: [['과금 출력 토큰', 'Sonnet 5.5 기준; Haiku 4.5: −9%'], ['답변 길이', 'Sonnet 5.5 기준; Haiku 4.5: −39%'], ['큰 도구 출력', '축소된 출력 기준'], ['정확도', '규칙 없음: 156/156']],
     raceTitle: '같은 프롬프트, 네 가지 답.', raceNote: '보이는 답변 토큰 · 낮을수록 간결', bare: '규칙 없음', tokens: ' 토큰',
     cut: (p) => `규칙 없음 대비 −${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 3회 평균 · 그중 한 번의 원문 답변은 아래에',
     reads: 'Claude가 읽는 내용', kept: '  ← 오류는 유지', foot1: '원본 출력은 이후 매 턴마다 다시 과금됩니다', foot2: '큰 도구 출력: 평균 ~48% 감소',
@@ -87,7 +87,7 @@ const I18N = {
     pill: 'Claude Code 插件 · 13 个智能体 · 零依赖', tag1: '输入更少 token，输出更少 token。', tag2: '答案不变。',
     words: (a, b) => `${a} 个词 → ${b} 个词`, same: '✓ 答案相同',
     statsTitle: 'Chisle 对比无规则集的同一模型',
-    tiles: [['计费输出 token', '无规则集模型的 91%'], ['回答长度', '无规则集模型的 61%'], ['超大工具输出', '按每个被精简的输出'], ['准确率', '无规则集：156/156']],
+    tiles: [['计费输出 token', 'Sonnet 5.5；Haiku 4.5 为 −9%'], ['回答长度', 'Sonnet 5.5；Haiku 4.5 为 −39%'], ['超大工具输出', '按每个被精简的输出'], ['准确率', '无规则集：156/156']],
     raceTitle: '同一个提示词，四个回答。', raceNote: '可见回答 token · 越低越精简', bare: '无规则集', tokens: ' token',
     cut: (p) => `比无规则集少 ${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 3 次运行的平均值 · 其中一次的原始回答见下方',
     reads: 'Claude 读到的内容', kept: '  ← 保留错误', foot1: '原始输出会在之后每一轮被重新计费', foot2: '超大工具输出：平均缩小约 48%',
@@ -103,7 +103,7 @@ const I18N = {
     pill: 'Claude Code プラグイン · 13 エージェント · 依存ゼロ', tag1: '入力も出力も、トークンは少なく。', tag2: '答えは同じ。',
     words: (a, b) => `${a} 語 → ${b} 語`, same: '✓ 同じ答え',
     statsTitle: 'ルールなしの同じモデルと比べた Chisle',
-    tiles: [['課金出力トークン', 'ルールなしモデルの 91%'], ['回答の長さ', 'ルールなしモデルの 61%'], ['巨大なツール出力', '削減した出力あたり'], ['精度', 'ルールなし：156/156']],
+    tiles: [['課金出力トークン', 'Sonnet 5.5；Haiku 4.5 は −9%'], ['回答の長さ', 'Sonnet 5.5；Haiku 4.5 は −39%'], ['巨大なツール出力', '削減した出力あたり'], ['精度', 'ルールなし：156/156']],
     raceTitle: '同じプロンプト、4 つの回答。', raceNote: '表示される回答トークン · 低いほど簡潔', bare: 'ルールなし', tokens: ' トークン',
     cut: (p) => `ルールなしより −${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 3 回の平均 · そのうち 1 回の回答の原文は下に',
     reads: 'Claude が読む内容', kept: '  ← エラーは残す', foot1: '生の出力は以降のターンごとに再課金されます', foot2: '巨大なツール出力：平均で約 48% 縮小',
@@ -260,8 +260,8 @@ function banner(t) {
 function stats(t) {
   const W = 880, H = 248;
   const tiles = [
-    ['−9%', ...L.tiles[0], 0.91],
-    ['−39%', ...L.tiles[1], 0.61],
+    ['−39%', ...L.tiles[0], 0.61],
+    ['−43%', ...L.tiles[1], 0.57],
     ['−48%', ...L.tiles[2], 0.52],
     ['156/156', ...L.tiles[3], 1],
   ];
@@ -278,7 +278,7 @@ function stats(t) {
       `<rect x="${x + 18}" y="${y0 + 138}" width="${fw}" height="8" rx="4" fill="${fc}">` +
       (p === 1 ? '' : anim('width', [[0, bw], [1, bw], [2.5, fw]], 5, { ease: true })) + '</rect></g>');
   });
-  return svg(t, W, H, 'Chisle versus the same model with no ruleset: 9% fewer billed output tokens, answers 39% shorter, oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.', o);
+  return svg(t, W, H, 'Chisle versus the same model with no ruleset, on Sonnet 5.5: 39% fewer billed output tokens (Haiku 4.5: 9%), answers 43% shorter (Haiku 4.5: 39%), oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.', o);
 }
 
 // ── Race: one prompt, four rulesets, every bar finishing at the same moment ──

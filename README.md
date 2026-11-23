@@ -22,7 +22,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/readme/stats-dark.svg">
-    <img src="assets/readme/stats-light.svg" width="880" alt="Chisle versus the same model with no ruleset: 9% fewer billed output tokens, answers 39% shorter, oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.">
+    <img src="assets/readme/stats-light.svg" width="880" alt="Chisle versus the same model with no ruleset, on Sonnet 5.5: 39% fewer billed output tokens (Haiku 4.5: 9%), answers 43% shorter (Haiku 4.5: 39%), oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.">
   </picture>
 </p>
 
@@ -114,8 +114,15 @@ Then a short example and a five-line list of the transitions.
 
 <p align="center">
   <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark-sonnet.svg">
+    <img src="assets/benchmark-sonnet-light.svg" width="860" alt="Claude Code with Sonnet 5.5, 39 answers (13 prompts, 3 runs) in one session, billed output tokens as percent of the same model with no ruleset: caveman 78%, ponytail 73%, Chisle 61%.">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark.svg">
-    <img src="assets/benchmark-light.svg" width="860" alt="Claude Code benchmark, 39 answers (13 prompts, 3 runs) in one session, billed output tokens as percent of the same model with no ruleset: caveman 96%, ponytail 115%, Chisle 91%.">
+    <img src="assets/benchmark-light.svg" width="860" alt="Claude Code with Haiku 4.5, the same prompts: caveman 96%, ponytail 115%, Chisle 91%. On Haiku every ruleset adds hidden thinking, which eats most of the shorter answers.">
   </picture>
 </p>
 

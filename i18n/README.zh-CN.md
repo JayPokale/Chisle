@@ -23,7 +23,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/stats-dark.svg">
-    <img src="../assets/readme/zh-CN/stats-light.svg" width="880" alt="Chisle 对比无规则集的同一模型：计费输出 token 减少 9%，回答缩短 39%，超大工具输出缩小 48%，准确率 156/156，与无规则集相同。">
+    <img src="../assets/readme/zh-CN/stats-light.svg" width="880" alt="Chisle 对比无规则集的同一模型（Sonnet 5.5）：计费输出 token 减少 39%（Haiku 4.5 为 9%），回答缩短 43%（Haiku 4.5 为 39%），超大工具输出缩小 48%，准确率 156/156，与无规则集相同。">
   </picture>
 </p>
 
@@ -115,8 +115,15 @@ class OrderStateMachine:
 
 <p align="center">
   <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-sonnet.svg">
+    <img src="../assets/benchmark-sonnet-light.svg" width="860" alt="使用 Sonnet 5.5 的 Claude Code，一次会话 39 个回答（13 个提示词 × 3 次），计费输出 token 占无规则集同一模型的百分比：caveman 78%，ponytail 73%，Chisle 61%。">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark.svg">
-    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code 基准测试，一次会话 39 个回答（13 个提示词 × 3 次），计费输出 token 占无规则集同一模型的百分比：caveman 96%，ponytail 115%，Chisle 91%。">
+    <img src="../assets/benchmark-light.svg" width="860" alt="使用 Haiku 4.5 的 Claude Code，相同提示词：caveman 96%，ponytail 115%，Chisle 91%。在 Haiku 上，任何规则集都会增加隐藏思考，几乎抵消回答变短带来的节省。">
   </picture>
 </p>
 
