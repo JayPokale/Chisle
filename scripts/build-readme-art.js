@@ -281,7 +281,7 @@ function stats(t) {
   return svg(t, W, H, 'Chisle versus the same model with no ruleset: 31% fewer billed output tokens, answers 49% shorter, oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.', o);
 }
 
-// ── Race: one prompt, four rulesets, tokens streamed at the same speed ────────
+// ── Race: one prompt, four rulesets, every bar finishing at the same moment ──
 function race(t) {
   const W = 880, H = 304, D = 9, X = 150, MAXW = 560, T0 = 0.6, RUN = 4.4;
   const arms = [['Chisle', 567], ['ponytail', 740], ['caveman', 1018], [L.bare, 1571]];
@@ -291,9 +291,9 @@ function race(t) {
     `<text x="${W - 28}" y="42" font-size="${fit(L.raceNote, 13, 380)}" fill="${t.muted}" text-anchor="end">${esc(L.raceNote)}</text>`,
     `<text x="28" y="70"${mono(12.5)} fill="${t.muted}">${esc('> Implement an order state machine: created, paid, shipped, delivered, cancelled, refunded…')}</text>`,
   ];
-  const tEnd = (n) => T0 + (n / max) * RUN;
+  const te = T0 + RUN; // all bars land together; only their lengths differ
   arms.forEach(([name, n], i) => {
-    const y = 98 + i * 44, w = r1((n / max) * MAXW), me = i === 0, te = tEnd(n);
+    const y = 98 + i * 44, w = r1((n / max) * MAXW), me = i === 0;
     o.push(`<text x="${X - 16}" y="${y + 15}" font-size="${fit(name, 14, 118)}" font-weight="${me ? 700 : 500}" fill="${me ? t.accent : t.soft}" text-anchor="end">${esc(name)}</text>`,
       `<rect x="${X}" y="${y}" width="${w}" height="20" rx="5" fill="${me ? t.fill : t.bar}">` +
         anim('width', [[T0, 0], [te, w], [D - 0.5, w], [D - 0.15, 0]], D) + '</rect>',
@@ -304,7 +304,7 @@ function race(t) {
   });
   const cut = L.cut(Math.round(100 * (1 - arms[0][1] / max)));
   const px = r1(X + (arms[0][1] / max) * MAXW + 106);
-  o.push(`<g>${shown(tEnd(max) + 0.2, D - 0.3, D)}<rect x="${px}" y="97" width="${r1(textW(cut, 12.5) * 1.12 + 24)}" height="22" rx="11" fill="${t.fill}" fill-opacity="0.12" stroke="${t.fill}" stroke-opacity="0.45"/>` +
+  o.push(`<g>${shown(te + 0.2, D - 0.3, D)}<rect x="${px}" y="97" width="${r1(textW(cut, 12.5) * 1.12 + 24)}" height="22" rx="11" fill="${t.fill}" fill-opacity="0.12" stroke="${t.fill}" stroke-opacity="0.45"/>` +
     `<text x="${px + 12}" y="112.5" font-size="12.5" font-weight="700" fill="${t.accent}">${esc(cut)}</text></g>`,
     `<text x="28" y="${H - 22}"${mono(fit(L.raceFoot, 11.5, 824, true))} fill="${t.faint}">${esc(L.raceFoot)}</text>`);
   return svg(t, W, H, 'Same prompt, four rulesets, visible answer tokens: Chisle 567, ponytail 740, caveman 1,018, no ruleset 1,571. Chisle is 64% shorter than no ruleset.', o);
