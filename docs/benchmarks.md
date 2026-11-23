@@ -10,7 +10,7 @@ The output-axis runs (`run-ablation.js`, `run-live.sh`) call Claude Code with to
 
 Haiku 4.5, Claude Code 2.1.323, tools off with the standalone note, all arms in one session. Rivals: caveman `ef6050c5e184`, ponytail 4.8.3. No arm gave a fake tool call or a non-answer. Pooled sums vs the bare model, 95% bootstrap intervals ([`pooled.js`](../benchmarks/pooled.js)).
 
-**Main suite**, the 13 `run-live.sh` prompts × 3 seeds, 39 answers per arm ([raw cells](../benchmarks/results/raw-314-direct/), [every prompt and answer](../benchmarks/results/raw-314-direct/ANSWERS.md)). The README chart is built from it.
+**Main suite**, the 13 `run-live.sh` prompts × 3 seeds, 39 answers per arm ([raw cells](../benchmarks/results/raw-314-direct/), [every prompt and answer](../benchmarks/results/raw-314-direct/ANSWERS.md)). The README's Haiku chart is built from it.
 
 | | billed | 95% CI | answer length | 95% CI | answer lines | reasoning | backfires |
 |---|--:|--:|--:|--:|--:|--:|--:|
@@ -18,6 +18,16 @@ Haiku 4.5, Claude Code 2.1.323, tools off with the standalone note, all arms in 
 | ponytail | 115% | 96–136% | 70% | 61–79% | 61% | 248% | 24 / 39 |
 | **Chisle 3.14** | **91%** | **78–106%** | **61%** | **53–70%** | **55%** | 179% | **16 / 39** |
 | chisle-C (not shipped) | 92% | 81–105% | 62% | 54–70% | 57% | 183% | 12 / 39 |
+
+**Sonnet 5.5**, the same 13 prompts × 3 seeds, 39 answers per arm, same session setup ([raw cells](../benchmarks/results/raw-314-sonnet-direct/), [every prompt and answer](../benchmarks/results/raw-314-sonnet-direct/ANSWERS.md)). The README's Sonnet chart and stats card are built from it.
+
+| | billed | 95% CI | answer length | 95% CI | answer lines | reasoning | backfires |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| caveman | 78% | 73–82% | 77% | 73–81% | 83% | 81% | 0 / 39 |
+| ponytail | 73% | 68–79% | 64% | 58–69% | 58% | 190% | 1 / 39 |
+| **Chisle 3.14** | **61%** | **56–66%** | **57%** | **52–61%** | **50%** | 117% | **0 / 39** |
+
+Why the models differ: per answer, the bare model thinks 351 hidden tokens on Haiku but 159 on Sonnet. On Haiku, Chisle cuts the visible answer from 1,040 to 638 tokens and adds 279 tokens of thinking (restating the task, listing the rules, planning the smaller code), so billed falls only 9%. On Sonnet the extra thinking is 27 tokens, and billed falls 39%, close to the 43% cut in answer length. Chisle is the cheapest arm on 11 of the 13 prompts on Sonnet (caveman wins `regex-concept` and `auth-bug`), and its interval clears both rivals'.
 
 **Ladder suite**, 12 coding asks where the platform already has the answer plus three root-cause fixes (`SUITES=ladder`, committed before its first run), × 2 seeds, 24 answers per arm ([raw cells](../benchmarks/results/raw-314-ladder-direct/), [every prompt and answer](../benchmarks/results/raw-314-ladder-direct/ANSWERS.md)).
 
@@ -27,9 +37,10 @@ Haiku 4.5, Claude Code 2.1.323, tools off with the standalone note, all arms in 
 | ponytail | 106% | 88–126% | 57% | 47–67% | 47% | 181% | 13 / 24 |
 | **Chisle 3.14** | **90%** | **78–105%** | **51%** | **44–59%** | **42%** | 151% | 7 / 24 |
 
-Chisle writes the shortest answers in both suites, and that gap is outside the noise (main suite 61% vs caveman 76%). Billed tokens favour Chisle too, but narrowly (91% vs 96%, 90% vs 92%) and inside the intervals: on Haiku every ruleset raises hidden reasoning, which eats most of the shorter answers. `chisle-C` ([its text](../benchmarks/results/raw-314-direct/chisle-C.SKILL.md)) is a 1.6k-character rewrite of the ruleset aimed at that reasoning; it made no difference, and an earlier run where it beat caveman was itself contaminated by fake tool calls. It also scored 156/156 on the accuracy suite.
+On Haiku, Chisle writes the shortest answers in both suites, and that gap is outside the noise (main suite 61% vs caveman 76%). Billed tokens favour Chisle too, but narrowly (91% vs 96%, 90% vs 92%) and inside the intervals: on Haiku every ruleset raises hidden reasoning, which eats most of the shorter answers. `chisle-C` ([its text](../benchmarks/results/raw-314-direct/chisle-C.SKILL.md)) is a 1.6k-character rewrite of the ruleset aimed at that reasoning; it made no difference, and an earlier run where it beat caveman was itself contaminated by fake tool calls. It also scored 156/156 on the accuracy suite.
 
 ```bash
+MODEL=claude-sonnet-5-5 node benchmarks/run-ablation.js benchmarks/results/raw-314-sonnet-direct 3 4 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle=skills/chisle/SKILL.md
 node benchmarks/run-ablation.js benchmarks/results/raw-314-direct 3 6 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle=skills/chisle/SKILL.md chisle-C=benchmarks/results/raw-314-direct/chisle-C.SKILL.md
 SUITES=ladder node benchmarks/run-ablation.js benchmarks/results/raw-314-ladder-direct 2 6 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle=skills/chisle/SKILL.md
 ARMS=vanilla,caveman,ponytail,chisle,chisle-C node benchmarks/pooled.js benchmarks/results/raw-314-direct/*/
