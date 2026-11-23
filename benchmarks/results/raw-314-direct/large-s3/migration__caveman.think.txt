@@ -1,0 +1,26 @@
+User wants a database migration script. They say "standalone question: there is no codebase and no tool access here" - so they don't want me to interact with the file system, just show code.
+
+They want:
+1. Move users table from full_name to first_name/last_name
+2. Backfill existing rows
+3. Safely re-runnable
+
+They want me in caveman mode (full). So I should be terse, drop articles, fragments OK.
+
+This is a critical operation, so I should be clear about the order and what happens. Given it's destructive (data migration), I should probably keep clarity for the critical parts but can be caveman for explanations.
+
+Let me write a migration that:
+1. Checks if columns already exist (idempotent)
+2. Adds new columns if needed
+3. Backfills from full_name
+4. Removes old column only after verified
+5. Works for different DBs (I'll show SQL generic + maybe a versioned migration format like Alembic for Python/Flask)
+
+Actually, let me show multiple approaches:
+1. Plain SQL (idempotent)
+2. Python/Alembic (common for Flask/Django apps)
+3. Node/Knex (common for JS apps)
+
+I'll focus on the idempotent SQL first, then maybe one framework example.
+
+Caveman mode: drop articles (a/an/the), filler (just/really/basically), pleasantries. Fragments OK. Short synonyms.

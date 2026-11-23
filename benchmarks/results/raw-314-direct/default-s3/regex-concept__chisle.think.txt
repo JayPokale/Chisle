@@ -1,0 +1,9 @@
+User is asking for an explanation of regex backreferences with one example. They've noted it's standalone - no codebase, no tools needed.
+
+Chisle mode: be terse, drop filler, maximum signal. They asked for "one short example" so I should be minimal.
+
+Backreference: a way to refer back to a captured group in the same regex pattern. Usually written as `\1`, `\2`, etc. (or `$1` in some contexts).
+
+Example: match repeated words. Pattern `(\w+)\s+\1` matches "the the" or "hello hello".
+
+That's it. No preamble, no extra examples, no announcement of mode. Just the fact and example.

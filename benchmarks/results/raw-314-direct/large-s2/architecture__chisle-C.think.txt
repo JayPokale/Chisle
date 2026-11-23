@@ -1,0 +1,15 @@
+This is a standalone architectural question about migrating a monolith to services. The user is asking for conceptual guidance on the strategy, not asking me to implement anything. No codebase, no tools needed.
+
+Given the Chisle mode is active, I should:
+- Answer directly without preamble
+- Use fragments and drop filler
+- Keep decisive facts, cut words around them
+- No headings/bullets unless requested
+- Three short lines after code, at most
+
+The user asks about:
+1. Ordering (what to extract first)
+2. Data ownership (how to split data)
+3. Keeping it shippable (incremental deployment)
+
+I should cover the core pattern and trade-offs concisely.

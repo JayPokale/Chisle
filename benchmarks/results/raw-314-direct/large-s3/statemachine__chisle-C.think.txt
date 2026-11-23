@@ -1,0 +1,53 @@
+The user wants me to implement an order state machine with specific states and transitions. They explicitly say "Standalone question: there is no codebase and no tool access here." This means they just want me to show code directly, without using any tools.
+
+The states are:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+I need to think about legal transitions:
+- created → paid (order gets paid)
+- created → cancelled (order gets cancelled before payment)
+- paid → shipped (order is prepared and shipped)
+- paid → refunded (order gets refunded after payment)
+- shipped → delivered (order is delivered)
+- delivered → (terminal state)
+- cancelled → (terminal state)
+- refunded → (terminal state)
+
+Invalid transitions should be rejected. For example:
+- created → shipped (can't ship without payment)
+- shipped → cancelled (can't cancel after shipping)
+- delivered → refunded (can't refund after delivered)
+
+This is straightforward - I should write clean, minimal code. I could do this in Python, Go, TypeScript, or another language. Python is probably clearest for a state machine. I could use:
+1. A simple class with explicit state transitions (most explicit)
+2. A dictionary mapping current states to valid next states
+3. An enum-based approach
+4. A more complex pattern like visitor or strategy
+
+The simplest, most direct approach: class with valid transitions dictionary + method to perform transitions.
+
+Let me write this in Python first, then maybe offer alternatives.
+
+```python
+class OrderStateMachine:
+    # Define valid transitions
+    TRANSITIONS = {
+        'created': {'paid', 'cancelled'},
+        'paid': {'shipped', 'refunded'},
+        'shipped': {'delivered'},
+        'delivered': set(),
+        'cancelled': set(),
+        'refunded': set(),
+    }
+    
+    def __init__(self):
+        self.state = 'created'
+    
+    def transition(self, new_state):
+Writing the transition check and state update next...
+

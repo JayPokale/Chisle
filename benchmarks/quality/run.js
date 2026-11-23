@@ -27,7 +27,7 @@ fs.mkdirSync(RAW, { recursive: true });
 // Isolated config: credentials only, so no personal settings/CLAUDE.md/plugins leak in.
 const ISO = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-bench-'));
 fs.copyFileSync(path.join(os.homedir(), '.claude', '.credentials.json'), path.join(ISO, '.credentials.json'));
-const skill = fs.readFileSync(path.join(HERE, '..', '..', 'skills', 'chisle', 'SKILL.md'), 'utf8');
+const skill = fs.readFileSync(process.env.CHISLE_SKILL || path.join(HERE, '..', '..', 'skills', 'chisle', 'SKILL.md'), 'utf8');
 const body = skill.split(/^---\s*$/m).slice(2).join('---').trim();
 if (!body) { console.error('empty chisle system prompt'); process.exit(1); }
 fs.writeFileSync(path.join(ISO, 'chisle.txt'), body + '\n');

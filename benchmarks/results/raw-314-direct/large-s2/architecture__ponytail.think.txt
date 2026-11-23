@@ -1,0 +1,36 @@
+This is a detailed architectural question about migrating a monolith to microservices. The user has explicitly stated this is a standalone question with no codebase or tool access, so I should provide conceptual guidance rather than code.
+
+The ponytail mode is active, which means I should be efficient and direct, but this isn't about code - it's about architectural strategy. I should give practical, grounded advice that reflects real constraints rather than theoretical ideals.
+
+Key topics to cover:
+1. Ordering (what to extract first)
+2. Data ownership (managing shared data)
+3. Keeping it shippable (incremental deployment)
+
+Let me think about what matters in real migrations:
+
+**Ordering:**
+- Extract the parts that are least coupled to everything else first (highest fan-out, lowest fan-in)
+- Or: extract parts that are causing the most pain (the team bottleneck, the scaling blocker)
+- The right answer is usually the second one - ship value early to prove the pattern works
+- Early extractions set the template for later ones
+
+**Data ownership:**
+- The monolith keeps existing data initially (strangle fig pattern)
+- New service gets its own copy via event log or dual-write
+- Eventually the monolith stops writing to that data, service owns it
+- Schema versioning and backward compatibility matter
+- Transactions across services are hard - eventual consistency becomes the model
+
+**Keeping it shippable:**
+- Branch on the monolith, not on feature completion
+- Each service extraction is a deployable change, not a 6-month integration
+- The monolith's public API stays stable (adapters/facades as needed)
+- Run the new service dark first (write-through, read nothing)
+- Then shadow read (compare results, discard)
+- Then parallel read (both paths, pick winner)
+- Then cutover
+
+This is good territory for ponytail - it's about avoiding over-engineering (the monolith to microservices culture shift). The lazy answer to "what do we extract first" is "what causes us actual pain today" not "what's theoretically decoupled."
+I'm keeping the answer direct and practical, without over-explaining.
+

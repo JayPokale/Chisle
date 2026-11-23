@@ -1,0 +1,25 @@
+The user is asking for code that makes a deep copy of a nested settings object before editing it. This is a standalone question with no codebase context. They want to see the code that demonstrates this.
+
+The user hasn't specified a programming language, but given this is likely a common scenario, I should probably provide a solution in a commonly-used language. I could do JavaScript (most common for web settings), Python, or even show a couple of languages.
+
+Actually, let me think about what the user is really asking. They want to see how to deep copy a nested settings object. This is language-agnostic in concept but specific in implementation.
+
+Since they said "show the code" and no specific language was mentioned, I should probably ask which language, OR provide the most common/useful one. Given the audience of Claude Code users, JavaScript/TypeScript is very common, but Python is also very common.
+
+Actually, let me re-read: "Standalone question: there is no codebase and no tool access here." So they're just asking for a code example, not to work with an actual project.
+
+I should provide code, probably in a commonly useful language. Without knowing their preference, I'll go with JavaScript since it's very common for settings objects and has clear deep copy examples. But I could also do Python. Let me do JavaScript as the main example since `JSON.parse(JSON.stringify())` is a classic pattern, and also mention `structuredClone()` as a modern approach. I could also show the lodash approach.
+
+Wait, they said "show the code" - singular or just want one approach? I think showing a few approaches with their trade-offs would be useful. Let me keep it concise per ponytail guidelines.
+
+Ponytail is active. What's the ladder here?
+1. Does this need to exist at all? It's a question about code patterns, so yes.
+2. Already in codebase? No codebase.
+3. Stdlib? Yes - most languages have built-in deep copy or serialization.
+4. Native platform feature? Yes.
+Next I'll run through the stdlib-first options, since that's the lightest path. I'm leaning toward JavaScript for the main example, with Python as an alternative, and I'll aim for the smallest working version.
+
+Now I'm writing the JavaScript example with structuredClone, and I'm starting to note the JSON.parse approach for older environments...
+
+Settling on Python for the next example, since the JavaScript snippet has already been covered. I'm writing out a deepcopy version with a nested change to show the original stays untouched.
+

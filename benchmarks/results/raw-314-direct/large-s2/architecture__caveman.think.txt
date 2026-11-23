@@ -1,0 +1,20 @@
+User asking for explanation of how to migrate monolith to microservices gradually, without big-bang rewrite. They note it's a standalone question - no codebase, no tool access. They want guidance on ordering, data ownership, keeping things shippable throughout.
+
+They've activated "caveman mode" - respond terse, drop articles/filler, use fragments. Keep technical substance. Only drop fluff. This is an explanation question, not code work.
+
+Let me think through this:
+1. Strangler fig pattern - wrap existing code
+2. Ordering - depends on coupling, risk, value
+3. Data ownership - hard part. Can't just break relationships.
+4. Keep shippable - feature flags, dual writes, gradual traffic shift
+
+Caveman style: drop "the", "just", "simply", "happy to". Fragments fine. Short synonyms. Pattern: [thing] [action] [reason]. [next].
+
+Let me structure:
+- Core pattern (strangler fig)
+- How to order (dependency graph + value + risk)
+- Data migration strategy (dual writes, ownership boundaries)
+- Keeping shippable (feature flags, gradual rollout, easy rollback)
+- Tradeoffs
+
+Caveman level: full mode (default)

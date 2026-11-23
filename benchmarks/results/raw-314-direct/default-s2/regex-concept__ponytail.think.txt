@@ -1,0 +1,11 @@
+The user is asking for an explanation of regex backreferences with one short example. This is a straightforward, standalone question about a programming concept. No tools are needed.
+
+They want:
+1. An explanation of what a backreference is
+2. One short example
+
+I should be concise and clear. This is not a task that requires ponytail mode (that's for code-building decisions), just a direct explanation.
+
+A backreference in regex refers to a previously captured group that you can reference later in the pattern or replacement. The most common use is `\1`, `\2`, etc. for the nth captured group.
+
+Simple example: Finding repeated words, like "the the" or "hello hello".

@@ -1,0 +1,16 @@
+The user is asking for a deep copy of a nested settings object before editing it. This is a standalone question with no codebase context. They want to see code that demonstrates how to deep copy a nested object.
+
+This is a common problem in JavaScript/TypeScript. There are several approaches:
+1. JSON serialization method (simple but limited)
+2. Recursive function (robust)
+3. Using a library like lodash
+4. Using structuredClone (modern API)
+
+I should show a clean, practical implementation. Since they didn't specify a language, I'll assume JavaScript/TypeScript since it's the most common context for this question. I'll show a few approaches and explain them.
+
+Let me provide:
+1. A simple recursive deep copy function
+2. The JSON method (with caveats)
+3. The modern structuredClone approach
+
+I'll keep it concise and practical.

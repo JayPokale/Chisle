@@ -1,0 +1,10 @@
+The user is asking for an explanation of database connection pooling - how it works and why it helps. They've explicitly noted this is a standalone question with no codebase or tool access needed.
+
+This is a straightforward educational question. I should explain it clearly and concisely in the Chisle mode (direct, fragments, no filler).
+
+Key points to cover:
+1. What it is
+2. How it works
+3. Why it helps (benefits)
+
+I should be direct and avoid unnecessary prose.

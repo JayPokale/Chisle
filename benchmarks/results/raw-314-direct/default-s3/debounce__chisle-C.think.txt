@@ -1,0 +1,12 @@
+The user is asking for a debounce implementation for a search input that currently fires API calls on every keystroke. They explicitly state "Standalone question: there is no codebase and no tool access here." 
+
+This is a straightforward request for code showing how to add debouncing. I should provide a clean, practical solution. Since they didn't specify a framework, I'll show vanilla JavaScript (most universal) but could also show React/TypeScript versions. Let me give the clearest, smallest working solution first.
+
+The user is in Chisle mode, so I need to:
+- Answer directly, no preamble
+- Code first
+- Fragments/minimal prose
+- No "Here's how to do it:" - just show it
+- Keep it small and practical
+
+Let me show a vanilla JS approach first (most universal), then optionally mention framework approaches.

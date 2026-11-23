@@ -1,0 +1,52 @@
+The user is asking for a code snippet to sort file names so that "file2" comes before "file10". This is about natural/numeric sorting rather than lexicographic sorting.
+
+In lexicographic sorting, "file10" comes before "file2" because "1" < "2" in string comparison.
+
+They want:
+- file1
+- file2
+- file3
+- ...
+- file9
+- file10
+- etc.
+
+This is a natural sort problem. Let me show solutions in a few common languages.
+
+The user says "Standalone question: there is no codebase and no tool access here" - so I should just provide code, not use any tools.
+
+Since this is Ponytail mode and the user is asking for code, I should:
+1. Show the code
+2. Keep explanation minimal
+3. Use the ladder - for natural sorting, there are stdlib/native options
+
+Python is probably the most common. I could use:
+- `natsort` package (not stdlib, requires install)
+- Manual sorting with a key function that separates numbers from text (stdlib, clever)
+- `regex` with key function (stdlib, clever)
+
+For Python, the simplest stdlib approach is to use a sort key that extracts numeric and text parts:
+
+```python
+import re
+files = ["file10", "file2", "file1", "file20", "file3"]
+files.sort(key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
+print(files)
+```
+
+Or without regex:
+```python
+import re
+files = ["file10", "file2", "file1", "file20", "file3"]
+files.sort(key=lambda x: [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', x)])
+```
+
+Let me think about what languages to show. Python is most common, but I could show:
+Next I'm listing a few languages to cover, but the user asked for "the code" singular, so one Python example should do. I'm using a regex split with a key function to sort numeric parts as numbers, and I'm showing the printed result.
+
+Still writing the natural sort code...
+
+Still writing the natural sort code...
+
+Weighing whether to add a JavaScript version too, but the user asked for "the code" singular, so I'm sticking with one Python example.
+

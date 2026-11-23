@@ -1,0 +1,40 @@
+The user is asking me to show code that reads API base URL and request timeout from environment variables with sensible defaults. This is a standalone question without a codebase.
+
+They want to see code that:
+1. Reads API base URL from an environment variable
+2. Reads request timeout from an environment variable
+3. Provides sensible defaults for both
+
+Since there's no specific language mentioned, I should probably provide a few common options or ask. But the most common case would be Python given it's often used for such tasks. Actually, let me just provide Python since that's most common, but I could add others.
+
+Let me think about what "sensible defaults" might be:
+- API base URL: something like "http://localhost:8000" or "https://api.example.com"
+- Request timeout: typically 30 seconds is reasonable
+
+Since Ponytail is active, I should:
+1. Skip unnecessary abstraction
+2. Use stdlib where possible
+3. Keep it minimal
+4. No extra scaffolding
+
+For Python, I'd use `os.getenv()` which is stdlib and built-in.
+
+Let me provide a simple, practical example:
+
+```python
+import os
+
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "30"))
+```
+
+That's the minimal version. I could show it in different languages or patterns, but keeping it lazy - one liner pattern.
+
+Actually, let me think - should I show multiple languages? The user didn't specify. I'll show Python as the primary (most common) and maybe note alternatives briefly.
+
+Under Ponytail full mode:
+- Code first
+- Brief explanation
+- Pattern: `[code] → skipped: [X], add when [Y].`
+
+This is very straightforward, no complexity to skip or debate.

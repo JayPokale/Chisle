@@ -1,0 +1,5 @@
+The user is asking me to show code that groups a list of orders by customer ID and totals each customer's spend. They explicitly state this is a standalone question with no codebase and no tool access.
+
+Since there's no context about what language they want or what format the data is in, I should provide a practical example that demonstrates the concept. I'll show solutions in a commonly used language (like Python) and maybe another option, as this is a common data manipulation task.
+
+Let me provide clean, practical code examples.

@@ -1,0 +1,22 @@
+The user is asking for code to group orders by customer ID and calculate total spend per customer. They explicitly state this is a standalone question with no codebase and no tool access.
+
+Since there's no context about language/framework, I should use the most common default. For data manipulation tasks like this, Python is very common, and so is SQL. I'll go with Python as it's more universally applicable for a "show the code" request.
+
+The user wants to see the code, so I should provide a working solution. They want:
+1. Group by customer ID
+2. Calculate total spend per customer
+3. Show the code
+
+Since they didn't specify the data structure, I'll assume a list of orders with customer_id and amount. I'll show a few approaches (simplest would be best per chisle rules).
+
+Chisle mode: fragments, drop filler, code first, brief explanation after if needed.
+
+Let me think about the approach:
+- Simplest: Python dict with group by logic
+- Or: pandas (but adds dependency)
+- Or: SQL (but need database context)
+- Or: Python standard library with groupby from itertools
+
+For maximum signal with no dependencies: Python dict or itertools.groupby. Dict is clearest.
+
+Code first, then one line of context if needed.

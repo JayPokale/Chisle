@@ -1,0 +1,8 @@
+The user is asking for an explanation of database connection pooling - how it works and why it's beneficial. This is a standalone educational question with no codebase involved. They've explicitly noted there's no codebase and no tool access needed.
+
+I should provide a clear, concise explanation covering:
+1. What database connection pooling is
+2. How it works mechanically
+3. Why it's beneficial (performance, resource efficiency, etc.)
+
+This should be direct and to the point, without unnecessary elaboration. I'll avoid the structure of headers and sections - just a clear explanation.

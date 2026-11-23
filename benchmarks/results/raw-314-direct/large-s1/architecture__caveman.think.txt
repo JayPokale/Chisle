@@ -1,0 +1,24 @@
+User asking for a standalone explanation about migrating monolith to microservices. No code, no tools. Just pure explanation. They want:
+1. How to migrate without big-bang
+2. Ordering (which services first)
+3. Data ownership (how to split data)
+4. Keeping it shippable throughout
+
+This is a strategy/architecture question. Given "caveman mode" is on and active, I should be terse but keep the substance. Articles/filler drop, fragments OK. No hedging.
+
+Pattern: explain strategy clearly but compressed. Use short synonyms, structural fragments.
+
+Let me structure:
+1. Big bang problem
+2. Strangler pattern + approach
+3. Ordering principles
+4. Data ownership model
+5. Keeping shippable
+6. Example flow
+
+Caveman rules:
+- Drop: a/an/the, just/really/basically, sure/certainly
+- Use fragments
+- Short synonyms (service not "microservice module", split not "partition", break not "decompose"
+- Keep technical terms exact
+- Pattern: [thing] [action] [reason]. [next]

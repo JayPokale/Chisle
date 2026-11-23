@@ -1,0 +1,15 @@
+The user is describing a classic off-by-one bug in token expiry validation. They're asking me to find and fix the root cause, but they explicitly state "there is no codebase and no tool access here" — this is a standalone question.
+
+This is a logic error question, not a code review. The root cause is straightforward:
+
+**The bug:** Using `currentTime > expiry` means tokens are rejected when `currentTime == expiry`. A token that expires at time T should be valid up to and including time T. At time T+1, it's expired.
+
+**The fix:** Change `>` to `>=`. That way:
+- If `currentTime == expiry`: `currentTime >= expiry` is true → reject (correct, it's expired)
+- If `currentTime < expiry`: `currentTime >= expiry` is false → accept (correct, still valid)
+
+**Why this matters:** The boundary case is real. If a token expires at 12:00:00 and the current time is exactly 12:00:00, the user should not be rejected yet. Only after 12:00:01 should it fail.
+
+The user wants me to identify the root cause and explain the fix. This is a "lazy senior developer" territory — the answer is one line of code change and a one-line explanation.
+
+They said "no codebase and no tool access" so I shouldn't try to use tools. Just diagnose and explain.

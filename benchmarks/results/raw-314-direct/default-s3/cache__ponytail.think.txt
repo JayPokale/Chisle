@@ -1,0 +1,25 @@
+The user is asking me to add a cache layer for a user profile API. However, they're noting that this is a "standalone question" with no codebase and no tool access.
+
+Since there's no existing codebase to work with, I should:
+1. Provide minimal, working code for a cache layer
+2. Follow ponytail principles (I'm in ponytail mode by default)
+3. Use the ladder: Does this need to exist? → Yes (asked explicitly). Already in codebase? → N/A. Stdlib does it? → Yes, functools.lru_cache for simple cases.
+
+For a user profile API cache, the lazy approach is:
+- Use `functools.lru_cache` or `@cache` from functools for simple in-memory caching
+- Or if they need TTL/expiration, use a simple dict with timestamps
+- Or if using a framework like FastAPI, middleware-based caching
+
+The *shortest* working solution depends on context:
+- Pure Python function? `@lru_cache`
+- FastAPI/HTTP API? middleware or decorator
+- Django? QuerySet caching or view-level
+
+Since they said "standalone question" with no context, I should give the simplest working example. The laziest cache that works is `@lru_cache` from stdlib.
+
+Let me provide:
+1. The simplest version (functools.lru_cache)
+2. A slightly more featureful version if they need TTL
+3. Brief explanation of when to use each
+
+Ponytail says: code first, then at most three short lines. No essays. If explanation is longer than code, delete it.

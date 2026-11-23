@@ -1,0 +1,12 @@
+The user is asking me to add a cache layer for user profile API responses. However, they explicitly note this is a standalone question with no codebase and no tool access.
+
+Since there's no existing codebase to work with, I need to provide example code showing a cache layer implementation for user profile API responses. I should show practical, production-ready code.
+
+I'm in "caveman" mode (full), so I should be terse, drop articles, avoid filler. But for code examples without an existing project, I should still write clear, working code.
+
+Let me provide a few approaches:
+1. A simple in-memory cache with TTL
+2. A more robust solution with Redis
+3. Maybe a middleware approach
+
+I'll show practical implementations they can adapt to their use case.

@@ -1,0 +1,18 @@
+The user is asking about a floating-point precision issue where adding $0.10 and $0.20 results in $0.30000000000000004 instead of exactly $0.30. This is a classic floating-point arithmetic problem.
+
+The root cause is that decimal numbers like 0.1, 0.2, and 0.3 cannot be represented exactly in binary floating-point (IEEE 754 format, which is what most programming languages use). When you add 0.1 + 0.2, the binary representation errors compound, resulting in something slightly larger than 0.3.
+
+In binary:
+- 0.1 (decimal) ≈ 0.0001100110011... (repeating, can't be exact)
+- 0.2 (decimal) ≈ 0.0011001100110... (repeating, can't be exact)
+- When added, the rounding errors accumulate
+
+The fix depends on the language, but common approaches:
+1. Store currency as integers (cents, not dollars) - multiply by 100
+2. Use decimal/BigDecimal libraries that handle base-10 properly
+3. Round to 2 decimal places when displaying
+4. Use fixed-point arithmetic libraries
+
+This is a caveman-mode question though. The user said "Standalone question: there is no codebase and no tool access here." So they just want the explanation.
+
+Let me be terse.

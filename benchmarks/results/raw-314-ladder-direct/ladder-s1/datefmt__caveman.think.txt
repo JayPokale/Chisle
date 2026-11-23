@@ -1,0 +1,11 @@
+User wants code to show an ISO timestamp from an API as a localized date like "Nov 23, 2026" in a web app. This is a standalone question with no codebase.
+
+Caveman mode active. Keep it terse, drop fluff.
+
+They want to see code that converts ISO timestamp to localized date format. This is likely JavaScript/React for a web app.
+
+No codebase, no tool access - they just want the code shown.
+
+Caveman mode: Drop articles, fluff, pleasantries. Fragments OK. Keep technical terms exact. Code blocks unchanged.
+
+I'll show JavaScript/React code for this common task.

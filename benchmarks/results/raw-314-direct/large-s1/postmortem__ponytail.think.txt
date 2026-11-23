@@ -1,0 +1,14 @@
+The user is asking me to write an incident postmortem for a hypothetical scenario: a four-hour outage caused by connection pool exhaustion from a slow downstream dependency. They've explicitly noted this is a standalone question with no codebase and no tool access needed.
+
+This is a straightforward writing task. They want a postmortem document following standard incident post-mortem format. I should include:
+- Incident summary/overview
+- Timeline (since it's a 4-hour outage, I'll create a realistic timeline)
+- Root cause analysis
+- Remediations/action items
+- Lessons learned
+
+I should make it realistic and detailed enough to be useful as a template or example. I'll use realistic timestamps and technical details.
+
+Since this is asking for a document and the user is asking for a "standalone" postmortem, I should deliver it as formatted text that they can use directly. No tool calls needed.
+
+Let me structure this as a professional incident postmortem that would be typical in a tech organization.

@@ -39,6 +39,12 @@ const arms = armSpecs.map((spec) => {
   return { name, prompt };
 });
 
+// Claude Code tells the model the account's email and it may repeat it. Cells
+// get committed, so that one address is redacted; other emails in answers
+// (e.g. code examples) stay verbatim.
+const ACCOUNT = (() => { try { return JSON.parse(fs.readFileSync(path.join(require('os').homedir(), '.claude.json'), 'utf8')).oauthAccount.emailAddress || null; } catch (_) { return null; } })();
+const redact = (s) => (ACCOUNT ? s.split(ACCOUNT).join('<email>') : s);
+
 // The prompts live in run-live.sh; read them rather than keep a second copy.
 // Normalize CRLF: a Windows checkout with core.autocrlf=true breaks the heredoc match.
 const live = fs.readFileSync(path.join(__dirname, 'run-live.sh'), 'utf8').replace(/\r\n/g, '\n');
@@ -49,7 +55,11 @@ const suites = Object.fromEntries((process.env.SUITES || 'default,large').split(
 
 const cells = [];
 for (let s = 1; s <= Number(seeds); s++) for (const [suite, tasks] of Object.entries(suites)) for (const line of tasks.split('\n')) {
-  const [task, , prompt] = line.split('\t');
+  const [task, , ask] = line.split('\t');
+  // Tools are off, but the prompts say "our app": without this note every arm,
+  // bare included, often answered with fake <function_calls> text instead of an
+  // answer (30-50% of cells before 2026-11-23). Same text for every arm.
+  const prompt = ask + ' (Standalone question: there is no codebase and no tool access here.)';
   for (const arm of arms) cells.push({ dir: path.join(out, `${suite}-s${s}`), task, prompt, arm });
 }
 const file = (c, ext) => path.join(c.dir, `${c.task}__${c.arm.name}.${ext}`);
@@ -79,8 +89,8 @@ const run = (c) => new Promise((resolve) => {
         if (c.tries >= 6) { limited = true; return resolve(); }
         return setTimeout(() => run(c).then(resolve), 60000 * c.tries);
       }
-      fs.writeFileSync(file(c, 'json'), JSON.stringify(result));
-      fs.writeFileSync(file(c, 'think.txt'), thinking.join('\n\n---\n\n'));
+      fs.writeFileSync(file(c, 'json'), redact(JSON.stringify(result)));
+      fs.writeFileSync(file(c, 'think.txt'), redact(thinking.join('\n\n---\n\n')));
       resolve();
     });
 });

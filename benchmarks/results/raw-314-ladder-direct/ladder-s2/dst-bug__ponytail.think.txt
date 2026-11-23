@@ -1,0 +1,28 @@
+The user is asking me to identify and explain the root cause of why a nightly job drifts by an hour after every daylight saving time (DST) change, when it's scheduled with `setInterval(run, 24 * 60 * 60 * 1000)`.
+
+Let me think through this:
+
+1. `setInterval(run, 24 * 60 * 60 * 1000)` schedules a job to run every 86,400,000 milliseconds, which is exactly 24 hours in clock time.
+
+2. The issue is that DST causes the actual wall-clock day to be either 23 hours (spring forward) or 25 hours (fall back).
+
+3. When DST happens:
+   - Spring forward (lose an hour): The clock jumps from 2:00 AM to 3:00 AM. So that day only has 23 actual hours.
+   - Fall back (gain an hour): The clock goes back from 2:00 AM to 1:00 AM. So that day has 25 actual hours.
+
+4. If a job is scheduled with `setInterval(24 * 60 * 60 * 1000)`:
+   - In spring forward: The interval represents 24 hours of elapsed time, but the wall-clock shows only 23 hours have passed. So the job runs 1 hour later in wall-clock time than expected.
+   - In fall back: The interval represents 24 hours of elapsed time, but the wall-clock shows 25 hours have passed. So the job runs 1 hour earlier in wall-clock time than expected.
+
+Actually, let me reconsider. The user says "drifts by an hour after every daylight saving change" - drift typically means it gets progressively off.
+
+Let me think more carefully:
+
+If the nightly job is supposed to run at, say, 2:00 AM:
+- Initially scheduled to run at 2:00 AM
+The reason the drift happens is that `setInterval` counts elapsed milliseconds, while the nightly schedule is defined in wall-clock time, so each DST transition shifts the job by an hour relative to the clock.
+
+Now I'm settling on the real cause: `setInterval` measures elapsed time, while the job is meant to run at a wall-clock hour, so each DST change shifts it by an hour. I'm considering fixes like a DST-aware scheduler, computing the next run from the target wall-clock time, or a time-zone-aware library.
+
+I'm settling on the fix now: the user has said there's no codebase or tool access, so they want a clear explanation of the root cause and remedy rather than code.
+

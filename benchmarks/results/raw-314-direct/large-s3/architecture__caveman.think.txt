@@ -1,0 +1,17 @@
+User asking standalone question about monolith to microservices migration strategy. No codebase, no tool access. This is architecture/strategy advice.
+
+They want:
+1. How to avoid big-bang rewrite
+2. Ordering (what to migrate first)
+3. Data ownership 
+4. Keep shipping throughout
+
+This is a pure thinking/explanation question. Caveman mode active - terse, fragments OK, no filler. But security warnings and multi-step sequences that need clarity get normal prose. This is more architectural explanation so I should be clear but terse.
+
+Let me structure:
+- Strangler pattern (the core approach)
+- Ordering strategy 
+- Data ownership model
+- Shipping strategy
+
+Keep it caveman but technically precise.

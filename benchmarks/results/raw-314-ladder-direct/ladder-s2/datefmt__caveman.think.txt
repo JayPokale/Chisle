@@ -1,0 +1,13 @@
+User is asking for code to convert an ISO timestamp from an API into a localized date format like "Nov 23, 2026" for a web app. They note this is standalone with no codebase.
+
+They want me to use caveman mode (full intensity based on the persistent instruction). Let me keep it terse.
+
+They want:
+1. Code to handle ISO timestamp
+2. Format as localized date
+3. Example format: "Nov 23, 2026"
+4. For web app context
+
+I should provide a simple, working example. JavaScript is most natural for web apps.
+
+Caveman mode: drop articles, filler, fragments OK, short synonyms. Keep technical terms exact.

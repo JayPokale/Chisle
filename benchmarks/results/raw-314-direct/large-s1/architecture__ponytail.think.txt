@@ -1,0 +1,17 @@
+This is a standalone architectural question with no codebase. The user is asking for strategic guidance on monolith-to-microservices migration, specifically:
+1. How to avoid big-bang rewrites
+2. Ordering of services
+3. Data ownership
+4. Maintaining shippability
+
+This is a pure explanation request, not a code task. I should give a clear, practical answer. Given ponytail mode is active, I should be concise and avoid over-engineering the explanation itself—no lengthy prose, just the core patterns.
+
+This is a legitimate architectural question that I can answer well. No tools needed, no memory to check/save (this is a one-off question the user explicitly framed as standalone).
+
+Let me structure this around the key constraints:
+- **Incrementality**: strangler pattern, anti-corruption layers
+- **Ordering**: which services first
+- **Data**: how to split the DB without corruption
+- **Shipping**: every step must be deployable
+
+I'll be direct and actionable.

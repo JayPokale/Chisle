@@ -1,0 +1,46 @@
+The user is asking me to design a REST API for a multi-tenant document store. They explicitly note this is a standalone question with no codebase and no tool access. This is a design/architecture question asking for the API specification plus reasoning.
+
+Given the Chisle mode is active, I should:
+- Be terse, drop filler
+- Structure as prose where possible, not lists
+- Make decisions explicit with reasoning
+- Use technical terms precisely
+- Skip apologetic hedging
+
+I should cover:
+1. Resources and their endpoints
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+
+Each with explicit decisions and tradeoffs.
+
+Let me think about this:
+
+**Resources**
+- Tenant (implicit in routing/auth)
+- Document (core resource)
+- Folder/Collection (optional organizational layer)
+- Document metadata/versions (if explicit)
+
+**Multi-tenant routing options:**
+- Path prefix: `/api/tenants/{tenantId}/documents`
+- Subdomain: `{tenantId}.api.example.com/documents`
+- Header: `X-Tenant-ID` with `/api/documents`
+
+Path is most explicit, works with shared infrastructure, standard.
+
+**Documents structure:**
+- GET /api/tenants/{tenantId}/documents — list
+- POST /api/tenants/{tenantId}/documents — create
+- GET /api/tenants/{tenantId}/documents/{docId} — retrieve
+- PUT /api/tenants/{tenantId}/documents/{docId} — update (or PATCH for partial)
+- DELETE /api/tenants/{tenantId}/documents/{docId} — delete
+- GET /api/tenants/{tenantId}/documents/{docId}/versions — version history
+- GET /api/tenants/{tenantId}/documents/{docId}/versions/{versionId} — specific version
+- POST /api/tenants/{tenantId}/documents/{docId}/restore — restore from version
+I'm working through the auth model next: bearer tokens, either JWT or opaque, with a tenantId claim so isolation is enforced in the application layer and not only by the route, plus scopes for read, write, delete, and admin, and an API key option for service accounts. Then pagination, where I'm weighing cursor-based against offset/limit, and leaning toward offset/limit with defaults and a cap, returning next and prev links. Versioning is the last piece, and I've only started it: every write increments the version, and I haven't settled whether the explicit part needs more.
+
+I'm covering the error format now: a standard JSON envelope with a code, message, and details, with consistent HTTP status codes and a request ID for traceability. I'm also still weighing version-aware writes for optimistic locking and whether deletes should be soft with tombstones or hard.
+

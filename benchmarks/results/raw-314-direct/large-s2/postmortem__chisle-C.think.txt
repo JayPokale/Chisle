@@ -1,0 +1,10 @@
+The user is asking me to write an incident postmortem for a hypothetical four-hour outage. This is a standalone request with no codebase involved. They want me to create documentation for an incident that was caused by connection pool exhaustion due to a slow downstream dependency.
+
+This is a straightforward documentation request. I should write a realistic, professional incident postmortem that includes:
+1. Timeline of events
+2. Root cause analysis
+3. Remediations/action items
+
+I'll make it realistic and detailed enough to be useful as a template or example. I should use a standard postmortem format.
+
+No tool access needed here - just writing the document.

@@ -1,0 +1,66 @@
+User wants a state machine for order states. This is a standalone question with no codebase. They want:
+1. States: created, paid, shipped, delivered, cancelled, refunded
+2. Legal transitions enforced
+3. Invalid ones rejected
+4. Show the code
+
+Let me think about valid transitions:
+- created → paid (payment processed)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order shipped)
+- paid → refunded (order refunded)
+- shipped → delivered (order delivered)
+- shipped → cancelled (maybe? or not allowed once shipped?)
+- delivered → refunded (customer requests refund after delivery)
+- cancelled → refunded (refund for cancelled order)
+- refunded → (terminal state)
+
+Actually, let me reconsider. Typical order flow:
+- created: order placed
+- paid: payment received
+- shipped: order shipped
+- delivered: order delivered
+- cancelled: order cancelled (can happen from created or possibly paid)
+- refunded: refund issued (can happen from paid, shipped, or delivered)
+
+Reasonable transitions:
+- created → paid
+- created → cancelled
+- paid → shipped
+- paid → cancelled (maybe, refund issued)
+- paid → refunded
+- shipped → delivered
+- shipped → cancelled (rare, maybe not allow)
+- delivered → refunded
+- cancelled → (terminal, maybe refund issued separately)
+- refunded → (terminal)
+
+I'll implement this in Python since it's clear and allows for good demonstration. I'll use an enum for states and enforce transitions with a state machine class.
+
+The user asked for caveman mode (terse, no articles, fragments OK). Let me follow that style but keep code comments minimal and technical terminology exact.
+
+Let me write a clean Python implementation:
+
+```python
+from enum import Enum
+from typing import Set
+
+class OrderState(Enum):
+    CREATED = "created"
+    PAID = "paid"
+    SHIPPED = "shipped"
+    DELIVERED = "delivered"
+Still writing the state machine class, defining the legal transitions for each order state...
+
+Still writing the state machine class, with the rest of the order and transition logic.
+
+Still writing the transition logic and the demo usage...
+
+Still working out the transition table, pinning down which cancellation and refund paths are legal from each state.
+
+Still refining which transitions make sense from each state, especially whether cancellation and refund should be separate paths.
+
+Still refining the transition table, settling which states can move to CANCELLED or REFUNDED and which are terminal.
+
+Now I'm finalizing the state machine code, making sure the transitions are clear.
+

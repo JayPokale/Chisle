@@ -1,0 +1,24 @@
+This is a question asking me to design a REST API for a multi-tenant document store. The user explicitly says this is a standalone question with no codebase and no tool access - they're asking for design/architectural guidance, not implementation.
+
+Since this is design work without an existing codebase, I should:
+1. Design the API thoughtfully
+2. Explain the key decisions and tradeoffs
+3. Keep it practical and grounded in real constraints
+
+This is ponytail territory - lazy design means not over-engineering features that don't exist yet, shipping the minimum that works, and being pragmatic about common patterns.
+
+Let me structure this:
+- Core resources and routes
+- Authentication model (crucial for multi-tenant)
+- Pagination strategy
+- Versioning approach
+- Error format
+- Then explain the decisions briefly
+
+I should avoid:
+- Over-engineered permission systems (RBAC until needed)
+- Speculative fields ("might need this later")
+- Trying to handle every edge case
+- Unnecessary abstraction layers
+
+Let me design something solid but minimal.

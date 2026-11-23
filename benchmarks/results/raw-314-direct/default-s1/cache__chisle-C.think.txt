@@ -1,0 +1,16 @@
+The user is asking me to add a cache layer for user profile API responses. They've explicitly stated this is a standalone question with no codebase and no tool access.
+
+Since there's no existing codebase to work with, I need to provide example code that demonstrates a practical cache layer for user profile API responses.
+
+I should:
+1. Show working code (not pseudo-code)
+2. Keep it minimal but complete
+3. Use common patterns and libraries
+4. Make it production-ready but simple
+
+I'll provide a few different approaches depending on the stack, but I should pick the most common default. Since no stack is specified, I'll go with:
+- Node.js/JavaScript (most common for APIs)
+- Use a simple in-memory cache first (can be extended to Redis)
+- Show both the cache implementation and how to use it
+
+I'll keep it concise and direct, following the Chisle mode principles.

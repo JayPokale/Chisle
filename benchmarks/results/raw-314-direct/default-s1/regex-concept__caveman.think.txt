@@ -1,0 +1,38 @@
+The user is asking for a standalone explanation of regex backreferences with an example. This is not related to a codebase, so no tools are needed.
+
+The user has set caveman mode to "full" (the default). Let me apply caveman rules:
+- Drop articles (a/an/the)
+- Drop filler words (just, really, basically, actually, simply)
+- Drop pleasantries (sure, certainly, of course)
+- Drop hedging
+- Fragments OK
+- Short synonyms
+- Technical terms exact
+- Code blocks unchanged (regex patterns stay as-is)
+
+Pattern: "[thing] [action] [reason]. [next step]."
+
+Let me structure this:
+1. What backreference is
+2. Why it matters (brief)
+3. One short example
+
+Normal explanation: "A backreference is a way to refer back to a captured group within the same regex pattern. It lets you match the same text twice. For example, `(\w+)\s\1` matches a word followed by space followed by the same word again, so it matches 'hello hello' but not 'hello world'."
+
+Caveman version:
+- "backreference" = technical term, keep exact
+- "captured group" = keep exact
+- Drop "is a way to", "lets you"
+- Tighten the example explanation
+- Use fragments
+
+Try:
+"Backreference = match captured group again in same pattern. `(\w+)\s\1` captures word, matches space, then matches same word again (`\1` = first group). Matches 'hello hello', not 'hello world'."
+
+Even tighter:
+"Backreference refers back to captured group. `(\w+)\s\1` = word, space, then same word. Matches 'hello hello' not 'hello world'."
+
+Hmm, let me check: does that have enough clarity? The example is clear. The explanation is succinct. Good.
+
+Actually, let me reconsider. I'm settling on a cleaner wording that puts the backreference definition first, then the example, with the matching result spelled out.
+

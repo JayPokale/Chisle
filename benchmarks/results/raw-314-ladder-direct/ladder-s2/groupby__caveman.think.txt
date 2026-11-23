@@ -1,0 +1,7 @@
+User is asking me to show code for grouping a list of orders by customer ID and calculating total spend per customer. They explicitly state this is a standalone question with no codebase.
+
+They want me to respond in caveman mode (which is active by default). Let me be terse while keeping technical substance.
+
+Let me provide a few code examples showing different approaches (Python, JavaScript, SQL) since they didn't specify a language.
+
+Caveman mode: drop articles, filler, pleasantries. Fragments OK. Keep code blocks unchanged.

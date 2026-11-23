@@ -1,0 +1,13 @@
+The user is asking me to add a cache layer for user profile API responses. However, they explicitly state "Standalone question: there is no codebase and no tool access here." This means I should not expect to access files or have a git repo to work with.
+
+Since there's no existing codebase, they're asking for a general example of how to implement caching for a user profile API. I should provide a practical code example showing caching implementation.
+
+I should:
+1. Keep it concise (Chisle mode: fragments, drop articles)
+2. Show working code with common patterns
+3. Not over-engineer, but show a solid approach
+4. Pick a reasonable stack - since unstated, I could go with Node.js/JavaScript as that's common, or Python, or a language-agnostic approach
+
+I'll provide a practical implementation. Since the stack isn't specified, I'll do a Node.js example as it's common for APIs. I could also do Python. Let me go with Node.js with both a simple in-memory approach and something production-ready with Redis.
+
+Actually, let me provide both a simple synchronous example and show what production looks like. Keep it tight - no unnecessary explanation.

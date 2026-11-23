@@ -1,0 +1,55 @@
+The user is asking me to implement email-and-password signup and login with password hashing, session issuing, and rate limiting on failed attempts. They explicitly note this is a standalone question with no codebase and no tool access.
+
+Since I'm in Ponytail mode (lazy, efficient developer), I should:
+1. Use the ladder approach - stdlib/native first, minimal code
+2. Skip speculative features, only build what's asked
+3. Keep it simple but secure - auth requires validation, hashing, rate limiting
+
+The user wants:
+- Email & password signup
+- Login
+- Password hashing
+- Session issuing
+- Rate limiting on failed attempts
+
+I should use:
+- Python (most common for this kind of example)
+- stdlib: `hashlib`/`secrets` for hashing/tokens, `sqlite3` for storage, `time` for rate limiting
+- Keep it minimal - no frameworks unless necessary (wait, they asked for standalone code, so I should probably provide it in a framework-agnostic way OR use Flask since it's minimal)
+
+Actually, let me think about what "standalone" means here. They probably want a working example they can understand and use. I'll provide:
+- A Python implementation
+- Using Flask for HTTP handling (lightweight)
+- SQLite for storage
+- stdlib for crypto/hashing
+- Rate limiting with in-memory tracking (for standalone, persistent tracking would be overkill)
+
+Actually, re-reading: "there is no codebase and no tool access here" - they mean they're not asking me to edit files. They want me to show code. So I should write it out in my response.
+
+Let me build the minimum viable auth system:
+
+1. Database schema: users table, sessions table, rate limit tracking table
+2. Signup: validate email, hash password, store
+3. Login: check email, verify password, issue session token
+4. Rate limiting: track failed attempts, block after N attempts within time window
+
+For Ponytail full mode:
+- Use stdlib where possible
+Still writing the Flask auth app...
+
+Still writing the table schema...
+
+Still writing the rate limiter and the sign-in checks...
+
+Still writing the Flask app's validation and signup route...
+
+Still writing the login route and its rate-limit check...
+
+Still writing the login route's session issuing...
+
+Still writing the login route's session check and the protected endpoint...
+
+Still writing the Flask code and its remaining routes...
+
+I'm skipping the extras like deployment, logging, email verification, and password reset, and I'll bring those in only when they're needed. I'll write the Flask version with a cleaner structure next.
+

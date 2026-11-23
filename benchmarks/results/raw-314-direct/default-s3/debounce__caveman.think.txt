@@ -1,0 +1,10 @@
+User wants to see code for adding debounce to a search input that currently fires API calls on every keystroke. This is a standalone question - no codebase, no tool access needed. Just show the solution.
+
+They want me in caveman mode, so keep it terse.
+
+I'll show a few approaches:
+1. Plain JavaScript with setTimeout
+2. React with useEffect (most common)
+3. Maybe a custom hook
+
+Keep it short, no fluff.

@@ -1,0 +1,51 @@
+The user is asking me to show code that groups a list of orders by customer ID and totals each customer's spend. They explicitly note this is a standalone question with no codebase and no tool access.
+
+Since they didn't specify a language, I should pick a common, clear one. Python is probably the clearest and most accessible.
+
+Let me think about the ponytail approach:
+1. Does this need to exist at all? No - it's already a solved problem in many ways
+2. Already in this codebase? No codebase
+3. Stdlib does it? Yes - defaultdict, Counter, or simple dict
+4. Can it be one line? Not really, needs some iteration/grouping logic
+5. Minimum code that works?
+
+The simplest approach in Python:
+- Use a dict to accumulate totals by customer_id
+- Iterate through orders and add to the total
+
+Or use defaultdict which is slightly cleaner.
+
+Or use itertools.groupby (requires sorted data first).
+
+The ladder says: stdlib does it, so use it. A dict or defaultdict is stdlib and minimal.
+
+Let me show the simplest version that works:
+
+```python
+from collections import defaultdict
+
+orders = [
+    {"customer_id": 1, "amount": 100},
+    {"customer_id": 2, "amount": 50},
+    {"customer_id": 1, "amount": 75},
+    {"customer_id": 3, "amount": 200},
+    {"customer_id": 2, "amount": 25},
+]
+
+customer_totals = defaultdict(float)
+for order in orders:
+    customer_totals[order["customer_id"]] += order["amount"]
+
+print(dict(customer_totals))
+# Output: {1: 175.0, 2: 75.0, 3: 200.0}
+```
+
+Or without defaultdict:
+
+```python
+orders = [
+    {"customer_id": 1, "amount": 100},
+Still writing the grouping code...
+
+The defaultdict version reads cleanest, so I'll lead with that and mention a groupby alternative after it.
+

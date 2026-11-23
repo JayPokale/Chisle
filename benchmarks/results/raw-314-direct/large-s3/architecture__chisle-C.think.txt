@@ -1,0 +1,25 @@
+The user is asking for an explanation of how to migrate a monolith to microservices without a big-bang rewrite. They note this is a standalone question with no codebase and no tool access.
+
+Given the "Chisle" mode instructions, I should:
+- Answer directly
+- Use fragments, drop articles/filler
+- Keep decisive facts, cut words around them
+- No headings/bullets unless the question asked for them
+- Think longer only to find bugs or read code first
+
+The user is asking for coverage of:
+1. Ordering (what to extract first)
+2. Data ownership (how to handle data)
+3. Keeping it shippable throughout
+
+This is a solid architectural/migration strategy question. I should give the core pattern, the key ordering principle, data handling, and how to stay shippable. No need for elaborate explanations—just the essentials.
+
+Key points:
+- Extract services bottom-up (dependencies first) or by value (highest ROI first)
+- Strangler pattern: new code routes to service, old code still works
+- Data: start with read replicas, then sync, then dual writes, then migration
+- Shippable: feature flags, canaries, gradual traffic shifting
+- Key: seams already exist (high-cohesion modules) or you're not ready
+- Database per service needs coordination but can be incremental
+
+Let me structure this as fragments following Chisle style.

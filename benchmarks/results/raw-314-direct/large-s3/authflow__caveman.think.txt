@@ -1,0 +1,33 @@
+User wants a standalone implementation of email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They want to see the code and explicitly mention this is standalone - no codebase, no tool access.
+
+Since they said "no tool access" and "standalone", they want me to write the code directly in the response without using tools to read/write files. I should provide a complete, working implementation.
+
+I'll use caveman mode as instructed (terse, no filler). They want technical substance only.
+
+I'll provide a production-ready implementation. Good tech stack:
+- Node.js/Express (common, clear)
+- bcrypt for password hashing
+- session management (JWT or server-side sessions)
+- rate limiting (simple in-memory or Redis)
+
+Let me do a clean, complete implementation with:
+1. Database schema (or mock for standalone)
+2. User model with password hashing
+3. Signup endpoint
+4. Login endpoint with rate limiting
+5. Session management
+6. Auth middleware
+
+I'll use:
+- Express for HTTP server
+- bcrypt for password hashing
+- JWT for sessions (stateless, clean)
+- Simple in-memory rate limiting
+- Input validation
+
+Code should be runnable, no missing imports or placeholders.

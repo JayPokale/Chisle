@@ -1,0 +1,67 @@
+User wants a standalone debounce example for a search input that stops firing API calls on every keystroke. They explicitly noted no codebase/tool access, so they just want code shown.
+
+Caveman mode is active (default full). This is code, so write normally - caveman mode doesn't apply to code blocks, only prose.
+
+Keep prose terse but clear. Fragment this up.
+
+```javascript
+// Before: fires on every keystroke
+const handleSearch = (e) => {
+  const query = e.target.value;
+  fetchSearchResults(query);
+};
+
+// After: debounced
+let debounceTimer;
+const handleSearch = (e) => {
+  const query = e.target.value;
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    fetchSearchResults(query);
+  }, 300);
+};
+```
+
+Or React hook version:
+
+```javascript
+import { useState, useEffect } from 'react';
+
+function SearchInput() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (query) {
+        fetchSearchResults(query).then(setResults);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  return (
+    <div>
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search..."
+      />
+      <ul>
+        {results.map(r => <li key={r.id}>{r.name}</li>)}
+      </ul>
+    </div>
+  );
+}
+```
+
+Custom hook reusable:
+
+```javascript
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+Continuing the custom hook: it wires a timeout to update the debounced value and clears it on cleanup. Then the usage example pulls the debounced query into a search effect.
+
+Still writing the hook code...
+

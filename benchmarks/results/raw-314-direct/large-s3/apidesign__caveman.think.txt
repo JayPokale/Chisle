@@ -1,0 +1,49 @@
+User asking for REST API design for multi-tenant document store. No codebase, no actual implementation. They want:
+- Resources
+- Auth model
+- Pagination
+- Versioning
+- Error format
+- Explanations of decisions
+
+Caveman mode is active. Need to be terse, drop fluff, use fragments. Keep technical substance. Skip articles, hedging, pleasantries.
+
+Let me structure this as a design doc but deliver it in caveman style.
+
+Key decisions to explain:
+1. Resource structure (tenants, documents, versions)
+2. Auth (JWT, tenant isolation, scoping)
+3. Pagination (cursor vs offset - cursor better for consistency)
+4. Versioning (URL-based vs header-based - URL cleaner)
+5. Error format (JSON, standard fields)
+
+Pattern: [thing] [action] [reason]. [next step].
+
+No "Sure, I'd be happy to help with this design question." Just deliver the design.
+
+Let me think through each:
+
+**Resources:**
+- `/tenants/{tenantId}/documents` - main resource
+- `/tenants/{tenantId}/documents/{docId}` - single doc
+- `/tenants/{tenantId}/documents/{docId}/versions` - version history
+- `/tenants/{tenantId}/documents/{docId}/versions/{versionId}` - specific version
+
+Why: tenant isolation in URL = clear separation. Version as sub-resource = natural hierarchy.
+
+**Auth:**
+- JWT token with tenant claim
+- Each request must specify tenant (URL) and token validates that tenant claim
+- No cross-tenant access
+- API key alternative for service accounts
+
+Why: tenant claim in token = enforced isolation at auth layer. URL tenant id = defense in depth.
+
+**Pagination:**
+- Cursor-based for consistency (offset-based breaks with concurrent inserts)
+- Cursor = opaque string (base64 of last-seen ID or timestamp)
+- Limit param (1-100, default 20)
+Now I'm settling on how pagination returns its next-page information, and why a cursor holds up better than an offset when the data changes between requests. Then I'm moving on to versioning: the API version goes in the URL, and each document version is a numbered, immutable record that can be fetched with a query parameter. Next up is the error response format, which is starting out as a JSON object with an error code and a message.
+
+Still writing the error format example...
+

@@ -1,0 +1,43 @@
+The user is asking for an explanation of how to migrate a monolith to microservices without a big-bang rewrite. This is a standalone architectural question - they explicitly note there's no codebase and no tool access. This is design/strategy guidance.
+
+Given the Chisle mode, I should:
+- Be direct and terse
+- No hedging, no articles/filler
+- Structure as arrows (causality)
+- Answer at the question's altitude
+- Two tight paragraphs beat five headed sections
+- No headings unless asked
+- Keep every decisive fact: the fix, the gotcha, the caveat, the why
+
+The question asks for three things:
+1. Ordering
+2. Data ownership
+3. Keeping it shippable throughout
+
+Let me think about the core strategy:
+
+**Strangler pattern**: gradually extract services by intercepting old → new calls. Keep the monolith alive, don't rewrite it.
+
+**Ordering**: Start with high-ROI things:
+- Boundaries first: pick a seam with loose coupling, clear data ownership
+- Usually: auth, payments, notifications (if isolated). Avoid UI tier first.
+- Extract one, stabilize it, then next
+
+**Data ownership**: This is the hard part
+- Each service owns its write-path to its data, plus read-only sync/cache copies
+- Event sourcing or change-data-capture (CDC) to stay consistent
+- Accept transient stale reads in the monolith while catching up
+- Usually dual-write during migration (old code + new service), then cutover
+
+**Keeping shippable**:
+- Strangler intercepts calls: monolith calls new service, with fallback to old
+- Feature flags to control which path runs
+- Shadow traffic to test new service under real load without cutover
+- Canary traffic by percentage
+- Rollback = flip flag, not deploy
+
+Key gotchas:
+- Ordering matters: extract backends first (no deps), frontend/UI last
+- Data migration is not a one-time task; it's continuous until cutover
+Dual writes are fragile, since divergent writes quietly rot the data, so the old code stays the source of truth until the new service is fully trusted. Eventual consistency is now the default, which means any synchronous invariants will break and need rethinking.
+

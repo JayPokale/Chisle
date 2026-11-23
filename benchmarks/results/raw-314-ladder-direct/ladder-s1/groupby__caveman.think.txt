@@ -1,0 +1,13 @@
+The user is asking me to show code that groups orders by customer id and totals each customer's spend. They explicitly state this is a standalone question with no codebase and no tool access.
+
+Since there's no codebase, I should provide a general code example showing how to do this. I should provide multiple language options or at least one or two clear examples.
+
+They're in caveman mode (full intensity), so I need to be terse: drop articles, use fragments, short synonyms, no filler/hedging.
+
+Let me provide a few common approaches:
+1. Python with pandas (simple)
+2. SQL (database)
+3. Python without pandas (pure Python)
+4. JavaScript (since they might be doing web work)
+
+I'll keep it tight and show practical code.

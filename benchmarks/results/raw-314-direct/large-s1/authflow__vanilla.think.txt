@@ -1,0 +1,32 @@
+The user is asking me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They explicitly note it's a "standalone question" with no codebase and no tool access.
+
+Since there's no git repository or existing codebase, I should create a complete, working implementation from scratch. I'll build a production-ready example using modern best practices.
+
+I'll use:
+- Node.js/Express for the backend (popular, straightforward)
+- bcrypt for password hashing
+- JSON Web Tokens (JWT) for session management
+- A simple in-memory rate limiting mechanism (or can use a package like express-rate-limit)
+- SQLite or simple in-memory storage for demonstration
+
+Let me create a comprehensive implementation that shows:
+1. Signup endpoint with password hashing
+2. Login endpoint with rate limiting and session issuing
+3. Middleware to verify sessions
+4. Database schema setup
+
+I'll make it clear, well-structured, and production-ready. Since they asked to "show the code", I should provide the full working implementation.
+
+Let me build this with:
+- Express.js for the HTTP server
+- bcrypt for password hashing
+- jsonwebtoken for session tokens
+- A rate limiter for failed login attempts
+- SQLite for simple data persistence
+
+I'll provide a complete, runnable example.

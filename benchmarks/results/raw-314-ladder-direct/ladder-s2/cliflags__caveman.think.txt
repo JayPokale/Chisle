@@ -1,0 +1,10 @@
+The user wants me to show code for parsing `--port` and `--verbose` command-line flags in a Node.js script. They explicitly say "Standalone question: there is no codebase and no tool access here." So I should just provide code examples without using any tools.
+
+They want caveman mode active, so I need to be terse. Let me show a few approaches from simplest to more robust.
+
+I'll show:
+1. Manual parsing (basic)
+2. Using process.argv directly
+3. Using a simple library like minimist or yargs
+
+Keep it terse per caveman mode.

@@ -1,0 +1,35 @@
+The user is asking me to find and fix an auth middleware bug where valid tokens are rejected at the exact expiry boundary. They explicitly state: "Standalone question: there is no codebase and no tool access here."
+
+So this is a logic/conceptual question, not asking me to work with actual files. They want me to identify the problem in the described scenario.
+
+The issue described: middleware uses `currentTime > expiry` logic and rejects valid tokens at the exact expiry boundary.
+
+Let me think about this:
+- If a token expires at time T, it should be valid from creation until time T (inclusive)
+- At time T (the exact expiry moment), the token should still be valid
+- The logic `currentTime > expiry` means: reject if current time is AFTER expiry
+  - So if currentTime = expiry (at the boundary), the condition is false, token should be accepted ✓
+  
+Wait, that doesn't match the problem statement. Let me re-read.
+
+"rejects valid tokens at the exact expiry boundary (it uses currentTime > expiry)"
+
+If `currentTime > expiry` is the rejection condition:
+- At boundary: currentTime == expiry
+- Is currentTime > expiry? No, false.
+- So token should NOT be rejected
+
+But the problem says it DOES reject at the boundary. So either:
+1. The logic is actually `currentTime >= expiry` (more likely)
+2. There's floating point/timezone/clock skew involved
+3. The token's expiry timestamp is set incorrectly (off by one second)
+
+Most common root cause: the logic is **actually `currentTime >= expiry`** not `currentTime > expiry`, which would reject at the boundary.
+
+OR: the problem statement has it backward and the middleware uses `currentTime >= expiry` and they incorrectly wrote it as `>`.
+
+The fix would be to change `>=` to `>` so tokens are valid AT their expiry time, only invalid AFTER.
+
+Classic off-by-one error in token validation.
+I'm going to keep it short and brief, since the user wants caveman style, and I'll explain the boundary bug and its fix without a codebase to point at.
+

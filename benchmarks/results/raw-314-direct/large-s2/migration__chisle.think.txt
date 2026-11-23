@@ -1,0 +1,55 @@
+User is asking for a database migration script. They explicitly say "there is no codebase and no tool access here" - so they're asking me to write standalone code, not work with files. They want:
+
+1. Migration script that moves from full_name to first_name/last_name
+2. Backfills existing rows
+3. Safely re-runnable (idempotent)
+
+They want me to "show the code" - this is a code output request.
+
+For a database migration, I need to decide:
+- Which database? Not specified. Most common defaults: PostgreSQL. I should name it in one line.
+- Language? SQL is obvious for migrations, though could be Python/Node with a migration framework. I'll do raw SQL since it's most universal.
+
+The migration needs to be idempotent - meaning running it twice should be safe. Common patterns:
+- Check if columns exist before creating
+- Check if column exists before dropping
+- Use `IF NOT EXISTS` / `IF EXISTS`
+
+Here's the structure:
+1. Add new columns (first_name, last_name) if they don't exist
+2. Backfill from full_name by splitting
+3. Drop the old full_name column (or make nullable? depends on requirements - I'll drop it since they're "moving")
+4. Add constraints if needed (NOT NULL)
+
+For splitting full_name into first/last:
+- Simple approach: split on space (first word = first name, rest = last name)
+- But what if there's no space? Default to full name as first name, empty last name? Or vice versa?
+- I'll split on first space: everything before first space → first_name, everything after → last_name. If no space, all goes to first_name.
+
+For idempotency:
+- Use `IF NOT EXISTS` / `IF EXISTS` where available
+- Or use exception handling in a transaction
+
+Let me write a PostgreSQL version (most common for serious migrations). I'll make it be a SQL script that's safe to run multiple times.
+The next part is the SQL itself, so this is a continuation of code already being written. I'll keep it to a short progress phrase.
+
+Writing migration SQL...
+
+Still writing migration SQL...
+
+Still writing migration SQL...
+
+Working out how to keep the migration re-runnable when the NOT NULL constraint is already in place, since a plain repeat would error.
+
+Still writing migration SQL...
+
+Still writing migration SQL...
+
+Still writing migration SQL...
+
+Still writing migration SQL...
+
+Still writing migration SQL...
+
+Finalizing the SQL now...
+

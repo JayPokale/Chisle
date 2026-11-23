@@ -1,0 +1,13 @@
+The user is asking for a summary of the main tradeoffs between REST and GraphQL for a new API. This is a standalone question with no codebase or tool access needed.
+
+Let me provide a concise, balanced answer that covers the key tradeoffs:
+
+**REST:**
+- Pros: Simple, well-established, cacheable (HTTP caching works naturally), straightforward for simple CRUD operations
+- Cons: Over-fetching (getting more data than needed), under-fetching (need multiple requests), versioning challenges
+
+**GraphQL:**
+- Pros: Precise data fetching (get exactly what you need), single query for related data, strong typing, excellent for mobile/bandwidth-constrained clients
+- Cons: More complex to implement, caching is harder (POST requests), steeper learning curve, overkill for simple APIs
+
+I should keep this concise since they asked for a summary and it's exploratory rather than a decision to implement. I'll present the main tradeoff clearly.

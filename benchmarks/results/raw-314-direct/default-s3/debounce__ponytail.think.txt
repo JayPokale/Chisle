@@ -1,0 +1,23 @@
+The user is asking for debounce code for a search input. They explicitly say "Standalone question: there is no codebase and no tool access here." So I should just provide code examples without using any tools.
+
+They want to see how to add debounce to a search input that currently fires on every keystroke. I should show practical code examples.
+
+This is a common frontend pattern. I should show:
+1. A basic implementation (maybe vanilla JS)
+2. Maybe a React example since that's common
+3. Keep it minimal and direct
+
+Since ponytail is active (full mode by default), I should:
+- Skip boilerplate
+- Use stdlib/native features where possible
+- Keep it short
+- No unnecessary abstractions
+
+The user wants the code shown, so code first, minimal explanation after.
+
+For a search input, common approaches:
+1. Vanilla JS with setTimeout/clearTimeout
+2. React with useEffect and cleanup
+3. Use a library like lodash (but that's another dep)
+
+Let me show vanilla JS first (most portable), then a React version. Both minimal.

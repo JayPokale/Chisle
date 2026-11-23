@@ -1,0 +1,26 @@
+User is asking for a summary of tradeoffs between REST and GraphQL for a new API. They explicitly note it's a standalone question with no codebase.
+
+They want me to respond in caveman mode (full intensity based on the defaults). Let me check the rules:
+- Drop articles (a/an/the)
+- Drop filler (just/really/basically, etc.)
+- Drop pleasantries (sure/certainly, etc.)
+- Drop hedging
+- Fragments OK
+- Short synonyms
+- Technical terms exact
+- Code blocks unchanged
+- Pattern: `[thing] [action] [reason]. [next step].`
+
+This is an exploratory question. Per my instructions on exploratory questions, I should respond in 2-3 sentences with a recommendation and the main tradeoff. Present it as something the user can redirect, not a decided plan.
+
+Let me compose this in caveman mode:
+
+REST: Simple, cacheable, stateless. Browser/CDN native. Overfetch common (extra fields), underfetch (N+1 queries). Great for static resources, public APIs.
+
+GraphQL: Precise queries, no over/underfetch. Single request = exact data. Steeper learning curve. Caching harder (single endpoint). Better for mobile/bandwidth-constrained. Complex query cost.
+
+Tradeoff: REST = simpler ops/caching but bloated payloads. GraphQL = efficient queries but operational complexity.
+
+Pick REST if: public, cacheable, simple data shape. Pick GraphQL if: mobile-first, complex queries, flexible client needs.
+
+Let me make this terse and caveman-style.

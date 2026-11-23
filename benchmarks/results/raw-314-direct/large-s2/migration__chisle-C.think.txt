@@ -1,0 +1,61 @@
+The user is asking for a database migration script that:
+1. Moves a users table from a single `full_name` column to separate `first_name` and `last_name` columns
+2. Backfills existing rows with data split from the full_name
+3. Is safely re-runnable (idempotent)
+
+They explicitly say "Standalone question: there is no codebase and no tool access here" - so they just want to see code, not interact with actual files. I should provide a migration script.
+
+Since they don't specify a database system, I should pick the most common default - PostgreSQL is widely used for migrations. I could also show SQL that's fairly portable, or I could pick another common option.
+
+Actually, let me think about what "most common default" means here - for database migrations, there are several popular approaches:
+1. Plain SQL scripts
+2. Alembic (Python/SQLAlchemy)
+3. Flyway
+4. Liquibase
+
+The question says "migration script" which suggests they want to see the actual migration code. I'll provide a SQL migration (most direct) and could mention how to integrate it into a migration tool.
+
+For re-runnable migrations, the key patterns are:
+- Use `CREATE TABLE IF NOT EXISTS` / `DROP TABLE IF EXISTS`
+- For this specific case, we need to check if columns exist before adding them
+- Split the full_name into first/last name safely (handle edge cases like single word names, multiple spaces, etc.)
+
+Let me write a PostgreSQL migration that is idempotent:
+
+```sql
+-- Forward migration
+BEGIN;
+
+-- Add columns if they don't exist
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'users' AND column_name = 'first_name'
+  ) THEN
+    ALTER TABLE users ADD COLUMN first_name VARCHAR(255);
+  END IF;
+  
+  IF NOT EXISTS (
+Still writing the migration SQL...
+
+Still writing the migration SQL...
+
+Still writing the migration SQL...
+
+Still writing the migration SQL...
+
+Still writing the migration SQL...
+
+Still writing the backfill logic...
+
+Still writing the migration SQL...
+
+Still writing the backfill query...
+
+Still writing the migration SQL...
+
+I'm finalizing the backfill as a single UPDATE that sets first_name from the first word and last_name from everything after the first space, falling back to an empty string when there's no space. It only touches rows where first_name is still NULL, so a second run changes nothing.
+
+I'm weighing whether to add a rollback script and a migration-framework version, but the request is for a single, production-ready script, so I'll stick to one straightforward SQL migration and note its re-runnable behavior briefly.
+

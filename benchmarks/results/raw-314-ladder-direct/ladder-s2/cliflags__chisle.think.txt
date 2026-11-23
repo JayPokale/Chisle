@@ -1,0 +1,36 @@
+The user is asking for code to parse command-line flags in a Node.js script. They specifically want to parse `--port` and `--verbose` flags. They note this is a standalone question with no codebase.
+
+They want me to show the code. Let me provide a simple, working solution.
+
+In Node.js, the simplest approach is to use `process.argv`. Let me provide a few options:
+
+1. Manual parsing (simple, no deps)
+2. Using a library like `minimist` or `yargs` (more robust)
+
+Since they said "show the code" and didn't specify a library, I'll start with a simple manual approach, then maybe mention the library option.
+
+Actually, let me check the context - they're on the Haiku model and asking for a standalone code snippet. The Chisle mode is active ("Maximum signal. Minimum noise."). So I should be terse, code-first.
+
+Let me provide the most straightforward solution:
+
+```javascript
+const args = process.argv.slice(2);
+let port = 3000; // default
+let verbose = false;
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--port') {
+    port = parseInt(args[i + 1], 10);
+    i++;
+  } else if (args[i] === '--verbose') {
+    verbose = true;
+  }
+}
+
+console.log('Port:', port);
+console.log('Verbose:', verbose);
+```
+
+This is the minimal, working solution. I could also show a one-liner with minimist if they prefer a library approach. But let me start with the manual approach since it's self-contained.
+
+Chisle mode: code first, minimal explanation.

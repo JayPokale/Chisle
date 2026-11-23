@@ -1,0 +1,30 @@
+The user is asking me to show code that reads an API base URL and request timeout from environment variables with sensible defaults. This is a standalone question with no codebase.
+
+They want me to show code for this. I should ask what language they want, or I could provide a couple of common examples. Let me think about the ponytail mode - I should be efficient and practical.
+
+Given the context is a standalone question with no specific language mentioned, I should probably provide a few common language examples, or ask. Actually, looking at the directory structure, this appears to be a Python environment (<email> suggests an academic context). Let me provide Python as the primary example since that's most common, and maybe one more.
+
+Actually, the user said "Show the code" - singular. They probably want one example. Python is a safe bet for a general engineering context. Let me provide a clean, minimal Python solution using the lazy approach.
+
+The lazy solution:
+- Use `os.getenv()` with defaults
+- No validation layers unless needed at a trust boundary
+- Simple, readable
+
+I could use `python-dotenv` but that requires an extra dependency - stdlib `os` is there. The ladder says: stdlib does it → use it.
+
+Let me show Python with `os.getenv()`:
+
+```python
+import os
+
+API_BASE_URL = os.getenv('API_BASE_URL', 'https://api.example.com')
+REQUEST_TIMEOUT = int(os.getenv('REQUEST_TIMEOUT', '30'))
+```
+
+That's it. Minimal, works. If they need a different language or more complex handling, they'll say so.
+
+Actually, let me think about whether this needs more. The user said "with sensible defaults" - that's what I've done. The defaults I picked are reasonable (a placeholder URL and 30 seconds timeout, which is a standard HTTP timeout).
+
+Should I provide multiple languages? The instruction says "show the code" (singular) and it's a standalone question. I'll go with Python since it's widely used and readable. The next part is just a brief wrap-up: the Python snippet is good enough, and I don't need a note about ponytail mode because this is a plain, straightforward choice rather than a deliberate shortcut.
+

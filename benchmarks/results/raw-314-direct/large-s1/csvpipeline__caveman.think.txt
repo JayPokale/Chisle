@@ -1,0 +1,66 @@
+User wants a standalone script to:
+1. Read large CSV of transactions
+2. Validate each row
+3. Aggregate totals per customer
+4. Write a report
+5. Handle malformed rows gracefully (not crash)
+6. Show the code
+
+No codebase, no tool access - just show the code directly.
+
+They've activated caveman mode (terse, drop articles/filler). I should write clean code (not caveman) but keep my prose caveman-style.
+
+I'll write this in Python since it's good for CSV handling and data aggregation. Use:
+- csv.DictReader for flexible parsing
+- Try/except for validation
+- Dictionary for aggregation per customer
+- Error logging instead of failing
+
+Let me write a solid, production-ready script with:
+- Validation logic
+- Error handling (logs bad rows, continues)
+- Efficient aggregation
+- Clear report output
+
+```python
+import csv
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+def validate_row(row, row_num):
+    """Validate transaction row. Return (is_valid, error_msg, cleaned_row)."""
+    errors = []
+    
+    # Check required fields
+    required = ['customer_id', 'amount', 'date']
+    for field in required:
+        if field not in row or not row[field].strip():
+            errors.append(f"missing {field}")
+    
+    if errors:
+        return False, "; ".join(errors), None
+    
+    customer_id = row['customer_id'].strip()
+    
+    # Validate customer_id: non-empty string
+    if not customer_id:
+        return False, "empty customer_id", None
+    
+    # Validate amount: numeric, non-negative
+    try:
+        amount = float(row['amount'].strip())
+        if amount < 0:
+            return False, "negative amount", None
+    except ValueError:
+        return False, f"invalid amount: {row['amount']}", None
+Continuing the validation and date check, then the start of the processing function that reads the CSV and aggregates totals.
+
+Still writing the CSV processing loop and report output...
+
+Still writing report output and error logging...
+
+Still writing the report and main entry point...
+
+Wrapping up the script: checking the file-handling and error-path pieces, then the CLI arguments.
+

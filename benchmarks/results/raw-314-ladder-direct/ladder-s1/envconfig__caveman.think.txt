@@ -1,0 +1,11 @@
+User wants me to show code that reads API base URL and request timeout from environment variables with sensible defaults. This is a standalone question - no codebase, no existing files to edit.
+
+Since no language is specified, I should ask OR provide a common example. Actually, looking at the instruction "Show the code" - they want me to show code. The most common context would be Python or JavaScript given the user's email suggests they're in India at a tech institute.
+
+Actually, re-reading: "Standalone question: there is no codebase and no tool access here." This means I should just write example code. Since language isn't specified, I'll provide a general/popular example. Python is a good default for this type of infrastructure code.
+
+User has caveman mode on ("full" is default). So I should be terse. But code blocks stay normal. Let me write clean, terse responses.
+
+Actually, let me reconsider. The user might want multiple languages. But "show the code" (singular) suggests one example. I'll do Python as most common, but keep it terse and show the pattern clearly.
+
+Let me write both environment variable reading and defaults clearly.

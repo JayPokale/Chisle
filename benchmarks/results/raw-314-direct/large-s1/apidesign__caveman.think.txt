@@ -1,0 +1,29 @@
+User wants me to design a REST API for a multi-tenant document store. They want:
+1. Resources
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+
+And explain the decisions.
+
+They explicitly say it's a standalone question - no codebase, no tool access.
+
+Also, they want caveman mode (terse). Let me check:
+- Drop articles, filler, pleasantries, hedging
+- Fragments OK
+- Short synonyms
+- Technical terms exact
+- Code blocks unchanged
+- Pattern: `[thing] [action] [reason]. [next step].`
+
+But I need to be careful about "Auto-Clarity" - this is design/explanation territory. I should stay caveman but make sure the design is clear. Let me try to balance terseness with clarity since design needs rationale.
+
+Let me structure:
+1. Resources
+2. Auth
+3. Pagination
+4. Versioning
+5. Error format
+
+For each: decision, reasoning.

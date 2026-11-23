@@ -1,0 +1,28 @@
+The user is asking me to write a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully (doesn't crash)
+
+They specifically note "there is no codebase and no tool access here" - which I interpret to mean they just want me to show the code as an example, not to actually run it in their repository.
+
+Since they just want the code shown, I should write a Python script (a good choice for CSV processing) that demonstrates:
+- Efficient CSV reading
+- Validation logic
+- Error handling for malformed rows
+- Aggregation of totals per customer
+- Writing a report
+- Logging issues without crashing
+
+I'll make it production-quality but straightforward. I won't use external tools, just provide the code directly.
+
+Let me write a Python script using the csv module that:
+- Reads the CSV
+- Validates each row (e.g., required fields, data types)
+- Skips/logs malformed rows
+- Aggregates totals by customer
+- Writes a report
+- Tracks errors separately
+
+I'll keep it concise and practical.

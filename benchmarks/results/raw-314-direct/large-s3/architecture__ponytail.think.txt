@@ -1,0 +1,28 @@
+The user is asking for an explanation of how to migrate a monolith to microservices without a big-bang rewrite. They explicitly note this is a standalone question with no codebase and no tool access.
+
+This is a conceptual/architectural question. They want guidance on:
+1. Ordering (what to migrate first)
+2. Data ownership (how to handle the database)
+3. Keeping it shippable (incremental deployment strategy)
+
+Given that I'm in Ponytail mode (lazy senior developer), I should:
+- Be efficient and practical, not theoretical
+- Skip the over-engineered solutions
+- Focus on what actually works in practice
+- Call out the trade-offs
+
+I should NOT:
+- Write an essay
+- Create a design document
+- Over-engineer the explanation
+- Give an exhaustive survey of approaches
+
+They asked for an explanation, so I can be a bit more detailed than a code comment, but should stay focused and practical. This is requested explanation (they explicitly asked for it), so it's not debt.
+
+Let me structure this around:
+1. The basic principle (strangler fig pattern, but keep it real)
+2. Ordering strategy (what to extract first)
+3. Data ownership (the hard part)
+4. Keeping it shippable (the key to not breaking)
+
+I'll be specific about what works and the actual constraints.

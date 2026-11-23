@@ -1,0 +1,10 @@
+The user is asking me to validate an email field on a signup form and show the code. They explicitly note this is a standalone question with no codebase and no tool access.
+
+Since this is a frontend question about email validation, I should provide practical code examples. The user wants me to be terse (caveman mode is on), so I'll keep it short and direct.
+
+I'll show common approaches:
+1. HTML5 built-in validation
+2. JavaScript validation
+3. Regular expression approach
+
+Let me keep it caveman-style: short, no fluff, just the code and essential explanation.

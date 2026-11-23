@@ -1,0 +1,18 @@
+User asking for standalone explanation of regex backreferences with one example. No codebase, no tools needed. Straightforward explanation question.
+
+I'm in caveman mode (full). Need to drop:
+- Articles (a/an/the)
+- Filler (just/really/basically/actually/simply)
+- Pleasantries (sure/certainly/of course/happy to)
+- Hedging
+
+But keep: technical terms exact, fragments OK, short synonyms, pattern like `[thing] [action] [reason]. [next step]`.
+
+This is an explanation, not a multi-step sequence, so caveman is safe. No clarity issues.
+
+Simple structure:
+1. What backreference is
+2. How it works
+3. One example
+
+Short and direct.

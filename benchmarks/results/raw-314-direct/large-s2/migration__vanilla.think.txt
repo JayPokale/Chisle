@@ -1,0 +1,18 @@
+The user is asking me to write a database migration script. They specifically mention:
+1. Moving from a single `full_name` column to `first_name` and `last_name` columns
+2. Backfilling existing rows
+3. Making it safely re-runnable
+4. They want me to show the code
+5. They note there's no codebase and no tool access
+
+This is a straightforward request for me to write example migration code. Since there's no specific database system mentioned, I should probably provide a generic solution, but SQL databases are most common. I'll provide SQL migration code that works with most relational databases (PostgreSQL, MySQL, etc.).
+
+For safety and re-runnable migrations, I should:
+- Use IF NOT EXISTS or similar checks to avoid errors on re-run
+- Handle the transition carefully (keep old column, add new columns, migrate data, then optionally drop old column)
+- Use a two-phase approach or transactions where possible
+- Handle edge cases like NULL values, names with multiple parts, etc.
+
+I'll write this as a migration script that could work with common frameworks like Alembic (Python/SQLAlchemy), or just raw SQL. I'll probably show both a SQL version and maybe a Python version using Alembic since those are very common.
+
+Let me write a comprehensive migration that's production-safe.

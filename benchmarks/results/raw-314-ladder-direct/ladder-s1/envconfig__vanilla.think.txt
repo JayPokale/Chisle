@@ -1,0 +1,7 @@
+The user is asking me to show code that reads an API base URL and request timeout from environment variables with sensible defaults. This is a standalone question with no codebase or tool access - they just want to see example code.
+
+Since they haven't specified a language, I should ask which language they'd like, or provide an example in a common language. Let me provide examples in a few popular languages since it's a simple, commonly-needed pattern.
+
+Actually, looking at the instructions again - they said "there is no codebase and no tool access here" - so I should just provide the code directly without tool calls.
+
+Let me provide examples in a couple of popular languages:

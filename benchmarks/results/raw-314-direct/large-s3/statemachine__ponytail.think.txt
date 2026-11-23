@@ -1,0 +1,52 @@
+The user wants me to implement an order state machine with specific states and legal transitions. This is a standalone question with no codebase, so I should write clean, working code.
+
+Since there's no existing codebase and no tool access mentioned, I should provide the code directly. Let me think about the states and legal transitions:
+
+States:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+Legal transitions (thinking about realistic order flow):
+- created → paid (payment made)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order shipped after payment)
+- paid → cancelled (order cancelled after payment but before shipping)
+- paid → refunded (refund issued)
+- shipped → delivered (order delivered)
+- shipped → cancelled (cancel during shipping)
+- delivered → (end state, no transitions, or maybe return but not asked)
+- refunded → (end state)
+- cancelled → (end state)
+
+Actually, let me reconsider. Some transitions should be allowed:
+- created → paid
+- created → cancelled
+- paid → shipped
+- paid → refunded
+- paid → cancelled
+- shipped → delivered
+- shipped → refunded (maybe)
+- shipped → cancelled (maybe)
+- delivered → refunded (maybe for returns)
+
+Let me think about typical e-commerce flows:
+1. created → paid → shipped → delivered
+2. created → cancelled (cancelled before payment)
+3. created → paid → cancelled (cancelled after payment but before shipping)
+4. created → paid → refunded (refund without shipping)
+5. paid → shipped → cancelled (cancel during shipping? probably not)
+6. delivered → refunded (return/refund after delivery)
+
+I'll implement a reasonable set of legal transitions that cover common scenarios. Let me build this with Python since the user didn't specify a language and it's a good fit for state machines.
+
+I'll use:
+1. An enum for states
+2. A class to manage transitions
+3. Clear enforcement of valid transitions
+4. Exception for invalid transitions
+Next I'll write out the code cleanly.
+

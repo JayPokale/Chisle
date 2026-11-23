@@ -1,0 +1,40 @@
+The user is asking me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They say "Show the code" and explicitly note "there is no codebase and no tool access here" - so this is a request for me to write example code from scratch without file operations.
+
+They're in Chisle mode (maximum signal, minimum noise). I should:
+- Write working, production-ready code
+- Skip unnecessary boilerplate
+- No explanations longer than the code
+- Be terse but complete
+- Show the actual implementation, not theory
+
+Since there's no context about language/stack, I'll default to Node.js/Express with a database (PostgreSQL), which is common for this use case. I could also do Python/Flask, but Node is probably most expected for a modern auth system.
+
+Tech stack decision: Node.js + Express + PostgreSQL + bcrypt for hashing + JWT for sessions + simple in-memory rate limiting (or could use Redis, but that adds complexity).
+
+Actually, let me think about rate limiting - should I use:
+- In-memory rate limiting (simple, works for single-server)
+- Redis (production-grade, distributed)
+- Database (overkill)
+
+For a standalone example, in-memory is cleaner and doesn't add dependency complexity. For production, would use Redis, but the user asked for implementation, not "production checklist."
+
+Let me build:
+1. User model/schema
+2. Signup endpoint with validation, password hashing, session issuance
+3. Login endpoint with password verification, session issuance
+4. Rate limiting middleware for failed attempts
+5. Protected route example
+6. Session verification middleware
+
+I'll use:
+- Express (framework)
+- bcrypt (password hashing)
+- jsonwebtoken (session/token)
+- In-memory rate limiting with Map
+
+Code-first approach. Keep it tight, working, no unnecessary abstractions.

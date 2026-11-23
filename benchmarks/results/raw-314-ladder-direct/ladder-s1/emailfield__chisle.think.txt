@@ -1,0 +1,44 @@
+The user is asking me to validate an email field on a signup form. They say "Show the code" and note this is a standalone question with no codebase and no tool access.
+
+Since there's no existing codebase, they want me to write email validation code from scratch. They haven't specified a framework or language, so I should default to the most common web stack: JavaScript/HTML for a signup form.
+
+For email validation on a form before submission, I'd typically use:
+1. HTML5 `type="email"` with built-in validation
+2. JavaScript for custom validation if needed
+3. The validation should happen on form submit (before actually submitting to server)
+
+Let me write minimal, working code. Since they said "standalone" and no codebase, I'll give them a complete, small HTML form example with JavaScript validation.
+
+Under Chisle mode:
+- Fragments, no fluff
+- Code first, then brief explanation
+- No unrequested abstractions
+- Fewest files, shortest working diff
+- Output format: code first, then 2-3 short lines max
+
+For email validation: HTML5's type="email" does basic validation, but for robust client-side validation I should use a regex or built-in validation. I could use:
+- HTML5 built-in: `<input type="email" required>`
+- JS with `.checkValidity()` or manual regex
+- Simple regex: `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`
+
+Let me provide both HTML + JS approach since they asked for "the code" (singular or plural is ambiguous, but code means working solution).
+
+Actually, re-reading: "Validate the email field on our signup form before it submits" → they want validation that runs before form submission. That's client-side validation.
+
+Minimal approach:
+```html
+<form id="signup">
+  <input type="email" name="email" required>
+  <button type="submit">Sign Up</button>
+I'm noting that the form markup is finished and the submit handler is next, checking the email with a regex and blocking submission if it fails. I'm also thinking the HTML5 email type already covers basic checks, so the script could be shorter.
+
+I'm sketching the signup form's submit handler, using the email type's built-in check to decide whether to block submission.
+
+I'm sketching the signup form's submit handler, using the email field's built-in validity check to block submission and show an error message when it fails.
+
+I'm writing the email validation as a simple submit handler that checks the input with a regex and blocks submission on failure.
+
+Still writing the validation script...
+
+I'm wrapping up the response with a few formatting rules: code first, two or three lines of explanation at most, no pleasantries, and the key terms "prevent submission," "regex," and "required" spelled out.
+

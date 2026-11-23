@@ -1,0 +1,33 @@
+User wants a database migration script that:
+1. Moves users table from full_name to first_name/last_name
+2. Backfills existing rows
+3. Safely re-runnable
+
+They say "standalone question: there is no codebase and no tool access here" - so I should just provide code, not use tools.
+
+They also have caveman mode active ("Respond terse like smart caveman"). I need to be terse but clear, especially since this is a migration (irreversible operation) so I should ensure clarity on the safety aspects.
+
+I'll provide a migration script. I need to decide: SQL? Or a framework? Since they don't specify a database or framework, I'll provide a general SQL approach that's portable. Or maybe multiple approaches. Actually, let me give a solid SQL example with safe re-runnability patterns.
+
+Safe re-runnability typically means:
+- Check if changes already applied before running
+- Use transactions
+- Idempotent operations
+
+For migrations, common patterns:
+1. Add new columns
+2. Backfill data
+3. Add constraints if needed
+4. Drop old column
+
+A safely re-runnable migration might:
+- Check if columns exist before adding
+- Only backfill rows where data missing
+- Wrap in transaction
+- Or use "IF NOT EXISTS" / "IF EXISTS" patterns
+
+Let me write this in SQL that's portable (works with PostgreSQL, MySQL, etc.) but I'll note dialects where needed.
+
+Caveman mode: Drop articles, filler. Keep technical accuracy. Fragments OK.
+
+Pattern: "Migration splits full_name. Safe to re-run. Code:"

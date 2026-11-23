@@ -1,0 +1,15 @@
+The user is asking for an explanation of database connection pooling and why it helps. This is a standalone educational question about a software engineering concept, not a task to work on a codebase.
+
+According to the instructions, I should:
+- Give a short, concise response
+- For exploratory/explanatory questions, respond in 2-3 sentences with main points
+- Since this is an educational question asking for explanation (not code), I should explain clearly but concisely
+
+The Ponytail mode is active (lazy senior developer), which applies to code I build, not to how I explain concepts. But I should still be concise and avoid unnecessary prose.
+
+I should explain:
+1. What connection pooling is
+2. The problem it solves
+3. Why it helps (performance benefits)
+
+Let me give a clear, practical explanation without over-complicating it.

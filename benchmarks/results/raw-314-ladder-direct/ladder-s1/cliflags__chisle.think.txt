@@ -1,0 +1,40 @@
+The user is asking for a standalone example of how to parse command-line flags in a Node.js script, specifically `--port` and `--verbose` flags. This is a straightforward request with no codebase context.
+
+They explicitly said "Show the code" and "Standalone question: there is no codebase and no tool access here" - so they want me to just provide the code without tool calls.
+
+Since this is Chisle mode and they're asking for code, I should provide a minimal, working solution. The simplest approach in Node.js is to use the built-in `process.argv` or a simple custom parser. I could also mention popular libraries like `yargs` or `commander`, but the user asked for a standalone approach and to show code, so I'll start with the simplest solution.
+
+Let me provide a clean, minimal implementation that parses `--port` and `--verbose` flags:
+
+```javascript
+// Parse --port and --verbose
+const args = process.argv.slice(2);
+const opts = {
+  port: 3000,
+  verbose: false
+};
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--port' && args[i + 1]) {
+    opts.port = parseInt(args[i + 1], 10);
+    i++;
+  } else if (args[i] === '--verbose') {
+    opts.verbose = true;
+  }
+}
+
+console.log(opts);
+```
+
+This is minimal and works. I could also show a slightly cleaner version using a more idiomatic approach. Let me think about what's clearest.
+
+Actually, a modern approach using a simple parser might be cleaner:
+
+```javascript
+const args = process.argv.slice(2);
+const opts = { port: 3000, verbose: false };
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--port') {
+I'm settling on a single manual approach for the parser, since the user asked for one standalone example. Within the loop, `--port` takes the next argument and parses it as an integer, then skips past it, while `--verbose` just sets the flag to true.
+

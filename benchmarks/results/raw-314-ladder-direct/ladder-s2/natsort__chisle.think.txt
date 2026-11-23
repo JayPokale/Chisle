@@ -1,0 +1,41 @@
+The user is asking me to sort a list of file names so that file2 comes before file10. This is about natural/numeric sorting vs lexicographic sorting.
+
+In lexicographic (standard string) sorting:
+- file10 comes before file2 (because "1" < "2")
+
+In natural sorting:
+- file2 comes before file10 (because 2 < 10 numerically)
+
+The user wants file2 before file10, so they want natural sorting.
+
+I should show code for this. The user said "Standalone question: there is no codebase and no tool access here" - so they don't want me to use tools, just provide code.
+
+What language? Not specified. I'll pick the most common default - Python. But I could also do JavaScript, or mention multiple options. Given the user wants the answer concise (Chisle mode), I should pick one and show it.
+
+Python with `natsort` is simplest, but that's a dependency. Let me think - standard library approach would be to use a key function that extracts numbers and sorts by them.
+
+Actually, the simplest is just to use a library that does this. But "dependency over a few lines"? Let me check the ladder:
+1. Needs to exist? Yes
+2. Already in codebase? No
+3. Stdlib? No, not really for natural sort
+4. Native feature? No
+5. Installed dependency? `natsort` exists but isn't standard
+6. One line? The sort key might be one line
+7. Only then minimum code
+
+Actually, for natural sort, the typical approach without a library is to write a key function that:
+- Splits the string into alternating text and number parts
+- Converts number parts to integers for comparison
+
+Here's a quick solution:
+
+```python
+import re
+
+def natural_key(s):
+    return [int(text) if text.isdigit() else text.lower() 
+            for text in re.split(r'(\d+)', s)]
+Still writing the natural sort code...
+
+Still working out the natural sort key for file2 versus file10...
+

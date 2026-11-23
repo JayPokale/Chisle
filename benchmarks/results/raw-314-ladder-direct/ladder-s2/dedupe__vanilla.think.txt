@@ -1,0 +1,15 @@
+The user is asking me to show code that removes duplicate emails from a list of users, keeping the first occurrence and maintaining the original order. They mention this is a standalone question with no codebase and no tool access.
+
+Since they want to see the code and there's no specific language mentioned, I should provide a general solution. I'll show a few common approaches in popular languages. Python is a good default, and I can also show JavaScript/TypeScript since those are common. Let me provide clean, efficient solutions.
+
+The key requirements:
+1. Remove duplicates
+2. Keep the first occurrence
+3. Maintain original order
+
+This is a classic problem that can be solved with:
+- Python: using dict.fromkeys() or a set + list comprehension
+- JavaScript: using Set and Array methods
+- Other languages have similar approaches
+
+Since no specific language was mentioned, I'll provide Python first as it's very readable, then maybe JavaScript as well.

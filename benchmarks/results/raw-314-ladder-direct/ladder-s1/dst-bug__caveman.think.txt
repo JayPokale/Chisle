@@ -1,0 +1,39 @@
+The user is asking me to identify and explain the root cause of why a nightly job scheduled with `setInterval(run, 24 * 60 * 60 * 1000)` drifts by an hour after every daylight saving time (DST) change.
+
+This is a classic problem with time-based scheduling. Let me think through this:
+
+1. `setInterval(run, 24 * 60 * 60 * 1000)` sets an interval of exactly 86,400,000 milliseconds (24 hours in milliseconds).
+
+2. The problem: When daylight saving time changes, the actual elapsed clock time doesn't match the interval duration in terms of wall-clock time (the time shown on clocks in a given timezone).
+
+3. Here's what happens:
+   - Spring forward (DST begins): Clocks jump forward 1 hour (e.g., 2 AM becomes 3 AM). The job runs every 86,400,000 ms, but the wall-clock time is now 1 hour ahead because of the DST shift. The job appears to be drifting earlier by an hour.
+   - Fall back (DST ends): Clocks go back 1 hour (e.g., 2 AM becomes 1 AM). The wall-clock time is now 1 hour behind. The job appears to be drifting later by an hour.
+
+4. Wait, let me reconsider. The user says it "drifts by an hour after every daylight saving change." Let me think about what "drift" means here.
+
+Actually, I need to reconsider the mechanism:
+
+- `setInterval(run, 24 * 60 * 60 * 1000)` creates a fixed interval of exactly 24 hours in elapsed time (UTC).
+- If a job runs at 2 AM wall-clock time and the interval is 24 hours:
+  - In a normal 24-hour period, the next run would be at 2 AM wall-clock time the next day.
+I'm working through the spring-forward case now: the job was set for 2 AM, the clock jumps to 3 AM, and since the interval is a fixed 86,400,000 ms, the next run lands at 3 AM wall-clock on the following day rather than 2 AM.
+
+I'm working through the spring-forward case: the job was set for 2 AM, but after the jump it still runs 24 hours of elapsed time later, so the wall-clock time it lands on shifts because the calendar day is only 23 hours long.
+
+I'm working through the spring-forward scenario with a concrete example: the job runs at 1:00 AM on Day 1, and I'm checking how a fixed 24-hour interval lands once the clock jumps forward.
+
+Working through the Day 1 example again, I see that 24 hours of elapsed time from 1:00 AM lands on 1:00 AM the next day, but the Day 1 wall-clock has only 23 hours because the clock skips from 2:00 to 3:00, so the run that was supposed to land at 1:00 AM sits one hour later than its wall-clock slot.
+
+I'm checking what "drift" actually means here: the job is meant to run at 2 AM wall-clock, and a spring-forward change could shift when a fixed 24-hour interval lands relative to that clock time.
+
+I'm checking the Day 0 to Day 2 cases against the spring-forward change: with only 23 wall-clock hours in that stretch, the fixed 24-hour interval ends up landing one hour later than the 2 AM slot.
+
+I'm checking the spring-forward case against the Unix timestamp: the job runs at 2:00 AM on Day 0, and the next run is scheduled 86,400 seconds of elapsed time later.
+
+Now I'm checking the timestamps directly: a Unix timestamp stays the same across a DST change, so the fixed 86,400-second interval still lands at the same elapsed moment. Only the wall-clock reading shifts, which is why the job appears to drift by an hour relative to a 2 AM schedule.
+
+Now I'm working through the fall-back case: 24 hours of elapsed time spans only 23 wall-clock hours, so the job lands an hour earlier. Over repeated changes those one-hour offsets accumulate, and the root cause is that a fixed millisecond interval measures elapsed time while the schedule is anchored to wall-clock time.
+
+I'm settling on the fix: a scheduler that targets a wall-clock time and recomputes the next run after each execution, rather than adding a fixed millisecond interval. The user only asked for the explanation, so that's what I'll give them.
+

@@ -1,0 +1,8 @@
+The user is asking for an explanation of how to migrate a monolith to microservices without a big-bang rewrite. This is a standalone question with no codebase to work with - they explicitly note "there is no codebase and no tool access here."
+
+This is a conceptual/architectural question about software engineering practices. I should provide a comprehensive but concise explanation covering:
+1. The ordering/sequencing of service extraction
+2. Data ownership and handling
+3. How to maintain "shippability" throughout (continuous deployment)
+
+I should be direct and avoid unnecessary elaboration. The user seems to be asking for practical guidance on this common problem.

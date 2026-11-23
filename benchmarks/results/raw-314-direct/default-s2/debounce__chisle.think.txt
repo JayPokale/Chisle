@@ -1,0 +1,45 @@
+The user is asking for code that adds debounce to a search input. They say "standalone question: there is no codebase and no tool access here" which means they just want me to show code examples, not work on files in their directory.
+
+They want me to show the code for adding debounce to a search input that currently fires an API call on every keystroke.
+
+This is a common frontend pattern. The most common context would be JavaScript/React in a modern web app. I should show:
+1. A simple debounce implementation or use of a debounce function
+2. How to apply it to a search input's onChange handler
+
+Since they said "show the code" and it's standalone, I should give a working example. React is probably the most common, but I could also show vanilla JS. Let me give a React example since that's very common for this pattern.
+
+I should be in Chisle mode - maximum signal, minimum noise. No pleasantries, no lengthy explanation, just the code and the essential caveat.
+
+The classic approach is to use `setTimeout` with a cancel mechanism. I could:
+1. Show a manual debounce with useEffect + useRef
+2. Use a debounce library like lodash
+3. Show a custom hook
+
+For terse, signal-maximum response: show the hook-based approach (most reusable) or the useEffect pattern directly in the component.
+
+Let me show the useEffect + useState pattern which is explicit and commonly understood:
+
+```jsx
+const [query, setQuery] = useState('');
+const [results, setResults] = useState([]);
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    if (query.trim()) {
+      fetch(`/api/search?q=${query}`)
+        .then(r => r.json())
+        .then(setResults);
+    }
+  }, 300);
+
+  return () => clearTimeout(timer);
+}, [query]);
+
+return (
+  <input
+    value={query}
+    onChange={(e) => setQuery(e.target.value)}
+Now I'm settling on a reusable debounce approach as well as the inline version, and I'm thinking about how to structure the explanation to keep it short.
+
+I'm going with the useEffect version since it's the most self-contained, and I'll mention the alternatives briefly after it.
+

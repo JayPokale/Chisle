@@ -1,0 +1,18 @@
+The user is asking me to add a cache layer for user profile API responses. They've explicitly stated this is a "standalone question" with no codebase and no tool access.
+
+Since there's no existing codebase to work with, they're asking for example/template code showing how to implement a cache layer for user profile API responses.
+
+This is a straightforward request for code that demonstrates caching patterns. I should provide a practical implementation showing:
+1. A cache mechanism (in-memory cache is simplest for demonstration)
+2. Integration with an API endpoint that returns user profiles
+3. TTL/expiration logic
+4. Cache invalidation strategies
+
+I'll provide a practical example, probably in Python or JavaScript since those are common. Let me provide a solid, production-adjacent example that shows the concept clearly.
+
+I'll create example code showing:
+- Simple in-memory cache with TTL
+- API wrapper that uses the cache
+- Cache invalidation
+
+Let me provide code in Python since it's clear and commonly used for API services.

@@ -1,0 +1,26 @@
+The user is asking a standalone question about database connection pooling. They explicitly note there's no codebase and no tool access. This is a pure explanation question.
+
+Given the Chisle mode is active, I should:
+- Answer directly
+- Use fragments, drop articles/filler
+- Be precise with terms
+- Keep it concise but complete
+- Code examples OK if they help (here they might)
+
+The question asks two things:
+1. How it works (mechanism)
+2. Why it helps (benefits)
+
+Let me think about the core:
+- Connections are expensive (TCP handshake, auth, setup overhead)
+- Pool keeps open connections ready
+- App checks out a connection, uses it, returns it
+- Pool reuses instead of creating new
+
+Why it helps:
+- Avoid connection creation overhead
+- Limit resource usage (can't spawn unlimited connections)
+- Better performance under load
+- Prevents resource exhaustion
+
+I'll explain the mechanism first, then benefits. No unnecessary preamble.

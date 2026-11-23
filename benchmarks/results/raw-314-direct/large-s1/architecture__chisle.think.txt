@@ -1,0 +1,22 @@
+The user is asking for an explanation about how to migrate a monolith to microservices without a big-bang rewrite. They explicitly note this is a standalone question with no codebase and no tool access needed.
+
+This is asking for architectural/strategic guidance. I should follow the Chisle rules:
+- Maximum signal per token: drop pleasantries, use fragments where it makes sense, structural causality
+- Two tight paragraphs beat five headed sections
+- Technical terms exact and verbatim
+- Keep decisive facts: ordering, data ownership, shipping throughout
+
+Key points to cover:
+1. Ordering - what to extract first
+2. Data ownership - the coupling problem
+3. Keeping it shippable - strangler pattern, feature toggles
+4. The gotchas and tradeoffs
+
+Let me think about the structure:
+- Opening: the core pattern (strangler)
+- Ordering: what to extract and why
+- Data ownership: the hard part
+- Shipping: how to maintain flow
+- Gotchas/tradeoffs
+
+Chisle mode: skip the intro pleasantries, go straight to the substance, use causality arrows, no lists unless necessary, keep it tight.

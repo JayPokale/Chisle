@@ -1,0 +1,24 @@
+User is asking for a standalone implementation of email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They want to see the code. No existing codebase, no tool access.
+
+Since there's no codebase and no tool access mentioned, I should provide a complete, working implementation. I'll use Python with Flask since it's clear and accessible. I'll include:
+- Password hashing with bcrypt
+- Session management
+- Rate limiting with a simple in-memory approach (can be Redis in production)
+- Basic email validation
+
+Actually wait - they said "no tool access here" but I can still provide code. Let me create a solid implementation.
+
+I'll use caveman mode since that's active. Keep it terse but technically complete.
+
+Let me structure it:
+1. User model with hashed passwords
+2. Auth routes (signup, login, logout)
+3. Rate limiter for failed attempts
+4. Session management
+
+I'll use Flask + SQLAlchemy + bcrypt for a production-ready pattern.

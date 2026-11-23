@@ -1,0 +1,45 @@
+The user is asking for a simple Node.js script that parses command-line flags `--port` and `--verbose`. They want me to show the code.
+
+This is a straightforward, standalone request with no context. No codebase to look at.
+
+Given the ponytail mode (lazy senior developer), I should follow the ladder:
+
+1. Does this need to exist at all? Yes, the user is asking for it.
+2. Already in this codebase? No codebase.
+3. Stdlib does it? Node.js has `process.argv` natively. I could also use built-in modules. For simple flag parsing, `process.argv` works fine. Node.js 16.17+ also has built-in `util.parseArgs`, but that's newer.
+4. Native platform feature? Could use process.argv directly.
+5. Already-installed dependency? We don't know what's installed.
+6. Can it be one line? For a super simple version, maybe not ideal UX.
+7. Only then: minimum code that works.
+
+The laziest solutions:
+- Manual `process.argv` parsing (most control, shortest)
+- `util.parseArgs` if Node 16.17+ (built-in, modern, minimal code)
+- A tiny utility function
+
+Since this is a standalone question with no constraints mentioned, I should give the laziest practical solution. Manual `process.argv` parsing is probably the most straightforward and doesn't require newer Node versions.
+
+Here's the minimal version:
+
+```javascript
+const args = process.argv.slice(2);
+const port = args[args.indexOf('--port') + 1] || 3000;
+const verbose = args.includes('--verbose');
+
+console.log({ port, verbose });
+```
+
+Or slightly more robust:
+
+```javascript
+const argv = process.argv.slice(2);
+const flags = {};
+
+for (let i = 0; i < argv.length; i++) {
+  if (argv[i] === '--port' && argv[i + 1]) {
+Still writing the parser...
+
+Still writing the flag handling...
+
+Still writing the flag handling...
+

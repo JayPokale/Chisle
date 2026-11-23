@@ -1,0 +1,22 @@
+The user is asking me to add a cache layer for user profile API responses. They've explicitly stated this is a standalone question with no codebase and no tool access.
+
+Since there's no existing codebase to work with, I need to provide example code showing how to implement a cache layer for a user profile API. I should keep it concise and practical.
+
+Looking at the Chisle mode instructions:
+- Answer directly
+- Code first, then at most three short lines of explanation
+- Smallest thing that works
+- No unrequested abstractions
+
+I should provide minimal, working code showing a cache layer. I'll assume a common stack (Node.js/Express or similar) since it's not specified. I could also provide multiple options, but the instruction says "unstated stack → most common default, one line" - so I should pick one.
+
+For a user profile API cache, the most common modern approach would be:
+1. In-memory cache with TTL (using a library like node-cache or similar)
+2. Redis cache
+3. Simple memoization
+
+I'll show a practical example with a commonly used approach. Let me provide Node.js/Express with a simple cache implementation using a library or basic memoization.
+
+Actually, let me provide both a simple in-memory approach and a Redis approach, but keep it very concise. The user asked to "show the code" so they want practical examples.
+
+Let me start with the simplest working solution, then maybe show an alternative.

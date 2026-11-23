@@ -1,0 +1,41 @@
+The user is asking me to show how to parse `--port` and `--verbose` command-line flags in a Node.js script. They explicitly state this is a standalone question with no codebase.
+
+This is a straightforward coding question. They want to see code for parsing command-line flags.
+
+The lazy approach (ponytail mode is active):
+1. Does this need to exist? Yes, parsing CLI flags is a real need.
+2. Already in codebase? No codebase.
+3. Stdlib does it? Node.js has built-in ways to parse this:
+   - `process.argv` - raw array
+   - No built-in flag parser, but we can use a simple approach
+4. Already-installed dependency? They didn't mention any.
+5. Can it be one line? No, we need at least a few lines.
+6. Minimum code that works?
+
+Since this is Haiku and a simple request, I should show:
+1. The simplest approach (manual parsing from `process.argv`)
+2. Maybe mention that `process.argv` is what's available
+
+Let me show a simple, working example:
+
+```javascript
+const args = process.argv.slice(2);
+let port = 3000;
+let verbose = false;
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--port' && args[i + 1]) {
+    port = parseInt(args[i + 1], 10);
+    i++;
+  } else if (args[i] === '--verbose') {
+    verbose = true;
+  }
+}
+
+console.log('Port:', port);
+console.log('Verbose:', verbose);
+```
+
+This is minimal, works, and doesn't require dependencies. The ponytail comment would note that if they add many flags, they might want a library, but for 1-2 flags this is perfect.
+
+No tests needed for this tiny snippet - it's self-contained and the user can run it directly.

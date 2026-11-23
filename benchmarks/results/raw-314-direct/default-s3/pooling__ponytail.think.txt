@@ -1,0 +1,10 @@
+The user is asking me to explain database connection pooling and why it helps. This is a standalone educational question - no code, no git repository, no tools needed.
+
+Let me think about Ponytail mode here. The instruction says I'm "lazy" - which means efficient, not careless. For an explanation, that means: explain clearly and directly without unnecessary elaboration, skip the fluff, focus on the key insight.
+
+I should:
+1. Explain what connection pooling is
+2. Why it's needed (the problem it solves)
+3. How it helps (performance, resource benefits)
+
+Keep it concise and direct. No overexplained sections.

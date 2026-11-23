@@ -1,0 +1,19 @@
+The user is asking me to identify the root cause of a pagination bug where one item is skipped between pages. The formula they're giving is: `offset = page * pageSize + 1` with pages starting at 0.
+
+Let me think through this:
+- Page 0 (first page): offset = 0 * pageSize + 1 = 1 (should be 0)
+- Page 1 (second page): offset = 1 * pageSize + 1 = pageSize + 1 (should be pageSize)
+- Page 2: offset = 2 * pageSize + 1 = 2*pageSize + 1 (should be 2*pageSize)
+
+So the problem is clear: the `+ 1` in the formula is the culprit. It's adding 1 to every offset calculation, which means:
+
+1. The first page starts at index 1 instead of 0, skipping the first item entirely
+2. Each page boundary has this off-by-one error propagated
+
+The correct formula should be: `offset = page * pageSize` (without the + 1)
+
+The root cause is that someone added a `+ 1` to the offset calculation, possibly thinking pages were 1-indexed instead of 0-indexed, or perhaps as a misguided attempt to fix another bug.
+
+The fix is simple: remove the `+ 1` from the offset calculation.
+
+This is a standalone question with no codebase access, so I just need to identify and explain the fix.

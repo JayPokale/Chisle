@@ -1,0 +1,33 @@
+User wants me to write an incident postmortem for a hypothetical 4-hour outage caused by connection pool exhaustion from slow downstream dependency. This is a standalone writing task with no code/codebase involved.
+
+Caveman mode is active (default: full). I should drop articles, filler, hedging, and use fragments. But this is a formal document (postmortem), so I need to balance terseness with clarity and professional structure.
+
+Let me check: is this a case where caveman should drop out? "Drop caveman when: Security warnings, Irreversible action confirmations, Multi-step sequences where fragment order or omitted conjunctions risk misread, User asks to clarify or repeats question."
+
+A postmortem is a formal document that will be shared/archived. The structure and clarity matter for communication across teams. However, it's not a security warning or an irreversible action confirmation. The fragments shouldn't create ambiguity since postmortems have clear section structure.
+
+I think I can write this in caveman mode (full) but keep professional structure intact. Articles can drop, filler can drop, but sentence structure within each section can remain clear because the headings provide context.
+
+Actually, let me reconsider. A postmortem is a critical document that will be read by many stakeholders and potentially referenced later. Overly terse caveman-speak might hurt clarity for non-technical readers or when skimming. But the user asked for caveman mode as default and said "No revert after many turns. No filler drift. Still active if unsure. Off only: 'stop caveman' / 'normal mode'."
+
+The user is explicitly saying stay in caveman mode unless told to stop. So I should write this in caveman mode (full intensity), dropping articles and filler while keeping structure clear.
+
+Let me write a realistic postmortem template with realistic details:
+
+---
+
+**INCIDENT POSTMORTEM**
+**Date:** 2026-11-20  
+**Duration:** 4 hours (14:00 - 18:00 UTC)  
+Now I'm laying out the incident timeline: payment service slowing from 50ms to over 2 seconds, error rate alerts firing, and the connection pool filling up before the rollback.
+
+Now I'm filling in the rest of the timeline: the API gateway starts dropping requests at 14:42, the team escalates at 14:50, and the payment service team traces the stuck queries to a database with 847 open connections against a pool of 500. The batch is killed around 15:30, the gateway recovers by 15:45, and the root cause is a schema migration shipped without query optimization, so slow analytical queries hold connections for 60 to 90 seconds each.
+
+Now I'm working through the contributing factors: the gateway kept retrying payment requests with no circuit breaker, there's no alert on connection pool usage, and the migration was only load tested at a fraction of production scale.
+
+Now I'm filling in the remediation plan: a few fixes are set for the next two weeks, including load testing migrations at increasing scale and splitting the analytical workload onto its own pool. The longer-term items are moving to a connection pooler and having the service report expected latency in its headers.
+
+Now I'm filling in the last of the remediation items: the longer-term work includes forcing stale connections closed after 60 seconds idle and setting latency targets for the downstream dependency. Then I'm moving on to the lessons learned and the prevention checklist, which is still being drafted.
+
+Now I'm wrapping up the checklist and sign-off: prevention items like load testing at scale, query plan review, pool headroom, circuit breakers, and timeout tracing, with the follow-up owner set for a four-week checkpoint and the review scheduled for December 20.
+

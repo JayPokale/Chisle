@@ -1,0 +1,15 @@
+The user is asking me to write an incident postmortem for a hypothetical scenario: a four-hour outage caused by connection pool exhaustion from a slow downstream dependency. They've explicitly noted this is a standalone question with no codebase.
+
+This is a straightforward writing task. They want a template/example postmortem that follows standard incident review structure. I should write this in a professional, clear manner that could serve as a real postmortem or template.
+
+Key sections in a postmortem:
+1. Summary/Executive Summary
+2. Timeline (the 4 hours)
+3. Root Cause Analysis
+4. Impact
+5. Remediations (immediate and preventive)
+6. Lessons Learned
+
+I'm in Chisle mode, so I should be concise and direct. No hedging, no unnecessary pleasantries. The structure should be clear but not over-formatted. 
+
+Since this is about incident response (a serious topic), I should maintain clarity and completeness even in Chisle mode - this is "auto-clarity" territory where comprehensiveness matters.

@@ -1,0 +1,54 @@
+The user is asking me to show code that groups a list of orders by customer ID and totals each customer's spend. They note this is a standalone question with no codebase and no tool access.
+
+Since there's no context about what language they want or what the data structure looks like, I should give a practical, minimal example. Given the lazy approach (ponytail is active), I should:
+
+1. Not over-engineer this
+2. Show the simplest working solution
+3. Use standard library features
+4. Keep it short
+
+I'll provide a Python solution since it's concise and clear. I could do multiple languages, but the user asked for "the code" (singular), so I'll give one good example.
+
+The most Ponytail approach:
+- Use Python's `defaultdict` or `groupby`, or just a regular dict
+- One-liner or minimal code
+- No classes, no frameworks
+- Show it working with sample data
+
+Let me give a quick, clean solution:
+
+```python
+from collections import defaultdict
+
+orders = [
+    {"customer_id": 1, "amount": 100},
+    {"customer_id": 2, "amount": 50},
+    {"customer_id": 1, "amount": 75},
+    {"customer_id": 2, "amount": 25},
+]
+
+customer_totals = defaultdict(float)
+for order in orders:
+    customer_totals[order["customer_id"]] += order["amount"]
+
+print(customer_totals)
+```
+
+Or even simpler with a dict comprehension if the data is already sorted:
+
+```python
+orders = [...]
+totals = {}
+for order in orders:
+    totals[order["customer_id"]] = totals.get(order["customer_id"], 0) + order["amount"]
+print(totals)
+```
+
+Or using `itertools.groupby` if sorted:
+
+```python
+from itertools import groupby
+
+for customer_id, group in groupby(orders, key=lambda o: o["customer_id"]):
+The groupby version needs the input sorted by customer, so I'm wrapping up the simpler example here. The defaultdict approach is the clearest choice since it doesn't require pre-sorting. Let me run it on sample data.
+

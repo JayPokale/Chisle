@@ -1,0 +1,31 @@
+This is an interesting classic DST (Daylight Saving Time) bug. Let me think about what's happening.
+
+The nightly job is scheduled with `setInterval(run, 24 * 60 * 60 * 1000)`, which schedules it to run every 24 hours = 86,400,000 milliseconds.
+
+The issue is that the job drifts by an hour after every daylight saving time change.
+
+Here's the root cause:
+
+When daylight saving time changes occur, the **wall clock time** changes by 1 hour. This affects how time is measured relative to local time, but `setInterval` and `setTimeout` in JavaScript work with **elapsed milliseconds** (they use system time/monotonic clock internally).
+
+However, the **user's perception** and **logging/scheduling** are based on **wall clock time** (local time zones).
+
+Actually, let me reconsider. `setInterval` uses milliseconds, which should be wall-clock independent... but there's a subtlety here.
+
+Wait, I need to think more carefully. If the job is drifting by an hour after DST changes, and it's scheduled with `setInterval(run, 24 * 60 * 60 * 1000)`, what's happening?
+
+The issue is likely:
+1. The user is probably checking when the job *should* run based on local wall-clock time (e.g., "run at 2 AM every night")
+2. When DST changes, the wall clock jumps forward or backward
+3. If the scheduled time was meant to be "2 AM every day" in local time, but `setInterval` just fires every 86,400 seconds, then after a DST change, it will be off by an hour from the intended local time
+
+Actually, the classic problem is different. Let me think again...
+
+The real root cause is likely this:
+- If the system uses `setInterval(run, 24 * 60 * 60 * 1000)` with the assumption that 86,400,000 ms = 24 hours in wall-clock time
+I'm working through the elapsed-time math: a spring-forward day holds only 23 real hours, so a fixed 24-hour interval lands an hour late in wall-clock terms, while a fall-back day holds 25, so the job lands an hour early.
+
+Now I'm working out how to fix the drift: scheduling by wall-clock time instead of a fixed 24-hour interval, perhaps with a library that handles DST, or by computing each next run time explicitly.
+
+The fall-back and spring-forward cases both come down to elapsed time versus wall-clock time, so the drift is the timer counting 24 hours of elapsed time while the schedule is defined in local time. The fix is to schedule against the calendar and timezone rather than a fixed interval.
+

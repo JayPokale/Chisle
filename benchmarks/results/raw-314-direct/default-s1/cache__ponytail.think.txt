@@ -1,0 +1,18 @@
+The user is asking me to add a cache layer for user profile API responses. However, they note "there is no codebase and no tool access here" - so this is a standalone request where they want me to show code example, not modify an actual project.
+
+They're asking me to show code for a cache layer for a user profile API. Given I'm in Ponytail mode (lazy, efficient), I should:
+
+1. Apply the ladder - does this need to exist? For a hypothetical API, yes. Can stdlib cover it? Absolutely - Python's `functools.lru_cache` or similar.
+2. Show the minimal, working solution first
+3. No unrequested abstractions
+4. Explain what was skipped and when to add it
+
+Since there's no actual codebase to modify, I'll show a clean, minimal example. The user is asking for the code and understands it's standalone.
+
+Laziest approach: use `functools.lru_cache` on the API fetch function. That's the rung that works.
+
+I should:
+- Show the minimal code (lru_cache decorator)
+- Maybe show a slightly more sophisticated version with TTL if relevant
+- Keep it short per Ponytail rules
+- Mention what was skipped (custom cache class, Redis, etc.)

@@ -1,0 +1,71 @@
+The user is asking for a standalone implementation of email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They say "there is no codebase and no tool access here" - but that's not quite right since I have tools. However, I think they mean there's no existing project to work in. I should just provide the code directly.
+
+This is in "chisle" mode, so I should:
+- Answer directly
+- Not restate the request
+- Provide the smallest thing that works
+- Code first
+- Minimal explanation
+
+Since this is a standalone request with no framework specified, I should assume the most common default. For web apps with auth, that would be:
+- Node.js/Express or Python/Flask for the backend
+- Database: PostgreSQL or SQLite
+
+I'll go with Node.js/Express + SQLite as it's self-contained and common. Actually, let me think - Python might be simpler. Flask + SQLite would be very straightforward.
+
+Let me do Node.js/Express because:
+1. Very common for this
+2. npm packages are well-established (bcrypt, express-session, rate limiting)
+3. Clear and minimal
+
+I need:
+1. Password hashing (bcrypt)
+2. User signup endpoint
+3. User login endpoint with rate limiting
+4. Session management
+5. Database schema
+
+Let me write minimal, working code:
+
+```javascript
+const express = require('express');
+const bcrypt = require('bcrypt');
+const sqlite3 = require('sqlite3');
+const session = require('express-session');
+const rateLimit = require('express-rate-limit');
+
+const app = express();
+const db = new sqlite3.Database(':memory:'); // or 'auth.db' for persistent
+
+app.use(express.json());
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+Still writing the login limiter...
+
+Still writing the login rate limiter...
+
+Writing the login handler's database lookup...
+
+Still writing the login handler's failed-attempt logging...
+
+Still writing the rest of the login and session handlers...
+
+Still writing the login rate limiter and the SQLite setup...
+
+Still writing the rate limiter config...
+
+Still writing the signup handler and its response.
+
+Still writing the login handler's response...
+
+Now I'm finishing the Express routes: the login response returns a session ID, the profile route checks whether a user is set in the session, and logout destroys it. I'll also mention the npm packages to install.
+
+I'm settling on the final answer now: Node.js with Express, bcrypt for hashing, and sessions, and I'm wrapping up with the install and run steps.
+

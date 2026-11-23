@@ -1,0 +1,22 @@
+This is a classic daylight saving time (DST) bug. The user is describing a nightly job that drifts by an hour after every DST change.
+
+The root cause is that `setInterval(run, 24 * 60 * 60 * 1000)` schedules the job to run every 24 hours in wall-clock time (86,400,000 milliseconds). However, when DST happens:
+
+- **Spring forward** (DST starts): clocks jump ahead 1 hour, so the actual elapsed time is 23 hours instead of 24 hours. The job runs "early" relative to wall-clock time.
+- **Fall back** (DST ends): clocks go back 1 hour, so the actual elapsed time is 25 hours instead of 24 hours. The job runs "late" relative to wall-clock time.
+
+Over time, the job's scheduled time drifts relative to wall-clock time because setInterval uses elapsed time (milliseconds), not wall-clock time.
+
+The proper solution depends on what "nightly" means:
+1. **If it should run at a fixed wall-clock time** (e.g., always at 2 AM): Use a cron-like scheduler or calculate the next occurrence of that time and schedule accordingly. Libraries like `cron` or `node-schedule` handle DST automatically.
+2. **If it should run every 24 wall-clock hours** (regardless of DST): You need to adjust for DST by recalculating the interval when DST changes.
+3. **If it should run every 24 real hours** (UTC time): This actually works fine with setInterval, but you'd need to account for the fact that UTC doesn't observe DST.
+
+The most common approach for a "nightly job" is option 1: run at a fixed wall-clock time. The fix is to use a proper scheduler like `node-schedule` or `cron`:
+
+```javascript
+const schedule = require('node-schedule');
+Now I'm looking at the next part of the approach: setInterval tracks elapsed milliseconds, not wall-clock time, so after a DST change the interval fires an hour off from the clock. I'm considering recalculating the interval each time DST shifts as a way to stay closer to the original setInterval design.
+
+I'm noting that the answer should be standalone, since there's no codebase or tool access, so I'll cover the root cause of the DST drift, the proper fix, and keep it concise.
+

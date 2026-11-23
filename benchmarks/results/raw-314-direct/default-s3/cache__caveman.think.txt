@@ -1,0 +1,20 @@
+The user is asking me to add a cache layer for user profile API responses. They note it's a standalone question with no codebase and no tool access.
+
+Since there's no existing codebase to work with, I should provide a complete, standalone example of a cache layer implementation for a user profile API. I'll show practical code that demonstrates caching patterns.
+
+The user has set caveman mode to full, so I should be terse, drop articles, use fragments, short synonyms, etc. But code blocks should remain unchanged.
+
+Let me provide a practical example with:
+1. A basic cached profile API implementation
+2. Common caching patterns (in-memory, TTL, invalidation)
+3. Working code they can adapt
+
+I'll use a common pattern - maybe Node.js/Express or Python. Let me do Node.js since it's widely used for APIs. I'll keep it simple but complete.
+
+Actually, let me think about what would be most useful - I could show:
+- Simple in-memory cache
+- Cache with TTL (time-to-live)
+- Cache invalidation
+- Cache decorator/middleware pattern
+
+Let me provide a practical Node.js example first, then maybe show a Python alternative or more sophisticated pattern if useful.

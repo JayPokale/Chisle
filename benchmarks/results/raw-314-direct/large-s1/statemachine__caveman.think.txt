@@ -1,0 +1,36 @@
+The user wants me to implement an order state machine with these states:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+With legal transitions enforced and invalid ones rejected.
+
+They explicitly say "Show the code" and "there is no codebase and no tool access here" - so I need to write code directly in my response, not use tools.
+
+They also have caveman mode on (from the system instructions). So I should be terse but still clear for code.
+
+Let me think about valid transitions:
+- created → paid (payment completed)
+- created → cancelled (cancel before payment)
+- paid → shipped (order ships)
+- paid → refunded (refund paid order)
+- shipped → delivered (arrives at destination)
+- shipped → cancelled (cancel in transit? maybe not typical, let me think...)
+- delivered → refunded (customer can get refund after delivery)
+- cancelled → ??? (can't transition from cancelled)
+- refunded → ??? (can't transition from refunded)
+
+A reasonable state machine:
+- created → paid, cancelled
+- paid → shipped, refunded, cancelled (allow refund of paid order before shipment)
+- shipped → delivered, cancelled (maybe allow cancel in transit?)
+- delivered → refunded (refund after delivery)
+- cancelled → (terminal state)
+- refunded → (terminal state)
+
+Let me implement this. I'll show Python as it's clear and shows the pattern well.
+
+I should use caveman mode (full) - drop articles, filler, fragments OK, short synonyms.

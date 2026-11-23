@@ -1,0 +1,54 @@
+This is a standalone design question about REST API architecture for a multi-tenant document store. The user is asking for:
+
+1. Resources
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+
+Plus explanations of the design decisions.
+
+This is not a coding task — it's a design question. The user explicitly says "Standalone question: there is no codebase and no tool access here." So I shouldn't be looking for files or trying to run code.
+
+Given I'm in Ponytail mode (lazy senior developer), I should:
+- Build what's asked
+- Skip over-engineering 
+- Explain decisions concisely
+- Not write an essay, but this is explicitly requested as "explain the decisions"
+
+The user wants a design walkthrough, so I can give a fuller explanation here — it's explicitly requested, not unrequested prose.
+
+Let me think through the ladder for a multi-tenant doc store:
+
+**Resources:**
+- Tenants (the isolation boundary)
+- Documents (the main entity)
+- Document versions (implicit or explicit?)
+- Maybe collections/folders for org
+
+**Auth:**
+- Multi-tenant means tenant isolation is critical
+- API key per tenant? JWT with tenant claim? Both?
+- Tenant ID in URL path is standard
+- Bearer token auth standard for REST
+
+**Pagination:**
+- Offset-limit is simplest, cursor-based if scale matters
+- Start with offset-limit unless we know we're at scale
+
+**Versioning:**
+- API versioning: URL path (`/v1/documents`) is standard, cleanest
+- Document versioning: timestamp-based or sequence number? Keep all versions or prune?
+- Explicit endpoint (`/documents/:id/versions`) vs implicit?
+
+**Error format:**
+- JSON standard
+- Status code + error body
+- Include request ID for debugging (multi-tenant tracing)
+- Consistent structure
+
+Let me design this end-to-end, keeping it practical and not over-engineered.
+
+Key decisions:
+I'm settling on the key decisions now: tenant isolation through the URL path plus token validation, a simple bearer token that carries the tenant ID, offset-limit pagination, an explicit versions endpoint for documents, and consistent JSON errors with semantic status codes. I'll explain each briefly since the user asked for the reasoning.
+

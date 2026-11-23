@@ -1,0 +1,37 @@
+The user is asking me to remove duplicate emails from a list of users, keeping the first occurrence and maintaining the original order. They want me to show the code.
+
+They explicitly state "Standalone question: there is no codebase and no tool access here" - so they're asking for a code example/solution, not to work on actual files in a directory.
+
+Since they didn't specify a language, I should pick the most common default. Python is a good default for this kind of data manipulation task.
+
+The task is straightforward:
+1. Take a list of user objects/dicts with emails
+2. Remove duplicates keeping first occurrence
+3. Maintain original order
+
+This is a classic problem that can be solved with a set to track seen emails, and iterate through maintaining order.
+
+I'm in Chisle mode, so:
+- Code first
+- Minimal explanation after
+- No unnecessary abstractions
+- Terse but complete
+
+Let me write a Python solution:
+
+```python
+def remove_duplicate_emails(users):
+    seen = set()
+    result = []
+    for user in users:
+        if user['email'] not in seen:
+            seen.add(user['email'])
+            result.append(user)
+    return result
+```
+
+Simple, efficient, maintains order. Alternative with dict.fromkeys() would be less clear for this case since we need to track emails specifically and return user objects.
+
+Actually, I could also show the dict comprehension approach or use a more functional style, but the loop is clearest.
+
+I should give a complete example with sample usage.

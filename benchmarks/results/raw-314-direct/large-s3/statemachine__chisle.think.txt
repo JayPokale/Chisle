@@ -1,0 +1,56 @@
+The user is asking for a state machine implementation for order states. They mention "Standalone question: there is no codebase and no tool access here" which is interesting - they're explicitly saying they don't want me to use tools, they just want to see the code.
+
+Let me think about what they're asking:
+1. Order states: created, paid, shipped, delivered, cancelled, refunded
+2. Legal transitions should be enforced
+3. Invalid transitions should be rejected
+4. Show the code
+
+Since there's no codebase, I need to choose a language. The most common default would be Python or JavaScript. Python is good for state machines. Let me think about what makes sense.
+
+They didn't specify a language, so I'll go with Python as it's clear and common. I could also do TypeScript or other languages, but Python is straightforward.
+
+Let me think about the state transitions:
+- created → paid, cancelled
+- paid → shipped, refunded
+- shipped → delivered, cancelled (maybe?)
+- delivered → (terminal)
+- cancelled → (terminal)
+- refunded → (terminal)
+
+Actually, let me think about realistic order flows:
+- created: order placed
+- paid: payment received
+- shipped: order sent out
+- delivered: order received
+- cancelled: order cancelled (can happen from created, possibly from paid if refund)
+- refunded: refund processed (from paid, or after cancellation)
+
+Legal transitions might be:
+- created → paid (payment made)
+- created → cancelled (cancel before payment)
+- paid → shipped (ship paid order)
+- paid → refunded (refund paid order)
+- shipped → delivered (delivery complete)
+- shipped → cancelled (cancel in transit - rare)
+- delivered → (terminal)
+- cancelled → (terminal)
+- refunded → (terminal)
+
+I'll implement this using an Enum or just strings, with a class that handles state transitions. I could use:
+1. A simple if/elif approach with a dictionary of valid transitions
+2. A more sophisticated pattern with decorators or a FSM library
+Since the user asked for a single implementation and didn't name a language, I'm going with Python and no external dependencies. A dict of valid transitions should keep it clear.
+
+Writing the transition table and the transition method now...
+
+Working out the order state machine in Python, with a dict of valid transitions and a check that rejects anything else. I'm writing out the state constants and the transition table now.
+
+Still writing the Order class...
+
+Writing the Order class's transition check and the example usage block...
+
+Now I'm wrapping up the transition checks and thinking about whether to add extras like logging or hooks, but the simple version fits a plain "show the code" request better.
+
+Checking the edge case where shipped orders can be cancelled, which covers items lost or returned in transit. The final step is to output the implementation directly, without using any tools.
+

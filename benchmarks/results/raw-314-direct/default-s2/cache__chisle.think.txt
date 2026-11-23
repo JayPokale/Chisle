@@ -1,0 +1,26 @@
+The user is asking me to add a cache layer for user profile API responses. They note it's a "standalone question" with no codebase and no tool access.
+
+Since there's no existing codebase, they want me to show example code for a cache layer for a user profile API. I should:
+
+1. Keep it concise and practical
+2. Show a working implementation
+3. No unnecessary boilerplate or over-engineering
+4. Use common patterns
+
+I'll show a simple but functional cache layer. Since they didn't specify a language/framework, I should assume something common. Given they're asking about "API responses" and "user profile", I'll go with either Node.js/Express or Python/Flask as these are common. Let me go with Node.js since it's widely used for APIs.
+
+I'll show:
+- Basic in-memory cache (simple)
+- TTL (time-to-live) for staleness
+- Middleware integration
+
+Actually, in Chisle mode, I should be maximizing signal. Code first, minimal explanation. No unnecessary preamble.
+
+Let me provide a solid, working example in Node.js with Express since that's a common stack. I could also show Redis as an option if they want persistent cache, but start simple.
+
+Here's the approach:
+- Simple in-memory cache with TTL
+- Or Redis for production
+- Show both briefly
+
+Actually, let me keep it simple and focused. Show one clean implementation with comments only on the why (like the cache expiration logic).

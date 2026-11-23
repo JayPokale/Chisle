@@ -1,0 +1,47 @@
+The user is asking for a complete implementation of email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They say "Standalone question: there is no codebase and no tool access here" - so they want me to write code from scratch without using tools. They want me to show the code.
+
+Since there's no specified stack, I should use the "most common default" - which for web auth would be Node.js/Express or Python/Flask. Node.js is probably most common for this kind of thing these days. I'll use:
+- Node.js with Express
+- bcrypt for password hashing
+- JWT for sessions
+- in-memory or simple storage for rate limiting (could be Redis in production)
+
+Actually, let me think about what's most practical and commonly used:
+- Node.js/Express is very common
+- PostgreSQL for storage
+- bcrypt for hashing
+- JWT or sessions
+- Redis or in-memory for rate limiting
+
+For a standalone answer showing the code, I should:
+1. Keep it minimal but complete
+2. Show the key components
+3. Use industry-standard libraries
+4. Make it runnable
+
+Let me write this in Node.js/Express with:
+- bcrypt for password hashing
+- JWT for session tokens
+- Simple in-memory rate limiting (or Redis if more robust needed)
+- Basic user storage (could be replaced with DB)
+
+I'll write three files:
+1. User model/DB
+2. Auth routes
+3. Rate limiter middleware
+
+Actually, in Chisle mode - "smallest thing that works, first". I should provide the most practical, minimal working implementation. Let me write it as a single file or a few focused files.
+
+Let me structure it as:
+- auth.js (routes and logic)
+- middleware.js (rate limiting)
+- db.js (simple in-memory or file-based storage)
+
+Or better, make it one coherent example they can run.
+
+Since this is "show the code" and standalone, I'll write practical, production-ready patterns but keep it concise.

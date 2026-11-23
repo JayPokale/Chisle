@@ -1,0 +1,19 @@
+The user is asking me to show code that groups a list of orders by customer ID and totals each customer's spend. They explicitly note it's a standalone question with no codebase and no tool access.
+
+Since there's no context about language preference, I should pick the most common default. Python is typically the default for data processing tasks like this. I'll show a simple, working solution.
+
+I'm in Chisle mode, so:
+- Code first
+- Minimal explanation
+- No unnecessary boilerplate
+- Direct, terse language
+- No hedging or preamble
+
+The user wants me to show code, so I'll present a few approaches at different levels of complexity:
+1. Dict/manual loop (vanilla Python)
+2. itertools.groupby (requires sorted data)
+3. defaultdict (cleaner dict approach)
+
+Actually, for Chisle mode and the request "show the code", I should just show the most practical one. defaultdict is clean and efficient.
+
+Let me write clean, working Python code with minimal explanation.

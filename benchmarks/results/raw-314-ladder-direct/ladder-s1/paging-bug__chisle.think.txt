@@ -1,0 +1,34 @@
+The user is asking me to identify and fix a pagination bug where offset is computed as `page * pageSize + 1` with pages starting at 0.
+
+Let me think through this:
+
+Page 0, pageSize 10:
+- offset = 0 * 10 + 1 = 1
+- So we skip item 0, start at item 1
+
+Page 1, pageSize 10:
+- offset = 1 * 10 + 1 = 11
+- So we start at item 11, but items 0-9 were on page 0 (starting at 1), so we'd have items 1-10 on page 0, then skip item 10 and start at item 11 on page 1
+
+Wait, let me reconsider. If offset = page * pageSize + 1:
+
+Page 0: offset = 1, we get items [1, 2, ..., 10] (assuming pageSize=10)
+Page 1: offset = 11, we get items [11, 12, ..., 20]
+Page 2: offset = 21, we get items [21, 22, ..., 30]
+
+So item 0 is skipped entirely, and there's also the issue that between page 0 and page 1, we jump from item 10 to item 11, which is correct after skipping 0, but items on page 0 should be items [0, 1, ..., 9] if we're 0-indexed.
+
+The issue is the `+ 1`. That `+ 1` causes:
+1. Item 0 to be skipped entirely
+2. Each subsequent offset to be off by one
+
+The correct formula for 0-indexed pages and 0-indexed items should be:
+offset = page * pageSize
+
+So:
+Page 0: offset = 0, items [0, 1, ..., 9]
+Page 1: offset = 10, items [10, 11, ..., 19]
+I've found the root cause: the extra `+ 1` shifts every page's offset by one item, so item 0 gets skipped. Removing it gives offset = page * pageSize, which matches 0-indexed pages and items.
+
+I'm settling on the point that this is a standalone question with no codebase or tools, so the right move is to explain the bug and the fix briefly.
+

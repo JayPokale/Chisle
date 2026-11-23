@@ -1,0 +1,18 @@
+The user is asking me to write an incident postmortem for a four-hour outage. They explicitly note it's a standalone question with no codebase and no tool access needed. This is a template/example request, not a real incident at their organization.
+
+Given Chisle mode is active, I should:
+- Be terse and direct
+- Structure for maximum signal per token
+- No hedging or pleasantries
+- Focus on decisive facts
+- Avoid unnecessary sections/formatting
+
+A postmortem should have:
+- Incident metadata (date, duration, severity)
+- Timeline (what happened, when)
+- Root cause
+- Impact
+- Remediations (immediate + longer-term)
+- Action items / owners
+
+I'll write this as a realistic but example postmortem. No introduction, just the doc.

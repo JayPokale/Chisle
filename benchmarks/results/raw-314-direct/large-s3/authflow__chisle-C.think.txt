@@ -1,0 +1,50 @@
+The user is asking me to implement email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They say "Show the code" and explicitly state "there is no codebase and no tool access here" - so this is a standalone question asking for implementation examples.
+
+They want me in Chisle mode (terse, direct, code-first). No codebase means I need to provide example code from scratch. They haven't specified a stack, so I should pick the most common default - probably Node.js with Express, or Python with Flask. Node.js is very common for auth systems. I'll go with Node.js/Express since it's widely used.
+
+I need to show:
+- Signup endpoint with password hashing
+- Login endpoint with session issuing
+- Rate limiting on failed login attempts
+
+Minimal viable implementation. I'll use:
+- bcrypt for password hashing (standard)
+- In-memory sessions or JWT (JWT is simpler for this demo)
+- In-memory rate limiting for failed attempts (a real app would use Redis)
+
+Let me write minimal, working code:
+
+```javascript
+// app.js
+const express = require('express');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
+
+const app = express();
+app.use(express.json());
+
+const SECRET = 'your-secret-key';
+const users = {}; // In-memory user store
+const failedAttempts = {}; // Track failed login attempts
+
+// Rate limiter for login failures
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts
+  keyGenerator: (req) => req.body.email,
+  handler: (req, res) => {
+    res.status(429).json({ error: 'Too many failed attempts, try again later' });
+Writing signup route with password hashing...
+
+Adding the login route with a rate limiter and JWT session issuing...
+
+Still writing the Express server code...
+
+(empty)
+

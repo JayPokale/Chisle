@@ -1,0 +1,43 @@
+The user is asking me to add a cache layer for user profile API responses. They note this is a standalone question with no codebase or tool access.
+
+Let me think about this through the ponytail lens (lazy, efficient developer):
+
+The ladder:
+1. **Does this need to exist at all?** - This is speculative. The user hasn't shown me a performance problem. YAGNI suggests skipping it.
+2. **Already in stdlib?** - `functools.lru_cache` does in-memory caching in one line. Perfect for API response caching.
+3. **Is there a one-liner solution?** - Yes, decorator on the function.
+
+Since this is "ultra" mode (ponytail is active), I should challenge whether a cache is needed at all, but then provide the lazy solution.
+
+For a user profile API cache, the simplest solution is `@lru_cache` or `@cached_property` depending on context. Since they said "API responses" (suggesting external calls), `functools.lru_cache` with a TTL-like approach using `functools.cache` would work, but `lru_cache` doesn't have TTL built-in.
+
+Actually, Python 3.12+ has `@functools.cache` and `functools.lru_cache`. For the lazy solution:
+- If you need TTL: use a simple wrapper or `cachetools.TTLCache` (but that's a dependency)
+- If simple LRU is fine: `@functools.lru_cache(maxsize=256)` on the fetch function
+
+Let me provide the simplest working solution:
+
+```python
+from functools import lru_cache
+
+@lru_cache(maxsize=256)
+def get_user_profile(user_id: int) -> dict:
+    """Fetch user profile from API."""
+    # TODO: actual API call here
+    response = requests.get(f"https://api.example.com/users/{user_id}")
+Now I'm weighing whether a cache is even warranted, and then noting that the lazy fix is an `lru_cache`-wrapped fetch. The response is a mutable dict, which could get altered by callers, so I'm considering whether the cached value should be something immutable instead.
+
+Still writing the cached fetch code...
+
+The lazy answer is a lot more fragile than it looks here. `lru_cache` needs hashable results, and a `dict` isn't hashable, so I'm weighing immutable return types like a tuple, a JSON string, or a wrapper around the cache.
+
+Still writing the cached fetch code...
+
+Still writing the dict cache...
+
+I'm deciding whether to challenge the need for a cache at all, and if one is warranted, the simplest version is a decorator on the fetch function. I'm weighing a wrapper that returns plain JSON and the trade-offs of each option.
+
+Still writing the dict cache...
+
+I'm settling on the answer: challenge the cache first, since there's no profiler data yet, then show the simplest working version. The JSON-string cache is the fallback I'll go with.
+

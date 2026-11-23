@@ -1,0 +1,11 @@
+The user is asking for an explanation of regular expression backreferences with a short example. This is a standalone question, not about a codebase. No tools needed, just a clear explanation.
+
+Let me give a concise explanation with a good example.
+
+A backreference in a regex is a way to refer back to a captured group within the same pattern. It lets you match the same text that was previously matched by a group.
+
+The syntax is typically `\1`, `\2`, etc. in the regex pattern itself, referring to groups 1, 2, etc.
+
+A common example: matching repeated words or finding duplicate patterns.
+
+Let me give a good short example that illustrates the concept clearly.

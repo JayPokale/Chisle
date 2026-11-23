@@ -1,0 +1,5 @@
+The user is asking for a debounce implementation for a search input that currently fires an API call on every keystroke. They want to see the code and explicitly note there's no codebase and no tool access.
+
+Since there's no codebase, they want a standalone example. The most common context for this would be JavaScript/React, but it could be any framework. I'll go with vanilla JavaScript since that's most universal, then show a React example since that's very common.
+
+Chisle mode: be direct, show code first, minimal explanation. No "Sure I'd be happy to help" type phrases.

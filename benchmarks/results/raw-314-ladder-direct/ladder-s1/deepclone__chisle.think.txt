@@ -1,0 +1,20 @@
+The user is asking for code that makes a deep copy of a nested settings object before editing it. This is a standalone question with no codebase context. They want to see the code and understand how to prevent mutation of the original object.
+
+This is language-agnostic since they didn't specify, but the most common context for this would be JavaScript/TypeScript. I'll provide that since it's the most common use case, but I could ask. Actually, let me just provide JavaScript since it's most common and the user said "Show the code" - they want a concrete example.
+
+I should be terse per Chisle mode. Code first, minimal explanation.
+
+Let me think about deep copy approaches in JavaScript:
+1. JSON.parse(JSON.stringify()) - simple but limited (no functions, Date objects become strings, etc.)
+2. structuredClone() - modern, handles most cases, no external deps
+3. Manual recursion
+4. External library like lodash
+
+For a general "settings object" use case, `structuredClone()` is the best modern approach. It's built-in and handles most nested objects.
+
+I'll show:
+1. The simple structuredClone approach
+2. Maybe mention JSON.parse/stringify for older environments
+3. Brief explanation
+
+Keep it terse.

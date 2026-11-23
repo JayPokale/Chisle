@@ -1,0 +1,13 @@
+The user is asking for code that makes a deep copy of a nested settings object before editing it, to avoid mutating the original. They explicitly state there's no codebase and no tool access - this is just a standalone code question.
+
+They want to see the code and understand how to do this. Since they didn't specify a language, I should probably ask or provide for a common language. Actually, let me provide solutions in common languages since it's a general question about deep copying.
+
+Given the caveman mode, I should be terse but keep code and technical terms exact.
+
+Let me show practical examples:
+
+1. JavaScript - using structuredClone, JSON.parse/stringify, or spread operators
+2. Python - using copy.deepcopy()
+3. Maybe others
+
+Actually, let me start with JavaScript since that's very common for settings objects, and Python. And I'll be terse.

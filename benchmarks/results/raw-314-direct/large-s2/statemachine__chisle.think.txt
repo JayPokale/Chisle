@@ -1,0 +1,53 @@
+The user is asking for a state machine implementation for order states with the following states:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+With legal transitions and invalid ones rejected.
+
+They mention "standalone question: there is no codebase and no tool access here" - so they're asking for me to just provide code, not to integrate it into an existing project.
+
+Let me think about the valid transitions for an order state machine:
+
+1. **created** → paid, cancelled
+2. **paid** → shipped, refunded, cancelled
+3. **shipped** → delivered, cancelled (maybe?)
+4. **delivered** → refunded (maybe?)
+5. **cancelled** → (terminal state)
+6. **refunded** → (terminal state)
+
+Actually, let me think more carefully about realistic transitions:
+- Order is **created**
+- Payment happens: **created** → **paid**
+- Order can be cancelled before payment: **created** → **cancelled**
+- After payment, order is **paid**
+- Order ships: **paid** → **shipped**
+- After shipping, order is **shipped**
+- Order delivers: **shipped** → **delivered**
+- After delivery, order is **delivered**
+- Order can be refunded after payment but before shipping: **paid** → **refunded**
+- Order can be refunded after delivery: **delivered** → **refunded**
+- Order can be cancelled before shipping: **paid** → **cancelled** (but this might transition to refunded)
+- Or cancelled and then refunded
+
+Let me define clearer transitions:
+- **created** → paid (payment received)
+- **created** → cancelled (order cancelled before payment)
+- **paid** → shipped (order shipped)
+- **paid** → cancelled (order cancelled after payment - probably moves to refunded)
+- **paid** → refunded (refund initiated for paid order)
+- **shipped** → delivered (order delivered)
+- **shipped** → cancelled (order cancelled in transit - probably returns to refunded)
+The state machine is going to be a Python enum with the transitions laid out as a map, and I'm settling on a cleaner model where terminal states are explicit and refunds hang off paid and delivered. Now I'm starting to write the Enum class definition.
+
+Still writing the state machine class...
+
+Still writing the state machine methods...
+
+Still writing the state machine example...
+
+I'm weighing whether to offer both Python and TypeScript, but I'll keep it to one clean Python implementation since it's the most concise.
+

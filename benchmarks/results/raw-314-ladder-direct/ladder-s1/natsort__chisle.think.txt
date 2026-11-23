@@ -1,0 +1,39 @@
+The user is asking me to show how to sort a list of file names so that file2 comes before file10. This is about natural/numeric sorting vs lexicographic sorting.
+
+In lexicographic (standard string) sorting:
+- file10 comes before file2 (because "1" < "2" in string comparison)
+
+But the user wants file2 before file10, which is natural sorting (numeric-aware sorting).
+
+They say "standalone question: there is no codebase and no tool access here" - so they just want to see code that does this. No specific language mentioned, so I should probably show a common approach. I'll show the most useful approach.
+
+Let me think about which language to use. The user hasn't specified. I could show:
+- Python (most readable)
+- JavaScript (web-common)
+- Multiple languages
+
+I think Python is clearest here. I'll show the solution using `natsort` or a custom sort key.
+
+Actually, let me re-read their instruction. They say "Show the code" - singular. So one example. Python with a simple approach would be best.
+
+Using `re` module to extract numbers:
+
+```python
+import re
+
+files = ['file10', 'file2', 'file1', 'file20']
+files.sort(key=lambda x: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', x)])
+print(files)
+```
+
+Or simpler with a library:
+```python
+from natsort import natsorted
+files = ['file10', 'file2', 'file1', 'file20']
+print(natsorted(files))
+```
+
+Since they said "show the code" and no libraries mentioned, I should show the manual approach. But the natsort is simpler.
+
+Actually, let me check the context. They said "standalone question: there is no codebase and no tool access here" - meaning they don't want me to read/write files or use tools. I'm going to keep it short: show the Python code first, then a brief explanation of the key-based sort.
+

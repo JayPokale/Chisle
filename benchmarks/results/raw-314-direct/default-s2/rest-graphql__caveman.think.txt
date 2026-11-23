@@ -1,0 +1,24 @@
+User asking standalone question about REST vs GraphQL tradeoffs. No codebase, no tools needed. Just a direct answer.
+
+Caveman mode is active (default "full"). Need to be terse, drop articles/filler, fragments OK. But this is exploratory/educational—no code, no ambiguity risk. Can be clear and direct without overdoing terseness.
+
+Main tradeoffs:
+
+REST:
+- Simple, standardized (HTTP methods, URLs)
+- Cacheable by default (GET/POST/etc)
+- Overfetching (get extra fields you don't need)
+- Underfetching (need multiple requests)
+- Easy to understand, widely known
+
+GraphQL:
+- Request exactly what you need (no over/underfetch)
+- Single request for complex data
+- Steeper learning curve
+- Harder to cache
+- More complex server-side (resolver complexity)
+- Better for client flexibility
+
+Format for caveman: short, direct. Pattern: [thing] [action] [reason]. [next step].
+
+Actually, for a "what are tradeoffs" question, caveman mode says "2-3 sentences with a recommendation and the main tradeoff." So I should keep it really tight and actionable.

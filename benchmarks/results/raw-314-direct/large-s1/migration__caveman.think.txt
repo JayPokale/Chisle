@@ -1,0 +1,24 @@
+User wants a database migration script that:
+1. Moves users table from single `full_name` column to `first_name`/`last_name`
+2. Backfills existing rows
+3. Is safely re-runnable (idempotent)
+
+They say "standalone question: there is no codebase and no tool access here" - so they just want me to write and show code, not use tools.
+
+They also have caveman mode active ("Respond terse like smart caveman"). So I should drop fluff, articles, etc. but keep technical substance.
+
+This is a SQL migration script. I should write one that's idempotent - meaning it can be run multiple times safely without breaking. Common patterns:
+- Check if column exists before adding
+- Check if column exists before dropping
+- Use transactions
+- Maybe a data migration step and schema change steps
+
+I'll write a SQL script (or could do multiple languages, but SQL is most direct). I'll make it safe by:
+1. Checking if first_name/last_name columns already exist
+2. Only migrating if they don't
+3. Parsing full_name intelligently (split on first space, last part is last name, first part is first name)
+4. Can run multiple times safely
+
+Let me write this in SQL (PostgreSQL style, but pattern works for most databases). Could also show Python + SQL for more flexibility on the parsing logic.
+
+Caveman mode: drop articles, filler, pleasantries. Keep technical substance and code blocks unchanged.

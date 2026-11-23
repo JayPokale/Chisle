@@ -1,0 +1,5 @@
+User wants code for debounce on a search input. They say "standalone question: there is no codebase and no tool access here" - so they don't want me to read/edit files, just show example code.
+
+They want caveman mode (terse). Let me show debounce implementation - likely React since it's common. I'll show both a simple version and using a hook.
+
+Keep it terse per caveman rules: drop articles, filler, fragments OK.

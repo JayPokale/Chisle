@@ -1,0 +1,51 @@
+The user is asking for a standalone implementation of email-and-password signup and login with password hashing, session issuing, and rate limiting. They explicitly say "there is no codebase and no tool access here" - so I can't use tools like Read, Edit, Write, etc. I need to provide code directly in my response.
+
+This is a straightforward request for code. Given the ponytail mode is active (lazy senior developer), I should:
+1. Build what's asked
+2. Use the ladder - stdlib/native first
+3. Minimal viable implementation
+4. No over-engineering
+
+The request is for a full authentication system. Let me think about the stack:
+- Language: Not specified, but Python is reasonable for a standalone example
+- Framework: Could be Flask, FastAPI, etc. - FastAPI is modern and minimal
+- Password hashing: `argon2` or `bcrypt` via `passlib`
+- Sessions: JWT is simpler than server-side sessions
+- Rate limiting: Simple in-memory approach using timestamps
+- Database: SQLite for standalone
+
+Actually, let me check the ladder:
+1. Does this need to exist? Yes, user asked for it.
+2. Already in codebase? No codebase.
+3. Stdlib? Python has hashlib, but passlib/argon2 is better for passwords. JWT could use stdlib `hmac` but `pyjwt` is standard.
+4. Native platform? No.
+5. Already-installed? Not specified, so assume nothing except Python stdlib.
+6. One line? No, this needs structure.
+7. Minimal code that works.
+
+For pure stdlib approach:
+- Use `hashlib` for password hashing (not ideal but works)
+- Use `hmac` + `json` for JWT (doable)
+- Use `sqlite3` for storage
+- Use `time` for rate limiting
+- Use `secrets` for token generation
+
+This would be a bit verbose. The user asked to "show the code" - they want a working example, likely a complete implementation.
+I'm settling on a practical version first, built with FastAPI, SQLite, passlib for hashing, and pyjwt for session tokens, with in-memory rate limiting on failed logins. I'll follow with a stdlib-only variant as a note.
+
+Next I'm sketching the FastAPI and SQLite app: a user model, signup and login endpoints, and rate limiting on failed logins, with a stdlib-only variant noted afterward.
+
+Still writing the auth app setup...
+
+Still writing the auth app setup...
+
+Still writing the signup endpoint...
+
+Still writing the login endpoint...
+
+Still writing the login endpoint and the app entry point...
+
+I'm settling on a lightweight stdlib-friendly setup here: SQLite for storage, passlib for hashing, PyJWT for tokens, and in-memory rate limiting, with a note on a pure stdlib option at the end.
+
+I'm dropping the ORM and going with plain SQLite queries, which is the lazier route. Then I'll put the pieces together: FastAPI, passlib for hashing, PyJWT for tokens, and in-memory rate limiting, and I'll finish with some test requests.
+

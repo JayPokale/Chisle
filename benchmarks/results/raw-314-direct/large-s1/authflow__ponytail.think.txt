@@ -1,0 +1,47 @@
+The user is asking for a standalone implementation of email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They explicitly say "there is no codebase and no tool access here" - so they want me to write code from scratch and show it. This is a demonstration/educational request.
+
+Since ponytail mode is active (default is "full"), I should:
+1. Use stdlib/native features first
+2. Minimize external dependencies
+3. Keep it as simple as possible while being secure
+4. Only explain what's not obvious
+
+I should build a minimal but working implementation. Let me think about the stack:
+- Python with Flask/FastAPI would be typical
+- For password hashing: use `argon2` or `bcrypt` from hashlib/scrypt? Actually, `argon2` is better but adds a dependency. `bcrypt` adds a dependency. Python's `hashlib` with salt and iterations is in stdlib but slower. For a demo, I could use `hashlib.pbkdf2_hmac` which is stdlib.
+- For sessions: simple in-memory dict with timestamps, or use `secrets` module
+- For rate limiting: simple dict tracking failed attempts per email + timestamp
+
+Since this is a demo/educational context and ponytail mode, I should use stdlib where possible:
+- `hashlib.pbkdf2_hmac` for password hashing (stdlib, no deps)
+- `secrets` for token generation
+- Simple dict-based rate limiting with timestamps
+- Could use `sqlite3` for storage (stdlib) or just show in-memory
+
+Let me write a minimal Flask app (Flask is common but I could use stdlib `http.server` too - but Flask is lighter than the ceremony of http.server).
+
+Actually, wait - the user says "no tool access here" and "standalone question". They might want me to just write the code without running it. Let me write complete, working code.
+
+I'll use:
+- Flask (lightweight web framework, commonly understood)
+Still writing the auth code...
+
+Still writing the auth code...
+
+Still writing the auth code...
+
+Still writing the auth code...
+
+Still writing the login handler...
+
+Still writing the login handler...
+
+Still writing the login handler...
+
+Now I'm settling on the final version, and I'll keep it to the standard library plus Flask, since that's what the user asked for.
+

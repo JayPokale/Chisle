@@ -1,0 +1,9 @@
+The user is asking for an explanation of database connection pooling - how it works and why it's beneficial. They've explicitly noted this is a standalone question with no codebase or tool access needed.
+
+This is a straightforward technical explanation question. I should:
+1. Explain what connection pooling is
+2. Explain how it works
+3. Explain the benefits/why it helps
+4. Keep it concise and clear
+
+No need to access memory, tools, or write anything to disk - just provide a clear technical explanation.

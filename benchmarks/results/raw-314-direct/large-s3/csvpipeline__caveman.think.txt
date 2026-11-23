@@ -1,0 +1,28 @@
+The user is asking for a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully
+
+They want to see the code and note this is a standalone question with no codebase.
+
+They also said to respond in "caveman mode" (terse, drop articles/filler, fragments OK).
+
+Let me write a Python script that does this. I'll make it robust:
+- Handle malformed rows without crashing
+- Use streaming/chunking for large files
+- Validate rows properly
+- Aggregate by customer
+- Write a report
+
+I'll use Python with no special dependencies since they said "standalone". I could use csv module or pandas, but I'll keep it simple with csv module for portability.
+
+Let me structure it:
+1. Define validation logic
+2. Read CSV, track errors
+3. Aggregate totals
+4. Write report
+5. Show summary of issues
+
+Caveman mode active - drop articles, drop filler, short synonyms, fragments OK.

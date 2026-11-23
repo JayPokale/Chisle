@@ -1,0 +1,10 @@
+The user is asking me to design a REST API for a multi-tenant document store. They've explicitly noted this is a standalone question with no codebase and no tool access. This is a theoretical design question about API architecture.
+
+This is a good opportunity to demonstrate thoughtful API design with clear tradeoffs and reasoning. I should cover:
+1. Resources (endpoints)
+2. Authentication and authorization model for multi-tenancy
+3. Pagination strategy
+4. Versioning approach
+5. Error response format
+
+I'll structure this clearly, explain the decisions and tradeoffs, and keep it practical and grounded.

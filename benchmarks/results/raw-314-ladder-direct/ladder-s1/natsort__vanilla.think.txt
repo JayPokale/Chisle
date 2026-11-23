@@ -1,0 +1,14 @@
+The user is asking for a code example that sorts file names so that "file2" comes before "file10". This is about natural/numeric sorting, not lexicographic (alphabetical) sorting.
+
+In lexicographic sorting, "file10" comes before "file2" because "1" < "2".
+In natural sorting, "file2" comes before "file10" because 2 < 10.
+
+The user wants natural sorting. They explicitly say "Standalone question: there is no codebase and no tool access here" - so they just want me to show code examples, not use tools.
+
+Let me provide code examples in a few popular languages:
+
+1. Python - using natural sort
+2. JavaScript - using natural sort
+3. Bash - using sort with numeric fields
+
+I'll show the most practical/common approaches.

@@ -1,0 +1,14 @@
+The user is asking for a standalone comparison of REST vs GraphQL tradeoffs. This is a straightforward technical question with no code to work with.
+
+I need to remember the ponytail mode - I'm in full mode by default, which means lazy efficiency. But this isn't about building code, it's about explaining concepts. The rule about "if explanation is longer than code, delete explanation" doesn't apply here since there's no code. The user asked explicitly for a comparison of tradeoffs, so this is requested prose.
+
+I should be concise and direct though - hit the main tradeoffs without padding. Focus on what matters for decision-making.
+
+Key tradeoffs:
+1. Query flexibility vs predictable payloads
+2. Learning curve and ecosystem maturity 
+3. Caching and HTTP semantics
+4. Server complexity and N+1 problem
+5. Versioning strategy
+
+Let me keep this to 2-3 key tradeoffs as requested in the system instructions for exploratory questions.

@@ -1,0 +1,21 @@
+The user is asking for a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows without dying
+
+They want the code shown, and note this is standalone (no codebase, no tool access).
+
+This is straightforward - I should write practical Python code. Since no language is specified, Python is the most common choice for data processing.
+
+The key requirements are:
+- Large CSV handling (use a stream, not load all in memory)
+- Row validation (check for required fields, data types)
+- Aggregation (sum totals by customer)
+- Report output (write results)
+- Error resilience (skip malformed rows, don't crash)
+
+I'll use the `csv` module (stdlib) for parsing, skip rows that fail validation, aggregate into a dict, write to a report file.
+
+Chisle mode: No preamble, code first, minimal explanation.

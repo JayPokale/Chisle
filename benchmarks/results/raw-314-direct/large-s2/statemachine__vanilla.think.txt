@@ -1,0 +1,25 @@
+The user is asking me to implement an order state machine with specific states (created, paid, shipped, delivered, cancelled, refunded) and enforce valid transitions while rejecting invalid ones. They've specified this is a standalone question with no codebase.
+
+Since there's no existing codebase, I should create a clean, well-designed implementation. I'll show the code directly without tool access.
+
+Let me think about the valid transitions for an order state machine:
+- created → paid (payment received)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order shipped)
+- paid → refunded (refund issued)
+- shipped → delivered (order delivered)
+- shipped → cancelled (cancelled after payment - requires refund)
+- delivered → (terminal state)
+- cancelled → (terminal state)
+- refunded → (terminal state)
+
+I'll implement this in Python as it's clear and commonly used. I could also show it in other languages, but Python is good for demonstrating the concept clearly.
+
+Here's my approach:
+1. Define an Enum for states
+2. Create a state machine class that tracks current state
+3. Define valid transitions in a transition map
+4. Implement methods to transition between states, checking validity
+5. Show example usage
+
+I'll write clean, production-ready code without over-engineering.

@@ -1,0 +1,28 @@
+The user is asking for a summary of main tradeoffs between REST and GraphQL for a new API. They explicitly state there's no codebase and no tool access.
+
+This is a straightforward architectural question. Per Chisle mode, I should:
+- Answer directly with the key tradeoffs
+- Use fragments, drop filler
+- Keep it concise but complete
+- Avoid hedging and pleasantries
+- No headings/bullets unless the question asks for them (it doesn't)
+
+The main tradeoffs:
+
+REST:
+- Simpler to build and cache (HTTP semantics)
+- Each resource has a fixed shape (over/under-fetching)
+- Easier to debug (standard HTTP tools)
+- Stateless, well-understood patterns
+- Multiple requests for related data
+
+GraphQL:
+- Client specifies exact fields needed (solves over/under-fetching)
+- Single query for related data (N+1 problem if not careful)
+- More complex to implement (resolver logic, caching harder)
+- Steeper learning curve
+- Better for mobile/varied clients
+
+Key decision point: Does the client need flexibility in what fields it fetches?
+
+Let me keep this concise in Chisle style.

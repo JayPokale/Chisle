@@ -1,0 +1,19 @@
+The user is asking for a confirmation modal before deleting an item in a web app. They say "Show the code" and mention this is a standalone question with no codebase.
+
+Since there's no existing codebase to work with, I need to provide a complete, working example. The most common modern approach would be React, but I could also provide vanilla JavaScript + HTML. Given they said "web app" without specifying, I'll go with React since it's very common, but make it simple and clear.
+
+Actually, let me reconsider - they might want a simpler vanilla JS example since there's no codebase. But React is probably more useful. Let me provide a simple, complete React example.
+
+For Chisle mode:
+- No pleasantries
+- Code first
+- Minimal explanation
+- Exact, working example
+- Fragment sentences, drop filler
+
+I should provide:
+1. Working code (React component with modal)
+2. Brief explanation of key parts
+3. Any gotchas
+
+No headings, no lengthy intro, code first.

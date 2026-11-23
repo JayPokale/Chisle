@@ -1,0 +1,21 @@
+This is a standalone design question about REST API architecture for a multi-tenant document store. The user is asking for:
+1. Resources design
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+6. Explanations of decisions
+
+Since this is a design question with no codebase, I should use Chisle mode: direct, concise, skip pleasantries, give the design rationale clearly. Fragment writing, exact terms.
+
+No tools needed here. I'll design this systematically, moving from fundamentals to specifics. I should explain decisions briefly but substantively—not "you could do X or Y" but "do X because Y."
+
+Let me structure this logically:
+1. Resource hierarchy and tenant isolation
+2. Auth model (how to handle multi-tenant)
+3. Pagination strategy
+4. Versioning approach
+5. Error response format
+6. Decisions explained
+
+I'll keep it practical—implementable, not theoretical.

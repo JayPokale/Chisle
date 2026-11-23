@@ -1,0 +1,54 @@
+The user is asking for a complete implementation of email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They say "Show the code" and "Standalone question: there is no codebase and no tool access here" — so I need to provide code examples directly, no tool use.
+
+They didn't specify a language or framework, so I should assume the most common default for this kind of task. That's typically Node.js/Express for web backends, or Python/Flask, or Go. I'll go with Node.js/Express since it's very common for auth implementations and straightforward to demonstrate.
+
+Let me build a complete working example with:
+- User registration (email/password)
+- Login with password verification
+- Session management (using JWT or sessions)
+- Rate limiting on failed login attempts
+- Password hashing (bcrypt)
+
+I'll keep it concise, no boilerplate, no over-engineering. Single file or minimal structure.
+
+Actually, let me think about what's clearest:
+- Use bcrypt for password hashing (industry standard)
+- Use JWT for sessions (stateless, simple)
+- Use an in-memory store for failed attempts (or could use a simple rate limiter middleware)
+- Use Express for the HTTP layer
+
+Let me write this in a minimal, working way:
+
+```javascript
+const express = require('express');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const app = express();
+
+const SECRET = 'your-secret-key';
+const users = {}; // { email: { hash, ... } }
+const failedAttempts = {}; // { email: { count, resetTime } }
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 min
+const MAX_ATTEMPTS = 5;
+
+app.use(express.json());
+
+function rateLimitCheck(email) {
+  const now = Date.now();
+Still writing the rate limiter...
+
+Still writing the signup handler...
+
+Still writing the login handler...
+
+Still writing the login and token handling...
+
+Still writing the remaining route handlers and the server setup...
+
+Settling on the plan now: a Node.js/Express signup and login with bcrypt hashing, JWT sessions, and a per-email counter on failed attempts. I'm making sure the database, hashing, token, rate limiter, and routes all fit together.
+

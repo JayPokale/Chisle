@@ -1,0 +1,38 @@
+The user is asking me to add a confirmation modal before deleting an item in a web app. They say "there is no codebase and no tool access here" - this is a standalone question.
+
+This is a simple, common UI pattern. Let me think about what the user likely needs:
+
+1. They want to see code for a confirmation modal
+2. It should appear before deleting an item
+3. This is a standalone example, not editing an existing codebase
+
+Since there's no specific framework mentioned, I should provide a practical, minimal example. The most common modern approach would be:
+- React (if that's what they're using)
+- Or vanilla JS/HTML
+
+Given that they said "no codebase", they probably want a minimal, working example they can adapt. I'll provide a simple, practical solution.
+
+Under Ponytail (lazy senior dev mode), I should:
+1. Use native/stdlib first - could use the browser's built-in `confirm()` dialog
+2. If they want a custom modal (more polished), show the minimal React component or vanilla JS version
+3. Skip over-engineering
+
+The browser's native `confirm()` is the actual lazy answer here - it's one line and works everywhere. But if they want a styled modal (which "modal" implies they might), I should show the minimal custom version.
+
+Let me give both options: the ultra-lazy native confirm, and if they want a styled modal, the minimal custom solution.
+
+Actually, re-reading: they want me to "show the code" for a confirmation modal. They probably want the custom modal version (since they specifically said "modal" not "dialog"). But I should acknowledge the lazy option exists.
+
+Under Ponytail full mode:
+- Skip the unnecessary abstraction
+- Use what's already in the platform
+- Shortest working diff
+
+Options:
+1. Native `confirm()` - one line, works, but browser-styled
+2. Custom HTML/CSS/JS modal - more control
+3. Use a component library - probably overkill for a one-off
+I'm going to show a plain `confirm()` as the one-line option, then a minimal custom modal in vanilla JS and HTML, with React as an alternative if that's their stack.
+
+The explanation should stay brief, since the user asked for code first.
+

@@ -1,0 +1,24 @@
+The user is asking for a standalone script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully
+
+They explicitly say "Show the code" and note this is a "Standalone question: there is no codebase and no tool access here." So they want me to write the script directly in text, not use any tools.
+
+This is a great practical task. I'll write a Python script that:
+- Uses efficient CSV reading (with a generator or chunking for large files)
+- Validates rows with proper error handling
+- Aggregates totals by customer
+- Logs/reports issues with malformed rows
+- Writes a clean report output
+
+I'll make it robust and production-ready, handling:
+- Missing fields
+- Invalid numeric values
+- Duplicate headers
+- Empty rows
+- Various CSV edge cases
+
+Let me write a clear, well-structured script.

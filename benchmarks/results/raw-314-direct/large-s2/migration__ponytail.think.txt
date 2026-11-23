@@ -1,0 +1,61 @@
+The user is asking for a database migration script that:
+1. Splits a `full_name` column into `first_name` and `last_name`
+2. Backfills existing rows
+3. Is safely re-runnable (idempotent)
+
+They want to see the code and explicitly state there's no codebase/tool access. This is a standalone question - I should write the script without using any tools.
+
+Since they didn't specify a database system, I should pick a common one. I'll go with PostgreSQL since it's standard for migrations, but I could also do MySQL/MariaDB. Let me do PostgreSQL as it's more modern and cleaner.
+
+For a reusable migration, I need to:
+- Check if the new columns already exist (idempotence)
+- Add `first_name` and `last_name` columns
+- Parse and backfill from `full_name` using string splitting
+- Optionally drop the old column (or keep it for safety)
+- Make it safe to re-run (all operations should be wrapped in EXISTS/IF EXISTS checks)
+
+Let me write a solid migration. I'll use a simple approach: split on space, everything before first space = first_name, rest = last_name. If only one word, that becomes first_name and last_name is empty or same as first_name. I'll handle edge cases gracefully.
+
+This should be SQL and language-agnostic since they didn't specify. I'll write PostgreSQL SQL, but could also show Python with SQLAlchemy or Alembic if they want.
+
+Actually, let me provide a few options:
+1. Pure SQL (PostgreSQL)
+2. Python + SQLAlchemy (for a framework-based app)
+
+I'll go with SQL first since it's the most direct, then mention the Python alternative.
+
+For the split logic in PostgreSQL:
+- `SPLIT_PART(full_name, ' ', 1)` for first part
+- `SUBSTRING(full_name FROM POSITION(' ' IN full_name) + 1)` for the rest, or use array functions
+Since the ponytail directive is in effect, I'll keep this lazy: a single-space split, with the first name taken as everything before the first space and the last name as everything after it. I'm also making the script re-runnable with IF NOT EXISTS checks, writing the first step as adding the new columns.
+
+Still writing the migration SQL...
+
+Still writing the backfill logic...
+
+Refining the UPDATE so it handles leading and trailing spaces, with the last name taken from everything after the first space. Next I'll consider whether to also offer an Alembic or standalone Python version.
+
+Still writing the SQL migration...
+
+Still writing the SQL migration...
+
+Still writing the Python backfill, with the SQLite update for splitting first and last names.
+
+Still writing the SQLite backfill, working out how the first and last name substrings should behave when there is no space in the name.
+
+Still writing the SQLite backfill, checking how the split works when a name has no space.
+
+Still writing the Python backfill, fetching the rows that still need splitting and using the first whitespace to separate the first and last names.
+
+Still writing the migration script, filling in the Python backfill that splits full_name on the first whitespace.
+
+Still writing the Python backfill, splitting each name on the first whitespace and updating the rows.
+
+I'm running through the checklist for the migration script: it needs to exist since schema changes should be versioned, no dependencies beyond the standard library's sqlite3 are required, and the Python version is the minimal viable option. I'm leaving out transactions beyond sqlite3's default commit behavior, extra logging, the destructive column drop, and separate PostgreSQL and MySQL variants. Now I'm thinking about whether to wrap the whole migration in an explicit transaction for better re-entrancy and safety.
+
+Still writing the backfill, adding explicit error handling and a transaction around the column checks and the update.
+
+Still writing the backfill loop, splitting each name on the first whitespace and committing the updates inside a try/except that rolls back on failure.
+
+Weighing whether to lead with the SQL or the full Python script, I'm settling on SQL first since it's the most direct, then the Python version for practical use.
+

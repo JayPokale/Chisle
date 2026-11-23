@@ -1,0 +1,16 @@
+The user is asking for an explanation of how to migrate a monolith to microservices without a complete rewrite. This is a standalone architecture/strategy question - they explicitly note there's no codebase and no tool access needed. 
+
+They want me to cover:
+1. Ordering (what to extract first, sequencing)
+2. Data ownership (how to handle data boundaries)
+3. Shippability (keeping the system working throughout)
+
+This is a good question about software architecture and migration strategy. I should give a practical, thorough answer that explains the actual techniques and trade-offs involved. I'll structure it around:
+
+1. High-level philosophy (strangle fig pattern, evolutionary approach)
+2. Sequencing/ordering decisions
+3. Data ownership patterns
+4. Keeping it shippable
+5. Practical considerations
+
+I should be concise but substantive - this is architecture guidance, not narrative.

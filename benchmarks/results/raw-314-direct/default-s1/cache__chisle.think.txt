@@ -1,0 +1,19 @@
+The user is asking me to add a cache layer for user profile API responses. They've explicitly stated this is a "standalone question" with no codebase and no tool access.
+
+Since there's no existing codebase to work with, I need to create example code that demonstrates a cache layer for a user profile API. I should keep it practical and show real patterns.
+
+I should follow the Chisle mode:
+- Fragments, drop articles
+- Maximum signal per token
+- Code first, then short explanation
+- No unrequested abstractions
+
+I'll create a simple but realistic cache layer. I'll assume a modern tech stack (Node.js/Express, Python, or similar). Let me go with Node.js/Express as it's common for API work.
+
+Key elements:
+1. In-memory cache with TTL (time-to-live)
+2. Middleware for caching
+3. Cache invalidation strategy
+4. Example usage
+
+Let me write this efficiently in Chisle mode - code first, minimal explanation.

@@ -1,0 +1,27 @@
+The user is asking me to implement email-and-password signup and login with the following features:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They mention this is a "standalone question" with no codebase and no tool access. Since there's no existing codebase to work with and they want me to "show the code," I should provide example implementation code.
+
+I'll create a complete, production-ready implementation. I should choose a reasonable tech stack - let me go with Python with Flask since it's clear and commonly used for such auth implementations.
+
+Key components I need:
+1. User registration/signup endpoint
+2. User login endpoint
+3. Password hashing (using bcrypt or similar)
+4. Session management (JWT or session tokens)
+5. Rate limiting on failed login attempts
+6. Database schema
+7. Input validation
+
+Since this is standalone and they want to see the code, I'll provide:
+- A complete Flask application with SQLite for simplicity
+- Proper password hashing with bcrypt
+- JWT-based session tokens
+- Rate limiting using a simple in-memory approach (could be Redis in production)
+- Input validation
+- Error handling
+
+Let me write this out clearly and concisely, with all the code shown.

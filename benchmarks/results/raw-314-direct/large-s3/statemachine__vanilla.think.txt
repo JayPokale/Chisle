@@ -1,0 +1,47 @@
+The user is asking me to implement an order state machine with specific states and transitions. They mention this is a standalone question with no codebase and no tool access.
+
+Since there's no existing codebase and they want me to "show the code," I should write a clean, working implementation of a state machine. This is a software engineering task where I need to demonstrate good design.
+
+The states are:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+I need to think about valid transitions:
+- created → paid (order is paid)
+- created → cancelled (order is cancelled before payment)
+- paid → shipped (order is shipped after payment)
+- paid → refunded (refund issued before shipment)
+- shipped → delivered (order is delivered)
+- shipped → cancelled (this might not be valid - once shipped, can't cancel?)
+- Actually, let me think about this more carefully...
+
+Reasonable state transitions for an order:
+- created → paid (customer pays)
+- created → cancelled (customer cancels before paying)
+- paid → shipped (order ships)
+- paid → refunded (customer requests refund before shipment)
+- shipped → delivered (order arrives)
+- shipped → cancelled (?)
+- delivered → refunded (customer requests return/refund after delivery)
+- cancelled → (terminal state, can't go anywhere)
+- refunded → (terminal state, can't go anywhere)
+
+Let me think about what makes legal sense:
+1. created is the starting state
+2. From created: → paid or → cancelled
+3. From paid: → shipped or → refunded
+4. From shipped: → delivered (most common) or possibly → refunded (return before delivery?) 
+5. From delivered: → refunded (customer can request refund after delivery)
+6. cancelled and refunded are terminal states
+
+I'll implement this in Python as it's clear and straightforward. I could also do it in TypeScript/JavaScript, but Python is cleaner for this.
+
+I'll create a state machine class that:
+Still writing the state machine class...
+
+Still writing the state machine class...
+

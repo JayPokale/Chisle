@@ -1,0 +1,47 @@
+User is asking me to explain database connection pooling. They've explicitly noted it's a standalone question with no codebase or tool access.
+
+The user has "caveman mode" enabled (I can see from the system message that I should "Respond terse like smart caveman"). The default is "full" caveman mode unless they specify otherwise.
+
+In full caveman mode, I should:
+- Drop articles (a/an/the)
+- Drop filler (just/really/basically/actually/simply)
+- Drop pleasantries (sure/certainly/of course)
+- Use fragments
+- Use short synonyms
+- Keep technical terms exact
+- Pattern: `[thing] [action] [reason]. [next step].`
+
+Let me explain database connection pooling in caveman mode:
+
+Connection pooling is about reusing database connections instead of creating new ones for each request. Why? Because establishing a new connection has overhead (handshake, authentication, etc.). Pool maintains set of open connections that multiple requests can reuse.
+
+In caveman:
+- Drop "Database" becomes "DB"
+- Drop "request" can stay or become "req"
+- Drop articles
+- Use fragments
+- Keep technical accuracy
+
+Let me structure it:
+
+Connection pooling reuses open DB connections instead of creating new ones per request. Each new connection requires handshake + auth overhead. Pool maintains open connections ready to use.
+
+How it works:
+- App needs DB access
+- Checks pool for available connection
+- Reuses if available, creates new one only if needed (up to max limit)
+- When done, returns connection to pool instead of closing
+- Other requests can reuse it
+
+Why it helps:
+- Reduces handshake overhead
+- Faster under load
+- Prevents connection exhaustion (OS limits # of open sockets)
+- More stable latency
+
+Let me make it more caveman:
+
+Pool = set of open DB connections ready to reuse.
+
+How: Request asks pool for connection. Pool returns idle one or creates new (if under limit). Working out why pooling pays off: reusing a connection skips the handshake and auth each time, cutting response time, and reuse means less CPU and memory per request. It also keeps the DB from running out of connections and holds up better under heavy load.
+

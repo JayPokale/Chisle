@@ -1,0 +1,24 @@
+The user is asking me to add a confirmation modal before deleting an item in a web app. However, they explicitly state "there is no codebase and no tool access here" and it's marked as a "standalone question."
+
+This is a situation where there's no code to work with, so I can't actually edit files or show real code from their project. The user is asking for example code showing how to implement a confirmation modal.
+
+Under the ponytail guidelines, I should:
+1. Skip speculative code - but this isn't speculative, it's explicitly asked for
+2. Show the minimum code that works
+3. No essays, code first
+4. Shortest diff/solution
+
+Since there's no existing codebase, I should provide the simplest, most practical example of a confirmation modal before delete. The laziest approach would depend on what they're using:
+- Vanilla JS with HTML dialog element (native, stdlib-equivalent)
+- React with a simple component
+- etc.
+
+Since they didn't specify a framework, I'll go with vanilla JS using the native `<dialog>` element, which is the laziest approach (native platform feature). Then maybe show a React variant if they ask.
+
+Under ponytail full mode, I should:
+- Show code first
+- Keep explanation to 1-3 lines max
+- Skip unrequested variants (don't show 5 different ways, pick the laziest)
+- Mark deliberate simplifications
+
+Let me show the native HTML approach (uses native `<dialog>` which is perfect for this):

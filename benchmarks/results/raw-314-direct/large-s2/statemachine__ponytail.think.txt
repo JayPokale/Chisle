@@ -1,0 +1,47 @@
+This is a straightforward request to implement an order state machine with specific states and transitions. The user wants:
+
+1. States: created, paid, shipped, delivered, cancelled, refunded
+2. Valid transitions (legal) enforced
+3. Invalid transitions rejected
+4. Show the code
+5. Standalone - no existing codebase, no tool access needed
+
+Since there's no codebase, I should just write the code and show it. The user asked me to "show the code" directly.
+
+Let me think about the valid transitions for an order state machine:
+- created → paid (payment received)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order dispatched)
+- paid → cancelled (order cancelled after payment - needs refund)
+- paid → refunded (direct refund without shipping)
+- shipped → delivered (order arrived)
+- shipped → cancelled (order cancelled during shipping - needs refund)
+- cancelled → refunded (refund issued for cancelled order)
+- delivered → refunded (customer return/refund after delivery)
+
+This is a simple domain problem that doesn't need over-engineering. I'll keep it minimal:
+1. A simple enum or string-based state
+2. A transition mapping/rules
+3. A way to check if a transition is valid
+4. A way to change state with validation
+
+The laziest approach under the ladder:
+1. Does this need to exist? Yes, the user asked for it.
+2. Already in codebase? No.
+3. Stdlib? Python has `enum` for states, but no built-in state machine.
+4. Native platform? No.
+5. Already-installed dependency? Could use `transitions` library, but we can do this in minimal code.
+6. One line? No, need at least a transition table and validation.
+7. Minimum code that works.
+
+I'll write this in Python since it's clear and minimal. I'll use:
+- An enum for states
+- A dict mapping (current_state, next_state) → allowed/disallowed
+Writing the minimal state enum and transition table now...
+
+Still writing the transition table and validation functions...
+
+Still writing the demo and transition checks...
+
+The code is written and now I'm wrapping up the demo and explaining why it's kept minimal.
+

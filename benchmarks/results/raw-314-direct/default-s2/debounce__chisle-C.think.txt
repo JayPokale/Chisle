@@ -1,0 +1,20 @@
+The user is asking for a debounce implementation for a search input that currently fires API calls on every keystroke. They explicitly note this is a standalone question with no codebase and no tool access.
+
+Since there's no codebase, I need to show code examples. The most common use case for search debounce is in a web application - likely React or vanilla JavaScript. I'll show a practical example.
+
+Chisle mode: be direct, show code first, minimal explanation.
+
+I'll show:
+1. A debounce utility function (or use a common pattern)
+2. How to apply it to a search input
+
+Let me provide a React example since that's very common, but I could also show vanilla JS.
+
+Actually, the user asked to "show the code" - they want working code they can use. I should give them the most practical, copy-paste-ready version.
+
+Most common approaches:
+1. Custom debounce hook in React
+2. Debounce utility + vanilla JS
+3. Using a library like lodash
+
+I'll show a simple custom implementation that works in vanilla JS and React, then show usage.

@@ -1,0 +1,10 @@
+The user is asking for an explanation of database connection pooling - how it works and why it helps. They explicitly note this is a standalone question with no codebase and no tool access.
+
+Given the "Chisle" mode is active, I should:
+- Answer directly, no preamble
+- Fragments over full prose; drop articles, filler
+- Keep it concise but complete
+- No headings/bullets unless the question asks for them (it asks "how" and "why", so this could warrant structure, but I should keep it minimal)
+- Exact terms
+
+Let me explain connection pooling clearly and concisely.

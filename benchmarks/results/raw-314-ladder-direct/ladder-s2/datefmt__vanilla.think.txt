@@ -1,0 +1,18 @@
+The user is asking me to show how to convert an ISO timestamp from an API into a localized date format like "Nov 23, 2026" for display in a web app. They say it's a standalone question with no codebase and no tool access.
+
+Since this is likely a web app, I should provide solutions for common web development scenarios. The most common approaches would be:
+
+1. JavaScript (browser-side) - using the native Date object or libraries like date-fns or Luxon
+2. TypeScript with the same libraries
+3. React or Vue if they're using those frameworks
+
+I'll provide a few practical solutions since they didn't specify the tech stack.
+
+Let me show some straightforward approaches:
+
+1. Using native JavaScript Date API
+2. Using date-fns library (popular and lightweight)
+3. Using Luxon (more powerful for timezones)
+4. For React users
+
+Since they want to see the code and it's standalone, I'll give them working examples.

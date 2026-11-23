@@ -1,0 +1,20 @@
+The user is asking me to write an incident postmortem for a hypothetical four-hour outage. They explicitly note it's a standalone question with no codebase and no tool access.
+
+This is a straightforward writing task. They want a postmortem template/example that covers:
+- Timeline
+- Root cause
+- Remediations
+
+I should write this in Chisle mode (terse, maximum signal). No headings if they're not needed, but a postmortem structure actually benefits from clear sections - that's not noise, that's how postmortems are read and actioned.
+
+Let me write a realistic postmortem that's concrete enough to be useful. I'll use a realistic scenario (which they already specified): connection pool exhaustion from slow downstream.
+
+Key elements:
+- Title/metadata
+- Timeline (specific times, what happened)
+- Root cause (the why, not just the what)
+- Impact
+- Remediations (immediate + long-term)
+- Action items
+
+I'll keep it crisp and avoid ceremony while being complete enough to be actionable.

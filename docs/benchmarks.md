@@ -2,6 +2,40 @@
 
 Every result behind the [README](../README.md), in full. Each figure is recomputed from the committed raw cells by the scripts named beside it; nothing is estimated except where a section says "simulated". Earlier rounds (June–October 2026, rulesets up to v3.8) are retired; they stay in the git history.
 
+## Correction (2026-11-23): the tools-off answer runs
+
+The output-axis runs (`run-ablation.js`, `run-live.sh`) call Claude Code with tools switched off, but several prompts say "our app" or "our auth middleware". In every arm, the bare model included, Haiku often answered by writing fake tool-call text (`<function_calls>…`) that ends the turn instead of an answer, and the scorer counted those cells as answers. Cells affected, by run: [`raw-314-sidebyside`](../benchmarks/results/raw-314-sidebyside/) bare 12 / 26, caveman 11, ponytail 10, Chisle 3.13 6, Chisle 8; [`raw-314-sonnet`](../benchmarks/results/raw-314-sonnet/) bare 8 / 24, Chisle 7 / 26; [`raw-314-ladder`](../benchmarks/results/raw-314-ladder/) bare 10 / 24, caveman 11, ponytail 10, Chisle 9; [`raw-nov-sidebyside`](../benchmarks/results/raw-nov-sidebyside/) bare 13 / 27, caveman 6, ponytail 9, Chisle 3.8.1 7, Chisle 7; [`raw-nov`](../benchmarks/results/raw-nov/) bare 8 / 26, caveman 8, ponytail 3, Chisle 4; [`raw-nov-sonnet`](../benchmarks/results/raw-nov-sonnet/) bare 10 / 35, Chisle 8 / 36. Every output-axis and Sonnet figure in the sections below compares answers with aborted tool calls and is superseded by the clean rerun; the cells stay for the record. Since this date every prompt ends with the same note for every arm ("Standalone question: there is no codebase and no tool access here."), and [`pooled.js`](../benchmarks/pooled.js) counts fake tool calls as non-answers and judges code answers by prompt kind (its length rule had also counted short code answers as non-answers). Unaffected: the agentic runs (tools on), the accuracy suite (a required answer format, graded; no cell failed it) and the input axis (no model calls).
+
+## Output axis, clean rerun (2026-11-23)
+
+Haiku 4.5, Claude Code 2.1.323, tools off with the standalone note, all arms in one session. Rivals: caveman `ef6050c5e184`, ponytail 4.8.3. No arm gave a fake tool call or a non-answer. Pooled sums vs the bare model, 95% bootstrap intervals ([`pooled.js`](../benchmarks/pooled.js)).
+
+**Main suite**, the 13 `run-live.sh` prompts × 3 seeds, 39 answers per arm ([raw cells](../benchmarks/results/raw-314-direct/), [every prompt and answer](../benchmarks/results/raw-314-direct/ANSWERS.md)). The README chart is built from it.
+
+| | billed | 95% CI | answer length | 95% CI | answer lines | reasoning | backfires |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| caveman | 96% | 83–111% | 76% | 68–83% | 81% | 156% | 19 / 39 |
+| ponytail | 115% | 96–136% | 70% | 61–79% | 61% | 248% | 24 / 39 |
+| **Chisle 3.14** | **91%** | **78–106%** | **61%** | **53–70%** | **55%** | 179% | **16 / 39** |
+| chisle-C (not shipped) | 92% | 81–105% | 62% | 54–70% | 57% | 183% | 12 / 39 |
+
+**Ladder suite**, 12 coding asks where the platform already has the answer plus three root-cause fixes (`SUITES=ladder`, committed before its first run), × 2 seeds, 24 answers per arm ([raw cells](../benchmarks/results/raw-314-ladder-direct/), [every prompt and answer](../benchmarks/results/raw-314-ladder-direct/ANSWERS.md)).
+
+| | billed | 95% CI | answer length | 95% CI | answer lines | reasoning | backfires |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| caveman | 92% | 74–114% | 72% | 65–80% | 72% | 122% | 6 / 24 |
+| ponytail | 106% | 88–126% | 57% | 47–67% | 47% | 181% | 13 / 24 |
+| **Chisle 3.14** | **90%** | **78–105%** | **51%** | **44–59%** | **42%** | 151% | 7 / 24 |
+
+Chisle writes the shortest answers in both suites, and that gap is outside the noise (main suite 61% vs caveman 76%). Billed tokens favour Chisle too, but narrowly (91% vs 96%, 90% vs 92%) and inside the intervals: on Haiku every ruleset raises hidden reasoning, which eats most of the shorter answers. `chisle-C` ([its text](../benchmarks/results/raw-314-direct/chisle-C.SKILL.md)) is a 1.6k-character rewrite of the ruleset aimed at that reasoning; it made no difference, and an earlier run where it beat caveman was itself contaminated by fake tool calls. It also scored 156/156 on the accuracy suite.
+
+```bash
+node benchmarks/run-ablation.js benchmarks/results/raw-314-direct 3 6 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle=skills/chisle/SKILL.md chisle-C=benchmarks/results/raw-314-direct/chisle-C.SKILL.md
+SUITES=ladder node benchmarks/run-ablation.js benchmarks/results/raw-314-ladder-direct 2 6 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle=skills/chisle/SKILL.md
+ARMS=vanilla,caveman,ponytail,chisle,chisle-C node benchmarks/pooled.js benchmarks/results/raw-314-direct/*/
+node scripts/build-chart.js
+```
+
 ## Chisle 3.14 (2026-11-19)
 
 The full suite again, with Chisle 3.13 beside 3.14. The two ship the same ruleset (unchanged since 3.10), so wherever only the ruleset is measured, the gap between them is run-to-run noise; they differ only in the hooks, which the agentic and input-axis sections measure. Rivals: caveman `ef6050c5e184`, ponytail 4.8.3, as before. Some results go against Chisle and are reported as measured.
@@ -18,16 +52,6 @@ The full suite again, with Chisle 3.13 beside 3.14. The two ship the same rulese
 Billed tokens tie with caveman this run (69% each, against 87% for caveman in the 3.9 run). Chisle writes the shortest answers, backfires least and is the only arm that answered every prompt. On the 20 prompts every arm answered: billed Chisle 3.14 75%, caveman 77%, Chisle 3.13 80%, ponytail 92%. Hidden reasoning rises with every ruleset on Haiku, as before.
 
 **Sonnet 5.5.** Bare vs Chisle 3.14, 12 prompts × 2 seeds ([raw cells](../benchmarks/results/raw-314-sonnet/), [every prompt and answer](../benchmarks/results/raw-314-sonnet/ANSWERS.md)): billed **53%** (95% CI 44–63%), answer length 49% (40–59%), lines 51%, reasoning 102%, backfires 4 / 24. The 13th prompt, `authflow`, is out of both arms: the bare model's answer ran past the runner's 4-minute limit on three tries.
-
-**Ladder suite (2026-11-23).** Twelve coding asks where the platform already has the answer (dedupe, deep copy, group-by, date formatting, natural sort, CLI flags, email field, confirm dialog, env config) plus three root-cause bug fixes, picked because they target what the ruleset's ladder claims and a prose-only ruleset does not. The prompts (`SUITES=ladder`, in `run-live.sh`) were committed before the first run. Haiku 4.5, tools off, 2 seeds, 24 answers per arm ([raw cells](../benchmarks/results/raw-314-ladder/), [every prompt and answer](../benchmarks/results/raw-314-ladder/ANSWERS.md)).
-
-| | billed | 95% CI | answer length | 95% CI | answer lines | reasoning | backfires | non-answers |
-|---|--:|--:|--:|--:|--:|--:|--:|--:|
-| caveman | **73%** | 59–89% | 64% | 47–86% | 65% | **95%** | **2 / 24** | 1 |
-| ponytail | 95% | 74–119% | 66% | 46–92% | 55% | 167% | 14 / 24 | 6 |
-| Chisle 3.14 | 85% | 68–104% | **55%** | 40–75% | **44%** | 159% | 10 / 24 | 2 |
-
-The suite went to caveman on billed tokens, and more clearly on the 15 prompts every arm answered (72% vs Chisle 93%). Chisle wrote the shortest answers, but on most prompts it thought 1.5–2.9× as much as caveman: its hidden reasoning restates the request, lists the rules and drafts the code it then writes again, all of which the ruleset's "Thinking is billed too" section forbids. On Haiku, that reasoning is what keeps Chisle's billed savings level with caveman's despite shorter answers.
 
 **Accuracy.** Maths + coding, 52 problems × 3 seeds, Haiku 4.5 ([raw](../benchmarks/quality/raw-314/)): bare 156/156, Chisle 3.14 156/156, no item scored differently. Chisle used 85% of the bare model's output tokens and wrote answers 79% as long.
 
@@ -66,7 +90,6 @@ Chisle is the cheapest ruleset on all three tasks but costs more than the bare a
 ```bash
 node benchmarks/run-ablation.js benchmarks/results/raw-314-sidebyside 2 4 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle-3.13=<v3.13.0 SKILL.md> chisle=skills/chisle/SKILL.md
 ARMS=vanilla,caveman,ponytail,chisle-3.13,chisle node benchmarks/pooled.js benchmarks/results/raw-314-sidebyside/*/
-SUITES=ladder node benchmarks/run-ablation.js benchmarks/results/raw-314-ladder 2 6 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle=skills/chisle/SKILL.md
 MODEL=claude-sonnet-5-5 node benchmarks/run-ablation.js benchmarks/results/raw-314-sonnet 2 4 vanilla chisle=skills/chisle/SKILL.md
 RAW_DIR=benchmarks/quality/raw-314 node benchmarks/quality/run.js claude-haiku-4-5-20251001 3 4
 ARMS=vanilla,chisle-hook RAW_DIR=benchmarks/agentic/raw-314 node benchmarks/agentic/run.js claude-haiku-4-5-20251001 5 5

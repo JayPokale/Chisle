@@ -1,0 +1,13 @@
+The user wants me to write an incident postmortem for a hypothetical four-hour outage. This is a standalone request with no codebase, so I should write a realistic postmortem template/example.
+
+Key elements to include:
+- Timeline with specific timestamps
+- Root cause analysis
+- Impact assessment
+- Detection/discovery
+- Remediations (immediate and long-term)
+- Follow-ups
+
+I should make it realistic and detailed, written in postmortem style. Since it's a connection pool exhausted by slow downstream dependency scenario, I'll make it concrete with realistic details.
+
+I'll keep it concise but complete per Chisle mode — fragments where appropriate, but full sentences for a formal document like this. Postmortems are formal documents so prose should be normal/professional, just tight.

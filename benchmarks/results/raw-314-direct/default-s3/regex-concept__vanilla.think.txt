@@ -1,0 +1,5 @@
+The user is asking for an explanation of regular expression backreferences with an example. They explicitly note this is a standalone question with no codebase or tool access needed. I should give a concise, clear explanation with a single short example.
+
+A backreference in a regex is a way to refer back to a previously captured group in the same regex pattern. It's denoted by a backslash followed by a number, like `\1`, `\2`, etc.
+
+Let me explain briefly and give one good example:

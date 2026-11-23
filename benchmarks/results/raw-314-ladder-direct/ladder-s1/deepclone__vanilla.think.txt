@@ -1,0 +1,5 @@
+The user is asking for a code example showing how to make a deep copy of a nested settings object before editing it. They've specified this is a standalone question with no codebase or tool access needed. They want the actual code shown.
+
+This is a straightforward request for demonstration code. I should provide a clear example showing how to deep copy a nested object before mutating it. The language isn't specified, but given the context (settings object, nested structure), I'll provide a practical solution. I could show examples in JavaScript (most common for this), but let me ask or just provide a solid, general example. Actually, since they didn't specify language, I should probably provide a clear example - JavaScript or Python would be most common for this scenario. Let me go with JavaScript first as it's very common, and maybe add a Python alternative.
+
+Actually, let me provide both JavaScript and Python versions since this is a common pattern across languages.

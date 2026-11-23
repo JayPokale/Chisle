@@ -1,0 +1,21 @@
+This is a design question about REST API architecture for a multi-tenant document store. The user wants me to explain the design decisions. They've explicitly stated "Standalone question: there is no codebase and no tool access here" - so this is a pure design discussion, not implementation work.
+
+They want:
+1. Resources (endpoints/entities)
+2. Auth model (how to handle multi-tenancy and access control)
+3. Pagination 
+4. Versioning
+5. Error format
+
+They ask for the design AND explanations of decisions. This needs to be terse but complete - all the decisive facts about the API structure and why those choices.
+
+In Chisle mode: drop the preamble, go straight to the design. Use prose for decisions with causality (X → Y). Be specific about API contracts. Keep explanations tight but not shallow.
+
+Let me structure this:
+- Core resources (documents, tenants, etc.)
+- Authentication/multi-tenancy model
+- Pagination approach
+- Versioning strategy
+- Error format
+
+Then explain the tradeoffs for each major decision.

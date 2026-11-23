@@ -1,0 +1,22 @@
+The user is asking me to validate an email field on a signup form and show the code. They explicitly note this is a standalone question with no codebase and no tool access.
+
+Since there's no existing codebase, I need to show them a simple, working email validation solution. Given ponytail mode (lazy senior developer), I should:
+
+1. Use native platform features first (HTML5 validation)
+2. Keep it minimal
+3. Only add extra validation if needed
+
+For email validation, the ladder would be:
+1. Does it need to exist? Yes, form validation.
+2. Already in codebase? No, standalone.
+3. Stdlib does it? HTML5 `type="email"` does client-side validation.
+4. Native platform feature? Yes - HTML5 email input type.
+5. Need custom validation? Only if requirements go beyond HTML5.
+
+I should show:
+1. HTML5 native validation (the lazy way)
+2. If they need custom validation, a simple regex or fetch-based check
+
+Let me provide the minimal solution with HTML5 first, then mention when to add more.
+
+Code first, then explanation. No essays.

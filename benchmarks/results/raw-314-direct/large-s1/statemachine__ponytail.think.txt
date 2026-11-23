@@ -1,0 +1,55 @@
+The user is asking for a state machine implementation for order states. This is a standalone question with no codebase context. They want:
+- States: created, paid, shipped, delivered, cancelled, refunded
+- Legal transitions enforced
+- Invalid transitions rejected
+- Show the code
+
+This is a good candidate for the lazy (ponytail) approach:
+1. Does this need to exist? Yes, they asked for it.
+2. Already in a codebase? No codebase.
+3. Stdlib does it? Not really - we could use a simple dict of transitions.
+4. Can it be one line? No, needs structure.
+5. Minimum code that works.
+
+For a state machine, the laziest approaches are:
+- A dict mapping (current_state, event) → next_state
+- A simple class with a transition method and a dict
+- Use a library like `transitions` (but that's adding a dependency for what can be ~20 lines)
+
+Let me think about the valid transitions:
+- created → paid, cancelled
+- paid → shipped, refunded
+- shipped → delivered, refunded
+- delivered → (terminal, maybe refunded within window?)
+- cancelled → (terminal)
+- refunded → (terminal)
+
+Actually, let me reconsider:
+- created: initial state
+- paid: payment received
+- shipped: order shipped
+- delivered: order delivered
+- cancelled: order cancelled (can happen from created or paid)
+- refunded: payment refunded (can happen from paid, shipped, or possibly delivered within window)
+
+Reasonable transitions:
+- created → paid (payment processed)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order shipped)
+- paid → refunded (refund issued)
+- shipped → delivered (delivery confirmed)
+- shipped → refunded (refund issued before delivery)
+- delivered → refunded (refund within return window)
+- Any → cancelled? (maybe not - cancelled is typically only from created/paid)
+
+Let me go with a standard model:
+Writing the order class with its transition table...
+
+Still writing the demo...
+
+Still writing the demo...
+
+I'm weighing whether cancellation should be possible after payment, and I'm settling on the more common model: cancel is allowed from created and paid before shipping, while refund handles reversals after that. I'm updating the transition table accordingly, with paid now able to go to shipped, refunded, or cancelled.
+
+I'm settling the remaining transitions: delivered can go to refunded within a return window, cancelled and refunded are terminal, and that's a reasonable e-commerce model, so I'll go with it.
+

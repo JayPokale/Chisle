@@ -1,0 +1,48 @@
+The user is asking for code to remove duplicate emails from a list of users, keeping the first occurrence and maintaining the original order. They note it's a standalone question with no codebase.
+
+This is a straightforward problem. The best approach is to use a set to track seen emails while iterating through the list, keeping only the first occurrence of each email.
+
+Since they didn't specify a language, I should pick the most common/practical one. Python is the most likely choice for this kind of task. I'll provide a clean, efficient solution.
+
+Under ponytail principles:
+1. Does this need to exist? Yes, they asked for it.
+2. Already in codebase? No codebase.
+3. Stdlib does it? Yes - using set + list comprehension or a simple loop.
+4. Can it be one line? Almost - could be done with dict.fromkeys() which preserves insertion order in Python 3.7+
+
+The laziest solution that works:
+
+```python
+def remove_duplicate_emails(users):
+    seen = set()
+    result = []
+    for user in users:
+        if user['email'] not in seen:
+            seen.add(user['email'])
+            result.append(user)
+    return result
+```
+
+Or even lazier using dict.fromkeys:
+```python
+users = dict.fromkeys(users, None)
+```
+
+Actually, that won't work if users are dicts/objects because dicts aren't hashable by default.
+
+Let me think about the structure. They said "list of users" and want to remove duplicates by email. The cleanest approach assuming users are dicts with an 'email' key:
+
+```python
+def remove_duplicate_emails(users):
+    seen = set()
+    return [u for u in users if not (u['email'] in seen or seen.add(u['email']))]
+```
+
+This is a clever one-liner but maybe too clever. The set iteration approach is clearer:
+
+```python
+def remove_duplicate_emails(users):
+I'm settling on the approach of tracking seen emails in a set and keeping the first user for each one, and I'm also planning to show a variant that works on a plain list of email strings.
+
+I'm wrapping up by keeping the answer short and skipping any extra explanation.
+

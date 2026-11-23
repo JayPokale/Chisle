@@ -1,0 +1,25 @@
+User wants me to design a REST API for a multi-tenant document store. They want:
+1. Resources
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+6. Explanations of decisions
+
+They note it's standalone - no codebase, no tool access.
+
+The instructions say to use "caveman" mode - short, terse, drop articles/filler, fragments OK. But this is a design question, not code. Let me still keep it tight but clear since this is explanatory content where order/structure matters.
+
+Also note: "Drop caveman when: Multi-step sequences where fragment order or omitted conjunctions risk misread"
+
+This is a design spec that could be misunderstood if too compressed. I should drop full caveman here but keep it professional and tight (lite mode).
+
+Let me structure:
+- Resources (what endpoints)
+- Auth model
+- Pagination
+- Versioning
+- Error format
+- Decisions explained
+
+Standalone = I write it from scratch, no tools.

@@ -1,0 +1,23 @@
+This is a classic floating-point precision issue. The user is describing a symptom and asking me to explain the root cause, with no codebase to look at.
+
+The issue: $0.10 + $0.20 = $0.30000000000000004
+
+This is a fundamental problem with how decimal numbers are represented in binary floating-point arithmetic (IEEE 754), which is what virtually all programming languages use for the `float` or `double` type.
+
+In binary floating-point:
+- 0.1 cannot be represented exactly (it's a repeating binary fraction)
+- 0.2 cannot be represented exactly
+- When you add the two inexact representations, you get accumulated error
+
+The fix depends on the language/context, but the root causes and solutions are:
+
+1. **Root cause:** Binary floating-point cannot exactly represent decimal fractions like 0.1 and 0.2. When stored, they become slightly different values, and their sum compounds this error.
+
+2. **Solutions:**
+   - Use a decimal/fixed-point type (e.g., `Decimal` in Python, `BigDecimal` in Java, `decimal` in Go)
+   - Store amounts as integers (cents instead of dollars), then divide only for display
+   - Use a currency library that handles this
+
+The most robust solution for financial data is to use integers (cents) or a decimal type designed for financial calculations, never floating-point.
+
+In Chisle mode: be terse, no filler, just the fact and the fix.

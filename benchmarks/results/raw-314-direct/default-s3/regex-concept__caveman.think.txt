@@ -1,0 +1,17 @@
+User asking about regex backreferences. Standalone question, no code involved. They want:
+1. Explanation of what backreferences are
+2. One short example
+
+Using caveman mode (full). Drop articles, filler, fragments OK, short synonyms. Keep technical terms exact though.
+
+Let me structure: What it is → Why matters → Example
+
+Backreference = use captured group value later in same regex pattern. Denoted \1, \2, etc (or named groups).
+
+Example: Match repeated word
+```
+(\w+)\s+\1
+```
+Captures word group, then \1 refers back to that exact captured text.
+
+Keep it terse, one example.

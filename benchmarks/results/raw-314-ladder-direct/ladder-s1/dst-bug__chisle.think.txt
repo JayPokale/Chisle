@@ -1,0 +1,31 @@
+The user is asking about a problem with a nightly job that drifts by an hour after every daylight saving time change. The job is scheduled with `setInterval(run, 24 * 60 * 60 * 1000)`.
+
+This is a classic problem with naive time-based scheduling. Let me think through this:
+
+The issue: `setInterval(run, 24 * 60 * 60 * 1000)` schedules the job to run every 24 hours (86,400,000 milliseconds).
+
+However, the problem is that when daylight saving time changes (spring forward or fall back), the actual wall-clock hour that the job runs at shifts by an hour.
+
+**Why this happens:**
+
+When DST occurs:
+- Spring forward (2 AM → 3 AM): You "lose" an hour. The day is only 23 hours long in terms of wall-clock time.
+- Fall back (2 AM → 1 AM): You "gain" an hour. The day is 25 hours long in terms of wall-clock time.
+
+If you're using `setInterval` to run something "every 24 hours" in terms of elapsed milliseconds, you're running it on a fixed millisecond interval. But the relationship between elapsed time and wall-clock time breaks down on DST changes.
+
+For example:
+- Job scheduled to run at 2 AM every day
+- On a DST spring forward day, the wall-clock jumps from 1:59:59 AM to 3:00 AM, skipping 2 AM entirely
+- Or conversely, on a fall-back day, the wall-clock goes backward, so the relationship drifts
+
+Actually, let me reconsider. The job runs every 24 hours in elapsed time (86,400,000 milliseconds). The drift happens because:
+
+**More precise explanation:**
+
+The real issue is that `setInterval` is timing-based, not wall-clock based. It runs every 86,400,000 milliseconds. I'm working out how the fixed 24-hour interval interacts with the DST shifts: on a spring-forward day the wall clock covers only 23 hours, so the job appears an hour late, and on a fall-back day the 25-hour wall clock makes it appear an hour early. Those offsets accumulate over the changes, which is the drift the user is seeing.
+
+Now I'm looking at the fix: run on wall-clock time rather than a fixed 24-hour interval, which means computing the next 2 AM local time and scheduling with `setTimeout`, then recalculating after each run. I'm also weighing a timezone-aware scheduling library as an alternative.
+
+I'm noting that the fallback is a periodic check every minute that compares wall-clock time against the target, which sidesteps the elapsed-time problem entirely. The core point I'm landing on is that DST moves wall-clock time, so scheduling has to be anchored to wall-clock time rather than to `setInterval`'s elapsed milliseconds.
+

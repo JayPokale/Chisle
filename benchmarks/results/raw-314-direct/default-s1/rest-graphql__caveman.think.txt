@@ -1,0 +1,36 @@
+The user is asking for a summary of main tradeoffs between REST and GraphQL for a new API. They explicitly note this is a standalone question with no codebase.
+
+They've activated "caveman mode" - full intensity. So I need to:
+- Drop articles (a/an/the)
+- Drop filler words
+- Use fragments where natural
+- Short synonyms (big not extensive)
+- Keep technical terms exact
+- Short, punchy pattern: `[thing] [action] [reason]. [next step].`
+
+This is an exploratory question asking me to compare approaches. Per my instructions for exploratory questions, I should respond in 2-3 sentences with a recommendation and the main tradeoff. Keep it tight.
+
+Main tradeoffs:
+- REST: simple, cacheable, well-understood, but over/under-fetching data, versioning overhead
+- GraphQL: precise data fetching, single endpoint, but more complex server-side, harder to cache, steeper learning curve
+
+Caveman mode version - drop articles, filler, make it punchy:
+
+REST = simple, cacheable, versioning headache. GraphQL = precise queries, no over-fetch, but complex server, caching hard.
+
+For exploratory: pick one, state tradeoff.
+
+Recommendation: REST for simple/public APIs with stable schema. GraphQL for complex queries with many client types (web + mobile + third-party).
+
+Tradeoff: REST scales ops easier (caching, CDN, gateway); GraphQL scales dev faster (clients fetch exactly what they need, single endpoint, fewer breaking changes).
+
+Caveman mode:
+
+"REST = simpler ops (cache/CDN work), versioning overhead. GraphQL = simpler clients (precise fetch, single endpoint), complex server.
+
+Pick REST for stable, simple domains. GraphQL for client-heavy, schema-evolving systems. Tradeoff: operations simplicity vs client simplicity."
+
+Let me tighten more:
+
+"REST: ops-simple (cache/CDN), versioning pain. I'm settling on GraphQL for multi-client, evolving-schema setups and REST for a stable public API, with the tradeoff being operational simplicity against client convenience.
+

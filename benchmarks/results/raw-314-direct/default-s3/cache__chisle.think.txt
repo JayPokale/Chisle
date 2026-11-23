@@ -1,0 +1,16 @@
+The user is asking me to add a cache layer for user profile API responses. They note it's a standalone question with no codebase.
+
+This is a general question asking for code examples. Since there's no existing codebase to work with, I should provide a practical, working implementation.
+
+Key considerations:
+- In-memory cache (simple, fast)
+- TTL/expiration handling
+- Cache invalidation strategy
+- Thread-safe if needed
+- Shows the pattern clearly
+
+I should show actual code that works. Since no framework is specified, I'll default to something common. Given this appears to be a user at an Indian tech institute working on a CTF/security context, I'll assume Node.js/Python as most likely. I'll go with Node.js with a simple approach and also show a Python version briefly if helpful.
+
+Actually, let me think about what's most useful: a minimal, working cache implementation they can adapt. I'll show Node.js with a basic in-memory cache using a Map and TTL.
+
+Per chisle mode: show the code, minimal explanation. No "here's a cache layer!" preamble. Just the working code.

@@ -1,0 +1,50 @@
+The user is asking me to implement an order state machine with specific states (created, paid, shipped, delivered, cancelled, refunded) and enforce legal transitions while rejecting invalid ones. They explicitly note this is a standalone question with no codebase and no tool access.
+
+Since there's no codebase and they want me to "show the code," I should write this out clearly. They haven't specified a language, so I'll go with a commonly understood language. Python is a good choice for demonstrating a state machine clearly. I could also do TypeScript/JavaScript, but let me think about what makes the most sense...
+
+Python would be good for clarity. Let me think about the state machine logic:
+
+Valid transitions:
+- created → paid (payment received)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order shipped)
+- paid → refunded (refund issued)
+- shipped → delivered (order delivered)
+- shipped → cancelled (order cancelled during shipping - though this might need refund)
+- delivered → (terminal state, maybe refund available?)
+- cancelled → (terminal state)
+- refunded → (terminal state)
+
+Actually, let me think about this more carefully - what are realistic order state transitions?
+
+1. created → paid (payment successful)
+2. created → cancelled (order cancelled before payment)
+3. paid → shipped (order is packed and shipped)
+4. paid → refunded (refund given, money returned) - this might lead to cancelled
+5. shipped → delivered (order reached customer)
+6. shipped → cancelled (order cancelled in transit - probably refunded too)
+7. delivered → (end state, maybe refund option but that's outside the standard flow)
+
+Actually, typical e-commerce:
+- created (initial)
+- paid (payment received)
+- shipped (order on its way)
+- delivered (order arrived at customer)
+- cancelled (order was cancelled - can happen at created or paid stage typically)
+- refunded (money returned - could happen after delivered too)
+
+Let me define valid transitions more carefully:
+I'm working through which transitions are valid: created can go to paid or cancelled, paid to shipped, refunded or cancelled, shipped to delivered or cancelled, and delivered to refunded, with refunded and cancelled as endpoints.
+
+I'm sketching out a simpler model: the happy path runs created to paid to shipped to delivered, with cancellation possible before shipping and refunds possible for paid or delivered orders.
+
+Since my rewritten thinking already describes the Python state machine code, and this continues that same class definition, I'll keep it short.
+
+Still writing state machine class...
+
+Still writing the transition table and the can_transition check...
+
+Still writing the state machine class...
+
+Next I'm adding usage examples and error-case handling to the state machine.
+

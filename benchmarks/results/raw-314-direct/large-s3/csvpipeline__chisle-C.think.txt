@@ -1,0 +1,27 @@
+User wants a standalone script that:
+1. Reads large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully
+
+No existing codebase, so I'll write from scratch. They asked for the code to be shown. This is a data processing task.
+
+Chisle mode: direct, no fluff, show code first.
+
+I should choose a language - Python is most common for CSV/data processing. I'll make it production-ready but minimal.
+
+Key points:
+- Handle malformed rows without crashing
+- Aggregate by customer
+- Write report
+- Read large file efficiently (streaming, not loading all to memory)
+
+I'll write Python code that:
+- Uses csv.DictReader for robust parsing
+- Validates required fields
+- Skips/logs bad rows
+- Uses defaultdict for aggregation
+- Writes summary report
+
+Let me keep it simple and direct.

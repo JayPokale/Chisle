@@ -1,0 +1,8 @@
+The user is asking for code that adds debounce to a search input. They've clarified this is a standalone question with no codebase and no tool access needed. I should provide a clear example showing how to implement debounce for a search input that makes API calls.
+
+I'll show a few approaches since they didn't specify a framework:
+1. Vanilla JavaScript with setTimeout
+2. React example (most common)
+3. Maybe mention libraries like lodash
+
+Let me provide practical, working code examples.

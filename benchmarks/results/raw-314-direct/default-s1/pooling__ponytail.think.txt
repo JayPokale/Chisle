@@ -1,0 +1,13 @@
+The user is asking for an explanation of database connection pooling - how it works and why it helps. This is a standalone educational question, not related to any codebase.
+
+I should check my Ponytail settings. I'm in "full" mode (default), which means: code first, then at most three short lines. But this is a standalone explanation question with no code involved. The Ponytail guidance says "Explanation the user explicitly asked for (a report, a walkthrough, per-phase notes) is not debt, give it in full, the rule is only against unrequested prose."
+
+So I should give a full explanation here since they explicitly asked for it.
+
+Let me explain database connection pooling clearly:
+
+1. What it is
+2. How it works
+3. Why it helps (the benefits)
+
+I'll keep it clear and direct without being unnecessarily verbose.

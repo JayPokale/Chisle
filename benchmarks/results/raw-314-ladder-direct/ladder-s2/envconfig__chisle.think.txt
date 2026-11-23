@@ -1,0 +1,21 @@
+The user is asking for code that reads API base URL and request timeout from environment variables with sensible defaults. They explicitly state this is a standalone question with no codebase and no tool access.
+
+Since they haven't specified a language, I should ask or assume a common default. Actually, looking at the system notes, they say "Unstated stack, DB, language or framework → most common default, named in one line, no deliberation."
+
+For a web/API context, the most common modern defaults would be JavaScript/Python. Let me provide both or ask. Actually, the instruction says "one line, no deliberation" - so I should pick one and name it.
+
+Python is very common for this kind of config task. I'll go with Python since it's widely used and clear. But let me think - they might want Node.js/TypeScript given "API base URL". Let me just provide a clean example in Python since it's most straightforward for config reading.
+
+Wait - they said "no tool access here" which is odd. Let me re-read: "(Standalone question: there is no codebase and no tool access here.)" - they're saying don't try to use any tools, just show the code directly.
+
+I'll provide Python since that's the most common default for this kind of utility code, and I'll name it in one line. Actually, they might want multiple languages. Let me just show one clean example. The instruction says to name it in one line if language is unstated, so I'll just pick Python.
+
+Using Chisle mode:
+- Fragment writing
+- No hedging
+- Code first
+- Short explanation
+- Drop articles and filler
+- Keep decisive facts
+
+Let me write clean Python code with environment variables and defaults.

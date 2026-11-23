@@ -1,0 +1,23 @@
+The user is asking for a debounce implementation for a search input. They say "standalone question: there is no codebase and no tool access here" - so this is not about editing actual files, but showing example code.
+
+They want:
+1. A search input
+2. That currently fires API calls on every keystroke
+3. With debounce added
+4. Show the code
+
+No context about what framework/language they're using. Most common default for search input would be JavaScript/React for web. I'll provide both a vanilla JS and React example, keeping it concise.
+
+Actually, in Chisle mode, I should:
+- Be terse
+- Code first
+- No unnecessary explanations
+- Max signal per token
+
+The user wants to see the code for debouncing. I'll give them practical, working examples. Most useful: vanilla JS (most universal) + React (most common modern framework).
+
+Let me give:
+1. Vanilla JS with debounce
+2. React with debounce (using useCallback or custom hook)
+
+Keep explanations minimal, just the gotchas.

@@ -1,0 +1,20 @@
+The user is asking about a floating-point precision issue where adding $0.10 and $0.20 results in $0.30000000000000004 instead of exactly $0.30. This is a classic floating-point arithmetic problem in computing.
+
+They mention this is a "standalone question" with no codebase and no tool access. So they want me to explain the root cause and how to fix it - not to actually modify any code.
+
+The root cause is floating-point representation in binary. Here's what's happening:
+
+1. Decimal numbers like 0.1, 0.2, and 0.3 cannot be represented exactly in binary floating-point (IEEE 754 format, which most programming languages use)
+2. When you add 0.1 + 0.2 in most languages, you're not adding the exact decimal values, but their closest binary floating-point approximations
+3. The result of this addition, when converted back to decimal, is 0.30000000000000004
+
+This is a fundamental limitation of binary floating-point arithmetic, not a bug in any specific implementation.
+
+The fixes include:
+1. Use a decimal/money type (some languages have these, like Python's `Decimal` or languages designed for financial calculations)
+2. Store monetary values as integers (cents instead of dollars)
+3. Round to the appropriate precision when displaying to users
+4. Use libraries designed for financial calculations
+5. Be aware of this limitation and handle comparisons with appropriate tolerance
+
+Since they said "standalone question" with no codebase, I should give a clear explanation without trying to use tools.

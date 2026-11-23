@@ -1,0 +1,58 @@
+The user is asking about an auth middleware bug where valid tokens are rejected at the exact expiry boundary due to using `currentTime > expiry` logic.
+
+They explicitly state: "Standalone question: there is no codebase and no tool access here."
+
+So they don't want me to use tools to read actual code. They're asking me to reason through the problem and explain the root cause and fix.
+
+Let me think about this:
+
+The logic `currentTime > expiry` means:
+- If currentTime equals expiry, the condition is false → token is still valid
+- If currentTime is greater than expiry, the condition is true → token is rejected
+
+Wait, let me re-read. "rejects valid tokens at the exact expiry boundary" - so the problem is that valid tokens ARE being rejected.
+
+If `currentTime > expiry` is the rejection condition:
+- At the exact moment when currentTime == expiry, the condition is false (> is not ≥)
+- So it should NOT reject at the boundary
+- But the user says it IS rejecting
+
+Hmm, let me reconsider. Maybe the token expiry check is written as:
+```
+if (currentTime > expiry) {
+  reject token
+}
+```
+
+At the exact boundary where currentTime == expiry:
+- currentTime > expiry is FALSE
+- So the token should NOT be rejected
+- But the user says it IS being rejected
+
+There are a few possibilities:
+1. The comparison is actually `>=` somewhere in the code (which would reject at the boundary)
+2. There's a time precision/rounding issue
+3. The expiry time is set to something earlier than intended
+4. The issue is the opposite - the middleware uses `currentTime >= expiry` and they're saying it wrongly rejects
+
+Wait, re-reading: "it uses currentTime > expiry" - this is the condition they tell me. And they say valid tokens at the exact expiry boundary are rejected.
+
+If the code is:
+```
+if (currentTime > expiry) {
+I'm checking whether the code might use `>=` instead, since with `>` alone the boundary itself shouldn't be rejected. The token should still be valid at the exact expiry moment, so if it's being rejected there, something else in the check must be off.
+
+I'm weighing whether the check should be `>=` rather than `>`, since under `>` alone a token at exactly the expiry moment should still pass. If it is being rejected there, the comparison or the time values must be off somewhere.
+
+Wait, "it uses `>`" is just what the user said the code does, and it would not reject at the boundary itself. I'm checking whether the real check is `>=` or whether the time values are off.
+
+I'm working out whether the root cause is a `>=` comparison where `>` was intended, or whether the expiry value itself is set one tick early. The most common culprit for rejecting at the exact boundary is the inclusive operator being used in the wrong place.
+
+I'm weighing whether the stated `>` check could be the actual bug, since it wouldn't reject at the exact expiry moment by itself. The more likely explanation is that the real code uses `>=` or the expiry value is set a tick early, so I'll check both possibilities.
+
+I'm settling on the idea that the expiry check is fine in principle and the real trouble is precision: if currentTime and expiry come from different sources or resolutions, currentTime can land a hair above expiry right at the boundary and trip the rejection.
+
+I'm testing a few explanations: the code might really be `>=`, or the expiry value might be set a tick early. I'm also checking whether this looks like a precision mismatch between currentTime and expiry. Each candidate needs to explain why a token gets rejected exactly at the boundary.
+
+I'm reconsidering the boundary: if the code really is `currentTime > expiry`, a token at exactly the expiry moment shouldn't be rejected, so the `>=` version is the likely culprit. The fix would be to switch it to `>`, keeping tokens valid up to and including the expiry time.
+

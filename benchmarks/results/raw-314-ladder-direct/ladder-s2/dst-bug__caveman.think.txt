@@ -1,0 +1,37 @@
+The user is asking about a nightly job that drifts by an hour after daylight saving changes, and it's scheduled with `setInterval(run, 24 * 60 * 60 * 1000)`.
+
+Let me think about this carefully:
+
+1. `setInterval(run, 24 * 60 * 60 * 1000)` schedules a function to run every 24 hours (86,400,000 milliseconds).
+
+2. The problem is that the job drifts by an hour after every daylight saving change.
+
+3. When daylight saving time happens (either spring forward or fall back), the actual wall-clock time between job runs will differ from 24 hours.
+
+The root cause is subtle:
+
+**Spring Forward (DST starts):** When clocks move forward 1 hour (e.g., 2 AM → 3 AM):
+- The job is supposed to run every 24 hours
+- But `setInterval` doesn't care about wall-clock time; it just counts milliseconds
+- If the job runs at 2 AM before the change, the next run should be 2 AM the next day
+- However, when DST hits, that "2 AM" actually doesn't happen in real time (clocks jump to 3 AM)
+- So the job ends up running at 3 AM instead, drifting forward by 1 hour
+
+**Fall Back (DST ends):** When clocks move back 1 hour (e.g., 2 AM → 1 AM):
+- If the job was running at 2 AM before the change, the next run would be 1 hour later (in wall-clock time), so it drifts backward
+
+Wait, let me reconsider. `setInterval` works in milliseconds and doesn't care about wall-clock time at all. It just waits for the specified number of milliseconds to pass.
+
+The issue is that the user is *observing* drift in terms of wall-clock time (the job appears to run 1 hour different on the wall clock).
+I'm working out that the scheduler measures elapsed absolute time, so the drift the user sees comes from how wall-clock times map onto those intervals across the DST change, and I'm checking how the local-time offset shifts the apparent run time.
+
+I'm now thinking the likely cause is that the job is rescheduled with a fixed 24-hour delay to a target of 2 AM local time, so the DST shift moves that local target while the millisecond count stays the same. I'm writing a function that computes the next run time from the current local date.
+
+I'm sketching out a rescheduling approach that computes the next run from the local date and sets the delay accordingly, though I'm noting that this would use `setTimeout` rather than `setInterval`. Now I'm reconsidering the likely cause: the job may log local wall-clock time while running at a fixed UTC point, so the displayed time appears to shift when the offset changes.
+
+I'm now thinking the real culprit is a job meant to run at a fixed wall-clock time, like 2 AM local, being implemented as a fixed 24-hour interval instead. That interval doesn't move with the local clock, so each DST change shifts the apparent run time by an hour.
+
+I'm settling on the fix: compute the next 2 AM local time each run and reschedule with `setTimeout`, instead of relying on a fixed 24-hour `setInterval`.
+
+I'm settling on the root cause: `setInterval` only counts elapsed milliseconds and has no notion of time zones or DST, so a fixed 24-hour interval can't hold a local wall-clock time. The fix I'm landing on is to switch to `setTimeout` and recompute the next local run time, such as the next 2 AM, after each execution.
+

@@ -1,0 +1,59 @@
+The user is asking for a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully (doesn't crash)
+
+This is a standalone question with no codebase. I need to write a complete, working script. Given the Ponytail persona, I should:
+- Use stdlib where possible
+- Keep it simple and direct
+- Skip over-engineering (no frameworks, no unnecessary abstractions)
+- Handle errors at trust boundaries (CSV is external data)
+- Include a minimal check/demo
+- One-liner explanations only
+
+Python is natural for this. I'll use:
+- `csv` module (stdlib)
+- `defaultdict` (stdlib)
+- Simple validation
+- Write to CSV output
+
+The key ponytail decisions:
+- Don't use pandas (over-engineered for this task, adds dependency)
+- Use stdlib csv module
+- Simple try-except for each row to skip malformed ones
+- defaultdict to aggregate
+- One output file
+
+Here's the approach:
+```python
+import csv
+from collections import defaultdict
+from pathlib import Path
+
+def process_transactions(input_csv, output_csv):
+    transactions = defaultdict(lambda: {'count': 0, 'total': 0.0})
+    errors = []
+    
+    try:
+        with open(input_csv, 'r') as f:
+            reader = csv.DictReader(f)
+            for row_num, row in enumerate(reader, start=2):  # start=2 for header
+                try:
+                    customer = row.get('customer_id', '').strip()
+                    amount = float(row.get('amount', ''))
+                    
+                    if not customer:
+                        raise ValueError('missing customer_id')
+                    if amount < 0:
+                        raise ValueError('negative amount')
+                    
+Writing the report section now...
+
+Still writing the script...
+
+Still writing the sample data setup and checking the report output...
+
+I'm weighing the remaining design points: skip bad rows but report them, keep the aggregation as a simple defaultdict, output CSV, and validate only for a non-empty customer and a positive float amount. I want it straightforward with no retries or extra services, so it just tries to parse each row, skips failures, and reports what it skipped.
+

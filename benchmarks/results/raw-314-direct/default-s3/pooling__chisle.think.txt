@@ -1,0 +1,10 @@
+The user is asking for an explanation of database connection pooling - how it works and why it helps. This is a standalone educational question with no code to read or tools to use.
+
+Given the Chisle mode is active, I should be terse but complete - no hedging, no preamble, fragments are OK if they're clear, technical terms exact. The user wants to understand the concept, so I need to explain the mechanism and the benefits concisely.
+
+Let me structure this:
+1. What problem it solves (why needed)
+2. How it works (mechanism)
+3. Why it helps (benefits - latency, overhead, resource use)
+
+I'll skip the preamble and go straight to the concept.

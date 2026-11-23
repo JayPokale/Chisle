@@ -1,0 +1,58 @@
+The user is asking for a database migration script that:
+1. Moves a users table from a single `full_name` column to `first_name`/`last_name`
+2. Backfills existing rows
+3. Is safely re-runnable
+
+They want to see the code, and they note there's no codebase and no tool access here.
+
+This is a straightforward request for a migration script. They didn't specify a database (PostgreSQL, MySQL, etc.), so I should pick a sensible default. PostgreSQL is commonly used and handles migrations well. I could also show it generically or for multiple databases, but one clean example is better than a scattered overview.
+
+For a re-runnable migration, I need to handle the case where it's run multiple times without errors. Common patterns:
+- Check if the new columns exist before adding them
+- Check if the old column exists before using it
+- Use transactions
+- Idempotent operations (IF EXISTS, IF NOT EXISTS, etc.)
+
+A typical approach:
+1. Add new columns if they don't exist
+2. Backfill data by parsing full_name
+3. Drop the old column (or keep it for safety)
+4. Make new columns NOT NULL if appropriate
+
+Let me think about the ponytail mode here. The user just asked for code—they want a migration script. I should:
+- Pick the simplest, most standard approach
+- PostgreSQL (common choice)
+- Use basic string splitting to parse full_name
+- Make it idempotent
+
+For a re-runnable script, I'll check if columns exist and only do the work if needed. This is a practical migration, not a speculative feature, so I'm building exactly what they asked for.
+
+I'll write it in SQL (most direct for a database migration). If they want Python/alembic or another tool, they can ask. SQL is the fundamental level.
+
+Here's the structure:
+- Create new columns if they don't exist
+- Populate them from full_name if they're empty
+Still writing the migration script...
+
+Still writing the migration script...
+
+Still writing the parsing logic...
+
+Working through the edge cases for the split: a name with no space should land entirely in first_name with an empty last_name, and a multi-word name should put the second word into last_name. A NULL full_name is skipped, and COALESCE keeps any values already filled in from being overwritten.
+
+Still working through the last-name edge case, and I'm weighing whether to take everything after the first space as last_name while guarding against names with no space.
+
+Settling on SPLIT_PART for the split, and I'm handling the case where there's no space in the name, since the second part then comes back as an empty string instead of NULL and needs to become NULL.
+
+Still writing the migration script...
+
+Still writing the migration script...
+
+Still writing the migration script...
+
+Still writing the migration SQL...
+
+Writing the MySQL version now, since the function names differ: SUBSTRING_INDEX stands in for SPLIT_PART.
+
+I'm weighing the MySQL variant, since SUBSTRING_INDEX works differently from SPLIT_PART, and I'll keep PostgreSQL as the default. Next I'm considering whether the final columns should be NOT NULL, and I'll mention that they can be tightened after the backfill.
+

@@ -1,0 +1,25 @@
+This is a classic daylight saving time (DST) bug. Let me think through the root cause.
+
+The issue: a nightly job drifts by an hour after every DST change.
+
+Setup: `setInterval(run, 24 * 60 * 60 * 1000)` — that's 86,400,000 milliseconds, which equals 24 hours in wall-clock time.
+
+**The Problem:**
+- `setInterval` uses JavaScript timers, which are based on **elapsed real time** (milliseconds), not wall-clock time.
+- 24 * 60 * 60 * 1000 = 86,400,000 ms = exactly 24 real hours.
+- When DST ends (fall back), the wall clock moves backward 1 hour. The interval still fires after 24 real hours have elapsed, but the wall-clock time has "drifted" backward by 1 hour from when the job should run.
+- Similarly, when DST begins (spring forward), the wall clock jumps ahead 1 hour. The interval fires after 24 real hours, but it's now 1 hour later on the wall clock than intended.
+
+**Why this happens:**
+The scheduler doesn't track wall-clock time or calendar time—it just waits 86,400,000 ms and fires. It has no concept of "run at midnight every night." After a DST shift, the job's firing time has drifted relative to the intended wall-clock time (midnight).
+
+**The Fix:**
+Instead of using `setInterval` with a fixed millisecond interval, calculate the time until the next midnight (or next scheduled time) and use `setTimeout` to schedule the next run, recalculating after each execution. This way, the job is always aligned to wall-clock time, not elapsed real time.
+
+Pseudo-code:
+```javascript
+function scheduleJob() {
+  const now = new Date();
+  const tomorrow = new Date(now);
+Still writing the midnight scheduler...
+

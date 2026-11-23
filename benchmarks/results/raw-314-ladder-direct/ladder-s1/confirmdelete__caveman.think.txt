@@ -1,0 +1,15 @@
+The user is asking me to add a confirmation modal before deleting an item in a web app. They say "Show the code" and explicitly note "(Standalone question: there is no codebase and no tool access here.)"
+
+So they're asking me to write example code for a confirmation modal - this is a code example/educational request, not about modifying an existing codebase.
+
+Since there's no existing codebase to work with, I should provide a practical code example. I should ask what framework/approach they want, or provide a couple of common options (React, vanilla JS, etc.).
+
+Actually, re-reading: "Standalone question" suggests they just want an example. Let me provide some common patterns. I'll keep it terse per the caveman mode instruction.
+
+The user is in caveman mode (default: full). So I should be terse, drop articles and filler.
+
+Let me provide a couple of common approaches:
+1. React with a simple modal component
+2. Vanilla JavaScript
+
+I'll show both and keep it short and direct.

@@ -1,0 +1,5 @@
+The user is asking for an explanation of regular expression backreferences with a short example. They explicitly note this is a standalone question with no codebase, so I shouldn't use any tools.
+
+A backreference in a regular expression refers to a previously matched group within the same regex. It allows you to match the same text that was captured by a group earlier in the pattern.
+
+Let me give a clear, concise explanation with a practical example.

@@ -1,0 +1,21 @@
+This is a classic floating-point precision issue in computer science. The user is describing a symptom of floating-point arithmetic errors, specifically the common problem of binary floating-point representation.
+
+The root cause is that decimal numbers like 0.1, 0.2, and 0.3 cannot be represented exactly in binary floating-point format (IEEE 754), which is what most programming languages use by default.
+
+When you add 0.1 + 0.2 in binary floating-point:
+- 0.1 in binary is actually 0.1000110011001100... (repeating)
+- 0.2 in binary is actually 0.0011001100110011... (repeating)
+- When you add these, you get a value very close to 0.3 but not exactly 0.3
+- The result is approximately 0.30000000000000004 (the exact representation depends on the precision)
+
+This is NOT a bug in the code - it's a fundamental limitation of how computers represent decimal numbers in binary floating-point.
+
+The user asked this as a "standalone question" with "no codebase and no tool access here," so they want an explanation of the root cause and how to fix it, not an implementation.
+
+The fix depends on what technology they're using, but common solutions include:
+1. Use fixed-point decimal arithmetic (e.g., BigDecimal in Java, Decimal in Python)
+2. Work with cents (integers) instead of dollars (floats)
+3. Use a decimal library
+4. Round appropriately at display time (though this doesn't fix the underlying issue)
+
+Since they didn't specify a language, I should explain the root cause and mention the general approaches to fixing it, perhaps with language-agnostic examples.

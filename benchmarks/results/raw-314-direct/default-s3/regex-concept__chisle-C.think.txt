@@ -1,0 +1,14 @@
+User is asking for an explanation of regex backreferences with an example. This is a straightforward, standalone technical question.
+
+They want:
+1. Explanation of backreferences
+2. One short example
+3. Short, direct answer (chisle mode)
+
+No codebase, no tool access needed. Just explain the concept.
+
+A backreference is a way to reference a previously matched group within the same regex pattern. It allows you to match the same text that was captured in an earlier group.
+
+Example: matching repeated words or matching opening/closing tags.
+
+Let me keep it concise per chisle mode.

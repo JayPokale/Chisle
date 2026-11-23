@@ -1,0 +1,12 @@
+The user is asking me to design a REST API for a multi-tenant document store. This is a standalone question with no codebase - they're asking for architectural/design thinking. They want me to cover:
+1. Resources
+2. Auth model
+3. Pagination
+4. Versioning
+5. Error format
+
+And explain the decisions behind each.
+
+This is a design exercise, so I should think through the tradeoffs and explain my reasoning. I should be clear and concise but substantive. Let me work through each area systematically.
+
+This is not a task that requires memory reading or saving - it's a fresh design question.

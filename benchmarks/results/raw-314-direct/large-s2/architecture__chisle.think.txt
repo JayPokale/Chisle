@@ -1,0 +1,26 @@
+The user is asking for an explanation about migrating a monolith to microservices without a big-bang rewrite. This is a standalone theoretical question - no codebase, no code changes needed. They want to understand:
+1. Ordering (what to extract when)
+2. Data ownership
+3. How to maintain shippability throughout
+
+I'm in Chisle mode. This means:
+- Fragments, drop filler
+- Technical precision
+- Causality as arrows
+- No hedging
+- Terse structure at the question's altitude
+- Two tight paragraphs better than five sections
+- No headings unless necessary for clarity
+- Keep decisive facts, cut words around them
+
+The user asked for three things: ordering, data ownership, shippability. This isn't asking for a list or structured output with headers—it's asking for an explanation. So I should give this as prose paragraphs covering these topics, not as three separate sections.
+
+Key points:
+- Strangler fig pattern (wrap old code, extract gradually)
+- Order: start with I/O boundaries, not core logic
+- Extract services that own their data, not shared-everything
+- Keep the monolith shippable by wrapping services with adapters
+- Dual writes during migration, cutover via routing
+- Data ownership drives the boundary—don't extract logic that needs shared mutable state
+
+Let me write this tightly, causally, in prose.

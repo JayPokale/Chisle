@@ -1,0 +1,63 @@
+The user is asking for a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows without crashing
+
+They want to see the code and explicitly note there's no codebase, no tool access. This is a standalone question. They want me to write this from scratch.
+
+This is a good candidate for Python with built-in tools (csv module). I should:
+- Use Python's csv module to read
+- Validate rows (check required fields, data types)
+- Use a dict to aggregate per customer
+- Write output report
+- Handle errors gracefully (log malformed rows, skip them, continue)
+- Handle large files (don't load all into memory at once)
+
+Since they said "Chisle" mode is active, I need to:
+- Answer directly
+- Show the code immediately
+- No unnecessary preamble
+- Be concise but complete
+
+Let me write a solid, working script that handles the requirements:
+
+```python
+import csv
+import sys
+from collections import defaultdict
+from decimal import Decimal
+
+def validate_row(row):
+    """Return (valid: bool, customer_id: str, amount: float, error: str)"""
+    errors = []
+    
+    if 'customer_id' not in row or not row['customer_id'].strip():
+        errors.append('missing customer_id')
+    if 'amount' not in row or not row['amount'].strip():
+        errors.append('missing amount')
+    
+    if errors:
+        return False, None, None, '; '.join(errors)
+    
+    customer_id = row['customer_id'].strip()
+    
+    try:
+        amount = float(row['amount'])
+    except ValueError:
+        return False, None, None, f'invalid amount: {row["amount"]}'
+    
+    return True, customer_id, amount, None
+
+def process_transactions(input_file, output_file, error_file=None):
+Still writing the processing loop...
+
+Still writing the report section...
+
+Still writing the error-logging section...
+
+Still writing the error-logging section...
+
+Since there's no codebase or tool access, I just need to put the code straight into the reply. I want it to stream the file instead of loading it all at once, validate and log bad rows without stopping, and still be simple enough to actually run.
+

@@ -1,0 +1,5 @@
+The user is asking for a debounce implementation for a search input that currently fires an API call on every keystroke. They mention this is a standalone question with no codebase and no tool access.
+
+Since there's no existing code to work with, I should provide a practical example showing how to add debounce to a search input. I'll show multiple approaches (vanilla JavaScript, with a debounce utility, and possibly a React example since that's common).
+
+Let me provide clean, practical code examples.

@@ -1,0 +1,14 @@
+The user is asking me to write an incident postmortem. They note there's no codebase and no tool access - this is just a standalone question asking me to generate a postmortem document.
+
+This is straightforward - they want me to write a realistic postmortem template/example for a specific incident scenario: 4-hour outage caused by connection pool exhaustion due to a slow downstream dependency.
+
+I should write this in caveman mode (terse, dropping articles and fluff), but this is a document that needs clarity, structure, and professional formatting. Postmortems are serious documents where precision matters. However, I can still apply caveman principles - drop unnecessary words, use fragments where appropriate, keep it lean.
+
+Let me structure a realistic postmortem:
+- Timeline
+- Root cause
+- Impact
+- Remediations (immediate + follow-up)
+- Action items
+
+I'll make it realistic and detailed enough to be useful as a template or example.

@@ -1,0 +1,14 @@
+The user is asking me to add a confirmation modal before deleting an item in a web app. However, they've noted "Standalone question: there is no codebase and no tool access here."
+
+This means:
+1. This isn't about an existing project
+2. I should provide example code to show how to implement a confirmation modal
+3. No file reading/writing needed
+
+I'm in caveman mode (terse, drop articles/filler), so I should be concise but show working code.
+
+Since no framework is specified, I should probably show a common approach. I'll provide vanilla JS + HTML or React since those are most common for web apps. Let me show React since it's widely used, but keep it simple and clear.
+
+Actually, let me show both vanilla JS and React variants since they're the most common patterns.
+
+Keeping it terse per caveman mode.

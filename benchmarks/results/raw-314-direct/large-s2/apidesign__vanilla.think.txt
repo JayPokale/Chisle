@@ -1,0 +1,11 @@
+The user is asking me to design a REST API for a multi-tenant document store. They explicitly note this is a standalone question with no codebase or tool access needed. This is a design/architectural question where I should explain the resources, auth model, pagination, versioning, and error format with reasoning for each decision.
+
+Let me structure this comprehensively:
+
+1. **Resources** - what entities and endpoints
+2. **Auth Model** - how to handle multi-tenant auth
+3. **Pagination** - cursor-based vs offset
+4. **Versioning** - API versioning strategy
+5. **Error Format** - standardized error responses
+
+I should explain the trade-offs and reasoning for each decision.

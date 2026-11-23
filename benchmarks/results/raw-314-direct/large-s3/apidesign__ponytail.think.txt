@@ -1,0 +1,33 @@
+The user is asking me to design a REST API for a multi-tenant document store. They've explicitly noted this is a standalone question with no codebase and no tool access - just design and explanation.
+
+Given the Ponytail context, I should:
+1. Build only what's needed (YAGNI)
+2. Use stdlib/native patterns where they exist
+3. Avoid over-engineering
+4. Explain the *why* behind decisions, not just the what
+5. Be concise but complete
+
+For a multi-tenant document store API, the key design decisions are:
+- **Resources**: Documents, collections/folders, tenants/workspaces
+- **Auth**: Token-based (JWT or opaque), tenant isolation
+- **Pagination**: Offset/limit or cursor-based
+- **Versioning**: URL path version or Accept header
+- **Error format**: Standard JSON error structure
+
+I should explain trade-offs for each. Let me think through the lazy approach:
+
+1. **Does it need to exist?** Yes, designing a real API.
+2. **Resources** - standard CRUD patterns, nothing speculative
+3. **Auth** - go with what works: bearer token + tenant header or extracted from token
+4. **Pagination** - offset/limit is simpler than cursor, good until ~10k items
+5. **Versioning** - URL path is simpler and clearer than content negotiation
+6. **Errors** - standard JSON format
+
+The lazy answer avoids:
+- OAuth2 flows (overkill without requirement for external integrations)
+- GraphQL (adds complexity, REST is stated requirement)
+- Extensive versioning strategies (URL version covers it)
+- Cursor pagination (premature, offset works fine)
+- Custom frameworks (use stdlib patterns)
+
+Let me structure this clearly with resources, then auth, then the mechanical pieces (pagination, versioning, errors), with trade-off explanations.

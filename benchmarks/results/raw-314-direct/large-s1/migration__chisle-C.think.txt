@@ -1,0 +1,59 @@
+The user is asking for a database migration script that:
+1. Moves from a `full_name` column to `first_name` and `last_name` columns
+2. Backfills existing rows
+3. Is safely re-runnable
+
+They say "Standalone question: there is no codebase and no tool access here." This means they're asking for general code without reference to a specific project. They want me to show the code.
+
+Since they haven't specified a database, I should pick the most common one. For a web application with a users table, SQL (PostgreSQL or MySQL) is standard. I'll go with PostgreSQL as it's widely used and has good migration tooling.
+
+The script needs to be:
+- Idempotent (safely re-runnable)
+- Handle the full_name split to first_name and last_name
+- Not lose data
+
+For idempotency, I should check if columns exist before creating them, and handle rollback scenarios.
+
+A typical migration script approach:
+1. Add new columns (first_name, last_name) if they don't exist
+2. Backfill from full_name
+3. Make columns NOT NULL if appropriate
+4. Drop the old column (or leave it for compatibility)
+
+Since they asked for standalone code and said "Show the code", I should just provide the SQL migration script. I'll use PostgreSQL as the standard. I should make it idempotent using checks.
+
+Actually, let me think about what "safely re-runnable" means - it means if you run it twice, it shouldn't error. So use IF NOT EXISTS, or check constraints.
+
+Here's a good approach:
+
+```sql
+-- Migration: Split full_name into first_name and last_name
+-- Safely re-runnable with idempotent operations
+
+BEGIN;
+
+-- Step 1: Add new columns if they don't exist
+DO $$
+BEGIN
+    ALTER TABLE users ADD COLUMN first_name VARCHAR(255);
+EXCEPTION WHEN duplicate_column THEN NULL;
+Still writing migration SQL...
+
+Still writing migration SQL...
+
+Still writing migration SQL...
+
+Still writing the migration SQL...
+
+Still writing the backfill and constraint steps...
+
+Still writing the backfill SQL...
+
+Still writing the MySQL migration...
+
+Writing the final PostgreSQL migration with the backfill step...
+
+Now I'm writing out the final backfill and the idempotency checks: the WHERE clause only touches rows whose first_name is still NULL, so a second run changes nothing.
+
+The migration is basically settled now, so I'm moving on to the extra notes: when to drop the old column, how multi-word names get handled, and how to test it.
+

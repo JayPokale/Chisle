@@ -1,0 +1,18 @@
+The user is asking for a standalone implementation of email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They explicitly mention "there is no codebase and no tool access here" - but actually, based on my instructions, I do have tool access. However, they're asking for a "standalone" implementation shown in the response. Let me provide a comprehensive, production-ready implementation.
+
+I'll create a complete example with:
+- User model/schema
+- Password hashing (using bcrypt, which is industry standard)
+- Session management
+- Rate limiting for failed login attempts
+- Authentication endpoints
+- Proper error handling
+
+I'll use a popular tech stack. Since no specific framework was requested, I'll provide a Node.js/Express implementation as it's widely used and clear. I could also offer alternatives.
+
+Let me create a well-structured, secure implementation that covers all requirements.

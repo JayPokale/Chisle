@@ -1,0 +1,12 @@
+The user is asking a standalone question about database connection pooling - no code to review, no task to execute. They want an explanation of the concept and its benefits.
+
+They're in "chisle" mode (maximum signal, minimum noise). I should:
+- Be terse, drop articles/filler
+- Use fragments and arrows where causality applies
+- Technical terms exact
+- Answer at the question's altitude (no unnecessary structure)
+- Two tight paragraphs beat five headed sections
+
+The question has two parts: how it works, and why it helps. I should deliver both concisely.
+
+No thinking overhead - this is straightforward, just needs clear explanation.

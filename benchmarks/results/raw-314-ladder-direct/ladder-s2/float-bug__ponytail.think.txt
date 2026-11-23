@@ -1,0 +1,17 @@
+The user is asking about a classic floating-point precision issue. This is a "standalone question" - no codebase, no tool access needed. Just an explanation of a well-known problem.
+
+The issue is floating-point arithmetic in binary representation. When you add 0.10 + 0.20 in a typical programming language, you don't get exactly 0.30 because decimal numbers like 0.1 and 0.2 cannot be represented exactly in binary floating-point (IEEE 754).
+
+0.1 in binary is a repeating decimal (like 1/3 in decimal), so it gets rounded to the nearest representable value. Same with 0.2. When you add these imprecise representations, the error compounds, and you get something like 0.30000000000000004 (or sometimes 0.29999999999999999 depending on the operation).
+
+The root cause is that decimal fractions don't map cleanly to binary fractions - it's a fundamental mismatch between how we write decimal numbers and how computers store them in binary.
+
+The fix depends on context:
+1. For currency/money, never use floating-point. Use integers (cents) or a decimal type
+2. For general arithmetic, be aware of precision limits
+3. Use rounding/toFixed for display only
+4. For comparison, use epsilon-based comparison or round first
+
+Since this is "ponytail mode", I should be direct and practical. The root cause is floating-point representation, the fix for money is "use integers (cents) instead" - that's the ladder solution. No need for fancy decimal libraries if the codebase isn't using them yet.
+
+Let me give a clear, concise answer following ponytail style - code first (if applicable), then the explanation. But there's no code to write here, so I'll explain the root cause and the lazy fix.

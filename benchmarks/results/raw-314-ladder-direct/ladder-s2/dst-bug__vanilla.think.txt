@@ -1,0 +1,22 @@
+The user is asking about a nightly job that drifts by an hour after every daylight saving change, and it's scheduled with `setInterval(run, 24 * 60 * 60 * 1000)`.
+
+Let me think about this carefully. The user says this is a standalone question with no codebase and no tool access - so this is a conceptual/debugging question.
+
+The issue:
+- A nightly job is scheduled with `setInterval(run, 24 * 60 * 60 * 1000)` 
+- It drifts by one hour after every daylight saving change
+- This happens predictably with DST changes
+
+The root cause:
+When you use `setInterval` with a fixed millisecond interval like 24 hours in milliseconds, it will execute exactly 24 hours apart in wall-clock time (elapsed milliseconds). However, a "day" or "nightly" expectation is usually based on calendar/clock time.
+
+When daylight saving time changes:
+- In spring (spring forward): clocks go forward 1 hour. So midnight to midnight is only 23 hours of elapsed time. If you're using `setInterval(run, 24 * 60 * 60 * 1000)`, the next execution will be 24 elapsed hours later, which is 1 hour into the next day.
+- In fall (fall back): clocks go back 1 hour. So midnight to midnight is 25 hours of elapsed time. If you're using `setInterval(run, 24 * 60 * 60 * 1000)`, the next execution will be 24 elapsed hours later, which is 1 hour before the next midnight.
+
+So the job drifts by an hour after each DST change because `setInterval` measures elapsed time (wall-clock seconds), not calendar days.
+
+The fix is to NOT use `setInterval` for time-of-day scheduling. Instead, you should:
+1. Calculate when the next scheduled time should occur (e.g., next midnight or next occurrence of a specific time)
+Next I'll switch to a `setTimeout` chain that computes the next calendar-based run time, waits until then, and reschedules after each run. Alternatively, a scheduling library that understands calendar time and DST would avoid the bookkeeping.
+

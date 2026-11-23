@@ -1,0 +1,40 @@
+User asking standalone question about database connection pooling. No codebase, no tools needed. Just explanation.
+
+They set caveman mode to full (default is full). So I should:
+- Drop articles (a/an/the)
+- Drop filler (just, really, basically, actually, simply)
+- Drop pleasantries (sure, certainly, of course, happy to)
+- Use fragments OK
+- Use short synonyms (big not extensive)
+- Keep technical terms exact
+
+Pattern: `[thing] [action] [reason]. [next step].`
+
+Let me explain connection pooling in caveman mode full:
+
+Normal mode would be:
+"Database connection pooling is a technique where a pool of open database connections are maintained and reused across multiple requests instead of creating a new connection for each request. Each database connection requires a costly handshake (TCP connection, authentication, etc.). With pooling, connections stay open in a pool, and when a request needs one, it checks out a connection from the pool, uses it, and returns it. This eliminates repeated handshake overhead, reduces latency, and allows many concurrent requests to share fewer actual DB connections."
+
+Caveman full mode:
+- "Database" stays as is (technical term)
+- "connection pooling" stays (technical term)
+- Drop "is a technique where"
+- Drop "are maintained"
+- Drop "instead of"
+- Drop "Each database connection requires"
+- Drop "a" and "the"
+- Use fragments
+- Short form: "DB" for database (wait, let me check the rules... "articles (a/an/the), filler (just/really/basically/actually/simply), pleasantries" — it doesn't say to abbreviate technical terms. Actually ultra mode does abbreviate to DB/auth/config but we're on full. Let me keep "database" in full mode.)
+
+Let me craft this:
+
+---
+
+Pool maintains open DB connections, reuses them across requests instead of creating new per request. 
+
+Each connection handshake costs: TCP setup, authentication, session init. Expensive.
+
+I'm drafting a compact version of the pooling explanation, trimming the bullet list down and keeping the handshake cost and the reuse idea front and center.
+
+Now I'm laying out the pooling flow: a fixed set of connections stays open, a request borrows one, uses it, and returns it, so the next request reuses it without a fresh handshake. Then I'm weighing the payoffs: fewer total connections, faster responses, and better use of server resources under load. I'll finish by contrasting the cycle without pooling against the cycle with it.
+

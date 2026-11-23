@@ -1,0 +1,41 @@
+The user is asking me to show code that reads an API base URL and request timeout from environment variables with sensible defaults. They explicitly state this is a standalone question with no codebase and no tool access needed.
+
+This is a straightforward code example question. The user wants to see how to read environment variables and provide defaults.
+
+Let me think about what language to use. They didn't specify, so I should pick the most common/useful default. Given the email is a college address, this could be for learning, but no specific language is mentioned. I'll provide a few common options or pick the most universally useful.
+
+Actually, let me check the Chisle rules:
+- "Unstated stack, DB, language or framework → most common default, named in one line, no deliberation."
+
+So I should pick one default language and go with it. The most common for API client code would be Python or JavaScript. Python is probably most common for learning purposes. I'll do Python but keep it very concise per Chisle.
+
+Let me write this in a maximally efficient way:
+
+```python
+import os
+
+API_BASE_URL = os.getenv('API_BASE_URL', 'https://api.example.com')
+REQUEST_TIMEOUT = int(os.getenv('REQUEST_TIMEOUT', '30'))
+```
+
+That's the absolute minimum. But the user said "Show the code" - they want to see it. Let me make sure I'm following Chisle:
+- Code first
+- Terse but complete
+- No unnecessary explanation
+- One line per key fact
+
+Let me present this cleanly:
+
+```python
+import os
+
+API_BASE_URL = os.getenv('API_BASE_URL', 'https://api.example.com')
+REQUEST_TIMEOUT = int(os.getenv('REQUEST_TIMEOUT', '30'))
+```
+
+Defaults: `https://api.example.com` for URL, `30` seconds for timeout.
+
+That's it. Clean and direct.
+
+Wait, they said "Standalone question: there is no codebase and no tool access here." So they're just asking for code, not asking me to modify anything. Keeping it to the bare pattern now, with the defaults stated and no extra explanation.
+

@@ -1,0 +1,25 @@
+The user is asking for a database migration script that:
+1. Moves from a single `full_name` column to separate `first_name` and `last_name` columns
+2. Backfills existing rows
+3. Is safely re-runnable (idempotent)
+
+They note this is standalone - no codebase, no tool access. They want to see the code.
+
+I should assume a common database scenario. SQL with PostgreSQL is a safe default. I'll make it:
+- Idempotent (check if columns exist before adding)
+- Safe (no data loss)
+- Handles the backfill logic
+- Shows both the migration and potentially a rollback
+
+In Chisle mode:
+- Skip preamble, show code first
+- Terse explanation
+- No headings or structure unless needed
+- Exact, verbatim code
+
+A standalone migration in SQL, likely PostgreSQL. I'll show:
+1. Up migration (add columns, backfill, drop old)
+2. Down migration (reverse it)
+3. Make both idempotent
+
+Let me write clean, working SQL that handles edge cases like NULL full_name, multiple spaces, etc.

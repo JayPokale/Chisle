@@ -1,0 +1,35 @@
+The user is asking for code to remove duplicate emails from a list of users, keeping the first occurrence and maintaining original order. They say it's a standalone question with no codebase.
+
+They want me to show the code. They didn't specify a language, so I should probably provide a few common options or ask - but given the caveman mode is active and they asked to "show the code", I should just provide good, practical solutions.
+
+Let me think about the best approaches:
+
+1. Python with dict/set (modern): Use dict.fromkeys() - maintains insertion order in Python 3.7+
+2. Python with seen set: Classic approach
+3. Other languages if relevant
+
+Since no language specified, I'll give Python as primary (most common for data tasks) but keep it caveman-terse.
+
+Caveman mode is active (full mode by default). So:
+- Drop articles
+- Drop filler
+- Fragments OK
+- Short synonyms
+- Keep code blocks unchanged
+
+Let me write this tersely:
+
+```python
+# Option 1: dict.fromkeys (simplest)
+unique_emails = list(dict.fromkeys(emails))
+
+# Option 2: set + loop (explicit)
+seen = set()
+unique = []
+for email in emails:
+    if email not in seen:
+        unique.append(email)
+        seen.add(email)
+```
+
+Let me keep it caveman but clear. No "Sure!" or "Here's the code for you" fluff.

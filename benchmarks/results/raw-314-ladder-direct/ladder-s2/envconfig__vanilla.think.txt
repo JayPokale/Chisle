@@ -1,0 +1,11 @@
+The user is asking me to show code that reads an API base URL and request timeout from environment variables with sensible defaults. They clarify this is a standalone question with no codebase or tool access.
+
+Since they didn't specify a language, I should probably provide a few common examples or ask which language they want. However, given the context (they mentioned a Linux environment, zsh shell), they might be looking for a general approach or a specific language. Let me provide examples in a few common languages since it's a straightforward, educational code snippet request.
+
+I'll show:
+1. Python
+2. JavaScript/Node.js
+3. Go
+4. Bash
+
+This covers the most common use cases for API clients.

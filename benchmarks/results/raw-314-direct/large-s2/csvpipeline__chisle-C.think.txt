@@ -1,0 +1,61 @@
+The user is asking for a standalone script to:
+1. Read a large CSV of transactions
+2. Validate each row
+3. Aggregate totals per customer
+4. Write a report
+5. Handle malformed rows gracefully
+
+They explicitly say "Show the code" and note this is a standalone question with no codebase and no tool access.
+
+Since there's no context about language preference, I should pick the most common default - Python for data processing/CSV tasks is standard.
+
+The user wants:
+- Robust CSV reading
+- Validation without crashing
+- Aggregation
+- Report output
+- Error handling
+
+Key requirements:
+- Handle malformed rows without dying - logging/skipping bad rows
+- Large CSV - should be memory efficient (streaming)
+- Validation - what constitutes valid? Transaction should have customer ID, amount, etc.
+- Aggregation per customer
+- Report output
+
+I'll write a Python script that:
+1. Uses csv.DictReader for streaming
+2. Validates each row (amount is numeric, customer_id exists, etc.)
+3. Uses defaultdict to aggregate
+4. Logs skipped rows
+5. Writes report to file
+
+Chisle mode: show the code, don't narrate the problem. Code first. Smallest thing that works.
+
+```python
+import csv
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+def validate_row(row):
+    """Return (is_valid, customer_id, amount) or (False, None, None)"""
+    try:
+        customer_id = row.get('customer_id', '').strip()
+        amount_str = row.get('amount', '').strip()
+        
+        if not customer_id:
+            return False, None, None
+        
+        amount = float(amount_str)
+        return True, customer_id, amount
+    except (ValueError, AttributeError):
+        return False, None, None
+
+def process_transactions(csv_path, output_path):
+Still writing the transaction processing loop...
+
+Still writing the processing and report code...
+
+I'm wrapping up the script: the CSV is streamed, rows are validated, and totals are aggregated per customer. Then I'm writing a sorted report with a summary, and I'm settling on this as the complete answer.
+

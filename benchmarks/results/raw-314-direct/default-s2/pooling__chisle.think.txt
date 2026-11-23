@@ -1,0 +1,14 @@
+The user is asking me to explain database connection pooling and its benefits. They've explicitly stated this is a standalone question with no codebase and no tool access.
+
+Given my Chisle mode is active, I should be terse and signal-focused. I need to explain:
+1. What connection pooling is
+2. Why it helps (performance benefits)
+3. Keep it concise, no articles, drop filler
+
+Let me structure this efficiently:
+- What it is (the mechanism)
+- Why it matters (the problem it solves)
+- Key benefits
+- Maybe a gotcha or two
+
+I should avoid unnecessary preamble and get to the point.

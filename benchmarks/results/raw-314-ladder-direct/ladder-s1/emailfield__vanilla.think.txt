@@ -1,0 +1,19 @@
+The user is asking me to validate an email field on a signup form and show the code. However, they explicitly state "Standalone question: there is no codebase and no tool access here."
+
+This means:
+1. There is no existing codebase to work with
+2. I cannot use tools to read or write files
+3. They want me to show example code for email validation
+
+Since they're asking for a standalone answer with no codebase, I should provide example code snippets showing how to validate an email field on a signup form. I could show:
+- HTML/JavaScript solution (most common for a signup form)
+- Maybe multiple approaches (regex, HTML5 validation, library-based)
+
+Since there's no existing codebase to reference, I'll provide practical, working examples that could be used immediately.
+
+Let me provide a few approaches:
+1. HTML5 built-in validation (simplest)
+2. JavaScript validation with regex
+3. A more robust approach
+
+I'll keep it concise and practical.

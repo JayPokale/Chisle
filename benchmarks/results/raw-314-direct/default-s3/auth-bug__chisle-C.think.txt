@@ -1,0 +1,43 @@
+The user is asking about a bug in auth middleware where valid tokens are rejected at the exact expiry boundary due to using `currentTime > expiry` logic.
+
+Let me think about this:
+
+If the token expiry time is, say, 1000 (unix timestamp), and the middleware checks `currentTime > expiry`:
+- At currentTime = 999: 999 > 1000 = false → valid ✓
+- At currentTime = 1000: 1000 > 1000 = false → valid ✓
+- At currentTime = 1001: 1001 > 1000 = true → reject ✓
+
+Wait, that actually seems correct. At the exact expiry boundary (currentTime = 1000), the token should still be valid because the check is `>` not `>=`.
+
+Let me reconsider. The user says "rejects valid tokens at the exact expiry boundary" and the check "uses currentTime > expiry". So the issue is that valid tokens ARE being rejected at the boundary.
+
+Hmm, if `currentTime > expiry` is the check, then:
+- When currentTime equals expiry, the condition is false, so the token passes as valid.
+
+That would mean valid tokens are NOT rejected at the boundary if the logic is just `currentTime > expiry`.
+
+Unless... the user is saying the check is actually `currentTime >= expiry`? No, they explicitly said it uses `currentTime > expiry`.
+
+Wait, let me re-read: "it uses currentTime > expiry". This could mean:
+1. The middleware rejects if `currentTime > expiry` (meaning valid if NOT greater)
+2. The middleware checks `if (currentTime > expiry) reject`
+
+If interpretation 1: at boundary (currentTime = expiry), the check is false, so token is valid. This would NOT cause rejection at boundary.
+
+If interpretation 2: same result. At boundary, `currentTime > expiry` is false, so the if doesn't execute, token accepted.
+The user says tokens are rejected right at the boundary, so I'm looking for an off-by-one or a time-source mismatch, like milliseconds compared against seconds. Several candidate causes are on the table, and I'm weighing each one against the `>` comparison.
+
+I'm checking whether the time representations could differ, since a rounding mismatch at the boundary would explain the rejection. If expiry is rounded down and the current time is rounded up, the `>` comparison could flip right at the expiry moment, even though the logic looks correct on paper.
+
+I'm now weighing whether the fix is simply switching to `>=`, since the earlier reasoning showed `>` would accept the token exactly at expiry. I'm also checking for unit mismatches like seconds against milliseconds, or decimal expiry values being rounded, which could make the comparison misbehave right at the boundary.
+
+I'm weighing whether the off-by-one is in the comparison operator itself, since `>=` would be the stricter check. I'm also considering a time-source mismatch, such as milliseconds against seconds, or a timezone offset at the boundary, as the more likely real-world cause.
+
+I'm checking the comparison once more: if currentTime and expiry are in different units or precisions, a `>` check could flip right at the boundary, so the fix might be switching to `>=` or normalizing both values to the same units.
+
+I'm settling on the fix: the check should be `currentTime >= expiry` so tokens are rejected at and after expiry, and the time values need to share the same unit and precision so the boundary doesn't shift.
+
+I'm settling on the fix as a unit mismatch: if currentTime is in milliseconds while expiry is in seconds, the `>` comparison can reject a token that is still valid. Normalizing both to the same unit, and using `>=` so rejection starts at expiry, keeps the boundary where it belongs.
+
+Now I'm settling on the fix: convert both values to the same unit before comparing, and keep the time source consistent for both the current time and the expiry.
+

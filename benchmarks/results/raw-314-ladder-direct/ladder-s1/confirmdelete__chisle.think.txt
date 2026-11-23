@@ -1,0 +1,19 @@
+The user is asking me to add a confirmation modal before deleting an item in a web app. However, they explicitly state "Standalone question: there is no codebase and no tool access here."
+
+This means:
+1. No codebase to look at
+2. No tool access (so I can't read files)
+3. This is a generic request for example code
+
+Since there's no specific framework or tech stack mentioned, I should ask for clarification or provide a generic example. However, the user said "standalone question" which suggests they want a direct example without asking back.
+
+Given the ambiguity, I should provide a practical example using common web stack patterns. I'll provide a vanilla JavaScript example that works in most web apps, since that's the most universal. I could also show React, but vanilla JS is more universally applicable.
+
+Actually, wait - they said "Show the code" - they want code output. No codebase means I should provide example code. Let me give them a clean, working example.
+
+I'll provide:
+1. HTML structure with a modal
+2. JavaScript to handle delete confirmation
+3. Keep it minimal and practical
+
+Let me use vanilla JS since no framework was specified.

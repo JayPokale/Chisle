@@ -6,10 +6,15 @@
 //   e.g. node benchmarks/pooled.js benchmarks/results/raw-nov/*/
 const fs = require('fs'), path = require('path');
 const arms = (process.env.ARMS || 'vanilla,caveman,ponytail,chisle').split(',');
-const coding = new Set(['debounce', 'cache', 'migration', 'statemachine', 'csvpipeline', 'authflow']);
-const delivered = (task, r) => task === 'auth-bug' ? />=|<=/.test(r)
-  : coding.has(task) ? /```|<parameter name="contents?">/.test(r)
-  : r.length > 150 && !/^(I need|Need|Can you|What )/.test(r.trim());
+// Prompt kinds come from run-live.sh, so every suite is scored (the ladder
+// suite's terse code answers were counted as non-answers by a length rule).
+const live = fs.readFileSync(path.join(__dirname, 'run-live.sh'), 'utf8').replace(/\r\n/g, '\n');
+const kind = {};
+for (const m of live.matchAll(/\n[A-Z_]+=\$\(cat <<'EOF'\n([\s\S]*?)\nEOF/g)) for (const l of m[1].split('\n')) kind[l.split('\t')[0]] = l.split('\t')[1];
+// Fake tool-call text (the model "calling" a tool that is switched off) is not an answer.
+const FAKE_TOOL = /<function_calls>|<invoke[\s_>]|<tool_calls>|<tool_name>/;
+const delivered = (task, r) => !FAKE_TOOL.test(r) && !/^(I need|Need|Can you|What|Which)\b/.test(r.trim()) && (
+  task === 'auth-bug' ? />=|<=/.test(r) : kind[task] === 'coding' ? /```|`[^`\n]+`/.test(r) : r.length > 150);
 const rows = [];
 for (const d of process.argv.slice(2)) {
   const tasks = [...new Set(fs.readdirSync(d).filter((f) => f.endsWith('.json')).map((f) => f.split('__')[0]))];

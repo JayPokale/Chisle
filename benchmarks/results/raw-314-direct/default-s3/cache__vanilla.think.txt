@@ -1,0 +1,15 @@
+The user is asking me to add a cache layer for user profile API responses. However, they've explicitly noted in their request "Standalone question: there is no codebase and no tool access here."
+
+This means:
+1. There is no actual codebase to modify
+2. I don't have tool access to read/write files
+3. They want me to show code as an example/educational response
+
+Since there's no specific codebase context, I should provide a practical, well-structured example of how to implement a cache layer for a user profile API. I'll show a common approach that demonstrates:
+- Cache implementation
+- Cache invalidation strategy
+- Common patterns
+
+I'll make it language-agnostic but practical, perhaps showing a Node.js/JavaScript example since that's common for APIs, or I could show a Python example. Let me provide a solid, production-ready example with explanation.
+
+I should keep this concise and focused since it's a standalone question with no tool access.

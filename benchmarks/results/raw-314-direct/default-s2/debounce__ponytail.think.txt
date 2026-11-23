@@ -1,0 +1,38 @@
+The user is asking me to show code for adding debounce to a search input that currently fires an API call on every keystroke. They explicitly state there's no codebase and no tool access - this is a standalone question asking for code example.
+
+Since there's no existing codebase, I should provide a practical, minimal example. Let me think about what the user needs:
+
+1. A search input
+2. Debouncing logic
+3. API call on debounced search
+
+I should show this in a commonly-used context. JavaScript/React is most likely since this is a web search input. I could show vanilla JS or React - React is probably more useful as it's common for modern search inputs.
+
+Actually, let me check the ponytail rules here:
+1. Does this need to exist at all? No - the user explicitly asked for the code.
+2. Already in this codebase? No codebase.
+3. Stdlib does it? For debounce in JS/browser? Not really - there's setTimeout but not a built-in debounce utility.
+4. Native platform feature? No.
+5. Already-installed dependency? Since no codebase, I should assume minimal dependencies. I could use a library but should show the simplest approach first.
+6. Can it be one line? No, but I can make it very minimal.
+7. Build the minimum code.
+
+The laziest approaches:
+- Lodash `_.debounce` (but adds a dependency)
+- `useCallback` + `useRef` for a ref-based debounce timer (React)
+- Simple setTimeout debounce (vanilla JS, most universal)
+
+For minimal code, I should show:
+1. Vanilla JS approach (most universal, no dependencies)
+2. Maybe also a React hook approach since that's very common
+
+Actually, ponytail says "Code first. Then at most three short lines". So I should lead with the code and minimal explanation.
+
+The simplest approach is probably a vanilla JS example showing the pattern, then maybe a React hook version. Still writing the vanilla JS search example...
+
+Still writing the search code...
+
+Still writing the debounce code...
+
+I'm weighing whether to mention alternatives like a React hook version or Lodash's debounce, keeping it brief.
+

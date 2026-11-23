@@ -1,0 +1,29 @@
+The user is asking me to write a database migration script that:
+1. Moves a users table from a single `full_name` column to `first_name` and `last_name` columns
+2. Backfills existing rows with the split names
+3. Is safely re-runnable (idempotent)
+
+They note this is a standalone question with no codebase and no tool access. So I should just write out the code for them to see.
+
+I should provide a migration script that:
+- Checks if the columns already exist (for idempotency)
+- Adds the new columns if needed
+- Splits the full_name into first and last names
+- Optionally drops the old column (or keeps it for safety)
+- Is safely re-runnable
+
+I'll provide a SQL migration script. I should probably show a couple of common database systems. Let me provide a PostgreSQL version as that's most common, and maybe mention how it would work for other systems.
+
+Actually, let me provide both a raw SQL migration and maybe a framework-agnostic approach. I'll start with PostgreSQL which is very common.
+
+Key considerations for idempotency:
+- Check if columns exist before creating them
+- Use conditional logic (IF NOT EXISTS where available)
+- Handle the case where the migration has already run
+- Carefully handle the data splitting logic
+
+Let me write a comprehensive migration that handles:
+1. Adding new columns
+2. Backfilling data
+3. Optionally dropping the old column
+4. Being re-runnable

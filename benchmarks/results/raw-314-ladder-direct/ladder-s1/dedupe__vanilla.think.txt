@@ -1,0 +1,12 @@
+The user is asking me to show code that removes duplicate emails from a list of users, keeping the first occurrence and maintaining the original order. They note this is a standalone question with no codebase or tool access.
+
+Since this is a simple algorithmic problem, I should provide clean, working code. I'll provide a solution in a commonly used language. Python is a good choice since it's widely understood. I should show the most straightforward approach.
+
+Here are a few approaches:
+1. Using a set to track seen emails
+2. Using dict.fromkeys() (Python 3.7+ preserves insertion order)
+3. Using itertools.groupby (but requires sorting first, which changes order)
+
+The simplest and most efficient approach while maintaining order is to use a set to track seen emails and only keep items we haven't seen before.
+
+Let me provide a few variations showing different approaches.

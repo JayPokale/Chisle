@@ -1,0 +1,79 @@
+The user is asking for a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows gracefully (doesn't crash)
+
+They say "Show the code" and note this is a standalone question with no codebase or tool access.
+
+Since they didn't specify a language, I should pick the most common default. Python is typically the go-to for data/CSV work. I'll write a clean, working script.
+
+Key requirements:
+- Handle large CSVs (use iterators, not load-all)
+- Validate rows (check required fields, data types)
+- Skip/log malformed rows instead of crashing
+- Aggregate per customer
+- Write a report (output file or summary)
+
+I'm in Chisle mode (terse, maximum signal). The code is the answer; I'll keep explanation tight.
+
+Structure:
+- Use csv module for robust parsing
+- Dictionary to aggregate by customer
+- Error handling per row
+- Write report with aggregates
+
+No unrequested features: no fancy CLI args, no config files, no over-engineering. Just the core: read, validate, aggregate, report.
+
+Let me write this in Python using the csv module, which handles the complexity of CSV parsing.
+
+```python
+import csv
+import sys
+from pathlib import Path
+
+def validate_row(row):
+    """Return (valid: bool, error: str or None)"""
+    required = ['customer_id', 'amount']
+    
+    # Check required fields exist
+    for field in required:
+        if field not in row or not row[field]:
+            return False, f"Missing {field}"
+    
+    # Validate amount is numeric
+    try:
+        float(row['amount'])
+    except ValueError:
+        return False, f"Invalid amount: {row['amount']}"
+    
+    return True, None
+
+def process_transactions(input_file, output_file):
+Still writing the processing loop...
+
+Still writing the aggregation and report output...
+
+Still writing the error-reporting output and the main entry point...
+
+Refining the script to handle truly malformed CSVs, such as a bad header or an empty file, and to stay robust against stray columns and encoding issues.
+
+Still writing the row loop and the error handling for empty rows...
+
+Still writing the error handling and the report output...
+
+Still writing the summary output and the error listing...
+
+Fixing the error count and valid-row tally, since `sum(len(aggregates))` doesn't make sense; the valid count is just row_num minus the errors.
+
+Still writing the validation helper and the file-reading loop...
+
+Still writing the file-reading loop and the row validation...
+
+Writing the report section and the summary printout...
+
+Still writing the error-reporting output and wrapping up the script...
+
+Ready to show the final script: it uses csv.DictReader for proper parsing, checks required fields and numeric amounts, skips and logs bad rows, and keeps the summary on stderr so stdout stays clean.
+

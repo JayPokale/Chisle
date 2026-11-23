@@ -1,0 +1,30 @@
+The user is asking me to show how to parse `--port` and `--verbose` command-line flags in a Node.js script. They explicitly note this is a standalone question with no codebase and no tool access needed.
+
+This is a straightforward coding example question. I should show them code for parsing these flags. There are a few approaches:
+
+1. Manual parsing using `process.argv`
+2. Using a popular library like `minimist`, `yargs`, or `commander`
+
+I'll show the manual approach first since it's instructive and doesn't require dependencies, then mention alternatives. Since they asked for "the code" (singular), I should give them a practical example.
+
+Let me provide a clean, simple example:
+
+```javascript
+const args = process.argv.slice(2);
+let port = 3000; // default
+let verbose = false;
+
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--port' && args[i + 1]) {
+    port = parseInt(args[i + 1], 10);
+    i++;
+  } else if (args[i] === '--verbose') {
+    verbose = true;
+  }
+}
+
+console.log('Port:', port);
+console.log('Verbose:', verbose);
+```
+
+I could also show a more modern approach or mention popular libraries. Let me give a solid, practical answer.

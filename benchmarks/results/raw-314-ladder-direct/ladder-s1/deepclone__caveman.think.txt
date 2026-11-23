@@ -1,0 +1,15 @@
+User wants code that shows how to make a deep copy of a nested settings object before editing it, so the original isn't mutated. This is a standalone question with no codebase.
+
+They want to see code. I should show examples in common languages that handle this. JavaScript is probably the most relevant, but I could show a few options.
+
+Caveman mode is on, so keep it terse. No fluff. Technical substance stays.
+
+Let me provide clear, working examples without explanation bloat.
+
+JavaScript has several approaches:
+1. `structuredClone()` - modern, handles most types
+2. `JSON.parse(JSON.stringify())` - old workaround, loses functions/dates/undefined/circular refs
+3. Lodash `_.cloneDeep()`
+4. Recursive function
+
+I'll show the best modern approach first.

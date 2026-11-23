@@ -1,0 +1,36 @@
+User is asking for a database migration script. They want:
+1. Move from full_name to first_name/last_name
+2. Backfill existing rows
+3. Make it safely re-runnable
+4. Show the code
+
+This is a standalone question with no codebase. They want me to write example migration code.
+
+Since no specific database is mentioned, I should pick a reasonable default. Most common would be:
+- SQL (PostgreSQL, MySQL)
+- Node.js with a migration tool
+- Python with Alembic
+
+I'll go with SQL + a migration framework pattern. PostgreSQL is common. I could show a plain SQL approach or a framework approach (like Alembic or Node migrations).
+
+Actually, let me think about what "safely re-runnable" means:
+1. Must be idempotent (can run multiple times without error)
+2. Need to handle the case where migration already ran
+3. Need to handle data transformation safely
+
+I'll show a SQL-based solution with idempotency checks. PostgreSQL is a good default. I'll show:
+1. Create new columns if not exist
+2. Backfill data with safe parsing
+3. Drop old column (if desired, or leave it)
+4. Mark as applied
+
+Let me write a solid migration. I'll use PostgreSQL syntax but could easily adapt to MySQL.
+
+The key challenges:
+- Safely parse full_name into first/last
+- Handle NULL values
+- Handle names with no space
+- Track whether migration ran
+- Be re-runnable without error
+
+I'll provide both the migration file and a tracking approach.

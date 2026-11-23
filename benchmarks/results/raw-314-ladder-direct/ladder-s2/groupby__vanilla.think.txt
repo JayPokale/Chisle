@@ -1,0 +1,10 @@
+The user is asking for code to group a list of orders by customer ID and calculate the total spend per customer. They specify it's a standalone question with no codebase or tool access needed.
+
+This is a straightforward coding problem. I should provide a clear, practical solution. I'll give examples in a commonly-used language (Python makes sense here) and show how to do this with both a simple approach and potentially using built-in tools like `itertools.groupby` or `collections.defaultdict`.
+
+Since there's no specific language mentioned, Python is a good default for this kind of data manipulation task. I could show multiple approaches.
+
+Let me provide:
+1. A simple, readable solution using a dictionary
+2. Maybe show an alternative using groupby or defaultdict
+3. Include a sample dataset so they can see it in action

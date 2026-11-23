@@ -1,0 +1,17 @@
+The user is asking me to identify and explain the root cause of a floating-point precision issue where $0.10 + $0.20 = $0.30000000000000004 instead of exactly $0.30.
+
+They explicitly note "there is no codebase and no tool access here" - so they're asking for a conceptual explanation, not to fix code.
+
+This is a classic floating-point arithmetic problem. I should:
+1. Explain WHY this happens (binary representation issue)
+2. Explain the ROOT CAUSE (not a workaround, but the actual problem)
+3. Keep it concise - Ponytail style means no essays
+
+The root cause: Decimal numbers like 0.1 and 0.2 cannot be represented exactly in binary floating-point (IEEE 754). When you add the binary approximations, you get a result that's close to but not exactly 0.3.
+
+For fixing it in code (which they might ask next), the solution would be:
+- Use an integer-based approach (cents, not dollars)
+- Or use a decimal library
+- Not: rounding at display time (symptom fix, not root cause)
+
+Let me keep this crisp and lazy.

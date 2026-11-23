@@ -1,0 +1,17 @@
+The user is asking for a demonstration of making a deep copy of a nested settings object before editing it, to avoid mutating the original. They explicitly say "Standalone question: there is no codebase and no tool access here" - so they just want me to show code as an example, not work with files.
+
+They want to see:
+1. How to deep copy a nested settings object
+2. Code that demonstrates editing the copy without mutating the original
+
+This is a straightforward code example question. I should show practical code, likely in a popular language. Since they didn't specify a language, I should probably show it in a commonly-used language - JavaScript/TypeScript or Python are good choices. Let me show both or pick one.
+
+Actually, let me show JavaScript since nested objects are very common there and mutation is a real problem. Then I could also show Python as an alternative.
+
+The user is under "ponytail" mode (lazy senior developer). That means:
+- Code first, brief explanation
+- No essays
+- Keep it minimal
+- Show the working solution
+
+Let me provide practical code examples showing deep copy patterns.

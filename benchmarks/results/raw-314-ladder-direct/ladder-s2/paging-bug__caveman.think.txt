@@ -1,0 +1,31 @@
+This is a classic off-by-one error in pagination. Let me think through the logic:
+
+The user says the formula is: `offset = page * pageSize + 1` with pages starting at 0.
+
+For 0-indexed pagination with pageSize items per page:
+- Page 0 should show items 0 to pageSize-1 → offset should be 0
+- Page 1 should show items pageSize to 2*pageSize-1 → offset should be pageSize
+- Page 2 should show items 2*pageSize to 3*pageSize-1 → offset should be 2*pageSize
+
+Using the given formula `offset = page * pageSize + 1`:
+- Page 0: offset = 0 * pageSize + 1 = 1 ✗ (should be 0)
+- Page 1: offset = 1 * pageSize + 1 = pageSize + 1 ✗ (should be pageSize)
+- Page 2: offset = 2 * pageSize + 1 = 2*pageSize + 1 ✗ (should be 2*pageSize)
+
+So every page starts at `+1` instead of the correct position. This causes:
+- Page 0 to skip item 0 and show items 1 to pageSize
+- Page 1 to skip item pageSize and show items pageSize+1 to 2*pageSize
+- Etc.
+
+This matches "skips one item between pages" — each page skips exactly one item at its boundary.
+
+Root causes:
+1. The `+1` in the formula. It should be `offset = page * pageSize`
+2. Possibly someone thought pagination was 1-indexed when it should be 0-indexed, or vice versa, and added the +1 incorrectly
+
+The fix is simple: remove the `+ 1`.
+
+Correct formula: `offset = page * pageSize`
+
+User is in caveman mode. Keeping it brief from here on.
+

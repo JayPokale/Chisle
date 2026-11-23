@@ -1,0 +1,15 @@
+The user is asking about a floating-point precision issue. This is a classic problem in computer science where floating-point arithmetic produces unexpected results due to how binary floating-point numbers are represented.
+
+The issue: $0.10 + $0.20 = $0.30000000000000004
+
+This happens because 0.1 and 0.2 cannot be represented exactly in binary floating-point format (IEEE 754 double precision). When you add them, the rounding errors accumulate, resulting in a value slightly greater than 0.3.
+
+The root cause: **Binary floating-point cannot exactly represent decimal fractions like 0.1, 0.2, or 0.3.** These are stored as approximations, and arithmetic on approximations compounds the error.
+
+The user says "Standalone question: there is no codebase and no tool access here" - so they're asking for the conceptual explanation and the fix, not asking me to find this in code.
+
+Since they're asking about a cart total and dealing with money, I should explain:
+1. Root cause
+2. The fix (use fixed-point decimal arithmetic, not floating-point)
+
+Let me be terse and direct per Chisle mode.

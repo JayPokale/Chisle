@@ -1,0 +1,40 @@
+The user is asking for a database migration script that:
+1. Moves a users table from a single `full_name` column to `first_name`/`last_name`
+2. Backfills existing rows
+3. Is safely re-runnable
+
+This is a "standalone question" - no codebase, no context. They want to see code.
+
+Key considerations for a safe, re-runnable migration:
+- Idempotent: check if columns exist before creating/altering
+- Handle the split logic (last name is typically the last word, rest is first name, or similar)
+- Backfill data from full_name into the new columns
+- Handle NULL/empty values
+- Optionally drop the old column (or leave it for safety during rollout)
+
+I should write this in SQL (most common for migrations, database-agnostic) with common patterns. I'll make it idempotent by checking for column existence.
+
+Actually, the user asked for "the code" - they want to see it. No headings, just code plus brief explanation. Chisle mode.
+
+I'll provide a SQL migration that's idempotent and handles the split cleanly. I could show multiple database flavors, but SQL is most universal. If they need a specific DB, they'll ask.
+
+Split logic: last space-separated word is last name, everything before is first name. This is a heuristic but reasonable default.
+
+Let me write this once, working version:
+
+```sql
+-- Create new columns if they don't exist
+ALTER TABLE users ADD COLUMN IF NOT EXISTS first_name VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS last_name VARCHAR(255);
+
+-- Backfill from full_name (safely: only if first_name is still null)
+UPDATE users
+SET 
+  first_name = TRIM(SUBSTRING(full_name, 1, POSITION(' ' IN full_name) - 1)),
+  last_name = TRIM(SUBSTRING(full_name, POSITION(' ' IN full_name) + 1))
+Writing the SQL backfill for the first and last name split...
+
+Now I'm writing the PostgreSQL version of the backfill, with the SUBSTRING and POSITION logic for splitting the first and last names.
+
+I'm settling on PostgreSQL as the target, since it's the most common modern choice. The checklist is set: columns added only if missing, the backfill touches only rows where the new column is still NULL, and the DROP stays out behind a safety comment.
+

@@ -1,0 +1,19 @@
+User wants a standalone script that:
+1. Reads large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes report
+5. Handles malformed rows gracefully
+
+They want the code shown. No codebase, no tool access - just show code.
+
+Caveman mode active. Terse, no fluff.
+
+I'll write Python since it's good for CSV work. Should handle:
+- Large files (stream, not load all)
+- Validation (check fields)
+- Malformed rows (skip/log, don't crash)
+- Aggregation (customer totals)
+- Report output
+
+Let me write clean, robust code.

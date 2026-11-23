@@ -1,0 +1,52 @@
+User is asking a standalone question about database connection pooling. No codebase, no tools needed. Just explanation.
+
+They've set me to "caveman" mode (full). So I need to drop articles, filler, hedging. Fragments OK. Use short synonyms. Keep technical terms exact.
+
+Let me structure this clearly:
+- What is pooling
+- How it works
+- Why it helps
+
+Pattern: `[thing] [action] [reason]. [next step].`
+
+Let me draft:
+
+Normal mode would be:
+"Database connection pooling is a technique where a pool of database connections is maintained and reused instead of creating new connections for each request. When an application needs to query the database, it borrows a connection from the pool, uses it, and returns it. This avoids the expensive overhead of establishing new connections (handshake, authentication, initialization) for every single request. Under high load, this dramatically improves performance because connections are recycled rather than constantly created and destroyed."
+
+Caveman mode:
+"Pool maintain reuse DB connections. App borrow connection from pool, use, return. Skip expensive handshake/auth/init per request. High load → massive perf gain. Connections recycled not created/destroyed constantly."
+
+Actually let me be more caveman:
+
+Pool reuse open DB connections instead new per request. Avoids handshake, auth, init overhead. High load: connections recycled not constantly created/destroyed = perf win.
+
+Let me add "how it works" part:
+
+App request → check pool → free connection? take it → query → return to pool → available next time. No free? wait or create temp. Pool size tuned for load.
+
+Let me structure complete answer:
+
+**How it works:**
+Pool hold open connections. App request connection → take from pool if free → use → return to pool.
+
+**Why helps:**
+Handshake/auth/init expensive. Pool skip this per request. Under load: recycle connections fast. Prevents connection explosion. Memory/CPU savings.
+
+Let me make it terse but clear:
+Laying out the pooling answer now: connections kept open and reused, with a short example of the request load the pool absorbs.
+
+I'm settling on a compact format: a short "what" line, then a "how" list, keeping everything terse as the caveman style asks.
+
+Working out the "why it helps" points now: each new connection costs a handshake and auth, so reusing a small fixed pool avoids that cost on every request. I'm also tightening the mechanism into a short list of steps.
+
+I'm tightening the caveman rules: dropping articles, filler, and hedging, and keeping the technical terms exact. The main benefits are that per-request handshake, auth, and init cost goes away, and that a 100 req/sec load with no pool means 100 connections and 100 handshakes, while a size-10 pool reuses the same connections. The pool also prevents connection explosion and keeps memory and CPU use predictable under load.
+
+I'm restating the pooling explanation more tightly: the pool keeps connections open, the app grabs one when it needs a query and returns it afterward, and the cost saved is the per-request handshake and auth.
+
+I'm cutting the draft down to a tight structure: pooled connections get borrowed, used, and returned, and the point is that per-request handshake and auth costs go away.
+
+Settling on a tight list layout for the pooling answer, with the per-request handshake cost and the reuse-versus-new-connection numbers as the core reasons it's faster.
+
+Now I'm settling the pooling answer into a tight structure: connections held open and reused, with the per-request handshake cost removed, and the 100-requests-per-second example showing the difference.
+

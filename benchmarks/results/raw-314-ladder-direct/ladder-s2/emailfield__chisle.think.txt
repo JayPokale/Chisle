@@ -1,0 +1,29 @@
+The user is asking me to validate an email field on a signup form before it submits. They've explicitly said "Standalone question: there is no codebase and no tool access here."
+
+This is a straightforward request for code that validates email on a form before submission. Since there's no existing codebase, they want me to show code that does this.
+
+I should provide:
+1. A minimal, working solution for email validation on form submission
+2. Show the code clearly
+3. Keep it concise (Chisle mode: maximum signal)
+
+The user didn't specify a framework/language, so I should ask or assume the most common: HTML + JavaScript for a web form.
+
+Actually, looking at Chisle mode: "Unstated stack, DB, language or framework → most common default, named in one line, no deliberation."
+
+For a signup form email validation, the most common default is HTML + vanilla JavaScript.
+
+I should provide:
+- HTML form with email input
+- JavaScript validation before submit
+- Both client-side validation (HTML5 + JS) for UX and explain server-side is needed for security
+
+Let me keep it minimal and signal-maximum. No unnecessary explanation, just the code that works.
+
+Chisle rules:
+- Code first, then at most three short lines
+- No unrequested abstractions
+- Fewest files, shortest working diff
+- Full clarity for security (email validation is a trust boundary)
+
+Since there's no existing codebase, I'm creating a minimal standalone example. I should keep it as short as possible while being complete.

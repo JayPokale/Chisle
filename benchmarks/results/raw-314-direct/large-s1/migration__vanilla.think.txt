@@ -1,0 +1,28 @@
+The user is asking for a database migration script that:
+1. Moves from a single `full_name` column to separate `first_name` and `last_name` columns
+2. Backfills existing data
+3. Is safely re-runnable
+
+They specify "there is no codebase and no tool access here" - they want me to just write and show the code without using any tools.
+
+I should write a migration script that demonstrates good practices:
+- Idempotent (safe to run multiple times)
+- Handles edge cases in name parsing
+- Preserves data integrity
+- Can be rolled back if needed
+
+I'll provide a few versions - maybe SQL and Python since those are common. Let me think about the safest approach:
+
+1. Add the new columns if they don't exist
+2. Backfill from full_name
+3. Remove the old column (or keep it with a deprecation warning)
+4. Make it idempotent - check if columns exist, if data already migrated, etc.
+
+Let me write a comprehensive migration that handles:
+- Checking if the columns already exist
+- Safely parsing full names (handling various formats)
+- Idempotent execution
+- Transaction safety
+- Rollback possibility
+
+I'll provide both SQL and a more robust Python version.

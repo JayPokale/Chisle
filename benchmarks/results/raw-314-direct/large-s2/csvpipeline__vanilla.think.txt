@@ -1,0 +1,26 @@
+The user is asking me to write a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows without crashing
+
+They want to see the code and explicitly say "Standalone question: there is no codebase and no tool access here." This means they want me to just write and show the code without using tools like Write, Edit, etc. I should output the code in my response.
+
+Since they didn't specify a language, I'll use Python as it's commonly used for data processing tasks like this. I'll make it robust, handling malformed rows gracefully.
+
+Key requirements:
+- Read large CSV
+- Validate rows
+- Handle malformed rows without dying
+- Aggregate totals per customer
+- Write a report
+
+I'll write clean, production-ready code that:
+- Uses a streaming approach for large files (not loading everything into memory)
+- Validates data with clear error handling
+- Logs problems without stopping
+- Aggregates using a dictionary
+- Writes a summary report
+
+Let me write this code:

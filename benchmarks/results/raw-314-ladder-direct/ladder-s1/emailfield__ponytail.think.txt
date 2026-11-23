@@ -1,0 +1,31 @@
+The user is asking me to validate an email field on a signup form. They note this is a standalone question with no codebase and no tool access.
+
+Since there's no existing codebase, I need to provide example code showing email validation on a signup form. The user wants me to "show the code" - so they want a working example.
+
+I should provide a minimal, working solution. Let me think about what the ladder says:
+1. Does this need to exist at all? They're asking for it, so yes.
+2. Already in codebase? No codebase.
+3. Stdlib does it? For email validation, there are built-in options.
+4. Native platform feature? HTML5 has `<input type="email">` which provides built-in validation.
+5. Already-installed dependency? N/A since no codebase.
+6. Can it be one line? For basic validation, yes - but that might be insufficient.
+7. Minimum code that works.
+
+The lazy approach here is:
+- Use HTML5 `<input type="email">` with built-in validation (native platform feature)
+- For stronger validation, use a simple regex or the browser's native email validation
+- If they need backend validation, a minimal regex
+
+Since they said "standalone question" with no codebase, I should provide:
+1. A complete, runnable HTML example with a form
+2. Show both HTML5 built-in validation and optional JS validation if they want it
+
+The absolute laziest approach: use `<input type="email">` - the browser handles it.
+More robust: add JS validation with a simple regex or the HTML5 Validation API.
+
+I'll show:
+1. Pure HTML (native validation)
+2. With JS (using the Validation API, the simplest approach)
+3. Maybe a backend regex option
+
+Let me keep it minimal and practical.

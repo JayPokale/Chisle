@@ -1,0 +1,13 @@
+User wants code to remove duplicate emails from a list of users, keeping first occurrence and original order. They say it's a standalone question with no codebase and no tool access.
+
+They want me to show code. No specific language mentioned, so I should probably give a few common options or ask, but given the casual request, I'll provide Python as it's most readable and common for this task.
+
+Also, they're in "caveman" mode (full). So I should be terse - drop articles, use fragments, be direct.
+
+Let me show efficient solutions that maintain order:
+
+1. Python with dict (preserves insertion order in 3.7+)
+2. Python with set tracking
+3. Maybe one more language option
+
+Caveman style: drop "the", "a", fragments are OK, short synonyms.

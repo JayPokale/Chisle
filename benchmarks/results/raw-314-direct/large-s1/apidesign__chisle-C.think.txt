@@ -1,0 +1,73 @@
+This is a design question about REST API architecture for a multi-tenant document store. The user wants:
+1. REST API design
+2. Resources
+3. Auth model
+4. Pagination
+5. Versioning
+6. Error format
+7. Explanation of decisions
+
+It's a standalone architecture question, not tied to code work. I should provide a complete, well-reasoned design with clear trade-off explanations.
+
+The Chisle mode says "No headings, bullets or tables the question didn't ask for" but they're asking for a design, which naturally involves structure. I think reasonable structure helps here. But I should avoid unnecessary flourishes and get to the point quickly. I'll organize it clearly but tersely.
+
+Let me think through the key decisions:
+
+**Resources:**
+- Tenants, Documents, Versions, Users/Members
+- Document ownership/sharing model
+- Hierarchical (folders) or flat?
+
+**Auth:**
+- Tenant ID in header or path?
+- User auth (JWT token) + tenant isolation
+- Role-based access control within tenant
+
+**Pagination:**
+- Cursor-based vs offset-based
+- Document stores often have large result sets
+
+**Versioning:**
+- API versioning strategy (URL, header, Accept header)
+- Document version history
+
+**Error format:**
+- Consistent error response structure
+- HTTP status codes
+
+Let me design this:
+
+## Resources
+
+```
+/tenants/{tenantId}/documents
+/tenants/{tenantId}/documents/{docId}
+/tenants/{tenantId}/documents/{docId}/versions
+/tenants/{tenantId}/documents/{docId}/versions/{versionId}
+/tenants/{tenantId}/members
+/tenants/{tenantId}/members/{userId}
+```
+
+**Key decisions:**
+- Tenant in path enforces isolation at the routing layer
+- Flat document structure (no nested folders) — simplifies API, versioning, and permissions
+- Versions as a sub-resource of documents
+- Members tied to tenant (not global users)
+Now I'm laying out the auth side: the tenant ID goes in a header, the user is identified by a signed JWT, and the server checks that the token's tenant matches the header before anything else.
+
+Now I'm settling how tenant and user get checked: the tenant ID comes from the header and has to match the token, and the role in the token is what authorization reads, so no database lookup is needed for each request. OAuth2 would only come in if the app needs social or delegated login.
+
+Now I'm settling the cursor details: it encodes the sort key, direction, and last ID, and the next request fetches one extra row to tell whether more pages exist.
+
+Now I'm finishing the API versioning and document version history notes, and moving on to the error response format.
+
+Still writing the error response format...
+
+Now I'm writing out the error examples and the full document creation request with its response.
+
+Now I'm writing out the example JSON response for the document creation call, with the version, timestamps, and metadata fields.
+
+Now I'm wrapping up the trade-offs, weighing path-based tenant scoping against token-based scoping and cursor pagination against offset for the mutable document data.
+
+Now I'm weighing the trade-offs: path-scoped tenancy versus token-scoped, cursor versus offset pagination, Accept-header versus URL versioning, flat versus hierarchical documents, and immutable versions. I'm settling on the choices that fit a mutable, multi-tenant document store.
+

@@ -1,0 +1,13 @@
+The user is asking me to write an incident postmortem for a hypothetical four-hour outage. They've explicitly noted this is a standalone question with no codebase and no tool access needed. This is a straightforward writing task.
+
+A good postmortem should include:
+1. Summary/Executive Summary
+2. Timeline of events
+3. Impact assessment
+4. Root cause analysis
+5. Contributing factors
+6. Remediations (immediate and long-term)
+7. Action items
+8. Appendices (if needed)
+
+I'll structure this as a realistic incident postmortem that would be typical for a tech company. I'll make it detailed enough to be useful but realistic in scope.

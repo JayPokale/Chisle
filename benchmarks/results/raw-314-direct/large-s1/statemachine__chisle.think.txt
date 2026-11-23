@@ -1,0 +1,48 @@
+The user is asking for a standalone implementation of an order state machine with specific states and legal transitions. They mention "there is no codebase and no tool access here" which seems like a note about the context.
+
+Looking at the instructions, they want:
+- States: created, paid, shipped, delivered, cancelled, refunded
+- Legal transitions enforced
+- Invalid transitions rejected
+- Show the code
+
+Since this is standalone with no codebase, I need to write the state machine from scratch. I'll create a clean, minimal implementation that:
+1. Defines the states
+2. Defines valid transitions
+3. Enforces transitions
+4. Rejects invalid ones
+
+No language was specified. The most common defaults would be Python, JavaScript, or Go. Python is probably the safest for a standalone question like this since it's readable and common.
+
+I should keep it minimal - no over-engineering, no abstractions beyond what's needed. Just a clear state machine that enforces transitions.
+
+Let me think about valid transitions:
+- created → paid, cancelled
+- paid → shipped, refunded
+- shipped → delivered, refunded (maybe?)
+- delivered → (terminal state, no transitions)
+- cancelled → (terminal state, no transitions)
+- refunded → (terminal state, no transitions)
+
+Actually, let me think about realistic order flows:
+- created → paid (payment successful)
+- created → cancelled (order cancelled before payment)
+- paid → shipped (order dispatched)
+- paid → refunded (refund issued)
+- shipped → delivered (order arrived)
+- shipped → refunded (refund after ship? less common but possible)
+- delivered → (can't transition, order complete) - though maybe refund? Let's say refund is possible even after delivery for realistic e-commerce
+- cancelled → (terminal)
+- refunded → (terminal)
+
+Let me keep it simple and realistic:
+- created: initial state
+  - → paid (successful payment)
+  - → cancelled (cancelled before payment)
+- paid: payment received
+The state machine needs to cover the remaining states: shipped can move to delivered or refunded, while delivered, cancelled, and refunded are terminal. I'm starting the Python `Order` class now, with a transitions dictionary that enforces these rules.
+
+Still writing the order class and its transition rules...
+
+Still writing the example usage...
+

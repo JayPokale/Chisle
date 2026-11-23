@@ -1,0 +1,10 @@
+The user is asking for a debounce implementation for a search input. They say "standalone question" and "there is no codebase and no tool access here" - so I should just provide code without any file operations.
+
+They want:
+1. A search input that currently fires API calls on every keystroke
+2. Add debounce to prevent excessive calls
+3. Show the code
+
+Since there's no context about what framework/language, I should provide a simple, practical example. JavaScript with HTML would be most common for a search input. I'll show a vanilla JS approach that's clear and can be adapted.
+
+Chisle mode: be terse, code first, minimal explanation after.

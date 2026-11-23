@@ -1,0 +1,15 @@
+The user is asking me to add a cache layer for user profile API responses. However, they've explicitly stated "Standalone question: there is no codebase and no tool access here." This means:
+
+1. There's no existing codebase to modify
+2. I shouldn't attempt to use tools to read/write files
+3. They want me to show code as an example/demonstration
+
+Since this is a standalone question without an existing codebase, I should provide example code showing how to implement a cache layer for a user profile API. I'll show a practical implementation with common patterns.
+
+I should demonstrate:
+- A cache implementation (probably in-memory or with Redis)
+- Integration with an API endpoint
+- TTL/expiration handling
+- Cache invalidation
+
+I'll provide a few options or a complete example. Let me create a comprehensive example showing how to add caching to a user profile API.

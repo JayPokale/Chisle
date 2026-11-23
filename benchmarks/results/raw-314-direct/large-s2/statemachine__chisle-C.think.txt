@@ -1,0 +1,52 @@
+The user wants me to implement an order state machine with specific states and transitions. They explicitly state this is a standalone question with no codebase and no tool access.
+
+The states are:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+I need to think about valid transitions:
+- created → paid (payment made)
+- created → cancelled (cancel before payment)
+- paid → shipped (order ships)
+- paid → refunded (refund payment)
+- shipped → delivered (delivery complete)
+- cancelled → (terminal, no transitions)
+- delivered → (terminal, no transitions)
+- refunded → (terminal, no transitions)
+
+Wait, should refunded allow any transitions? Let me think about the business logic:
+- created → paid (normal flow)
+- created → cancelled (cancel before payment)
+- paid → shipped (normal flow)
+- paid → refunded (customer refund)
+- shipped → delivered (normal flow)
+- delivered → refunded (maybe return/refund after delivery?)
+- shipped → cancelled? (probably not, once shipped it's out)
+- cancelled → refunded? (might make sense if they paid then cancelled?)
+
+Actually, let me reconsider. Common order state machines:
+1. created → paid → shipped → delivered (happy path)
+2. created → cancelled (cancel anytime before shipment)
+3. paid → cancelled? Or once paid can't cancel? Depends on business logic
+4. refunded could come from paid, shipped, or delivered states
+
+For a strict model:
+- created → paid, cancelled
+- paid → shipped, refunded (full refund before ship)
+- shipped → delivered, refunded? (partial refund during transit?)
+- delivered → refunded? (return/refund)
+- cancelled, refunded, delivered → terminal states (no outgoing transitions)
+
+I'll go with a reasonable model:
+- created → paid, cancelled
+- paid → shipped, refunded, cancelled
+- shipped → delivered, cancelled (cancel in transit)
+- delivered → refunded (returns)
+I'm settling on a tighter model: created goes to paid or cancelled, paid goes to shipped or refunded, shipped goes to delivered, delivered goes to refunded, and cancelled and refunded are terminal. Next I'll implement it in Python with a class-based allowed-transitions dict, since there's no codebase to fit into.
+
+I'm settling on a class-based design: the class stores the current state, keeps the allowed transitions in a dict, and has a transition method that validates each move and raises clear errors for invalid ones.
+

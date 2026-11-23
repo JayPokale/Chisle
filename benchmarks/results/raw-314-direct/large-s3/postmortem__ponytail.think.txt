@@ -1,0 +1,11 @@
+The user is asking me to write an incident postmortem for a hypothetical four-hour outage. They've explicitly noted "there is no codebase and no tool access here" - this is a standalone question asking me to produce a postmortem document.
+
+This is not a lazy-code task (no coding involved), it's a documentation/writing task. Ponytail governs what I build, and this is building a document, not code. However, the ponytail principles about being efficient and not over-engineering still apply - I shouldn't write a bloated postmortem with unnecessary sections.
+
+I should write a realistic, incident postmortem that:
+1. Has a clear timeline of when things broke and how they were discovered/resolved
+2. Identifies the root cause (connection pool exhaustion due to slow downstream dependency)
+3. Includes reasonable remediations that follow the lazy principle
+4. Avoids bloat - real postmortems are actionable, not lengthy
+
+Let me structure this as a professional incident postmortem that would actually be useful.

@@ -1,0 +1,20 @@
+The user is asking about a classic floating-point arithmetic issue - the "$0.30000000000000004" problem. This is a well-known issue in computer science where decimal numbers cannot be precisely represented in binary floating-point arithmetic (IEEE 754).
+
+When you add 0.10 + 0.20 in binary floating-point, you don't get exactly 0.30 because:
+1. 0.10 cannot be represented exactly in binary (it's a repeating decimal)
+2. 0.20 cannot be represented exactly in binary
+3. When you add these imprecise representations, you get a result that, when converted back to decimal, shows as 0.30000000000000004
+
+The user says "there is no codebase and no tool access here" - so they're asking for the conceptual explanation and solution, not asking me to find and fix code.
+
+They're using caveman mode (terse) so I should be very concise.
+
+Root cause: binary floating-point can't represent 0.1 and 0.2 exactly.
+
+Solutions:
+1. Use a decimal library (like Python's `Decimal` or JavaScript's Big.js)
+2. Work in cents/integers (multiply by 100, do math, divide by 100)
+3. Round to 2 decimal places for display
+4. Use currency-specific libraries
+
+Let me keep this super terse.

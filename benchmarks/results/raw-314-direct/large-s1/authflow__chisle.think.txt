@@ -1,0 +1,24 @@
+The user is asking for a complete implementation of email-and-password signup and login with:
+1. Password hashing
+2. Session issuing
+3. Rate limiting on failed attempts
+
+They say "Show the code" and explicitly state "there is no codebase and no tool access here" — so this is a standalone question asking me to write example code from scratch.
+
+They haven't specified a language/framework, so I should pick the most common default. For web auth systems, that's typically Node.js/Express or Python/Flask. Node.js with Express is probably most common for this type of system in 2026.
+
+Key requirements:
+- Signup (email + password) with password hashing (bcrypt standard)
+- Login with password verification
+- Session issuing (JWT or session-based)
+- Rate limiting on failed login attempts
+
+I'll build a minimal Node.js/Express example:
+- Use `bcrypt` for password hashing
+- Use `express-session` and `sessionstore` for session management OR JWT for tokens
+- Use `express-rate-limit` for rate limiting
+- In-memory storage for demo (would use DB in production)
+
+I'll keep it minimal, no boilerplate, no "future-proofing" abstractions. The user asked to "show the code" so they want working, runnable code.
+
+Chisle mode: be terse, drop filler, code first with minimal explanation.

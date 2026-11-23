@@ -1,0 +1,15 @@
+The user is asking me to validate an email field on a signup form and show the code. However, they've explicitly stated "Standalone question: there is no codebase and no tool access here."
+
+This means:
+1. There is no existing codebase to work with
+2. I cannot use file tools to read or write files
+3. This is a standalone request for example code
+
+Since there's no specific framework mentioned, I should provide a practical solution. The most common approach would be client-side validation, possibly in JavaScript for a web form. I'll show a simple but effective email validation approach.
+
+I'll provide:
+1. HTML form markup
+2. JavaScript validation logic
+3. Brief explanation
+
+I'll keep it concise and practical.

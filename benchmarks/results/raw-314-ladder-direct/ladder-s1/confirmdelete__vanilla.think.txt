@@ -1,0 +1,10 @@
+The user is asking me to add a confirmation modal before deleting an item in a web app. However, they've explicitly stated "Standalone question: there is no codebase and no tool access here."
+
+This means:
+1. There's no existing codebase to work with
+2. I cannot access the file system to read or write files
+3. I should provide code as an example/template that they can use
+
+Since they want me to "show the code," I should provide a complete, practical example of how to implement a confirmation modal before deletion. I'll provide a few approaches (vanilla JavaScript, React, etc.) so they can use whichever fits their tech stack.
+
+Let me provide a clear, complete example with HTML, CSS, and JavaScript.

@@ -1,0 +1,23 @@
+User wants me to implement an order state machine with:
+- States: created, paid, shipped, delivered, cancelled, refunded
+- Legal transitions enforced
+- Invalid ones rejected
+- Standalone question - no codebase, just show code
+
+Since they said "show the code" and it's a standalone question (no existing codebase), I should just write a clean implementation.
+
+Let me think about valid transitions:
+- created → paid, cancelled
+- paid → shipped, refunded
+- shipped → delivered
+- delivered → (terminal state)
+- cancelled → (terminal state)
+- refunded → (terminal state)
+
+I should show the code clearly. They want it standalone with no codebase tool access, so I'll just present well-structured code.
+
+User has caveman mode on (full level). But this is showing code - should I drop caveman for code display? The instruction says "Code blocks unchanged" so the code itself stays normal. The explanation around it should be caveman.
+
+Let me write a solid implementation - probably Python with a class-based approach would be cleanest. Could use an Enum for states and define valid transitions.
+
+Actually, let me provide multiple implementations or one really solid one. I'll go with Python since it's clear and practical.

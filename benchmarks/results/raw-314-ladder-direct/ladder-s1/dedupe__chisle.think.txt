@@ -1,0 +1,53 @@
+The user wants code to remove duplicate emails from a list, keeping the first occurrence and preserving order. This is a straightforward algorithm question.
+
+Since they said "standalone question" with no codebase, I should provide the code solution. They didn't specify a language, so I'll go with Python as it's most common. I'll show the most efficient approach.
+
+Chisle mode: be terse, code first. No explanations unless they're crucial.
+
+The most efficient way is to use a set to track seen emails, iterating once:
+
+```python
+def remove_duplicate_emails(users):
+    seen = set()
+    result = []
+    for user in users:
+        if user['email'] not in seen:
+            seen.add(user['email'])
+            result.append(user)
+    return result
+```
+
+Or more concise with a dict (Python 3.7+ preserves insertion order):
+
+```python
+def remove_duplicate_emails(users):
+    return list(dict.fromkeys(users, key=lambda u: u['email']).keys())
+```
+
+Wait, that won't work with dict.fromkeys() that way. Let me think.
+
+Actually, the clearest concise way:
+```python
+def remove_duplicate_emails(users):
+    seen = set()
+    return [u for u in users if not (u['email'] in seen or seen.add(u['email']))]
+```
+
+This is a trick: `set.add()` returns None, so `or None` is falsy, letting the list comp work. But it's clever-tricky.
+
+The straightforward approach is clearest:
+
+```python
+def remove_duplicate_emails(users):
+    seen = set()
+    result = []
+    for user in users:
+        if user['email'] not in seen:
+            seen.add(user['email'])
+            result.append(user)
+    return result
+```
+
+Chisle: code first, minimal explanation. This is O(n) time, O(n) space.
+I'll offer a one-liner variant after the main solution.
+

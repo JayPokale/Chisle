@@ -1,0 +1,15 @@
+The user is asking me to sort a list of file names so that "file2" comes before "file10". This is a classic sorting problem where lexicographic (alphabetical) sorting doesn't work correctly for numeric suffixes.
+
+The issue is:
+- Lexicographic sort: "file10" < "file2" (because "1" < "2")
+- Natural sort (what we want): "file2" < "file10" (because 2 < 10)
+
+They want me to show the code. They mention "Standalone question: there is no codebase and no tool access here" - so I should just provide code examples, not use any tools.
+
+Let me show solutions in a few popular languages. I'll start with Python since it's versatile:
+
+1. Python - using natural sort
+2. JavaScript - using natural sort
+3. Shell/bash - if they need it
+
+I'll show the most practical approach for each.

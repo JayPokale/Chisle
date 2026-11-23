@@ -1,0 +1,31 @@
+The user is asking me to add debounce to a search input that fires an API call on every keystroke. They note this is a standalone question with no codebase.
+
+They want to see code. This is a pretty straightforward frontend task. The user wants to see a debounce implementation.
+
+This falls under ponytail - lazy senior developer mode. Let me think about the ladder:
+
+1. Does this need to exist? Yes, debouncing search is a real need.
+2. Already in codebase? No codebase.
+3. Stdlib does it? No.
+4. Native platform feature? No.
+5. Already-installed dependency? For web, could use lodash debounce, but typically debounce is small enough to write.
+6. Can it be one line? Not really - you need a function + handler hookup.
+7. Only then: minimum code that works.
+
+Since this is "standalone question: there is no codebase and no tool access here" - the user just wants to see code examples. No files to edit.
+
+I should show:
+- A debounce utility function (can be super minimal)
+- How to use it with a search input
+
+Let me show the absolute minimum that works. I'll show JavaScript since that's the most common context for this. I could do React too, but vanilla JS is simpler and more universal.
+
+Ponytail full mode: shortest working code, no explanations beyond the code itself. Pattern is `[code] → skipped: [X], add when [Y].`
+
+Actually, the user said "Show the code" so they explicitly want to see the code. Let me give them clean, minimal examples.
+
+I'll show:
+1. Vanilla JavaScript version (simplest, works anywhere)
+2. Maybe React version since that's common
+
+Let me keep it lean.

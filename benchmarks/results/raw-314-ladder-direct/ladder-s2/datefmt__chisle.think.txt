@@ -1,0 +1,37 @@
+The user is asking how to convert an ISO timestamp from an API to a localized date format in a web app. They specifically want to see code that shows "Nov 23, 2026" format.
+
+They've noted this is a standalone question with no codebase and no tool access.
+
+Since they're asking for a web app, I should assume JavaScript/TypeScript running in a browser environment.
+
+Chisle mode is active. I should:
+- Be terse, drop articles/filler
+- Show the code first
+- Keep explanation to 2-3 short lines max
+- Be exact and concise
+
+Here's the solution using JavaScript's built-in Intl API (best practice, no dependencies):
+
+```javascript
+const date = new Date("2026-11-23T10:30:00Z");
+const localized = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric'
+}).format(date);
+console.log(localized); // "Nov 23, 2026"
+```
+
+This uses the native Intl.DateTimeFormat API which is perfect for this use case. Alternative would be date libraries like date-fns or Luxon, but stdlib works fine here.
+
+I could also show a quick one-liner with toLocaleDateString(), though Intl.DateTimeFormat is more explicit:
+
+```javascript
+new Date("2026-11-23T10:30:00Z").toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric'
+})
+```
+
+Let me go with the cleaner example and note the trade-off if they want something shorter or need a different format.

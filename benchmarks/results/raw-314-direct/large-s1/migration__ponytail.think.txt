@@ -1,0 +1,57 @@
+The user is asking for a database migration script. They want:
+1. Move from single `full_name` column to `first_name` and `last_name` columns
+2. Backfill existing rows
+3. Make it safely re-runnable
+4. They want to see the code
+5. They note there's no codebase and no tool access
+
+Since there's no codebase, I should just provide the migration script directly as text.
+
+For a safely re-runnable migration, I should use idempotent patterns:
+- Check if columns/tables exist before creating
+- Handle the case where migration has already run
+- Not fail if columns already exist
+
+I'll provide a migration that could work with any SQL database. I'll go with PostgreSQL as it's common and clear, but I could also show a generic approach. Let me think about what's laziest here:
+
+1. Does this need to exist? Yes, the user asked for it.
+2. Already in codebase? No codebase.
+3. Stdlib? No stdlib for DB migrations across all languages.
+4. Native platform? No.
+5. Installed dependency? No codebase, so no deps.
+6. One line? No, migrations need multiple steps.
+7. Minimum code that works.
+
+For re-runnable, the key patterns are:
+- Use `IF NOT EXISTS` / `IF EXISTS` 
+- Check state before doing things
+- Idempotent operations
+
+I'll write a PostgreSQL version since it's standard, but I should keep it minimal. The user wants to see the code, so I'll just show it without tooling.
+
+Let me think about the structure:
+1. Add new columns if they don't exist
+2. Backfill from full_name if data needs it
+3. Drop old column if new columns exist and old is populated
+4. Mark as complete
+
+Actually, for true re-runnable safety, I should:
+1. Check if migration already ran (via a tracking table or by checking state)
+Still writing migration SQL...
+
+Still writing migration SQL...
+
+Checking whether the migration is truly safe to re-run: the ALTERs with IF NOT EXISTS / IF EXISTS are harmless to repeat, and the UPDATE just matches nothing once it's done. The real gap is a partial failure before the DROP, since a rerun would redo the backfill, which is probably fine but isn't a clean guarantee, so I'm weighing a tracking table or a stricter WHERE clause.
+
+Still writing the backfill query...
+
+Still writing the migration SQL...
+
+Still writing the migration SQL...
+
+Still writing the backfill and cleanup SQL...
+
+Writing the migration SQL...
+
+Deciding whether to offer a Python version as well as the SQL, and sticking with SQL since it's the most common choice for this kind of migration. Keeping the answer minimal, since the user just wants to see the code.
+

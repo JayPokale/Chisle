@@ -1,0 +1,13 @@
+The user is asking for code that reads API base URL and request timeout from environment variables with sensible defaults. They explicitly state this is a standalone question with no codebase and no tool access.
+
+Since they want me to show the code, I should provide example code for reading from environment variables. They didn't specify a language, so I should ask or provide a common example. Actually, looking at the pattern, let me provide Python since it's widely used for this pattern.
+
+User wants caveman mode (terse). Keep it tight, drop fluff.
+
+They want:
+1. Code that reads API base URL from env vars
+2. Code that reads request timeout from env vars
+3. Sensible defaults for both
+4. Show the code
+
+No language specified. Python is most common for this. Should I ask? No - just show it and they can adapt. Keep caveman sparse.

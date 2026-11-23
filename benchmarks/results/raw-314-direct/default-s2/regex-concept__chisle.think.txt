@@ -1,0 +1,17 @@
+The user is asking for a short explanation of regular expression backreferences with one example. This is a standalone question with no code to edit or tools to use.
+
+They want:
+1. Explanation of what a backreference is
+2. One short example
+3. They explicitly said this is a standalone question
+
+Given "chisle" mode is active, I should be terse: cut articles, filler, pleasantries. Answer at the question's altitude. Code first.
+
+A backreference lets you refer back to a captured group within the same regex pattern or in a replacement string.
+
+Example: match repeated words
+Pattern: `(\w+)\s+\1` matches a word followed by the same word again (like "hello hello")
+- `(\w+)` captures a word into group 1
+- `\1` refers back to whatever group 1 captured
+
+That's the core. Keep it short.

@@ -1,0 +1,18 @@
+The user is asking me to validate an email field on a signup form before it submits, and to show the code. They've clarified this is a standalone question with no codebase.
+
+They also have "caveman mode" enabled (full intensity based on the system message).
+
+Since there's no existing code, I should provide a working example. I should ask which technology/framework they want (vanilla JS, React, etc.), but given the caveman mode preference for terseness, let me reconsider - they said "show the code" which suggests they want it immediately.
+
+I'll provide a vanilla JS solution since it's most universal and standalone. I should drop articles, filler, hedging, and be very terse.
+
+Let me write email validation code. Standard pattern:
+1. Client-side: basic regex or HTML5 validation
+2. Server-side: more robust validation (they didn't ask for this, but good practice)
+
+Client-side validation considerations:
+- HTML5 `type="email"` with form validation
+- JavaScript validation before submit
+- Regex or proper parsing
+
+I'll give HTML + JS solution showing before-submit validation. Keep it terse.

@@ -1,0 +1,17 @@
+The user is asking me to write an incident postmortem for a hypothetical four-hour outage caused by a connection pool exhausted by a slow downstream dependency. This is a standalone question with no codebase or tool access needed.
+
+This is a common incident in systems engineering where:
+1. A downstream service becomes slow (maybe a database, external API, etc.)
+2. The connection pool gets exhausted waiting for responses
+3. No new requests can be made because all connections are waiting
+4. The service becomes unavailable
+
+I should write a realistic postmortem document that includes:
+- Executive summary
+- Timeline (with specific timestamps)
+- Impact statement
+- Root cause analysis
+- Remediations/action items
+- Lessons learned
+
+I'll make this realistic and practical, with actual technical details that would appear in a real postmortem.

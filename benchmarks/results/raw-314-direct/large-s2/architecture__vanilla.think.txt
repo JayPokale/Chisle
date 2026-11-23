@@ -1,0 +1,18 @@
+This is a great architecture question about breaking down a monolith incrementally. The user is asking for a conceptual/educational answer, not asking me to work with code or tools. They've explicitly noted "Standalone question: there is no codebase and no tool access here."
+
+This is asking for best practices on monolith-to-microservices migration, with emphasis on:
+1. Ordering (what to extract first)
+2. Data ownership (how to handle shared state)
+3. Keeping it shippable (continuous deployability throughout)
+
+I should give a practical, structured answer. Since this is a standalone question without code, I should be clear and concise but substantive. The user seems technically sophisticated (they mention CTF, security work in their profile context), so I can be direct.
+
+Key points:
+- Strangler pattern / incremental extraction
+- Start with low-risk, high-value services
+- Data ownership and eventual consistency
+- Branch by abstraction / feature flags to keep deployable
+- Shared code/data challenges
+- Testing strategy
+
+Let me structure this clearly without over-explaining.

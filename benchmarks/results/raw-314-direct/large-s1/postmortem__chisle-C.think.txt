@@ -1,0 +1,21 @@
+The user is asking me to write an incident postmortem for a hypothetical outage scenario. This is a standalone question - no actual codebase, no tool access needed. They want me to demonstrate what a good postmortem looks like for a specific scenario: a 4-hour outage caused by connection pool exhaustion due to a slow downstream dependency.
+
+In Chisle mode: answer directly, no preamble, give the deliverable.
+
+A postmortem should cover:
+- Executive summary
+- Timeline
+- Root cause analysis
+- Impact
+- Contributing factors
+- Remediations (immediate and preventive)
+- Action items
+
+I should make it realistic and practical. The scenario is specific: connection pool exhaustion from slow downstream. This typically happens when:
+1. A downstream service starts responding slowly
+2. Clients don't timeout quickly
+3. Connection pool fills up
+4. No new requests can get connections
+5. Service becomes unavailable
+
+Let me write a realistic postmortem.

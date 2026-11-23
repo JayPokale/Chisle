@@ -1,0 +1,37 @@
+The user is asking for code to sort file names so that file2 comes before file10. This is about natural/human sorting vs lexicographic sorting.
+
+By default, lexicographic (alphabetic) sorting gives: file1, file10, file2, file3, etc.
+Natural sorting gives: file1, file2, file3, file10, etc.
+
+The user wants to show code for natural sorting.
+
+They also explicitly said "Standalone question: there is no codebase and no tool access here." So they just want me to show code snippets without running anything.
+
+Caveman mode is on (default: full). I should be terse.
+
+Let me show solutions in common languages for natural sort.
+
+Python:
+```python
+from natsort import natsorted
+files = ["file10", "file2", "file1"]
+sorted_files = natsorted(files)
+```
+
+Or without external library using regex:
+```python
+import re
+def natural_key(text):
+    return [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', text)]
+
+files = ["file10", "file2", "file1"]
+sorted_files = sorted(files, key=natural_key)
+```
+
+JavaScript:
+```javascript
+const files = ["file10", "file2", "file1"];
+const sorted = files.sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+```
+
+I should show the most practical approaches. Caveman style - no fluff, direct.

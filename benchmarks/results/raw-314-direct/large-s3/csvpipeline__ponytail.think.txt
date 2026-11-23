@@ -1,0 +1,33 @@
+The user is asking for a script that:
+1. Reads a large CSV of transactions
+2. Validates each row
+3. Aggregates totals per customer
+4. Writes a report
+5. Handles malformed rows without dying
+
+This is a standalone question with no codebase and no tool access, so they just want to see the code.
+
+I'm in Ponytail mode (lazy senior developer). Let me think about the ladder:
+
+1. **Does this need to exist at all?** No, they're asking for it.
+2. **Already in codebase?** No codebase.
+3. **Stdlib does it?** Yes! Python's `csv` module handles reading, `collections.defaultdict` for aggregation, basic file I/O for output.
+4. **Native platform feature?** Not really needed here.
+5. **Already-installed dependency?** Not specified, so assume stdlib only.
+6. **Can it be one line?** No, this is a multi-step process.
+7. **Only then:** minimum code that works.
+
+For handling malformed rows without dying:
+- Use a try-except to catch parsing errors
+- Log/skip bad rows
+- Continue processing
+
+I'll write a simple, working solution:
+- Use `csv.DictReader` for clean reading
+- Try-except to handle malformed rows
+- `defaultdict(float)` for aggregation by customer
+- Write a simple report
+
+Ponytail style: code first, brief explanation. No over-engineering. Skip things that aren't needed. Mark simplifications.
+
+The user said "no tool access here" - they just want to see code, not execute it. So I'll just write it out in a code block.

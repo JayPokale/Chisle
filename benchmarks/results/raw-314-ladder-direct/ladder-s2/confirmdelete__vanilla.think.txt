@@ -1,0 +1,18 @@
+The user is asking me to show code for a confirmation modal before deleting an item in a web app. They explicitly state this is a standalone question with no codebase and no tool access.
+
+Since they want me to "show the code," I should provide example code for a confirmation modal. I can give them a few common approaches:
+
+1. A simple HTML/JavaScript approach
+2. A React component approach
+3. Maybe a more polished example
+
+I should ask what framework/approach they're using, but since they said "standalone question," I think they want a general example. Let me provide a couple of common patterns.
+
+Actually, re-reading: they said "Standalone question: there is no codebase and no tool access here" - this means they're asking for a general code example, not asking me to work with a specific project. So I should provide clean, standalone code examples that they can adapt to their project.
+
+Let me give them a few options:
+1. Vanilla JS/HTML
+2. React
+3. Maybe mention a third-party approach
+
+I'll keep it concise and practical.

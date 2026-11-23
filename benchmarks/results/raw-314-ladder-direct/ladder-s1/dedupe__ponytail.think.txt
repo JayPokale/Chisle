@@ -1,0 +1,45 @@
+The user is asking me to remove duplicate emails from a list of users, keeping the first occurrence and maintaining the original order. They want to see the code and explicitly note there's no codebase or tool access.
+
+This is a straightforward problem. I need to show code that:
+1. Takes a list of users (each with an email)
+2. Removes duplicates based on email
+3. Keeps the first occurrence
+4. Maintains original order
+
+The user didn't specify a language, but since they mention "standalone question" and no codebase context, I should probably show a general approach. I could show it in Python as it's clear and commonly used.
+
+The ponytail mode is active (lazy senior developer). Let me think about the ladder:
+1. Does this need to exist? Yes, it's the user's ask.
+2. Already in codebase? No codebase.
+3. Stdlib does it? Python has dict.fromkeys() which maintains insertion order (Python 3.7+) and preserves first occurrences for de-duplication.
+4. The lazy solution: use dict.fromkeys() with a key function, or a set-based approach.
+
+The simplest approach in Python:
+- For a list of dictionaries with an 'email' field: `{user['email']: user for user in users}.values()` gives unique by email, keeping last. For first occurrence, we'd need to track.
+- Or: use dict.fromkeys() with a key extractor.
+- Or: iterate with a set to track seen emails.
+
+Actually, the absolute simplest lazy solution:
+```python
+def deduplicate_emails(users):
+    seen = set()
+    result = []
+    for user in users:
+        if user['email'] not in seen:
+            seen.add(user['email'])
+            result.append(user)
+    return result
+```
+
+Or with dict.fromkeys():
+```python
+def deduplicate_emails(users):
+    return list({user['email']: user for user in reversed(users)}.values())[::-1]
+I'm reconsidering the dict-based version, since reversing the list to keep the first occurrence doesn't work. I'm now writing a version that uses a dict to track seen emails, with the first user for each email kept as the value.
+
+Still refining the set-based deduplication function...
+
+Still writing the dedupe function...
+
+Weighing whether to show Python alone or add another language, since the user gave no language and there's no codebase context. Python is a safe default, so I'll lead with it and keep the explanation short.
+

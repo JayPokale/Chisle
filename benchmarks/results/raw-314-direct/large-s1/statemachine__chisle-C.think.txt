@@ -1,0 +1,62 @@
+The user is asking for a standalone implementation of an order state machine. They want to cover these states:
+- created
+- paid
+- shipped
+- delivered
+- cancelled
+- refunded
+
+They want legal transitions enforced and invalid ones rejected. They want to see the code.
+
+They explicitly note this is a standalone question with no codebase and no tool access.
+
+Since there's no codebase, I should just write the code from scratch. No need to read files or use tools.
+
+Let me think about the valid transitions:
+- created → paid (payment successful)
+- created → cancelled (cancel before payment)
+- paid → shipped (order gets shipped)
+- paid → cancelled (cancel after payment but before shipping)
+- paid → refunded (refund the payment)
+- shipped → delivered (delivery complete)
+- shipped → cancelled (cancel after shipping? depends on policy - probably not allowed)
+- cancelled → (terminal state - no transitions out)
+- refunded → (terminal state - no transitions out)
+- delivered → (terminal state - no transitions out)
+
+Typical flow:
+- created → paid → shipped → delivered
+- created → cancelled
+- paid → cancelled → refunded (if refunding the payment)
+- Or: paid → refunded (direct refund without cancellation)
+
+Actually, let me reconsider. If an order is refunded, it should probably come from paid state. If an order is cancelled, it could come from created or paid. Let me think about the most sensible transitions:
+
+created:
+  → paid
+  → cancelled
+
+paid:
+  → shipped
+  → refunded
+  → cancelled
+
+shipped:
+  → delivered
+  (maybe → cancelled but that's unusual)
+
+delivered:
+  (terminal)
+
+cancelled:
+  (terminal)
+
+refunded:
+  (terminal)
+
+For this implementation, I'll use Python with a simple state machine pattern. Could also do it in TypeScript, Go, etc., but Python is clean and readable.
+
+I'll show:
+1. A simple approach with explicit transition rules
+I'm going to go with a more structured option as well, a class-based approach with a transition table, and keep the code clean and minimal.
+
