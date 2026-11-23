@@ -5,8 +5,8 @@
 // attribute holds the final frame, so a renderer without SMIL shows the result.
 //
 // The figures mirror the README's benchmark sections; change them together.
-// Race tokens: benchmarks/results/raw-314-sidebyside/large-s2/statemachine__*.json
-// (usage.output_tokens minus thinking_tokens).
+// Race tokens: benchmarks/results/raw-314-direct/large-s{1,2,3}/statemachine__*.json,
+// mean of the 3 runs (usage.output_tokens minus thinking_tokens).
 //
 // Run: node scripts/build-readme-art.js
 
@@ -39,9 +39,9 @@ const I18N = {
     pill: 'Claude Code plugin · 13 agents · 0 deps', tag1: 'Fewer tokens in. Fewer tokens out.', tag2: 'Same answers.',
     words: (a, b) => `${a} words → ${b} words`, same: '✓ same answer',
     statsTitle: 'Chisle vs the same model with no ruleset',
-    tiles: [['billed output tokens', '69% of the bare model'], ['answer length', '51% of the bare model'], ['oversized tool output', 'per trimmed tool output'], ['accuracy', 'bare model: 156/156']],
+    tiles: [['billed output tokens', '91% of the bare model'], ['answer length', '61% of the bare model'], ['oversized tool output', 'per trimmed tool output'], ['accuracy', 'bare model: 156/156']],
     raceTitle: 'Same prompt. Four answers.', raceNote: 'visible answer tokens · lower is leaner', bare: 'no ruleset', tokens: ' tokens',
-    cut: (p) => `−${p}% vs no ruleset`, raceFoot: 'Claude Code + Haiku 4.5 · all four in one run · the verbatim answers are below',
+    cut: (p) => `−${p}% vs no ruleset`, raceFoot: 'Claude Code + Haiku 4.5 · mean of 3 runs · one run\'s verbatim answers are below',
     reads: 'what Claude reads', kept: '  ← error kept', foot1: 'Raw output is billed again on every later turn', foot2: 'Oversized tool output: ~48% smaller on average',
     ladderTitle: 'Before writing code, stop at the first rung that holds',
     rungs: [['Does this need to exist at all?', 'skip it, say so in one line'], ['Already in this codebase?', 'reuse it'], ['Does the stdlib do it?', 'use the stdlib'], ['Native platform feature?', 'CSS over JS, DB constraint over code'], ['Already-installed dependency?', 'use it, never add a new one'], ['Can it be one line?', 'one line'], ['Only then', 'the minimum code that works']],
@@ -55,9 +55,9 @@ const I18N = {
     pill: 'Plugin de Claude Code · 13 agentes · 0 deps', tag1: 'Menos tokens de entrada y de salida.', tag2: 'Las mismas respuestas.',
     words: (a, b) => `${a} palabras → ${b}`, same: '✓ misma respuesta',
     statsTitle: 'Chisle frente al mismo modelo sin ruleset',
-    tiles: [['tokens facturados', '69% del modelo sin reglas'], ['longitud de respuesta', '51% del modelo sin reglas'], ['salida de herramientas', 'por salida recortada'], ['precisión', 'sin reglas: 156/156']],
+    tiles: [['tokens facturados', '91% del modelo sin reglas'], ['longitud de respuesta', '61% del modelo sin reglas'], ['salida de herramientas', 'por salida recortada'], ['precisión', 'sin reglas: 156/156']],
     raceTitle: 'Mismo prompt. Cuatro respuestas.', raceNote: 'tokens de respuesta visibles · menos es mejor', bare: 'sin ruleset', tokens: ' tokens',
-    cut: (p) => `−${p}% frente a sin ruleset`, raceFoot: 'Claude Code + Haiku 4.5 · los cuatro en una ejecución · las respuestas literales, abajo',
+    cut: (p) => `−${p}% frente a sin ruleset`, raceFoot: 'Claude Code + Haiku 4.5 · media de 3 ejecuciones · las respuestas literales de una, abajo',
     reads: 'lo que lee Claude', kept: '  ← error conservado', foot1: 'La salida en bruto se vuelve a cobrar en cada turno', foot2: 'Salida enorme de herramientas: ~48% más pequeña de media',
     ladderTitle: 'Antes de escribir código, detente en el primer peldaño que se cumpla',
     rungs: [['¿Hace falta que exista?', 'sáltalo y dilo en una línea'], ['¿Ya está en este código?', 'reutilízalo'], ['¿Lo hace la biblioteca estándar?', 'usa la biblioteca estándar'], ['¿Una función nativa de la plataforma?', 'CSS antes que JS, restricción de BD antes que código'], ['¿Una dependencia ya instalada?', 'úsala, nunca añadas otra'], ['¿Cabe en una línea?', 'una línea'], ['Solo entonces', 'el código mínimo que funciona']],
@@ -71,9 +71,9 @@ const I18N = {
     pill: 'Claude Code 플러그인 · 에이전트 13개 · 의존성 0', tag1: '입력 토큰도, 출력 토큰도 적게.', tag2: '답은 그대로.',
     words: (a, b) => `${a}단어 → ${b}단어`, same: '✓ 같은 답',
     statsTitle: '규칙 세트가 없는 같은 모델과 비교한 Chisle',
-    tiles: [['과금 출력 토큰', '규칙 없는 모델의 69%'], ['답변 길이', '규칙 없는 모델의 51%'], ['큰 도구 출력', '축소된 출력 기준'], ['정확도', '규칙 없음: 156/156']],
+    tiles: [['과금 출력 토큰', '규칙 없는 모델의 91%'], ['답변 길이', '규칙 없는 모델의 61%'], ['큰 도구 출력', '축소된 출력 기준'], ['정확도', '규칙 없음: 156/156']],
     raceTitle: '같은 프롬프트, 네 가지 답.', raceNote: '보이는 답변 토큰 · 낮을수록 간결', bare: '규칙 없음', tokens: ' 토큰',
-    cut: (p) => `규칙 없음 대비 −${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 넷 다 한 번의 실행 · 원문 답변은 아래에',
+    cut: (p) => `규칙 없음 대비 −${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 3회 평균 · 그중 한 번의 원문 답변은 아래에',
     reads: 'Claude가 읽는 내용', kept: '  ← 오류는 유지', foot1: '원본 출력은 이후 매 턴마다 다시 과금됩니다', foot2: '큰 도구 출력: 평균 ~48% 감소',
     ladderTitle: '코드를 쓰기 전에, 성립하는 첫 단계에서 멈춥니다',
     rungs: [['꼭 있어야 하나?', '건너뛰고 한 줄로 알리기'], ['이미 코드베이스에 있나?', '재사용하기'], ['표준 라이브러리로 되나?', '표준 라이브러리 쓰기'], ['플랫폼 기본 기능이 있나?', 'JS보다 CSS, 앱 코드보다 DB 제약'], ['이미 설치된 의존성이 있나?', '그걸 쓰고, 새로 추가하지 않기'], ['한 줄로 되나?', '한 줄로'], ['그때서야', '동작하는 최소한의 코드']],
@@ -87,9 +87,9 @@ const I18N = {
     pill: 'Claude Code 插件 · 13 个智能体 · 零依赖', tag1: '输入更少 token，输出更少 token。', tag2: '答案不变。',
     words: (a, b) => `${a} 个词 → ${b} 个词`, same: '✓ 答案相同',
     statsTitle: 'Chisle 对比无规则集的同一模型',
-    tiles: [['计费输出 token', '无规则集模型的 69%'], ['回答长度', '无规则集模型的 51%'], ['超大工具输出', '按每个被精简的输出'], ['准确率', '无规则集：156/156']],
+    tiles: [['计费输出 token', '无规则集模型的 91%'], ['回答长度', '无规则集模型的 61%'], ['超大工具输出', '按每个被精简的输出'], ['准确率', '无规则集：156/156']],
     raceTitle: '同一个提示词，四个回答。', raceNote: '可见回答 token · 越低越精简', bare: '无规则集', tokens: ' token',
-    cut: (p) => `比无规则集少 ${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 四者同一次运行 · 原始回答见下方',
+    cut: (p) => `比无规则集少 ${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 3 次运行的平均值 · 其中一次的原始回答见下方',
     reads: 'Claude 读到的内容', kept: '  ← 保留错误', foot1: '原始输出会在之后每一轮被重新计费', foot2: '超大工具输出：平均缩小约 48%',
     ladderTitle: '写代码之前，停在第一个成立的台阶',
     rungs: [['这真的需要存在吗？', '跳过，并用一句话说明'], ['代码库里已经有了吗？', '直接复用'], ['标准库能做吗？', '用标准库'], ['平台原生功能能做吗？', '能用 CSS 就不用 JS，能用数据库约束就不写代码'], ['已安装的依赖能做吗？', '用它，绝不新增依赖'], ['能写成一行吗？', '写成一行'], ['最后才', '写能工作的最少代码']],
@@ -103,9 +103,9 @@ const I18N = {
     pill: 'Claude Code プラグイン · 13 エージェント · 依存ゼロ', tag1: '入力も出力も、トークンは少なく。', tag2: '答えは同じ。',
     words: (a, b) => `${a} 語 → ${b} 語`, same: '✓ 同じ答え',
     statsTitle: 'ルールなしの同じモデルと比べた Chisle',
-    tiles: [['課金出力トークン', 'ルールなしモデルの 69%'], ['回答の長さ', 'ルールなしモデルの 51%'], ['巨大なツール出力', '削減した出力あたり'], ['精度', 'ルールなし：156/156']],
+    tiles: [['課金出力トークン', 'ルールなしモデルの 91%'], ['回答の長さ', 'ルールなしモデルの 61%'], ['巨大なツール出力', '削減した出力あたり'], ['精度', 'ルールなし：156/156']],
     raceTitle: '同じプロンプト、4 つの回答。', raceNote: '表示される回答トークン · 低いほど簡潔', bare: 'ルールなし', tokens: ' トークン',
-    cut: (p) => `ルールなしより −${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 4 つとも同じ実行 · 回答の原文は下に',
+    cut: (p) => `ルールなしより −${p}%`, raceFoot: 'Claude Code + Haiku 4.5 · 3 回の平均 · そのうち 1 回の回答の原文は下に',
     reads: 'Claude が読む内容', kept: '  ← エラーは残す', foot1: '生の出力は以降のターンごとに再課金されます', foot2: '巨大なツール出力：平均で約 48% 縮小',
     ladderTitle: 'コードを書く前に、最初に当てはまる段で止まる',
     rungs: [['そもそも必要か？', '飛ばして、1 行でそう伝える'], ['すでにコードベースにあるか？', '再利用する'], ['標準ライブラリでできるか？', '標準ライブラリを使う'], ['プラットフォームの標準機能は？', 'JS より CSS、アプリより DB 制約'], ['インストール済みの依存関係は？', 'それを使い、新しく足さない'], ['1 行で書けるか？', '1 行で書く'], ['そこで初めて', '動く最小限のコード']],
@@ -260,8 +260,8 @@ function banner(t) {
 function stats(t) {
   const W = 880, H = 248;
   const tiles = [
-    ['−31%', ...L.tiles[0], 0.69],
-    ['−49%', ...L.tiles[1], 0.51],
+    ['−9%', ...L.tiles[0], 0.91],
+    ['−39%', ...L.tiles[1], 0.61],
     ['−48%', ...L.tiles[2], 0.52],
     ['156/156', ...L.tiles[3], 1],
   ];
@@ -278,13 +278,13 @@ function stats(t) {
       `<rect x="${x + 18}" y="${y0 + 138}" width="${fw}" height="8" rx="4" fill="${fc}">` +
       (p === 1 ? '' : anim('width', [[0, bw], [1, bw], [2.5, fw]], 5, { ease: true })) + '</rect></g>');
   });
-  return svg(t, W, H, 'Chisle versus the same model with no ruleset: 31% fewer billed output tokens, answers 49% shorter, oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.', o);
+  return svg(t, W, H, 'Chisle versus the same model with no ruleset: 9% fewer billed output tokens, answers 39% shorter, oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.', o);
 }
 
 // ── Race: one prompt, four rulesets, every bar finishing at the same moment ──
 function race(t) {
   const W = 880, H = 304, D = 9, X = 150, MAXW = 560, T0 = 0.6, RUN = 4.4;
-  const arms = [['Chisle', 567], ['ponytail', 740], ['caveman', 1018], [L.bare, 1571]];
+  const arms = [['Chisle', 515], ['caveman', 667], ['ponytail', 672], [L.bare, 1081]];
   const max = Math.max(...arms.map((a) => a[1]));
   const o = [
     `<text x="28" y="42" font-size="${fit(L.raceTitle, 19, 420)}" font-weight="700" fill="${t.text}">${esc(L.raceTitle)}</text>`,
@@ -307,7 +307,7 @@ function race(t) {
   o.push(`<g>${shown(te + 0.2, D - 0.3, D)}<rect x="${px}" y="97" width="${r1(textW(cut, 12.5) * 1.12 + 24)}" height="22" rx="11" fill="${t.fill}" fill-opacity="0.12" stroke="${t.fill}" stroke-opacity="0.45"/>` +
     `<text x="${px + 12}" y="112.5" font-size="12.5" font-weight="700" fill="${t.accent}">${esc(cut)}</text></g>`,
     `<text x="28" y="${H - 22}"${mono(fit(L.raceFoot, 11.5, 824, true))} fill="${t.faint}">${esc(L.raceFoot)}</text>`);
-  return svg(t, W, H, 'Same prompt, four rulesets, visible answer tokens: Chisle 567, ponytail 740, caveman 1,018, no ruleset 1,571. Chisle is 64% shorter than no ruleset.', o);
+  return svg(t, W, H, 'Same prompt, four rulesets, visible answer tokens, mean of 3 runs: Chisle 515, caveman 667, ponytail 672, no ruleset 1,081. Chisle is 52% shorter than no ruleset.', o);
 }
 
 // ── Trim: what the tool-output compressor does to one oversized output ───────

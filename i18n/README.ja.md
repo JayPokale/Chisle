@@ -23,7 +23,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/stats-dark.svg">
-    <img src="../assets/readme/ja/stats-light.svg" width="880" alt="Chisle とルールセットなしの同じモデルの比較：課金される出力トークン 31% 減、回答の長さ 49% 減、巨大なツール出力 48% 減、精度は 156/156 でルールなしと同じ。">
+    <img src="../assets/readme/ja/stats-light.svg" width="880" alt="Chisle とルールセットなしの同じモデルの比較：課金される出力トークン 9% 減、回答の長さ 39% 減、巨大なツール出力 48% 減、精度は 156/156 でルールなしと同じ。">
   </picture>
 </p>
 
@@ -47,7 +47,7 @@ npx chisle
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/race-dark.svg">
-    <img src="../assets/readme/ja/race-light.svg" width="880" alt="同じプロンプト、4 つのルールセット、表示される回答トークン：Chisle 567、ponytail 740、caveman 1,018、ルールなし 1,571。Chisle はルールなしより 64% 短い。">
+    <img src="../assets/readme/ja/race-light.svg" width="880" alt="同じプロンプト、4 つのルールセット、表示される回答トークン：Chisle 515、ponytail 672、caveman 667、ルールなし 1,081。Chisle はルールなしより 52% 短い。">
   </picture>
 </p>
 
@@ -55,47 +55,56 @@ npx chisle
 <summary><b>両方の回答を見る</b></summary>
 <br>
 
-プロンプト：*"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* コミット済みの回答原文からの抜粋です：[`raw-314-sidebyside/large-s2`](../benchmarks/results/raw-314-sidebyside/large-s2/)
+プロンプト：*"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* コミット済みの回答原文からの抜粋です：[`raw-314-direct/large-s2`](../benchmarks/results/raw-314-direct/large-s2/)
 
 <table>
-<tr><th align="left" width="50%">ルールなし：126 行、回答トークン 1,571</th><th align="left" width="50%">Chisle：58 行、回答トークン 567</th></tr>
+<tr><th align="left" width="50%">ルールなし：132 行、回答トークン 1,307</th><th align="left" width="50%">Chisle：60 行、回答トークン 577</th></tr>
 <tr valign="top"><td>
 
 ```python
+class StateTransition:
+    """Defines valid state transitions"""
+    from_state: OrderState
+    to_states: Set[OrderState]
+
 class OrderStateMachine:
-    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
+    # Define all valid transitions
+    TRANSITIONS = {
         OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
         …
     }
-    def can_transition_to(self, next_state: OrderState) -> bool:
-        """Check if transition from current state to next state is valid."""
-    def transition_to(self, next_state: OrderState) -> None:
-        """Transition to the next state. Raises ValueError if transition is invalid."""
-    def get_current_state(self) -> str:
-    def get_valid_next_states(self) -> Set[str]:
+    def __init__(self, order_id: str):
+        …
+        self.state_history = [(OrderState.CREATED, datetime.now())]
+    def can_transition(self, target_state: OrderState) -> bool:
+    def transition(self, target_state: OrderState) -> bool:
+        """
+        Attempt to transition to target_state.
+        Returns True if successful, False if invalid.
+        """
+    def get_valid_transitions(self) -> Set[OrderState]:
 ```
 
-…すべて使えないファイル書き込みツール呼び出しの中（ツールは無効）。さらに 4 つのシナリオのデモ、機能一覧、遷移のまとめ。
+…さらにどこからも使われない `StateTransition` クラス、使用例とテスト、「Key Design Decisions」「Why these transitions」「Features」の各セクション。
 
 </td><td>
 
 ```python
 class OrderStateMachine:
-    VALID_TRANSITIONS = {
+    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
         OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
-        OrderState.PAID: {OrderState.SHIPPED, OrderState.CANCELLED, OrderState.REFUNDED},
+        OrderState.PAID: {OrderState.SHIPPED, OrderState.REFUNDED, OrderState.CANCELLED},
         …
     }
-    def transition(self, new_state: OrderState) -> None:
-        """Transition to new_state or raise ValueError if invalid."""
-        if new_state not in self.VALID_TRANSITIONS[self.state]:
+    def transition(self, target: OrderState) -> None:
+        if target not in self.VALID_TRANSITIONS[self.state]:
             raise ValueError(
-                f"Cannot transition from {self.state.value} to {new_state.value}"
+                f"Invalid transition: {self.state.value} → {target.value}"
             )
-        self.state = new_state
+        self.state = target
 ```
 
-そのあとに短い使用例と、遷移の 1 行まとめ。
+そのあと短い使用例と、遷移を 5 行でまとめた一覧。
 
 </td></tr>
 </table>
@@ -107,7 +116,7 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark.svg">
-    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code ベンチマーク、1 回の実行で 26 回答、ルールセットなしの同じモデルに対する課金出力トークンの割合。caveman 69%、ponytail 80%、Chisle 3.13 70%、Chisle 69%。">
+    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code ベンチマーク、1 セッションで 39 回答（13 プロンプト × 3 回）、ルールセットなしの同じモデルに対する課金出力トークンの割合：caveman 96%、ponytail 115%、Chisle 91%。">
   </picture>
 </p>
 

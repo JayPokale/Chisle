@@ -22,7 +22,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/readme/stats-dark.svg">
-    <img src="assets/readme/stats-light.svg" width="880" alt="Chisle versus the same model with no ruleset: 31% fewer billed output tokens, answers 49% shorter, oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.">
+    <img src="assets/readme/stats-light.svg" width="880" alt="Chisle versus the same model with no ruleset: 9% fewer billed output tokens, answers 39% shorter, oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.">
   </picture>
 </p>
 
@@ -46,7 +46,7 @@ npx chisle
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/readme/race-dark.svg">
-    <img src="assets/readme/race-light.svg" width="880" alt="Same prompt, four rulesets, visible answer tokens: Chisle 567, ponytail 740, caveman 1,018, no ruleset 1,571. Chisle is 64% shorter than no ruleset.">
+    <img src="assets/readme/race-light.svg" width="880" alt="Same prompt, four rulesets, visible answer tokens, mean of 3 runs: Chisle 515, ponytail 672, caveman 667, no ruleset 1,081. Chisle is 52% shorter than no ruleset.">
   </picture>
 </p>
 
@@ -54,47 +54,56 @@ npx chisle
 <summary><b>See both answers</b></summary>
 <br>
 
-The prompt: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* Excerpts from the verbatim committed answers in [`raw-314-sidebyside/large-s2`](benchmarks/results/raw-314-sidebyside/large-s2/):
+The prompt: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* Excerpts from the verbatim committed answers in [`raw-314-direct/large-s2`](benchmarks/results/raw-314-direct/large-s2/):
 
 <table>
-<tr><th align="left" width="50%">no ruleset: 126 lines, 1,571 answer tokens</th><th align="left" width="50%">Chisle: 58 lines, 567 answer tokens</th></tr>
+<tr><th align="left" width="50%">no ruleset: 132 lines, 1,307 answer tokens</th><th align="left" width="50%">Chisle: 60 lines, 577 answer tokens</th></tr>
 <tr valign="top"><td>
 
 ```python
+class StateTransition:
+    """Defines valid state transitions"""
+    from_state: OrderState
+    to_states: Set[OrderState]
+
 class OrderStateMachine:
-    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
+    # Define all valid transitions
+    TRANSITIONS = {
         OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
         …
     }
-    def can_transition_to(self, next_state: OrderState) -> bool:
-        """Check if transition from current state to next state is valid."""
-    def transition_to(self, next_state: OrderState) -> None:
-        """Transition to the next state. Raises ValueError if transition is invalid."""
-    def get_current_state(self) -> str:
-    def get_valid_next_states(self) -> Set[str]:
+    def __init__(self, order_id: str):
+        …
+        self.state_history = [(OrderState.CREATED, datetime.now())]
+    def can_transition(self, target_state: OrderState) -> bool:
+    def transition(self, target_state: OrderState) -> bool:
+        """
+        Attempt to transition to target_state.
+        Returns True if successful, False if invalid.
+        """
+    def get_valid_transitions(self) -> Set[OrderState]:
 ```
 
-…all inside a file-write tool call it could not make (tools were off), plus a four-scenario demo, a feature list and a recap of the transitions.
+…plus a `StateTransition` class nothing uses, example usage and tests, and "Key Design Decisions", "Why these transitions" and "Features" sections.
 
 </td><td>
 
 ```python
 class OrderStateMachine:
-    VALID_TRANSITIONS = {
+    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
         OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
-        OrderState.PAID: {OrderState.SHIPPED, OrderState.CANCELLED, OrderState.REFUNDED},
+        OrderState.PAID: {OrderState.SHIPPED, OrderState.REFUNDED, OrderState.CANCELLED},
         …
     }
-    def transition(self, new_state: OrderState) -> None:
-        """Transition to new_state or raise ValueError if invalid."""
-        if new_state not in self.VALID_TRANSITIONS[self.state]:
+    def transition(self, target: OrderState) -> None:
+        if target not in self.VALID_TRANSITIONS[self.state]:
             raise ValueError(
-                f"Cannot transition from {self.state.value} to {new_state.value}"
+                f"Invalid transition: {self.state.value} → {target.value}"
             )
-        self.state = new_state
+        self.state = target
 ```
 
-Then a short usage block and a one-line recap of the transitions.
+Then a short example and a five-line list of the transitions.
 
 </td></tr>
 </table>
@@ -106,7 +115,7 @@ Then a short usage block and a one-line recap of the transitions.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark.svg">
-    <img src="assets/benchmark-light.svg" width="860" alt="Claude Code benchmark, 26 answers in one run, billed output tokens as percent of the same model with no ruleset. caveman 69%, ponytail 80%, Chisle 3.13 70%, Chisle 69%.">
+    <img src="assets/benchmark-light.svg" width="860" alt="Claude Code benchmark, 39 answers (13 prompts, 3 runs) in one session, billed output tokens as percent of the same model with no ruleset: caveman 96%, ponytail 115%, Chisle 91%.">
   </picture>
 </p>
 

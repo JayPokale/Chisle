@@ -5,24 +5,23 @@ import { motion, useInView } from "motion/react";
 import Reveal from "./Reveal";
 import SectionHead from "./SectionHead";
 
-// Billed output tokens as % of the bare model, every arm in one run (Claude
-// Code + Haiku 4.5, 26 answers, 2026-11-19). Matches assets/benchmark.svg and
-// the README. 3.13 and 3.14 share one ruleset; the gap between them is noise.
+// Billed output tokens as % of the bare model, every arm in one session (Claude
+// Code + Haiku 4.5, 13 standalone prompts x 3 runs, 2026-11-23). Matches
+// assets/benchmark.svg and the README.
 const ARMS = [
-  { name: "chisle", pct: 69, self: true },
-  { name: "caveman", pct: 69 },
-  { name: "chisle 3.13", pct: 70 },
-  { name: "ponytail", pct: 80 },
+  { name: "chisle", pct: 91, self: true },
+  { name: "caveman", pct: 96 },
   { name: "bare model", pct: 100 },
+  { name: "ponytail", pct: 115 },
 ];
+const MAX = Math.max(...ARMS.map((a) => a.pct));
 
-// % of the bare model. Claude Code rows from benchmarks/results/raw-314-sidebyside/
-// (Chisle 3.14, Haiku 4.5, 26 answers in one run, tools off). Billed tokens tie
-// with caveman; answers are shortest.
+// % of the bare model. Claude Code rows from benchmarks/results/raw-314-direct/
+// (Chisle 3.14, Haiku 4.5, 39 answers in one session, every arm answered every prompt).
 const ROWS = [
-  { label: "billed tokens · Claude Code", caveman: "69%", ponytail: "80%", chisle: "69%" },
-  { label: "answer length · Claude Code", caveman: "56%", ponytail: "63%", chisle: "51%" },
-  { label: "answer lines · Claude Code", caveman: "67%", ponytail: "67%", chisle: "46%" },
+  { label: "billed tokens · Claude Code", caveman: "96%", ponytail: "115%", chisle: "91%" },
+  { label: "answer length · Claude Code", caveman: "76%", ponytail: "70%", chisle: "61%" },
+  { label: "answer lines · Claude Code", caveman: "81%", ponytail: "61%", chisle: "55%" },
   // benchmarks/results/raw-314-commands/commands.json: 37 shell commands; caveman and
   // ponytail are rulesets only, so they pass tool output through untouched.
   { label: "terminal output read · 37 commands", caveman: "100%", ponytail: "100%", chisle: "28%" },
@@ -68,7 +67,7 @@ export default function Benchmarks() {
               <div className="h-8 overflow-hidden rounded-md bg-raised">
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={inView ? { width: `${a.pct}%` } : {}}
+                  animate={inView ? { width: `${(100 * a.pct) / MAX}%` } : {}}
                   transition={{ duration: 1, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
                   className={`flex h-full items-center justify-end rounded-md pr-2.5 text-xs font-semibold ${
                     a.self ? "bg-gradient-to-r from-brand to-[#ffc56b] text-on-brand" : "bg-dim/35 text-fg"
@@ -84,8 +83,8 @@ export default function Benchmarks() {
         <Reveal delay={0.1}>
           <h3 className="mt-16 text-lg font-semibold tracking-tight">Shortest answers, cheapest fix</h3>
           <p className="mt-2 max-w-xl text-sm text-dim">
-            % of the bare model, Chisle 3.14 (ruleset unchanged since 3.10) on Haiku 4.5, 26 answers
-            in one run. On Sonnet 5.5, Chisle bills 53% of the bare model. Terminal output: caveman and
+            % of the bare model, Chisle 3.14 (ruleset unchanged since 3.10) on Haiku 4.5, 39 answers
+            in one session, every arm answering every prompt. Terminal output: caveman and
             ponytail never touch it; Chisle leaves Claude 28% of it to read. Across three real
             agent tasks with noisy test and git output, Chisle costs 90% of the bare agent,
             caveman 123%, ponytail 109%. On the failing-test task alone, Chisle 3.14 costs 47%

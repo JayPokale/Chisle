@@ -23,7 +23,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ko/stats-dark.svg">
-    <img src="../assets/readme/ko/stats-light.svg" width="880" alt="Chisle과 규칙 세트가 없는 같은 모델 비교: 과금 출력 토큰 31% 감소, 답변 길이 49% 감소, 큰 도구 출력 48% 감소, 정확도 156/156으로 규칙 없는 모델과 같음.">
+    <img src="../assets/readme/ko/stats-light.svg" width="880" alt="Chisle과 규칙 세트가 없는 같은 모델 비교: 과금 출력 토큰 9% 감소, 답변 길이 39% 감소, 큰 도구 출력 48% 감소, 정확도 156/156으로 규칙 없는 모델과 같음.">
   </picture>
 </p>
 
@@ -47,7 +47,7 @@ npx chisle
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ko/race-dark.svg">
-    <img src="../assets/readme/ko/race-light.svg" width="880" alt="같은 프롬프트, 네 가지 규칙 세트, 보이는 답변 토큰: Chisle 567, ponytail 740, caveman 1,018, 규칙 없음 1,571. Chisle은 규칙 없음보다 64% 짧습니다.">
+    <img src="../assets/readme/ko/race-light.svg" width="880" alt="같은 프롬프트, 네 가지 규칙 세트, 보이는 답변 토큰: Chisle 515, ponytail 672, caveman 667, 규칙 없음 1,081. Chisle은 규칙 없음보다 52% 짧습니다.">
   </picture>
 </p>
 
@@ -55,47 +55,56 @@ npx chisle
 <summary><b>두 답변 보기</b></summary>
 <br>
 
-프롬프트: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* 커밋된 원본 답변에서 발췌했습니다: [`raw-314-sidebyside/large-s2`](../benchmarks/results/raw-314-sidebyside/large-s2/)
+프롬프트: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* 커밋된 원본 답변에서 발췌했습니다: [`raw-314-direct/large-s2`](../benchmarks/results/raw-314-direct/large-s2/)
 
 <table>
-<tr><th align="left" width="50%">규칙 없음: 126줄, 답변 토큰 1,571개</th><th align="left" width="50%">Chisle: 58줄, 답변 토큰 567개</th></tr>
+<tr><th align="left" width="50%">규칙 없음: 132줄, 답변 토큰 1,307개</th><th align="left" width="50%">Chisle: 60줄, 답변 토큰 577개</th></tr>
 <tr valign="top"><td>
 
 ```python
+class StateTransition:
+    """Defines valid state transitions"""
+    from_state: OrderState
+    to_states: Set[OrderState]
+
 class OrderStateMachine:
-    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
+    # Define all valid transitions
+    TRANSITIONS = {
         OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
         …
     }
-    def can_transition_to(self, next_state: OrderState) -> bool:
-        """Check if transition from current state to next state is valid."""
-    def transition_to(self, next_state: OrderState) -> None:
-        """Transition to the next state. Raises ValueError if transition is invalid."""
-    def get_current_state(self) -> str:
-    def get_valid_next_states(self) -> Set[str]:
+    def __init__(self, order_id: str):
+        …
+        self.state_history = [(OrderState.CREATED, datetime.now())]
+    def can_transition(self, target_state: OrderState) -> bool:
+    def transition(self, target_state: OrderState) -> bool:
+        """
+        Attempt to transition to target_state.
+        Returns True if successful, False if invalid.
+        """
+    def get_valid_transitions(self) -> Set[OrderState]:
 ```
 
-…모두 쓸 수 없는 파일 쓰기 도구 호출 안에(도구는 꺼짐). 여기에 네 가지 시나리오 데모, 기능 목록, 전이 요약까지.
+…여기에 아무 데서도 쓰이지 않는 `StateTransition` 클래스, 사용 예제와 테스트, 그리고 "Key Design Decisions", "Why these transitions", "Features" 섹션까지.
 
 </td><td>
 
 ```python
 class OrderStateMachine:
-    VALID_TRANSITIONS = {
+    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
         OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
-        OrderState.PAID: {OrderState.SHIPPED, OrderState.CANCELLED, OrderState.REFUNDED},
+        OrderState.PAID: {OrderState.SHIPPED, OrderState.REFUNDED, OrderState.CANCELLED},
         …
     }
-    def transition(self, new_state: OrderState) -> None:
-        """Transition to new_state or raise ValueError if invalid."""
-        if new_state not in self.VALID_TRANSITIONS[self.state]:
+    def transition(self, target: OrderState) -> None:
+        if target not in self.VALID_TRANSITIONS[self.state]:
             raise ValueError(
-                f"Cannot transition from {self.state.value} to {new_state.value}"
+                f"Invalid transition: {self.state.value} → {target.value}"
             )
-        self.state = new_state
+        self.state = target
 ```
 
-그다음 짧은 사용 예시와 한 줄 전이 요약.
+그다음 짧은 예제와 전이를 정리한 다섯 줄 목록.
 
 </td></tr>
 </table>
@@ -107,7 +116,7 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark.svg">
-    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code 벤치마크, 한 번의 실행에서 답변 26개, 규칙 세트가 없는 같은 모델 대비 과금 출력 토큰 비율. caveman 69%, ponytail 80%, Chisle 3.13 70%, Chisle 69%.">
+    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code 벤치마크, 한 세션에서 답변 39개(프롬프트 13개 × 3회), 규칙 세트가 없는 같은 모델 대비 과금 출력 토큰 비율: caveman 96%, ponytail 115%, Chisle 91%.">
   </picture>
 </p>
 

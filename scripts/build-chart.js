@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // Generates assets/benchmark.svg (dark) and assets/benchmark-light.svg from REAL measured results: billed output
 // tokens per ruleset as % of the same model with no ruleset, from the
-// side-by-side run (Chisle 3.14 and 3.13, which share one ruleset, caveman
-// and ponytail in one session, Haiku 4.5, 2026-11-19). Pooled sums over every task where all arms have a cell,
-// the same method as benchmarks/pooled.js and the README table.
+// side-by-side run (Chisle 3.14, caveman and ponytail in one session, Haiku
+// 4.5, 13 standalone prompts x 3 seeds, 2026-11-23). Pooled sums over every
+// task where all arms have a cell, the same method as benchmarks/pooled.js.
 //
-// Source: benchmarks/results/raw-314-sidebyside/<suite>-s<seed>/<task>__<arm>.json
+// Source: benchmarks/results/raw-314-direct/<suite>-s<seed>/<task>__<arm>.json
 // Data-driven + CI-checkable: same cells in → same chart out.
 //
 // A second chart, assets/benchmark-terminal(-light).svg, shows the input
@@ -24,10 +24,10 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const RAW_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw-314-sidebyside');
+const RAW_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw-314-direct');
 const SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif";
-// The README swaps these with <picture>. Bar tones follow ARMS order: two rivals,
-// the previous Chisle, the current one.
+// The README swaps these with <picture>. Bar tones: rivals and the bare model share one tone,
+// Chisle gets its own.
 const THEMES = [
   { out: path.join(ROOT, 'assets', 'benchmark.svg'), bg: '#0d1117', border: '#30363d', title: '#e6edf3', text: '#c9d1d9', muted: '#8b949e', accent: '#f0a85a', bars: ['#484f58', '#484f58', '#7d5530', '#d78a3c'] },
   { out: path.join(ROOT, 'assets', 'benchmark-light.svg'), bg: '#ffffff', border: '#d0d7de', title: '#1f2328', text: '#31363c', muted: '#59636e', accent: '#b35a14', bars: ['#afb8c1', '#afb8c1', '#ecc49b', '#d78a3c'] },
@@ -38,9 +38,9 @@ const THEMES = [
 // bar, so reference it through this constant.
 const SELF = 'chisle';
 const ARMS = [
+  { key: 'vanilla', label: 'no ruleset' },
   { key: 'caveman', label: 'caveman' },
   { key: 'ponytail', label: 'ponytail' },
-  { key: 'chisle-3.13', label: 'Chisle 3.13' },
   { key: SELF, label: 'Chisle' },
 ];
 // Rulesets only, no RTK in any arm: bare agent, the two rivals, Chisle.
@@ -150,8 +150,9 @@ ${body}</svg>
 
 const CHARTS = [
   { collect, arms: ARMS, suffix: '', line: '100% = no ruleset',
+    bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]],
     title: 'Claude Code — billed output tokens, % of the same model with no ruleset',
-    sub: (s) => `Haiku 4.5, ${s.n} answers, all arms in one run; lower = cheaper; 3.13 and 3.14 share one ruleset`,
+    sub: (s) => `Haiku 4.5, ${s.n} answers (13 prompts × 3 runs), all arms in one session, every arm answered every prompt; lower = cheaper`,
     aria: (s) => `Claude Code benchmark, ${s.n} answers in one run, billed output tokens as percent of the same model with no ruleset.` },
   { collect: collectTerminal, arms: TERM_ARMS, suffix: '-terminal', line: '100% = raw output',
     bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]], // rivals, not older Chisles

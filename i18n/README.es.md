@@ -23,7 +23,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/stats-dark.svg">
-    <img src="../assets/readme/es/stats-light.svg" width="880" alt="Chisle frente al mismo modelo sin ruleset: 31% menos tokens de salida facturados, respuestas un 49% más cortas, salidas de herramientas enormes un 48% más pequeñas, precisión de 156 sobre 156, igual que el modelo sin reglas.">
+    <img src="../assets/readme/es/stats-light.svg" width="880" alt="Chisle frente al mismo modelo sin ruleset: 9% menos tokens de salida facturados, respuestas un 39% más cortas, salidas de herramientas enormes un 48% más pequeñas, precisión de 156 sobre 156, igual que el modelo sin reglas.">
   </picture>
 </p>
 
@@ -47,7 +47,7 @@ npx chisle
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/race-dark.svg">
-    <img src="../assets/readme/es/race-light.svg" width="880" alt="Mismo prompt, cuatro rulesets, tokens de respuesta visibles: Chisle 567, ponytail 740, caveman 1.018, sin ruleset 1.571. Chisle es un 64% más corto que sin ruleset.">
+    <img src="../assets/readme/es/race-light.svg" width="880" alt="Mismo prompt, cuatro rulesets, tokens de respuesta visibles: Chisle 515, ponytail 672, caveman 667, sin ruleset 1.081. Chisle es un 52% más corto que sin ruleset.">
   </picture>
 </p>
 
@@ -55,47 +55,56 @@ npx chisle
 <summary><b>Ver ambas respuestas</b></summary>
 <br>
 
-El prompt: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* Extractos de las respuestas literales guardadas en [`raw-314-sidebyside/large-s2`](../benchmarks/results/raw-314-sidebyside/large-s2/):
+El prompt: *"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* Extractos de las respuestas literales guardadas en [`raw-314-direct/large-s2`](../benchmarks/results/raw-314-direct/large-s2/):
 
 <table>
-<tr><th align="left" width="50%">sin ruleset: 126 líneas, 1.571 tokens de respuesta</th><th align="left" width="50%">Chisle: 58 líneas, 567 tokens de respuesta</th></tr>
+<tr><th align="left" width="50%">sin ruleset: 132 líneas, 1.307 tokens de respuesta</th><th align="left" width="50%">Chisle: 60 líneas, 577 tokens de respuesta</th></tr>
 <tr valign="top"><td>
 
 ```python
+class StateTransition:
+    """Defines valid state transitions"""
+    from_state: OrderState
+    to_states: Set[OrderState]
+
 class OrderStateMachine:
-    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
+    # Define all valid transitions
+    TRANSITIONS = {
         OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
         …
     }
-    def can_transition_to(self, next_state: OrderState) -> bool:
-        """Check if transition from current state to next state is valid."""
-    def transition_to(self, next_state: OrderState) -> None:
-        """Transition to the next state. Raises ValueError if transition is invalid."""
-    def get_current_state(self) -> str:
-    def get_valid_next_states(self) -> Set[str]:
+    def __init__(self, order_id: str):
+        …
+        self.state_history = [(OrderState.CREATED, datetime.now())]
+    def can_transition(self, target_state: OrderState) -> bool:
+    def transition(self, target_state: OrderState) -> bool:
+        """
+        Attempt to transition to target_state.
+        Returns True if successful, False if invalid.
+        """
+    def get_valid_transitions(self) -> Set[OrderState]:
 ```
 
-…todo dentro de una llamada a una herramienta de escritura que no podía hacer (las herramientas estaban desactivadas), más una demo de cuatro escenarios, una lista de características y un resumen de las transiciones.
+…más una clase `StateTransition` que nada usa, ejemplos de uso y pruebas, y las secciones «Key Design Decisions», «Why these transitions» y «Features».
 
 </td><td>
 
 ```python
 class OrderStateMachine:
-    VALID_TRANSITIONS = {
+    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
         OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
-        OrderState.PAID: {OrderState.SHIPPED, OrderState.CANCELLED, OrderState.REFUNDED},
+        OrderState.PAID: {OrderState.SHIPPED, OrderState.REFUNDED, OrderState.CANCELLED},
         …
     }
-    def transition(self, new_state: OrderState) -> None:
-        """Transition to new_state or raise ValueError if invalid."""
-        if new_state not in self.VALID_TRANSITIONS[self.state]:
+    def transition(self, target: OrderState) -> None:
+        if target not in self.VALID_TRANSITIONS[self.state]:
             raise ValueError(
-                f"Cannot transition from {self.state.value} to {new_state.value}"
+                f"Invalid transition: {self.state.value} → {target.value}"
             )
-        self.state = new_state
+        self.state = target
 ```
 
-Después, un bloque corto de uso y un resumen de las transiciones en una línea.
+Luego un ejemplo breve y una lista de cinco líneas con las transiciones.
 
 </td></tr>
 </table>
@@ -107,7 +116,7 @@ Después, un bloque corto de uso y un resumen de las transiciones en una línea.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark.svg">
-    <img src="../assets/benchmark-light.svg" width="860" alt="Benchmark de Claude Code, 26 respuestas en una ejecución, tokens de salida facturados como porcentaje del mismo modelo sin ruleset. caveman 69%, ponytail 80%, Chisle 3.13 70%, Chisle 69%.">
+    <img src="../assets/benchmark-light.svg" width="860" alt="Benchmark de Claude Code, 39 respuestas (13 prompts, 3 ejecuciones) en una sesión, tokens de salida facturados como porcentaje del mismo modelo sin ruleset: caveman 96%, ponytail 115%, Chisle 91%.">
   </picture>
 </p>
 

@@ -23,7 +23,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/stats-dark.svg">
-    <img src="../assets/readme/zh-CN/stats-light.svg" width="880" alt="Chisle 对比无规则集的同一模型：计费输出 token 减少 31%，回答缩短 49%，超大工具输出缩小 48%，准确率 156/156，与无规则集相同。">
+    <img src="../assets/readme/zh-CN/stats-light.svg" width="880" alt="Chisle 对比无规则集的同一模型：计费输出 token 减少 9%，回答缩短 39%，超大工具输出缩小 48%，准确率 156/156，与无规则集相同。">
   </picture>
 </p>
 
@@ -47,7 +47,7 @@ npx chisle
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/race-dark.svg">
-    <img src="../assets/readme/zh-CN/race-light.svg" width="880" alt="同一个提示词，四种规则集，可见回答 token：Chisle 567，ponytail 740，caveman 1,018，无规则集 1,571。Chisle 比无规则集短 64%。">
+    <img src="../assets/readme/zh-CN/race-light.svg" width="880" alt="同一个提示词，四种规则集，可见回答 token：Chisle 515，ponytail 672，caveman 667，无规则集 1,081。Chisle 比无规则集短 52%。">
   </picture>
 </p>
 
@@ -55,47 +55,56 @@ npx chisle
 <summary><b>查看两个回答</b></summary>
 <br>
 
-提示词：*"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* 以下摘自已提交的原始回答 [`raw-314-sidebyside/large-s2`](../benchmarks/results/raw-314-sidebyside/large-s2/)：
+提示词：*"Implement an order state machine covering created, paid, shipped, delivered, cancelled and refunded, with the legal transitions enforced and invalid ones rejected."* 以下摘自已提交的原始回答 [`raw-314-direct/large-s2`](../benchmarks/results/raw-314-direct/large-s2/)：
 
 <table>
-<tr><th align="left" width="50%">无规则集：126 行，1,571 个回答 token</th><th align="left" width="50%">Chisle：58 行，567 个回答 token</th></tr>
+<tr><th align="left" width="50%">无规则集：132 行，1,307 个回答 token</th><th align="left" width="50%">Chisle：60 行，577 个回答 token</th></tr>
 <tr valign="top"><td>
 
 ```python
+class StateTransition:
+    """Defines valid state transitions"""
+    from_state: OrderState
+    to_states: Set[OrderState]
+
 class OrderStateMachine:
-    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
+    # Define all valid transitions
+    TRANSITIONS = {
         OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
         …
     }
-    def can_transition_to(self, next_state: OrderState) -> bool:
-        """Check if transition from current state to next state is valid."""
-    def transition_to(self, next_state: OrderState) -> None:
-        """Transition to the next state. Raises ValueError if transition is invalid."""
-    def get_current_state(self) -> str:
-    def get_valid_next_states(self) -> Set[str]:
+    def __init__(self, order_id: str):
+        …
+        self.state_history = [(OrderState.CREATED, datetime.now())]
+    def can_transition(self, target_state: OrderState) -> bool:
+    def transition(self, target_state: OrderState) -> bool:
+        """
+        Attempt to transition to target_state.
+        Returns True if successful, False if invalid.
+        """
+    def get_valid_transitions(self) -> Set[OrderState]:
 ```
 
-……全部写在一个无法执行的文件写入工具调用里（工具已关闭），外加四个场景的演示、功能列表和状态转换总结。
+……外加一个没有任何地方使用的 `StateTransition` 类、用法示例和测试，以及“Key Design Decisions”“Why these transitions”“Features”三个小节。
 
 </td><td>
 
 ```python
 class OrderStateMachine:
-    VALID_TRANSITIONS = {
+    VALID_TRANSITIONS: Dict[OrderState, Set[OrderState]] = {
         OrderState.CREATED: {OrderState.PAID, OrderState.CANCELLED},
-        OrderState.PAID: {OrderState.SHIPPED, OrderState.CANCELLED, OrderState.REFUNDED},
+        OrderState.PAID: {OrderState.SHIPPED, OrderState.REFUNDED, OrderState.CANCELLED},
         …
     }
-    def transition(self, new_state: OrderState) -> None:
-        """Transition to new_state or raise ValueError if invalid."""
-        if new_state not in self.VALID_TRANSITIONS[self.state]:
+    def transition(self, target: OrderState) -> None:
+        if target not in self.VALID_TRANSITIONS[self.state]:
             raise ValueError(
-                f"Cannot transition from {self.state.value} to {new_state.value}"
+                f"Invalid transition: {self.state.value} → {target.value}"
             )
-        self.state = new_state
+        self.state = target
 ```
 
-然后是一段简短的用法示例和一行状态转换总结。
+然后是一段简短的示例和五行状态转换列表。
 
 </td></tr>
 </table>
@@ -107,7 +116,7 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark.svg">
-    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code 基准测试，一次运行 26 个回答，计费输出 token 占无规则集同一模型的百分比。caveman 69%，ponytail 80%，Chisle 3.13 70%，Chisle 69%。">
+    <img src="../assets/benchmark-light.svg" width="860" alt="Claude Code 基准测试，一次会话 39 个回答（13 个提示词 × 3 次），计费输出 token 占无规则集同一模型的百分比：caveman 96%，ponytail 115%，Chisle 91%。">
   </picture>
 </p>
 
