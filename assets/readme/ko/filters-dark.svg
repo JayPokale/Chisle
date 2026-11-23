@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="880" height="340" viewBox="0 0 880 340" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" xml:space="preserve" role="img" aria-label="Command-aware filters on real output, raw characters to what Claude reads: npm test 19,374 to 445 (98% less), a failing npm test 16,107 to 309 (98% less), git status 485 to 92 (81% less), git log -n 15 6,561 to 3,784 (42% less). Across 37 commands Claude reads 28% of the raw output with Chisle and 84% with RTK. Errors, failures and summaries always stay.">
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="340" viewBox="0 0 880 340" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif" xml:space="preserve" role="img" aria-label="Command-aware filters on real output, raw characters to what Claude reads: npm test 19,374 to 445 (98% less), a failing npm test 16,107 to 309 (98% less), git status 485 to 92 (81% less), git log -n 15 6,561 to 3,784 (42% less). Across 37 commands Claude reads 28% of the raw output with Chisle and 100% with caveman or ponytail, which never touch tool output. Errors, failures and summaries always stay.">
 <rect x="0.5" y="0.5" width="879" height="339" rx="14" fill="#0d1117" stroke="#30363d"/>
 <text x="28" y="42" font-size="19" font-weight="700" fill="#e6edf3">명령을 알고, 잡음을 걷어낸다.</text>
 <text x="852" y="42" font-size="13" fill="#8b949e" text-anchor="end">원본 출력 → Claude가 읽는 것</text>
@@ -27,5 +27,5 @@
 <rect x="330" y="249" width="242.2" height="16" rx="5" fill="#d78a3c"><animate attributeName="width" values="420;420;242.2;242.2;420;420" keyTimes="0.0000;0.2389;0.3500;0.9444;0.9833;1.0000" dur="9s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1"/></rect>
 <text x="330" y="282" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="11.5" fill="#6e7681">6,561 → 3,784 자</text>
 <text x="852" y="263" font-size="17" font-weight="700" fill="#f0a85a" text-anchor="end"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0.0000;0.3500;0.3722;0.9444;0.9667;1.0000" dur="9s" repeatCount="indefinite"/>−42%</text>
-<text x="28" y="318" font-size="12.5" fill="#6e7681">명령 37개: Claude가 읽는 원본 출력은 Chisle 28%, RTK 84%. 실패한 실행도 bypass 모드에서 필터링; | cat 이면 원본.</text>
+<text x="28" y="318" font-size="12.5" fill="#6e7681">명령 37개: Claude가 읽는 원본 출력은 Chisle 28%, caveman·ponytail 100%. 실패한 실행도 bypass 모드에서 필터링; | cat 이면 원본.</text>
 </svg>

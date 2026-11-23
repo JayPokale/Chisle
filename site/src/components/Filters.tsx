@@ -62,7 +62,7 @@ export default function Filters() {
 
       <Reveal delay={0.1}>
         <p className="mt-4 text-xs text-dim">
-          Across 37 commands Claude reads 28% of the raw output with Chisle and 84% with RTK.
+          Across 37 commands Claude reads 28% of the raw output with Chisle, 100% with caveman or ponytail.
           Failed test and build runs are filtered too when Claude Code runs in bypass-permissions
           mode. Output piped into anything but head/tail is left alone, so <code>| cat</code> shows
           it raw; commands already run through rtk are skipped. <code>CHISLE_COMPRESS_FILTERS=0</code>{" "}

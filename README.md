@@ -113,14 +113,14 @@ Then a short usage block and a one-line recap of the transitions.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark-terminal.svg">
-    <img src="assets/benchmark-terminal-light.svg" width="860" alt="Terminal output Claude reads across 37 shell commands, as percent of the raw output: caveman 100%, ponytail 100% (rulesets only, they never touch tool output), RTK 84%, Chisle 28%.">
+    <img src="assets/benchmark-terminal-light.svg" width="860" alt="Terminal output Claude reads across 37 shell commands, as percent of the raw output: no ruleset 100%, caveman 100%, ponytail 100% (rulesets only, they never touch tool output), Chisle 28%.">
   </picture>
 </p>
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark-cost.svg">
-    <img src="assets/benchmark-cost-light.svg" width="860" alt="Cost per fix on a real agent task, fixing a failing npm test with a 17k-character log, as percent of the same agent with no ruleset: caveman 109%, ponytail 93%, RTK 96%, Chisle 73%. Every run fixed the bug. Chisle 3.14 is 47% cheaper than 3.13.">
+    <img src="assets/benchmark-cost-light.svg" width="860" alt="Total cost of three real agent tasks with noisy commands (fix a failing npm test, add a feature that keeps a 391-test suite green, find a bug in a large commit), as percent of the same agent with no ruleset, no RTK in any arm: caveman 123%, ponytail 109%, Chisle 90%. Every run fixed its task.">
   </picture>
 </p>
 
@@ -138,7 +138,7 @@ Then a short usage block and a one-line recap of the transitions.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/readme/filters-dark.svg">
-    <img src="assets/readme/filters-light.svg" width="880" alt="Command-aware filters on real output, raw characters to what Claude reads: npm test 19,374 → 445 (−98%), a failing npm test 16,107 → 309 (−98%), git status 485 → 92 (−81%), git log -n 15 6,561 → 3,784 (−42%). Across 37 commands Claude reads 28% of the raw output with Chisle, 84% with RTK.">
+    <img src="assets/readme/filters-light.svg" width="880" alt="Command-aware filters on real output, raw characters to what Claude reads: npm test 19,374 → 445 (−98%), a failing npm test 16,107 → 309 (−98%), git status 485 → 92 (−81%), git log -n 15 6,561 → 3,784 (−42%). Across 37 commands Claude reads 28% of the raw output with Chisle, 100% with caveman or ponytail.">
   </picture>
 </p>
 

@@ -12,7 +12,7 @@
 // axis: terminal output Claude reads, as % of raw, over the 37-command corpus
 // in benchmarks/results/raw-314-commands/commands.json (benchmarks/replay-commands.js
 // --json). caveman and ponytail are rulesets with no tool-output hook, so
-// they read 100% by construction; RTK is the measured rival there.
+// they read 100% by construction, like the bare agent. No arm uses RTK.
 //
 // A third chart, assets/benchmark-cost(-light).svg: see collectCost().
 //
@@ -43,10 +43,11 @@ const ARMS = [
   { key: 'chisle-3.13', label: 'Chisle 3.13' },
   { key: SELF, label: 'Chisle' },
 ];
+// Rulesets only, no RTK in any arm: bare agent, the two rivals, Chisle.
 const TERM_ARMS = [
+  { key: 'bare', label: 'no ruleset' },
   { key: 'caveman', label: 'caveman' },
   { key: 'ponytail', label: 'ponytail' },
-  { key: 'rtk', label: 'RTK' },
   { key: SELF, label: 'Chisle' },
 ];
 
@@ -54,28 +55,34 @@ function collectTerminal() {
   const rows = JSON.parse(fs.readFileSync(path.join(ROOT, 'benchmarks', 'results', 'raw-314-commands', 'commands.json'), 'utf8'));
   const sum = (k) => rows.reduce((s, r) => s + r.chars[k], 0);
   const pct = (k) => Math.round((100 * sum(k)) / sum('bare'));
-  return { n: rows.length, held: rows.filter((r) => r.held).length, caveman: 100, ponytail: 100, rtk: pct('rtk'), [SELF]: pct(SELF) };
+  return { n: rows.length, held: rows.filter((r) => r.held).length, bare: 100, caveman: 100, ponytail: 100, [SELF]: pct(SELF) };
 }
 
-// Third chart, assets/benchmark-cost(-light).svg: cost per fix on one real
-// agent task (noisylog: a failing npm test with a 17k-char log, real repo,
-// hidden test), mean $ per run as % of the bare agent, all arms in one session.
-// Source: benchmarks/agentic/raw-noisylog/<fixture>__<arm>__<seed>.json
-const COST_DIR = path.join(ROOT, 'benchmarks', 'agentic', 'raw-noisylog');
+// Third chart, assets/benchmark-cost(-light).svg: total cost of three real
+// agent tasks with noisy commands (real repos, hidden tests), as % of the bare
+// agent. No arm uses RTK. Tasks: noisylog (a failing npm test, 17k-char log),
+// greensuite (a feature that must keep a 391-test suite green), gitregress (a
+// bug buried in a large refactor commit).
+// Source: benchmarks/agentic/raw-{noisylog,commands}/<fixture>__<arm>__<seed>.json
+const COST_DIRS = ['raw-noisylog', 'raw-commands'].map((d) => path.join(ROOT, 'benchmarks', 'agentic', d));
+const COST_ARMS = { bare: 'vanilla', caveman: 'caveman', ponytail: 'ponytail', [SELF]: 'chisle-hook' };
 function collectCost() {
   const runs = {};
-  for (const f of fs.readdirSync(COST_DIR)) {
-    const r = JSON.parse(fs.readFileSync(path.join(COST_DIR, f), 'utf8'));
-    (runs[r.arm] ||= []).push(r);
+  for (const dir of COST_DIRS) {
+    for (const f of fs.readdirSync(dir)) {
+      const r = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+      if (Object.values(COST_ARMS).includes(r.arm)) (runs[r.arm] ||= []).push(r);
+    }
   }
+  // Every arm has the same cells (task x seed), so a mean ranks like a total.
   const mean = (a) => runs[a].reduce((s, r) => s + r.cost_usd, 0) / runs[a].length;
-  const pct = (a) => Math.round((100 * mean(a)) / mean('vanilla'));
-  return {
-    n: runs.vanilla.length,
+  const stat = {
+    n: runs.vanilla.length / new Set(runs.vanilla.map((r) => r.fixture)).size,
+    tasks: new Set(runs.vanilla.map((r) => r.fixture)).size,
     allPassed: Object.values(runs).every((a) => a.every((r) => r.pass)),
-    vsPrev: 100 - Math.round((100 * mean('chisle-hook')) / mean('chisle-hook-3.13')),
-    caveman: pct('caveman'), ponytail: pct('ponytail'), rtk: pct('rtk'), [SELF]: pct('chisle-hook'),
   };
+  for (const [key, arm] of Object.entries(COST_ARMS)) stat[key] = Math.round((100 * mean(arm)) / mean('vanilla'));
+  return stat;
 }
 
 function collect() {
@@ -106,7 +113,7 @@ function buildSvg(stat, th, spec) {
   const ARMS = spec.arms;
   const W = 860, H = 300;
   const left = 170, top = 92, rowH = 50, plotW = 600;
-  const px = plotW / 110;
+  const px = plotW / Math.max(110, ...ARMS.map((a) => stat[a.key] + 12));
   const line100 = left + 100 * px;
 
   let body =
@@ -147,15 +154,15 @@ const CHARTS = [
     sub: (s) => `Haiku 4.5, ${s.n} answers, all arms in one run; lower = cheaper; 3.13 and 3.14 share one ruleset`,
     aria: (s) => `Claude Code benchmark, ${s.n} answers in one run, billed output tokens as percent of the same model with no ruleset.` },
   { collect: collectTerminal, arms: TERM_ARMS, suffix: '-terminal', line: '100% = raw output',
-    bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]], // RTK is a rival, not an older Chisle
+    bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]], // rivals, not older Chisles
     title: 'Terminal output Claude reads, % of the raw output',
     sub: (s) => `${s.n} shell commands (${s.held} held out), Claude Code limits; caveman and ponytail never touch tool output`,
     aria: (s) => `Terminal output Claude reads across ${s.n} shell commands, as percent of the raw output.` },
   { collect: collectCost, arms: TERM_ARMS, suffix: '-cost', line: '100% = no ruleset',
     bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]],
-    title: 'Cost per fix on a real agent task, % of the same agent with no ruleset',
-    sub: (s) => `Fix a failing npm test (17k-char log) in a real repo, Haiku 4.5, ${s.n} runs per arm${s.allPassed ? ', every run fixed it' : ''}; Chisle 3.14 is ${s.vsPrev}% cheaper than 3.13`,
-    aria: (s) => `Cost per fix on a real agent task, fixing a failing npm test, as percent of the same agent with no ruleset. Chisle 3.14 is ${s.vsPrev}% cheaper than 3.13.` },
+    title: 'Cost of real agent tasks, % of the same agent with no ruleset',
+    sub: (s) => `${s.tasks} tasks with noisy commands (failing test, 391-test suite, bug in a big commit), Haiku 4.5, ${s.n} runs each${s.allPassed ? ', all fixed' : ''}; no RTK`,
+    aria: (s) => `Total cost of ${s.tasks} real agent tasks with noisy commands, as percent of the same agent with no ruleset, no RTK in any arm.` },
 ];
 
 function main() {

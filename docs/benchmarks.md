@@ -31,6 +31,23 @@ Billed tokens tie with caveman this run (69% each, against 87% for caveman in th
 
 3.14 vs 3.13 directly: context **88%** (78–98%), tool output read **80%** (54–94%), turns 88% (77–100%), cost 96% (89–104%). The change is the PreToolUse wrapper: on `noisylog`, whose `npm test` fails, the agent read 76,111 chars of tool output bare, 57,548 with 3.13 and **6,862** with 3.14. Against the bare agent, 3.13 cost 9% more (an interval clear of 100%); 3.14's 5% is inside the noise. Pass rates do not separate (Fisher p = 1.0).
 
+**Noisy-command tasks, against the rivals (2026-11-23).** Three agentic fixtures where the agent has to run commands with large output: `noisylog` (a failing `npm test`, 17k-char log), `greensuite` (add hour units to a parser and keep a 391-test suite green, 16k chars per `npm test`) and `gitregress` (a 159-line refactor commit, 16.5k-char diff, hides a tax-before-discount bug; the fix must keep the commit's renames). `greensuite` and `gitregress` were added on 2026-11-23, before any run that includes them. Haiku 4.5, Claude Code 2.1.323, 3 seeds; arms are the bare agent, caveman and ponytail (each skill appended as a system prompt) and Chisle 3.14 (ruleset plus its shipped hooks). No arm uses RTK. All 36 runs passed the hidden test. Raw cells: [`raw-noisylog`](../benchmarks/agentic/raw-noisylog/), [`raw-commands`](../benchmarks/agentic/raw-commands/); the README's cost chart is built from them.
+
+| cost / run | bare agent | caveman | ponytail | **Chisle 3.14** |
+|---|--:|--:|--:|--:|
+| `noisylog` | $0.0698 | 109% | 93% | **73%** |
+| `greensuite` | $0.0739 | 98% | 112% | **80%** |
+| `gitregress` | $0.0914 | 155% | 119% | **111%** |
+| all three, total | $0.2351 | 123% | 109% | **90%** |
+
+| tool output read / run | bare agent | caveman | ponytail | **Chisle 3.14** |
+|---|--:|--:|--:|--:|
+| `noisylog` | 12,108 chars | 17,934 | 11,837 | **1,423** |
+| `greensuite` | 16,656 | 17,320 | 17,450 | **2,024** |
+| `gitregress` | 18,379 | 36,228 | 27,399 | **9,177** |
+
+Chisle is the cheapest ruleset on all three tasks but costs more than the bare agent on `gitregress`. No run there read the whole diff (each went file by file), so the filters saved mainly on `npm test` (11,555 → 103 chars); two of the three Chisle runs first opened the wrong commit and took 20 and 18 turns ($0.129, $0.117), the third 9 ($0.060). With 3 seeds a cell, per-task gaps under about 20% are noise.
+
 **Input axis.** Deterministic, no model calls.
 
 - Command corpus, 37 commands (14 held out, written before the 3.14 filters), chars the model reads ([`replay-commands.js`](../benchmarks/replay-commands.js), `CHISLE_PREV=<v3.13.0 checkout>` for the 3.13 arm): bare 100%, Chisle 3.12 (no filters) 57%, Chisle 3.13 47%, **Chisle 3.14 28%**, RTK 0.42.4 84%, RTK + Chisle 3.14 27%. Held out only: 3.13 34%, 3.14 31%, RTK 84%. Failed runs: 3.13 100% (untouched), 3.14 5%, RTK 92%. Chisle 3.14's output is smaller than RTK's on 31 commands, RTK's on 5, and 1 ties; RTK's five are where it drops information (directory names in `wc`, `.` in `ls`, a 7-char hash, three missing commit headers in `git log --stat`). caveman and ponytail are rulesets with no tool-output hook, so they read 100% by construction. Per-command data: [`raw-314-commands/commands.json`](../benchmarks/results/raw-314-commands/commands.json); the README's terminal chart is built from it (`node scripts/build-chart.js`).
@@ -43,6 +60,7 @@ MODEL=claude-sonnet-5-5 node benchmarks/run-ablation.js benchmarks/results/raw-3
 RAW_DIR=benchmarks/quality/raw-314 node benchmarks/quality/run.js claude-haiku-4-5-20251001 3 4
 ARMS=vanilla,chisle-hook RAW_DIR=benchmarks/agentic/raw-314 node benchmarks/agentic/run.js claude-haiku-4-5-20251001 5 5
 ARMS=vanilla,chisle-hook-3.13,chisle-hook RAW_DIR=benchmarks/agentic/raw-314 node benchmarks/agentic/score.js
+FIXTURES=greensuite,gitregress ARMS=vanilla,caveman,ponytail,chisle-hook RAW_DIR=benchmarks/agentic/raw-commands node benchmarks/agentic/run.js claude-haiku-4-5-20251001 3 6
 CHISLE_PREV=<v3.13.0 checkout> node benchmarks/replay-commands.js <fixtures-dir>
 node benchmarks/answers.js benchmarks/results/raw-314-sidebyside
 ```

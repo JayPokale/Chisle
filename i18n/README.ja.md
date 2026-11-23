@@ -114,14 +114,14 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-terminal.svg">
-    <img src="../assets/benchmark-terminal-light.svg" width="860" alt="37 のシェルコマンドで Claude が読むターミナル出力（生の出力に対する割合）：caveman 100%、ponytail 100%（ルールのみでツール出力には触れない）、RTK 84%、Chisle 28%。">
+    <img src="../assets/benchmark-terminal-light.svg" width="860" alt="37 のシェルコマンドで Claude が読むターミナル出力（生の出力に対する割合）：ルールなし 100%、caveman 100%、ponytail 100%（ルールのみでツール出力には触れない）、Chisle 28%。">
   </picture>
 </p>
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
-    <img src="../assets/benchmark-cost-light.svg" width="860" alt="実際のエージェントタスク（17k 文字のログを出して失敗する npm test の修正）での修正 1 回あたりのコスト、ルールなしの同じエージェントに対する割合：caveman 109%、ponytail 93%、RTK 96%、Chisle 73%。全実行でバグを修正。Chisle 3.14 は 3.13 より 47% 安い。">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="ノイズの多いコマンドを伴う実際のエージェントタスク 3 つ（失敗する npm test の修正、391 件のテストを緑のまま保つ機能追加、大きなコミットに埋もれたバグの発見）の合計コスト、ルールなしの同じエージェントに対する割合、どのアームも RTK なし：caveman 123%、ponytail 109%、Chisle 90%。全実行でタスクを完了。">
   </picture>
 </p>
 
@@ -139,7 +139,7 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/filters-dark.svg">
-    <img src="../assets/readme/ja/filters-light.svg" width="880" alt="実際の出力に対するコマンド別フィルター、生の文字数 → Claude が読む量：npm test 19,374 → 445（−98%）、失敗する npm test 16,107 → 309（−98%）、git status 485 → 92（−81%）、git log -n 15 6,561 → 3,784（−42%）。37 コマンドで Claude が読む生の出力は Chisle で 28%、RTK で 84%。">
+    <img src="../assets/readme/ja/filters-light.svg" width="880" alt="実際の出力に対するコマンド別フィルター、生の文字数 → Claude が読む量：npm test 19,374 → 445（−98%）、失敗する npm test 16,107 → 309（−98%）、git status 485 → 92（−81%）、git log -n 15 6,561 → 3,784（−42%）。37 コマンドで Claude が読む生の出力は Chisle で 28%、caveman・ponytail で 100%。">
   </picture>
 </p>
 

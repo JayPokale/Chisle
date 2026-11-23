@@ -114,14 +114,14 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-terminal.svg">
-    <img src="../assets/benchmark-terminal-light.svg" width="860" alt="셸 명령 37개에서 Claude가 읽는 터미널 출력(원본 대비 비율): caveman 100%, ponytail 100%(규칙만 있고 도구 출력은 건드리지 않음), RTK 84%, Chisle 28%.">
+    <img src="../assets/benchmark-terminal-light.svg" width="860" alt="셸 명령 37개에서 Claude가 읽는 터미널 출력(원본 대비 비율): 규칙 없음 100%, caveman 100%, ponytail 100%(규칙만 있고 도구 출력은 건드리지 않음), Chisle 28%.">
   </picture>
 </p>
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
-    <img src="../assets/benchmark-cost-light.svg" width="860" alt="실제 에이전트 작업(17k자 로그를 출력하며 실패하는 npm test 수정)에서 수정 1회당 비용, 규칙 없는 같은 에이전트 대비 비율: caveman 109%, ponytail 93%, RTK 96%, Chisle 73%. 모든 실행이 버그를 수정. Chisle 3.14는 3.13보다 47% 저렴.">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="잡음 많은 명령이 나오는 실제 에이전트 작업 3개(실패하는 npm test 수정, 테스트 391개를 통과 상태로 유지하며 기능 추가, 큰 커밋에 묻힌 버그 찾기)의 총비용, 규칙 없는 같은 에이전트 대비 비율, 모든 실행에서 RTK 없음: caveman 123%, ponytail 109%, Chisle 90%. 모든 실행이 작업을 완료.">
   </picture>
 </p>
 
@@ -139,7 +139,7 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ko/filters-dark.svg">
-    <img src="../assets/readme/ko/filters-light.svg" width="880" alt="실제 출력에 적용한 명령 인식 필터, 원본 문자 수 → Claude가 읽는 양: npm test 19,374 → 445 (−98%), 실패하는 npm test 16,107 → 309 (−98%), git status 485 → 92 (−81%), git log -n 15 6,561 → 3,784 (−42%). 명령 37개에서 Claude가 읽는 원본 출력은 Chisle 28%, RTK 84%.">
+    <img src="../assets/readme/ko/filters-light.svg" width="880" alt="실제 출력에 적용한 명령 인식 필터, 원본 문자 수 → Claude가 읽는 양: npm test 19,374 → 445 (−98%), 실패하는 npm test 16,107 → 309 (−98%), git status 485 → 92 (−81%), git log -n 15 6,561 → 3,784 (−42%). 명령 37개에서 Claude가 읽는 원본 출력은 Chisle 28%, caveman·ponytail 100%.">
   </picture>
 </p>
 

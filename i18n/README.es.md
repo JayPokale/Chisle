@@ -114,14 +114,14 @@ Después, un bloque corto de uso y un resumen de las transiciones en una línea.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-terminal.svg">
-    <img src="../assets/benchmark-terminal-light.svg" width="860" alt="Salida de terminal que lee Claude en 37 comandos, como porcentaje de la salida en bruto: caveman 100%, ponytail 100% (solo reglas, no tocan la salida de herramientas), RTK 84%, Chisle 28%.">
+    <img src="../assets/benchmark-terminal-light.svg" width="860" alt="Salida de terminal que lee Claude en 37 comandos, como porcentaje de la salida en bruto: sin reglas 100%, caveman 100%, ponytail 100% (solo reglas, no tocan la salida de herramientas), Chisle 28%.">
   </picture>
 </p>
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
-    <img src="../assets/benchmark-cost-light.svg" width="860" alt="Coste por arreglo en una tarea real de agente (arreglar un npm test que falla, con un log de 17k caracteres), como porcentaje del mismo agente sin reglas: caveman 109%, ponytail 93%, RTK 96%, Chisle 73%. Todas las ejecuciones arreglaron el fallo. Chisle 3.14 es un 47% más barato que 3.13.">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="Coste total de tres tareas reales de agente con comandos ruidosos (arreglar un npm test que falla, añadir una función sin romper una suite de 391 tests, encontrar un fallo en un commit grande), como porcentaje del mismo agente sin reglas, sin RTK en ningún caso: caveman 123%, ponytail 109%, Chisle 90%. Todas las ejecuciones resolvieron su tarea.">
   </picture>
 </p>
 
@@ -139,7 +139,7 @@ Después, un bloque corto de uso y un resumen de las transiciones en una línea.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/filters-dark.svg">
-    <img src="../assets/readme/es/filters-light.svg" width="880" alt="Filtros por comando sobre salida real, caracteres en bruto frente a lo que lee Claude: npm test 19.374 → 445 (−98%), un npm test que falla 16.107 → 309 (−98%), git status 485 → 92 (−81%), git log -n 15 6.561 → 3.784 (−42%). En 37 comandos Claude lee el 28% de la salida en bruto con Chisle y el 84% con RTK.">
+    <img src="../assets/readme/es/filters-light.svg" width="880" alt="Filtros por comando sobre salida real, caracteres en bruto frente a lo que lee Claude: npm test 19.374 → 445 (−98%), un npm test que falla 16.107 → 309 (−98%), git status 485 → 92 (−81%), git log -n 15 6.561 → 3.784 (−42%). En 37 comandos Claude lee el 28% de la salida en bruto con Chisle y el 100% con caveman o ponytail.">
   </picture>
 </p>
 

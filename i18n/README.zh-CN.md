@@ -114,14 +114,14 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-terminal.svg">
-    <img src="../assets/benchmark-terminal-light.svg" width="860" alt="37 条 shell 命令中 Claude 读到的终端输出（占原始输出的百分比）：caveman 100%，ponytail 100%（只是规则集，不处理工具输出），RTK 84%，Chisle 28%。">
+    <img src="../assets/benchmark-terminal-light.svg" width="860" alt="37 条 shell 命令中 Claude 读到的终端输出（占原始输出的百分比）：无规则 100%，caveman 100%，ponytail 100%（只是规则集，不处理工具输出），Chisle 28%。">
   </picture>
 </p>
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
-    <img src="../assets/benchmark-cost-light.svg" width="860" alt="真实智能体任务（修复一个失败的 npm test，日志 17k 字符）中每次修复的成本，占无规则同一智能体的百分比：caveman 109%，ponytail 93%，RTK 96%，Chisle 73%。每次运行都修复了 bug。Chisle 3.14 比 3.13 便宜 47%。">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="三个带嘈杂命令的真实智能体任务（修复失败的 npm test、在 391 个测试保持通过的前提下加功能、在一个大提交里找 bug）的总成本，占无规则同一智能体的百分比，所有组都不用 RTK：caveman 123%，ponytail 109%，Chisle 90%。每次运行都完成了任务。">
   </picture>
 </p>
 
@@ -139,7 +139,7 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/filters-dark.svg">
-    <img src="../assets/readme/zh-CN/filters-light.svg" width="880" alt="按命令过滤的真实输出，原始字符数 → Claude 读到的：npm test 19,374 → 445（−98%），失败的 npm test 16,107 → 309（−98%），git status 485 → 92（−81%），git log -n 15 6,561 → 3,784（−42%）。37 条命令中，用 Chisle 时 Claude 读原始输出的 28%，用 RTK 时 84%。">
+    <img src="../assets/readme/zh-CN/filters-light.svg" width="880" alt="按命令过滤的真实输出，原始字符数 → Claude 读到的：npm test 19,374 → 445（−98%），失败的 npm test 16,107 → 309（−98%），git status 485 → 92（−81%），git log -n 15 6,561 → 3,784（−42%）。37 条命令中，用 Chisle 时 Claude 读原始输出的 28%，用 caveman 或 ponytail 时 100%。">
   </picture>
 </p>
 
