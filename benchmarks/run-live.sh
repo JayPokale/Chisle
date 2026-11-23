@@ -100,6 +100,26 @@ thread	coding	Make this Python counter thread-safe: counter = 0; def increment()
 EOF
 )
 
+# SUITE=ladder (2026-11-23): everyday coding asks where the platform already
+# has the answer (stdlib, a native browser/runtime feature), plus root-cause bug
+# fixes: the two things the ruleset's ladder targets and a prose-only ruleset
+# does not. Picked for that reason and fixed before any run of it.
+TASKS_LADDER=$(cat <<'EOF'
+dedupe	coding	Remove duplicate emails from a list of users, keeping the first occurrence and the original order. Show the code.
+deepclone	coding	Make a deep copy of a nested settings object before editing it, so the original is never mutated. Show the code.
+groupby	coding	Group a list of orders by customer id and total each customer's spend. Show the code.
+datefmt	coding	Show an ISO timestamp from our API as a localized date like "Nov 23, 2026" in our web app. Show the code.
+natsort	coding	Sort a list of file names so that file2 comes before file10. Show the code.
+cliflags	coding	Parse --port and --verbose command-line flags in a Node.js script. Show the code.
+emailfield	coding	Validate the email field on our signup form before it submits. Show the code.
+confirmdelete	coding	Add a confirmation modal before deleting an item in our web app. Show the code.
+envconfig	coding	Read the API base URL and request timeout from environment variables, with sensible defaults. Show the code.
+paging-bug	coding	Our pagination skips one item between pages; it computes offset = page * pageSize + 1 with pages starting at 0. Find and fix the root cause.
+dst-bug	coding	Our nightly job drifts by an hour after every daylight saving change; it is scheduled with setInterval(run, 24 * 60 * 60 * 1000). Find and fix the root cause.
+float-bug	coding	Our cart total sometimes shows $0.30000000000000004 after adding a $0.10 and a $0.20 item. Find and fix the root cause.
+EOF
+)
+
 TASKS=$(cat <<'EOF'
 debounce	coding	Add debounce to a search input that currently fires an API call on every keystroke. Show the code.
 cache	coding	Add a cache layer for our user profile API responses. Show the code.
@@ -116,7 +136,8 @@ case "${SUITE:-default}" in
   default) ;;
   large)  TASKS="$TASKS_LARGE";  echo "suite: large (long-answer prompts)" ;;
   sonnet) TASKS="$TASKS_SONNET"; echo "suite: sonnet (reconstructed 2026-06-29 prompts)" ;;
-  *) echo "SUITE must be default, large or sonnet"; exit 2 ;;
+  ladder) TASKS="$TASKS_LADDER"; echo "suite: ladder (platform-first coding asks, root-cause fixes)" ;;
+  *) echo "SUITE must be default, large, sonnet or ladder"; exit 2 ;;
 esac
 
 run_cell() {

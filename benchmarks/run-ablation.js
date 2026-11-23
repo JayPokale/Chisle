@@ -43,7 +43,9 @@ const arms = armSpecs.map((spec) => {
 // Normalize CRLF: a Windows checkout with core.autocrlf=true breaks the heredoc match.
 const live = fs.readFileSync(path.join(__dirname, 'run-live.sh'), 'utf8').replace(/\r\n/g, '\n');
 const heredoc = (v) => live.match(new RegExp(`\\n${v}=\\$\\(cat <<'EOF'\\n([\\s\\S]*?)\\nEOF`))[1];
-const suites = { default: heredoc('TASKS'), large: heredoc('TASKS_LARGE') };
+// SUITES=ladder (comma list) picks other suites; default stays default + large.
+const suites = Object.fromEntries((process.env.SUITES || 'default,large').split(',')
+  .map((s) => [s, heredoc(s === 'default' ? 'TASKS' : 'TASKS_' + s.toUpperCase())]));
 
 const cells = [];
 for (let s = 1; s <= Number(seeds); s++) for (const [suite, tasks] of Object.entries(suites)) for (const line of tasks.split('\n')) {
