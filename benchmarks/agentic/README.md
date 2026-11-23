@@ -19,7 +19,7 @@ Both take `ARMS` (default `vanilla,chisle`) and `RAW_DIR` (default `./raw`).
 Arms: `vanilla` (bare agent), `chisle` (ruleset appended as a system prompt),
 `chisle-hook` (ruleset plus the shipped PostToolUse compressor, wired from
 `plugin.json`, with chars elided recorded per cell), `chisle-trim` (ruleset plus
-the deny list `npx chisle tools trim` writes), `ponytail` (the rival's skill). Point `RAW_DIR` at a fresh
+the deny list `npx chisle tools trim` writes), `ponytail` and `caveman` (each rival's skill, appended the same way). Point `RAW_DIR` at a fresh
 directory whenever the ruleset changes: the runner skips any cell that already
 has a result, so old cells would otherwise be scored as new.
 
@@ -39,6 +39,8 @@ ARMS=vanilla,chisle,chisle-hook RAW_DIR=benchmarks/agentic/raw-2 node benchmarks
 | `stdlib` | Order-preserving dedupe, which invites a dependency | Behaviour, plus `deps added` in the score table |
 | `noisylog` | `npm test` prints 401 results (17k chars) with one half-cent rounding failure mid-log | A fix that only special-cases the visible failure misses `1005 @ 50%` and `1 @ 50%`; editing the test instead of `price.js` fails outright |
 | `routing-catalog` | A regional courier catalog uses an exclusive weight check for inclusive service maxima | A caller-only fix misses exact-boundary quotes, eligible-service discovery, manifests, and quote audits |
+| `greensuite` | Adding hour units means changing a validation regex, a parsing regex and the unit table; every `npm test` prints 391 passing results (16k chars) | `1.5h`, `1h0m5s` and a bare `h` (must still throw), plus the visible suite |
+| `gitregress` | The last commit, a 159-line "modernise" refactor (16.5k-char diff), renamed every export and quietly started taxing the pre-discount subtotal | Taxed-after-discount totals; reverting the file to `HEAD~1` brings back the old export names and fails |
 
 `noisylog` was added on 2026-10-01, before any run that includes it. It was
 meant to give the `chisle-hook` arm something to compress, but a smoke run
@@ -46,6 +48,14 @@ showed it cannot: the log comes from a *failing* `npm test`, and Claude Code
 sends failed calls to `PostToolUseFailure`, whose output no hook can rewrite.
 What it measures instead is the context diet: does the agent filter a 17k-char
 log itself? The results below predate it and cover five fixtures.
+
+`greensuite` and `gitregress` were added on 2026-11-23, before any run that
+includes them, to measure the command filters against rulesets that leave tool
+output alone. `gitregress` needs git history, which can't be committed as a
+nested `.git`, so it ships a `setup.js` that the runner executes in the copied
+repo before the agent starts; it builds `HEAD~1` from `HEAD` by undoing the
+refactor's renames and style changes. Results:
+[`docs/benchmarks.md`](../../docs/benchmarks.md).
 
 ## Metrics
 

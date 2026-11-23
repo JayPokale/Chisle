@@ -106,8 +106,11 @@ for (const arm of ARMS) {
   }
 }
 // One short line per tool call: enough to see the pattern, small enough to commit.
-const summarize = (i) => String(i.command || i.pattern || (i.file_path ? path.basename(i.file_path)
-  + (i.offset || i.limit ? ` [${i.offset || 1}+${i.limit || ''}]` : '') : '') || i.path || '').slice(0, 100);
+// Claude Code tells the agent the account's email; a bare agent may commit with it.
+// Raw cells get committed, so any email address in a call or answer is redacted.
+const redact = (s) => s.replace(/[\w.%+-]+@[\w-]+(?:\.[\w-]+)+/g, '<email>');
+const summarize = (i) => redact(String(i.command || i.pattern || (i.file_path ? path.basename(i.file_path)
+  + (i.offset || i.limit ? ` [${i.offset || 1}+${i.limit || ''}]` : '') : '') || i.path || '').slice(0, 100));
 const outPath = (c) => path.join(RAW, `${c.fx}__${c.arm}__${c.seed}.json`);
 const todo = cells.filter((c) => !fs.existsSync(outPath(c)));
 let limited = false;
@@ -118,6 +121,9 @@ function runCell(c) {
     const work = fs.mkdtempSync(path.join(os.tmpdir(), `wk-${c.fx}-`));
     const repo = path.join(work, 'repo');
     fs.cpSync(path.join(FIX, c.fx, 'repo'), repo, { recursive: true });
+    // Optional per-fixture setup (e.g. git history, which can't be committed as a nested .git).
+    const setup = path.join(FIX, c.fx, 'setup.js');
+    if (fs.existsSync(setup)) execFileSync('node', [setup], { cwd: repo, stdio: 'pipe' });
     const before = snapshot(repo);
     const task = fs.readFileSync(path.join(FIX, c.fx, 'task.txt'), 'utf8').trim();
 
@@ -170,7 +176,7 @@ function runCell(c) {
         rec.input_tokens = d.usage ? (d.usage.input_tokens || 0) + (d.usage.cache_creation_input_tokens || 0) + (d.usage.cache_read_input_tokens || 0) : 0;
         rec.cost_usd = d.total_cost_usd || 0;
         rec.turns = d.num_turns || 0;
-        rec.answer = (d.result || '').trim();
+        rec.answer = redact((d.result || '').trim());
         rec.tool_calls = calls;
         rec.request_prompts = [...prompts.values()];
         if (hooked) {

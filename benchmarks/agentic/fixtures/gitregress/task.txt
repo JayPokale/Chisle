@@ -1,0 +1,1 @@
+Since the last commit, invoices that use a discount code come out too high. Find the behaviour change that commit introduced and fix it, without undoing the rest of that commit.

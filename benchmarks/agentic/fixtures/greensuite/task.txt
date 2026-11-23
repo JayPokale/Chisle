@@ -1,0 +1,1 @@
+Add hour support to parseDuration in src/duration.js, so "2h" and "1h30m" work. Run the test suite before you finish; it must stay green.
