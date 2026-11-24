@@ -4,6 +4,8 @@
 
 Key measured results (same model and prompts, only the injected ruleset differs; reproducible via benchmarks/ in the repo):
 - Claude Code + Sonnet 5.5 (13 prompts x 3 runs, every arm answered every prompt): billed output tokens Chisle 61% of a bare model, ponytail 73%, caveman 78%; answer length Chisle 57%, ponytail 64%, caveman 77%. On Haiku 4.5 every ruleset adds hidden thinking: billed Chisle 91%, caveman 96%, ponytail 115%; answer length Chisle 61%, ponytail 70%, caveman 76%.
+- Claude Code + Opus 5.5 (same prompts and setup): billed output tokens Chisle 51%, ponytail 58%, caveman 86%; answer length Chisle 50%, ponytail 59%, caveman 83%.
+- Real agent tasks with noisy commands (real repos, hidden tests, no RTK in any arm, each ruleset's own cached prompt not counted): four tasks on Haiku 4.5, total cost Chisle 73% of the bare agent, ponytail 103%, caveman 108%. One task with a 517-test suite, git history, diffs and two fixes: Chisle 61% (Haiku 4.5), 88% (Sonnet 5.5), 81% (Opus 5.5); caveman 94-97%, ponytail 102-104%; every run fixed both bugs.
 - Pi + GPT-5.5 (6 tasks): answer length Chisle 37%, ponytail 49%, caveman 56%. Billed tokens on explanation prompts Chisle 39%, caveman 43%, ponytail 76%.
 - Tool output is 67.5% of session content across 171 real Claude Code transcripts; the compressor trims eligible outputs ~46%. On OpenCode a 30 KB log cut fresh input tokens 87%.
 - Quality: 156/156 on auto-graded maths and coding problems (bare model 156/156).

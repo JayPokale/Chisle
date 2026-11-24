@@ -15,22 +15,30 @@ const ARMS = [
   { name: "bare model", pct: 100 },
 ];
 
-// % of the bare model. Claude Code rows from benchmarks/results/raw-314-sonnet-direct/
-// and raw-314-direct/ (Chisle 3.14, 39 answers per arm and model in one session,
-// every arm answered every prompt).
+// % of the bare model. Claude Code rows from benchmarks/results/raw-314-opus-direct/,
+// raw-314-sonnet-direct/ and raw-314-direct/ (Chisle 3.14, 39 answers per arm and
+// model in one session, every arm answered every prompt).
 const ROWS = [
+  { label: "billed tokens · Opus 5.5", caveman: "86%", ponytail: "58%", chisle: "51%" },
   { label: "billed tokens · Sonnet 5.5", caveman: "78%", ponytail: "73%", chisle: "61%" },
   { label: "billed tokens · Haiku 4.5", caveman: "96%", ponytail: "115%", chisle: "91%" },
+  { label: "answer length · Opus 5.5", caveman: "83%", ponytail: "59%", chisle: "50%" },
   { label: "answer length · Sonnet 5.5", caveman: "77%", ponytail: "64%", chisle: "57%" },
   { label: "answer length · Haiku 4.5", caveman: "76%", ponytail: "70%", chisle: "61%" },
   // benchmarks/results/raw-314-commands/commands.json: 37 shell commands; caveman and
   // ponytail are rulesets only, so they pass tool output through untouched.
   { label: "terminal output read · 37 commands", caveman: "100%", ponytail: "100%", chisle: "28%" },
-  // benchmarks/agentic/raw-{noisylog,commands}/: three real tasks with noisy
-  // commands (failing test, 391-test green suite, bug in a big commit), total $,
-  // 3 runs per arm per task, no RTK in any arm, every run fixed its task; each
-  // ruleset's own cached prompt not counted. Matches assets/benchmark-cost.svg.
-  { label: "cost · 3 real agent tasks", caveman: "120%", ponytail: "104%", chisle: "87%" },
+  // benchmarks/agentic/raw-{noisylog,commands,releasered}/: four real tasks with
+  // noisy commands (failing test, 391-test green suite, bug in a big commit, red
+  // release), Haiku 4.5, 3-5 runs per arm per task, no RTK in any arm, every run
+  // fixed its task; each ruleset's own cached prompt not counted. Matches
+  // assets/benchmark-cost.svg.
+  { label: "cost · 4 real agent tasks · Haiku 4.5", caveman: "108%", ponytail: "103%", chisle: "73%" },
+  // benchmarks/agentic/raw-releasered{,-sonnet,-opus}/: one task with tests, git
+  // history, diffs and two fixes; 5 runs on Haiku, 3 on Sonnet and Opus, all fixed.
+  { label: "cost · red release · Haiku 4.5", caveman: "97%", ponytail: "102%", chisle: "61%" },
+  { label: "cost · red release · Sonnet 5.5", caveman: "94%", ponytail: "104%", chisle: "88%" },
+  { label: "cost · red release · Opus 5.5", caveman: "97%", ponytail: "102%", chisle: "81%" },
 ];
 
 // Correctness, Chisle 3.14 vs bare, Haiku 4.5: benchmarks/quality/raw-314/ and
@@ -49,7 +57,7 @@ export default function Benchmarks() {
       <div className="mx-auto max-w-6xl px-5">
         <SectionHead eyebrow="Benchmarks" title="The shortest answers, measured">
           Same model, same prompts, one difference: the injected ruleset. Billed output tokens as a
-          share of the bare model, every arm in one run on Claude Code + Haiku 4.5. Raw transcripts and the runner{" "}
+          share of the bare model, every arm in one run on Claude Code + Sonnet 5.5. Raw transcripts and the runner{" "}
           <a
             href="https://github.com/JayPokale/Chisle/tree/main/benchmarks"
             className="text-accent underline underline-offset-4"
@@ -85,12 +93,16 @@ export default function Benchmarks() {
           <h3 className="mt-16 text-lg font-semibold tracking-tight">Shortest answers, cheapest fix</h3>
           <p className="mt-2 max-w-xl text-sm text-dim">
             % of the bare model, Chisle 3.14 (ruleset unchanged since 3.10) in Claude Code on Sonnet
-            5.5, 39 answers in one session, every arm answering every prompt. On Haiku 4.5 every
+            5.5, 39 answers in one session, every arm answering every prompt. On Opus 5.5 the gap
+            widens: Chisle bills 51% of the bare model, ponytail 58%, caveman 86%. On Haiku 4.5 every
             ruleset adds hidden thinking, so the same answers save less: Chisle 91%, caveman 96%,
             ponytail 115%. Terminal output: caveman and
-            ponytail never touch it; Chisle leaves Claude 28% of it to read. Across three real
-            agent tasks with noisy test and git output, Chisle costs 87% of the bare agent,
-            caveman 120%, ponytail 104% (each ruleset's own cached prompt not counted). On the failing-test task alone, Chisle 3.14 costs 47%
+            ponytail never touch it; Chisle leaves Claude 28% of it to read. Across four real
+            agent tasks with noisy test and git output, Chisle costs 73% of the bare agent,
+            caveman 108%, ponytail 103% (each ruleset's own cached prompt not counted). On one
+            task that needs all of it at once (a 517-test suite, git history and diffs, two
+            fixes), Chisle is the cheapest arm on every model: 61% on Haiku, 88% on Sonnet, 81%
+            on Opus. On the failing-test task alone, Chisle 3.14 costs 47%
             less than 3.13.
           </p>
           <div className="pane-scroll mt-6 overflow-x-auto rounded-xl border border-line bg-bg px-5 py-2">

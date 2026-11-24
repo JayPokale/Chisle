@@ -23,7 +23,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ko/stats-dark.svg">
-    <img src="../assets/readme/ko/stats-light.svg" width="880" alt="Chisle과 규칙 세트가 없는 같은 모델 비교(Sonnet 5.5): 과금 출력 토큰 39% 감소(Haiku 4.5는 9%), 답변 길이 43% 감소(Haiku 4.5는 39%), 큰 도구 출력 48% 감소, 정확도 156/156으로 규칙 없는 모델과 같음.">
+    <img src="../assets/readme/ko/stats-light.svg" width="880" alt="Chisle과 규칙 세트가 없는 같은 모델 비교(Sonnet 5.5): 과금 출력 토큰 39% 감소(Opus 5.5는 49%, Haiku 4.5는 9%), 답변 길이 43% 감소(Opus 5.5는 50%, Haiku 4.5는 39%), 큰 도구 출력 48% 감소, 정확도 156/156으로 규칙 없는 모델과 같음.">
   </picture>
 </p>
 
@@ -115,6 +115,13 @@ class OrderStateMachine:
 
 <p align="center">
   <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-opus.svg">
+    <img src="../assets/benchmark-opus-light.svg" width="860" alt="Opus 5.5를 쓰는 Claude Code, 한 세션에서 답변 39개(프롬프트 13개 × 3회), 규칙 세트가 없는 같은 모델 대비 과금 출력 토큰 비율: caveman 86%, ponytail 58%, Chisle 51%.">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-sonnet.svg">
     <img src="../assets/benchmark-sonnet-light.svg" width="860" alt="Sonnet 5.5를 쓰는 Claude Code, 한 세션에서 답변 39개(프롬프트 13개 × 3회), 규칙 세트가 없는 같은 모델 대비 과금 출력 토큰 비율: caveman 78%, ponytail 73%, Chisle 61%.">
   </picture>
@@ -137,9 +144,21 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
-    <img src="../assets/benchmark-cost-light.svg" width="860" alt="잡음 많은 명령이 나오는 실제 에이전트 작업 3개(실패하는 npm test 수정, 테스트 391개를 통과 상태로 유지하며 기능 추가, 큰 커밋에 묻힌 버그 찾기)의 총비용, 규칙 없는 같은 에이전트 대비 비율, 모든 실행에서 RTK 없음, 각 규칙 세트 자체의 캐시된 프롬프트는 제외: caveman 120%, ponytail 104%, Chisle 87%. 모든 실행이 작업을 완료.">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="잡음 많은 명령이 나오는 실제 에이전트 작업 4개(실패하는 npm test 수정, 테스트 391개를 통과 상태로 유지하며 기능 추가, 큰 커밋에 묻힌 버그 찾기, 릴리스를 깨뜨린 커밋 두 개 찾기)의 총비용, 규칙 없는 같은 에이전트 대비 비율, 모든 실행에서 RTK 없음, 각 규칙 세트 자체의 캐시된 프롬프트는 제외: caveman 108%, ponytail 103%, Chisle 73%. 모든 실행이 작업을 완료.">
   </picture>
 </p>
+
+<p align="center"><sub><b>모든 것이 한 번에 나오는 작업</b> (<code>releasered</code>): <code>v2.0.0</code> 태그에서는 테스트가 통과하지만 커밋 여섯 개 뒤에는 서로 무관한 버그 두 개 때문에 실패합니다. 에이전트는 테스트 517개(로그 2만 7천 자)를 돌리고, 태그 이후의 히스토리와 diff를 읽고, 파일 두 개를 고친 뒤 통과할 때까지 다시 돌립니다. 규칙 없음 대비 비용, 각 규칙 세트의 캐시된 프롬프트 제외, RTK 없음; 모든 실행이 두 버그를 모두 고쳤습니다.</sub></p>
+
+<div align="center">
+<table>
+<tr><th></th><th>Haiku 4.5 (5회)</th><th>Sonnet 5.5 (3회)</th><th>Opus 5.5 (3회)</th></tr>
+<tr><td>규칙 없음</td><td>100%</td><td>100%</td><td>100%</td></tr>
+<tr><td>caveman</td><td>97%</td><td>94%</td><td>97%</td></tr>
+<tr><td>ponytail</td><td>102%</td><td>104%</td><td>102%</td></tr>
+<tr><td><b>Chisle</b></td><td><b>61%</b></td><td><b>88%</b></td><td><b>81%</b></td></tr>
+</table>
+</div>
 
 <p align="center"><sub>진 결과까지 포함해 모든 원본 기록이 커밋되어 있습니다. <a href="../docs/benchmarks.md">방법과 데이터</a> · <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">진 결과를 공개하는 이유</a></sub></p>
 

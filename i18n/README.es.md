@@ -23,7 +23,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/es/stats-dark.svg">
-    <img src="../assets/readme/es/stats-light.svg" width="880" alt="Chisle frente al mismo modelo sin ruleset, en Sonnet 5.5: 39% menos tokens de salida facturados (Haiku 4.5: 9%), respuestas un 43% más cortas (Haiku 4.5: 39%), salidas de herramientas enormes un 48% más pequeñas, precisión de 156 sobre 156, igual que el modelo sin reglas.">
+    <img src="../assets/readme/es/stats-light.svg" width="880" alt="Chisle frente al mismo modelo sin ruleset, en Sonnet 5.5: 39% menos tokens de salida facturados (Opus 5.5: 49%, Haiku 4.5: 9%), respuestas un 43% más cortas (Opus 5.5: 50%, Haiku 4.5: 39%), salidas de herramientas enormes un 48% más pequeñas, precisión de 156 sobre 156, igual que el modelo sin reglas.">
   </picture>
 </p>
 
@@ -115,6 +115,13 @@ Luego un ejemplo breve y una lista de cinco líneas con las transiciones.
 
 <p align="center">
   <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-opus.svg">
+    <img src="../assets/benchmark-opus-light.svg" width="860" alt="Claude Code con Opus 5.5, 39 respuestas (13 prompts, 3 ejecuciones) en una sesión, tokens de salida facturados como porcentaje del mismo modelo sin ruleset: caveman 86%, ponytail 58%, Chisle 51%.">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-sonnet.svg">
     <img src="../assets/benchmark-sonnet-light.svg" width="860" alt="Claude Code con Sonnet 5.5, 39 respuestas (13 prompts, 3 ejecuciones) en una sesión, tokens de salida facturados como porcentaje del mismo modelo sin ruleset: caveman 78%, ponytail 73%, Chisle 61%.">
   </picture>
@@ -137,9 +144,21 @@ Luego un ejemplo breve y una lista de cinco líneas con las transiciones.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
-    <img src="../assets/benchmark-cost-light.svg" width="860" alt="Coste total de tres tareas reales de agente con comandos ruidosos (arreglar un npm test que falla, añadir una función sin romper una suite de 391 tests, encontrar un fallo en un commit grande), como porcentaje del mismo agente sin reglas, sin RTK en ningún caso y sin contar el prompt propio de cada ruleset (en caché): caveman 120%, ponytail 104%, Chisle 87%. Todas las ejecuciones resolvieron su tarea.">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="Coste total de cuatro tareas reales de agente con comandos ruidosos (arreglar un npm test que falla, añadir una función sin romper una suite de 391 tests, encontrar un fallo en un commit grande, encontrar los dos commits que rompieron una release), como porcentaje del mismo agente sin reglas, sin RTK en ningún caso y sin contar el prompt propio de cada ruleset (en caché): caveman 108%, ponytail 103%, Chisle 73%. Todas las ejecuciones resolvieron su tarea.">
   </picture>
 </p>
+
+<p align="center"><sub><b>Una tarea con todo a la vez</b> (<code>releasered</code>): los tests pasan en el tag <code>v2.0.0</code> y fallan seis commits después, por dos fallos sin relación. El agente ejecuta una suite de 517 tests (log de 27k caracteres), lee el historial y el diff desde el tag, arregla dos archivos y repite hasta que todo pasa. Coste como % de sin reglas, sin contar el prompt de cada ruleset (en caché), sin RTK; todas las ejecuciones arreglaron los dos fallos.</sub></p>
+
+<div align="center">
+<table>
+<tr><th></th><th>Haiku 4.5 (5 ejecuciones)</th><th>Sonnet 5.5 (3 ejecuciones)</th><th>Opus 5.5 (3 ejecuciones)</th></tr>
+<tr><td>sin reglas</td><td>100%</td><td>100%</td><td>100%</td></tr>
+<tr><td>caveman</td><td>97%</td><td>94%</td><td>97%</td></tr>
+<tr><td>ponytail</td><td>102%</td><td>104%</td><td>102%</td></tr>
+<tr><td><b>Chisle</b></td><td><b>61%</b></td><td><b>88%</b></td><td><b>81%</b></td></tr>
+</table>
+</div>
 
 <p align="center"><sub>Todas las transcripciones originales están en el repo, derrotas incluidas. <a href="../docs/benchmarks.md">Método y datos</a> · <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">por qué publicamos las derrotas</a></sub></p>
 

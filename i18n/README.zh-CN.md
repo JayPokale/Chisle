@@ -23,7 +23,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/zh-CN/stats-dark.svg">
-    <img src="../assets/readme/zh-CN/stats-light.svg" width="880" alt="Chisle 对比无规则集的同一模型（Sonnet 5.5）：计费输出 token 减少 39%（Haiku 4.5 为 9%），回答缩短 43%（Haiku 4.5 为 39%），超大工具输出缩小 48%，准确率 156/156，与无规则集相同。">
+    <img src="../assets/readme/zh-CN/stats-light.svg" width="880" alt="Chisle 对比无规则集的同一模型（Sonnet 5.5）：计费输出 token 减少 39%（Opus 5.5 为 49%，Haiku 4.5 为 9%），回答缩短 43%（Opus 5.5 为 50%，Haiku 4.5 为 39%），超大工具输出缩小 48%，准确率 156/156，与无规则集相同。">
   </picture>
 </p>
 
@@ -115,6 +115,13 @@ class OrderStateMachine:
 
 <p align="center">
   <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-opus.svg">
+    <img src="../assets/benchmark-opus-light.svg" width="860" alt="使用 Opus 5.5 的 Claude Code，一次会话 39 个回答（13 个提示词 × 3 次），计费输出 token 占无规则集同一模型的百分比：caveman 86%，ponytail 58%，Chisle 51%。">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-sonnet.svg">
     <img src="../assets/benchmark-sonnet-light.svg" width="860" alt="使用 Sonnet 5.5 的 Claude Code，一次会话 39 个回答（13 个提示词 × 3 次），计费输出 token 占无规则集同一模型的百分比：caveman 78%，ponytail 73%，Chisle 61%。">
   </picture>
@@ -137,9 +144,21 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
-    <img src="../assets/benchmark-cost-light.svg" width="860" alt="三个带嘈杂命令的真实智能体任务（修复失败的 npm test、在 391 个测试保持通过的前提下加功能、在一个大提交里找 bug）的总成本，占无规则同一智能体的百分比，所有组都不用 RTK，不计各规则集自身已缓存的提示词：caveman 120%，ponytail 104%，Chisle 87%。每次运行都完成了任务。">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="四个带嘈杂命令的真实智能体任务（修复失败的 npm test、在 391 个测试保持通过的前提下加功能、在一个大提交里找 bug、找出让发布版本变红的两个提交）的总成本，占无规则同一智能体的百分比，所有组都不用 RTK，不计各规则集自身已缓存的提示词：caveman 108%，ponytail 103%，Chisle 73%。每次运行都完成了任务。">
   </picture>
 </p>
+
+<p align="center"><sub><b>一个任务，全都用上</b>（<code>releasered</code>）：测试在 <code>v2.0.0</code> 标签处通过，六个提交之后因两个互不相关的 bug 而失败。智能体要运行 517 个测试（2.7 万字符的日志），阅读该标签以来的历史和 diff，修改两个文件，再反复运行直到全部通过。成本为无规则集的百分比，不计各规则集已缓存的提示词，不用 RTK；每次运行都修好了两个 bug。</sub></p>
+
+<div align="center">
+<table>
+<tr><th></th><th>Haiku 4.5（5 次）</th><th>Sonnet 5.5（3 次）</th><th>Opus 5.5（3 次）</th></tr>
+<tr><td>无规则集</td><td>100%</td><td>100%</td><td>100%</td></tr>
+<tr><td>caveman</td><td>97%</td><td>94%</td><td>97%</td></tr>
+<tr><td>ponytail</td><td>102%</td><td>104%</td><td>102%</td></tr>
+<tr><td><b>Chisle</b></td><td><b>61%</b></td><td><b>88%</b></td><td><b>81%</b></td></tr>
+</table>
+</div>
 
 <p align="center"><sub>所有原始记录都已提交，包括输掉的那些。<a href="../docs/benchmarks.md">方法与数据</a> · <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">为什么公开输掉的结果</a></sub></p>
 

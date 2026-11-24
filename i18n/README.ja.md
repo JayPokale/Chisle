@@ -23,7 +23,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/readme/ja/stats-dark.svg">
-    <img src="../assets/readme/ja/stats-light.svg" width="880" alt="Chisle とルールセットなしの同じモデルの比較（Sonnet 5.5）：課金される出力トークン 39% 減（Haiku 4.5 は 9%）、回答の長さ 43% 減（Haiku 4.5 は 39%）、巨大なツール出力 48% 減、精度は 156/156 でルールなしと同じ。">
+    <img src="../assets/readme/ja/stats-light.svg" width="880" alt="Chisle とルールセットなしの同じモデルの比較（Sonnet 5.5）：課金される出力トークン 39% 減（Opus 5.5 は 49%、Haiku 4.5 は 9%）、回答の長さ 43% 減（Opus 5.5 は 50%、Haiku 4.5 は 39%）、巨大なツール出力 48% 減、精度は 156/156 でルールなしと同じ。">
   </picture>
 </p>
 
@@ -115,6 +115,13 @@ class OrderStateMachine:
 
 <p align="center">
   <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-opus.svg">
+    <img src="../assets/benchmark-opus-light.svg" width="860" alt="Opus 5.5 の Claude Code、1 セッションで 39 回答（13 プロンプト × 3 回）、ルールセットなしの同じモデルに対する課金出力トークンの割合：caveman 86%、ponytail 58%、Chisle 51%。">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-sonnet.svg">
     <img src="../assets/benchmark-sonnet-light.svg" width="860" alt="Sonnet 5.5 の Claude Code、1 セッションで 39 回答（13 プロンプト × 3 回）、ルールセットなしの同じモデルに対する課金出力トークンの割合：caveman 78%、ponytail 73%、Chisle 61%。">
   </picture>
@@ -137,9 +144,21 @@ class OrderStateMachine:
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="../assets/benchmark-cost.svg">
-    <img src="../assets/benchmark-cost-light.svg" width="860" alt="ノイズの多いコマンドを伴う実際のエージェントタスク 3 つ（失敗する npm test の修正、391 件のテストを緑のまま保つ機能追加、大きなコミットに埋もれたバグの発見）の合計コスト、ルールなしの同じエージェントに対する割合、どのアームも RTK なし、各ルールセット自身のプロンプト（キャッシュ済み）は除外：caveman 120%、ponytail 104%、Chisle 87%。全実行でタスクを完了。">
+    <img src="../assets/benchmark-cost-light.svg" width="860" alt="ノイズの多いコマンドを伴う実際のエージェントタスク 4 つ（失敗する npm test の修正、391 件のテストを緑のまま保つ機能追加、大きなコミットに埋もれたバグの発見、リリースを赤にした 2 つのコミットの特定）の合計コスト、ルールなしの同じエージェントに対する割合、どのアームも RTK なし、各ルールセット自身のプロンプト（キャッシュ済み）は除外：caveman 108%、ponytail 103%、Chisle 73%。全実行でタスクを完了。">
   </picture>
 </p>
+
+<p align="center"><sub><b>すべてが一度に起きるタスク</b>（<code>releasered</code>）：<code>v2.0.0</code> タグではテストが通り、6 コミット後には無関係な 2 つのバグで失敗します。エージェントは 517 件のテスト（2.7 万文字のログ）を実行し、タグ以降の履歴と diff を読み、2 ファイルを直し、通るまで再実行します。ルールなしに対するコスト、各ルールセットのキャッシュ済みプロンプトは除外、RTK なし。全実行が両方のバグを修正。</sub></p>
+
+<div align="center">
+<table>
+<tr><th></th><th>Haiku 4.5（5 回）</th><th>Sonnet 5.5（3 回）</th><th>Opus 5.5（3 回）</th></tr>
+<tr><td>ルールなし</td><td>100%</td><td>100%</td><td>100%</td></tr>
+<tr><td>caveman</td><td>97%</td><td>94%</td><td>97%</td></tr>
+<tr><td>ponytail</td><td>102%</td><td>104%</td><td>102%</td></tr>
+<tr><td><b>Chisle</b></td><td><b>61%</b></td><td><b>88%</b></td><td><b>81%</b></td></tr>
+</table>
+</div>
 
 <p align="center"><sub>負けた実行も含め、生のログはすべてコミット済みです。<a href="../docs/benchmarks.md">手法とデータ</a> · <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">負けた結果も公開する理由</a></sub></p>
 

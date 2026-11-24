@@ -29,6 +29,16 @@ Haiku 4.5, Claude Code 2.1.323, tools off with the standalone note, all arms in 
 
 Why the models differ: per answer, the bare model thinks 351 hidden tokens on Haiku but 159 on Sonnet. On Haiku, Chisle cuts the visible answer from 1,040 to 638 tokens and adds 279 tokens of thinking (restating the task, listing the rules, planning the smaller code), so billed falls only 9%. On Sonnet the extra thinking is 27 tokens, and billed falls 39%, close to the 43% cut in answer length. Chisle is the cheapest arm on 11 of the 13 prompts on Sonnet (caveman wins `regex-concept` and `auth-bug`), and its interval clears both rivals'.
 
+**Opus 5.5** (2026-11-24), the same 13 prompts × 3 seeds, 39 answers per arm, same session setup ([raw cells](../benchmarks/results/raw-314-opus-direct/)). No fake tool calls or non-answers in any arm. The README's Opus chart is built from it.
+
+| | billed | 95% CI | answer length | 95% CI | answer lines | reasoning | backfires |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| caveman | 86% | 79–92% | 83% | 78–88% | 86% | 115% | 7 / 39 |
+| ponytail | 58% | 51–67% | 59% | 51–67% | 52% | 55% | 2 / 39 |
+| **Chisle 3.14** | **51%** | **44–58%** | **50%** | **43–57%** | **41%** | 66% | **2 / 39** |
+
+On Opus the ruleset cuts reasoning too: the bare model thinks 236 hidden tokens per answer, Chisle 155, so billed tokens fall about as far as answer length (2,956 → 1,507 billed per answer). The run cost $7.38 for all four arms.
+
 **Ladder suite**, 12 coding asks where the platform already has the answer plus three root-cause fixes (`SUITES=ladder`, committed before its first run), × 2 seeds, 24 answers per arm ([raw cells](../benchmarks/results/raw-314-ladder-direct/), [every prompt and answer](../benchmarks/results/raw-314-ladder-direct/ANSWERS.md)).
 
 | | billed | 95% CI | answer length | 95% CI | answer lines | reasoning | backfires |
@@ -40,6 +50,7 @@ Why the models differ: per answer, the bare model thinks 351 hidden tokens on Ha
 On Haiku, Chisle writes the shortest answers in both suites, and that gap is outside the noise (main suite 61% vs caveman 76%). Billed tokens favour Chisle too, but narrowly (91% vs 96%, 90% vs 92%) and inside the intervals: on Haiku every ruleset raises hidden reasoning, which eats most of the shorter answers. `chisle-C` ([its text](../benchmarks/results/raw-314-direct/chisle-C.SKILL.md)) is a 1.6k-character rewrite of the ruleset aimed at that reasoning; it made no difference, and an earlier run where it beat caveman was itself contaminated by fake tool calls. It also scored 156/156 on the accuracy suite.
 
 ```bash
+MODEL=claude-opus-5-5 node benchmarks/run-ablation.js benchmarks/results/raw-314-opus-direct 3 4 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle=skills/chisle/SKILL.md
 MODEL=claude-sonnet-5-5 node benchmarks/run-ablation.js benchmarks/results/raw-314-sonnet-direct 3 4 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle=skills/chisle/SKILL.md
 node benchmarks/run-ablation.js benchmarks/results/raw-314-direct 3 6 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle=skills/chisle/SKILL.md chisle-C=benchmarks/results/raw-314-direct/chisle-C.SKILL.md
 SUITES=ladder node benchmarks/run-ablation.js benchmarks/results/raw-314-ladder-direct 2 6 vanilla caveman=<caveman SKILL.md> ponytail=<ponytail SKILL.md> chisle=skills/chisle/SKILL.md
@@ -91,9 +102,40 @@ Billed tokens tie with caveman this run (69% each, against 87% for caveman in th
 | `greensuite` | 16,656 | 17,320 | 17,450 | **2,024** |
 | `gitregress` | 18,379 | 36,228 | 27,399 | **9,177** |
 
-The README's cost chart leaves each ruleset's own prompt out, for every arm alike: it is a fixed per-session overhead held in the prompt cache. On Haiku 4.5 the prompts are 838 tokens (Chisle), 968 (caveman) and 1,536 (ponytail), measured in [`raw-314-direct`](../benchmarks/results/raw-314-direct/) as each arm's single-request prompt minus the bare model's; per run they bill as one 1-hour cache write ($2/M) plus a cache read ($0.10/M) on every later request, which comes to $0.0025 (Chisle), $0.0027 (caveman) and $0.0042 (ponytail) per run. Without them the totals are caveman 120%, ponytail 104%, Chisle 87%; per task, Chisle 70% (`noisylog`), 77% (`greensuite`) and 108% (`gitregress`), caveman 105%, 94% and 152%, ponytail 87%, 106% and 115%.
+The README's cost chart leaves each ruleset's own prompt out, for every arm alike: it is a fixed per-session overhead held in the prompt cache. On Haiku 4.5 the prompts are 838 tokens (Chisle), 968 (caveman) and 1,536 (ponytail), measured in [`raw-314-direct`](../benchmarks/results/raw-314-direct/) as each arm's single-request prompt minus the bare model's; per run they bill as one 1-hour cache write ($2/M) plus a cache read ($0.10/M) on every later request, which comes to $0.0025 (Chisle), $0.0027 (caveman) and $0.0042 (ponytail) per run. Without them the three-task totals are caveman 120%, ponytail 104%, Chisle 87%; with `releasered` (below) added as a fourth task, the README's cost chart reads caveman 108%, ponytail 103%, Chisle 73%. Per task, Chisle 70% (`noisylog`), 77% (`greensuite`) and 108% (`gitregress`), caveman 105%, 94% and 152%, ponytail 87%, 106% and 115%.
 
 Chisle is the cheapest ruleset on all three tasks but costs more than the bare agent on `gitregress`. No run there read the whole diff (each went file by file), so the filters saved mainly on `npm test` (11,555 → 103 chars); two of the three Chisle runs first opened the wrong commit and took 20 and 18 turns ($0.129, $0.117), the third 9 ($0.060). With 3 seeds a cell, per-task gaps under about 20% are noise.
+
+**One task with everything at once (2026-11-24).** `releasered`: `npm test` is green at the `v2.0.0` tag and red six commits later (three authors), from two unrelated bugs: a per-line discount rewrite taxes the pre-discount subtotal, and a thousands-separator change pads cents on the wrong side. Every `npm test` prints 517 results (27k chars, 8 failing) and `git diff v2.0.0` is 10.5k chars, so the agent reads tests, history and diffs, finds two root causes, edits two files and reruns. The hidden test checks both fixes on amounts and regions the visible suite doesn't, that the other four commits survive (currencies, US states, line discounts, separators) and that the test files are unchanged. The fixture was committed before its first run. No arm uses RTK; cost leaves each ruleset's own cached prompt out at each model's prices (fitted from Claude Code's costUSD: Haiku 4.5 $2/M 1-hour cache write and $0.10/M read; Sonnet 5.5 $4 and $0.10; Opus 5.5 $8 and $0.20; prompt sizes 838 / 968 / 1,536 tokens on Haiku, 1,201 / 1,371 / 2,056 on Sonnet and Opus). Raw cells: [Haiku](../benchmarks/agentic/raw-releasered/), [Sonnet](../benchmarks/agentic/raw-releasered-sonnet/), [Opus](../benchmarks/agentic/raw-releasered-opus/).
+
+| Haiku 4.5, 5 runs | passed | cost / run | output tokens | tool output read | turns |
+|---|--:|--:|--:|--:|--:|
+| bare agent | 5 / 5 | $0.1567 | 4,102 | 46,481 chars | 17.0 |
+| caveman | 5 / 5 | 97% | 106% | 34,982 | 17.4 |
+| ponytail | 5 / 5 | 102% | 122% | 40,193 | 19.4 |
+| **Chisle 3.14** | 5 / 5 | **61%** | **92%** | **11,816** | **14.0** |
+
+| Sonnet 5.5, 3 runs | passed | cost / run | output tokens | tool output read | turns |
+|---|--:|--:|--:|--:|--:|
+| bare agent | 3 / 3 | $0.0951 | 833 | 12,936 chars | 5.0 |
+| caveman | 3 / 3 | 94% | 99% | 9,369 | 5.0 |
+| ponytail | 3 / 3 | 104% | 108% | 13,134 | 5.0 |
+| **Chisle 3.14** | 3 / 3 | **88%** | 107% | **7,936** | 5.3 |
+
+| Opus 5.5, 3 runs | passed | cost / run | output tokens | tool output read | turns |
+|---|--:|--:|--:|--:|--:|
+| bare agent | 3 / 3 | $0.2207 | 1,354 | 15,756 chars | 6.0 |
+| caveman | 3 / 3 | 97% | 94% | 13,471 | 5.7 |
+| ponytail | 3 / 3 | 102% | 92% | 16,269 | 5.7 |
+| **Chisle 3.14** | 3 / 3 | **81%** | **74%** | **10,122** | **5.0** |
+
+Haiku runs the full suite again and again (about 12 shell calls a run), so the filters work on every call: Chisle read a quarter of the bare agent's tool output and needed three fewer turns. Sonnet and Opus narrow their own output (`npm test | grep ✕ | head -30`, `git diff -- src/money.js src/invoice.js`) and finish in 5–6 turns, which leaves less to cut. On Sonnet, Chisle wrote 7% more output tokens than the bare agent and was still the cheapest arm.
+
+```bash
+ARMS=vanilla,caveman,ponytail,chisle-hook FIXTURES=releasered RAW_DIR=benchmarks/agentic/raw-releasered node benchmarks/agentic/run.js claude-haiku-4-5-20251001 5 4
+ARMS=vanilla,caveman,ponytail,chisle-hook FIXTURES=releasered RAW_DIR=benchmarks/agentic/raw-releasered-sonnet node benchmarks/agentic/run.js claude-sonnet-5-5 3 4
+ARMS=vanilla,caveman,ponytail,chisle-hook FIXTURES=releasered RAW_DIR=benchmarks/agentic/raw-releasered-opus node benchmarks/agentic/run.js claude-opus-5-5 3 4
+```
 
 **Input axis.** Deterministic, no model calls.
 

@@ -1,8 +1,8 @@
 // Each figure carries where it comes from. The point of the site is that the
 // numbers survive being checked, so the source sits right under the number.
 const STATS = [
-  { v: "−43%", k: "answer length on Sonnet 5.5; caveman −23%, ponytail −36%", src: "13 prompts × 3 runs in one session, Claude Code + Sonnet 5.5, every arm answered every prompt; benchmarks/results/raw-314-sonnet-direct/" },
-  { v: "−39%", k: "billed output tokens on Sonnet 5.5; caveman −22%, ponytail −27%", src: "same run; on Haiku 4.5 every ruleset adds hidden thinking, Chisle −9%; benchmarks/results/raw-314-direct/" },
+  { v: "−43%", k: "answer length on Sonnet 5.5; caveman −23%, ponytail −36%", src: "13 prompts × 3 runs in one session, Claude Code + Sonnet 5.5, every arm answered every prompt; Opus 5.5: −50%; benchmarks/results/raw-314-sonnet-direct/" },
+  { v: "−39%", k: "billed output tokens on Sonnet 5.5; caveman −22%, ponytail −27%", src: "same run; Opus 5.5: −49% (caveman −14%, ponytail −42%); on Haiku 4.5 every ruleset adds hidden thinking, Chisle −9%; benchmarks/results/raw-314-{opus-direct,direct}/" },
   { v: "−48%", k: "per oversized tool output, before Claude reads it", src: "PostToolUse hook replayed over the maintainer's recent Claude Code sessions; Read/Edit never touched" },
   { v: "156/156", k: "auto-graded maths and coding answers correct, same as the bare model", src: "52 problems × 3 seeds, Haiku 4.5, hidden tests, no judge model; benchmarks/quality/raw-314/" },
 ];

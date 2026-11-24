@@ -22,7 +22,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/readme/stats-dark.svg">
-    <img src="assets/readme/stats-light.svg" width="880" alt="Chisle versus the same model with no ruleset, on Sonnet 5.5: 39% fewer billed output tokens (Haiku 4.5: 9%), answers 43% shorter (Haiku 4.5: 39%), oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.">
+    <img src="assets/readme/stats-light.svg" width="880" alt="Chisle versus the same model with no ruleset, on Sonnet 5.5: 39% fewer billed output tokens (Opus 5.5: 49%, Haiku 4.5: 9%), answers 43% shorter (Opus 5.5: 50%, Haiku 4.5: 39%), oversized tool output 48% smaller, accuracy 156 of 156, the same as the bare model.">
   </picture>
 </p>
 
@@ -114,6 +114,13 @@ Then a short example and a five-line list of the transitions.
 
 <p align="center">
   <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark-opus.svg">
+    <img src="assets/benchmark-opus-light.svg" width="860" alt="Claude Code with Opus 5.5, 39 answers (13 prompts, 3 runs) in one session, billed output tokens as percent of the same model with no ruleset: caveman 86%, ponytail 58%, Chisle 51%.">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark-sonnet.svg">
     <img src="assets/benchmark-sonnet-light.svg" width="860" alt="Claude Code with Sonnet 5.5, 39 answers (13 prompts, 3 runs) in one session, billed output tokens as percent of the same model with no ruleset: caveman 78%, ponytail 73%, Chisle 61%.">
   </picture>
@@ -136,9 +143,21 @@ Then a short example and a five-line list of the transitions.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/benchmark-cost.svg">
-    <img src="assets/benchmark-cost-light.svg" width="860" alt="Total cost of three real agent tasks with noisy commands (fix a failing npm test, add a feature that keeps a 391-test suite green, find a bug in a large commit), as percent of the same agent with no ruleset, no RTK in any arm, each ruleset's own cached prompt not counted: caveman 120%, ponytail 104%, Chisle 87%. Every run fixed its task.">
+    <img src="assets/benchmark-cost-light.svg" width="860" alt="Total cost of four real agent tasks with noisy commands (fix a failing npm test, add a feature that keeps a 391-test suite green, find a bug in a large commit, find the two commits that turned a release red), as percent of the same agent with no ruleset, no RTK in any arm, each ruleset's own cached prompt not counted: caveman 108%, ponytail 103%, Chisle 73%. Every run fixed its task.">
   </picture>
 </p>
+
+<p align="center"><sub><b>One task with everything at once</b> (<code>releasered</code>): tests pass at the <code>v2.0.0</code> tag and fail six commits later, from two unrelated bugs. The agent runs a 517-test suite (27k-char log), reads the history and the diff since the tag, fixes two files and reruns until green. Cost as % of no ruleset, cached ruleset prompts not counted, no RTK; every run fixed both bugs.</sub></p>
+
+<div align="center">
+<table>
+<tr><th></th><th>Haiku 4.5 (5 runs)</th><th>Sonnet 5.5 (3 runs)</th><th>Opus 5.5 (3 runs)</th></tr>
+<tr><td>no ruleset</td><td>100%</td><td>100%</td><td>100%</td></tr>
+<tr><td>caveman</td><td>97%</td><td>94%</td><td>97%</td></tr>
+<tr><td>ponytail</td><td>102%</td><td>104%</td><td>102%</td></tr>
+<tr><td><b>Chisle</b></td><td><b>61%</b></td><td><b>88%</b></td><td><b>81%</b></td></tr>
+</table>
+</div>
 
 <p align="center"><sub>Every raw transcript is committed, losses included. <a href="docs/benchmarks.md">Method and data</a> · <a href="https://jaypokale.me/writing/chisle-benchmarks-it-loses">why we publish the losses</a></sub></p>
 

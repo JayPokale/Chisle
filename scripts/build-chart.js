@@ -6,7 +6,8 @@
 // task where all arms have a cell, the same method as benchmarks/pooled.js.
 //
 // Source: benchmarks/results/raw-314-direct/<suite>-s<seed>/<task>__<arm>.json
-// (Haiku) and raw-314-sonnet-direct/ (the same run on Sonnet 5.5, its own chart).
+// (Haiku), raw-314-sonnet-direct/ and raw-314-opus-direct/ (the same run on
+// Sonnet 5.5 and Opus 5.5, a chart each).
 // Data-driven + CI-checkable: same cells in → same chart out.
 //
 // A second chart, assets/benchmark-terminal(-light).svg, shows the input
@@ -28,6 +29,7 @@ const ROOT = path.join(__dirname, '..');
 const RAW_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw-314-direct');
 // Same suite and arms on Sonnet 5.5: assets/benchmark-sonnet(-light).svg.
 const SONNET_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw-314-sonnet-direct');
+const OPUS_DIR = path.join(ROOT, 'benchmarks', 'results', 'raw-314-opus-direct');
 const SANS = "-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif";
 // The README swaps these with <picture>. Bar tones: rivals and the bare model share one tone,
 // Chisle gets its own.
@@ -61,13 +63,14 @@ function collectTerminal() {
   return { n: rows.length, held: rows.filter((r) => r.held).length, bare: 100, caveman: 100, ponytail: 100, [SELF]: pct(SELF) };
 }
 
-// Third chart, assets/benchmark-cost(-light).svg: total cost of three real
+// Third chart, assets/benchmark-cost(-light).svg: total cost of four real
 // agent tasks with noisy commands (real repos, hidden tests), as % of the bare
 // agent. No arm uses RTK. Tasks: noisylog (a failing npm test, 17k-char log),
 // greensuite (a feature that must keep a 391-test suite green), gitregress (a
-// bug buried in a large refactor commit).
-// Source: benchmarks/agentic/raw-{noisylog,commands}/<fixture>__<arm>__<seed>.json
-const COST_DIRS = ['raw-noisylog', 'raw-commands'].map((d) => path.join(ROOT, 'benchmarks', 'agentic', d));
+// bug buried in a large refactor commit), releasered (tests, history and diffs
+// since a tag, two root causes in two files).
+// Source: benchmarks/agentic/raw-{noisylog,commands,releasered}/<fixture>__<arm>__<seed>.json
+const COST_DIRS = ['raw-noisylog', 'raw-commands', 'raw-releasered'].map((d) => path.join(ROOT, 'benchmarks', 'agentic', d));
 const COST_ARMS = { bare: 'vanilla', caveman: 'caveman', ponytail: 'ponytail', [SELF]: 'chisle-hook' };
 // Each ruleset's own prompt is left out of its cost, for every arm alike: it is a
 // fixed per-session overhead that sits in the prompt cache. Sizes are Haiku 4.5
@@ -88,7 +91,10 @@ function collectCost() {
   // Every arm has the same cells (task x seed), so a mean ranks like a total.
   const mean = (a) => runs[a].reduce((s, r) => s + r.cost_usd - ownCost(r), 0) / runs[a].length;
   const stat = {
-    n: runs.vanilla.length / new Set(runs.vanilla.map((r) => r.fixture)).size,
+    n: (() => { // runs per task, e.g. "3" or "3–5"
+      const per = Object.values(runs.vanilla.reduce((m, r) => ({ ...m, [r.fixture]: (m[r.fixture] || 0) + 1 }), {}));
+      return Math.min(...per) === Math.max(...per) ? `${per[0]}` : `${Math.min(...per)}–${Math.max(...per)}`;
+    })(),
     tasks: new Set(runs.vanilla.map((r) => r.fixture)).size,
     allPassed: Object.values(runs).every((a) => a.every((r) => r.pass)),
   };
@@ -160,6 +166,11 @@ ${body}</svg>
 }
 
 const CHARTS = [
+  { collect: () => collect(OPUS_DIR), arms: ARMS, suffix: '-opus', line: '100% = no ruleset',
+    bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]],
+    title: 'Claude Code + Opus 5.5: billed output tokens, % of the same model with no ruleset',
+    sub: (s) => `${s.n} answers (13 prompts × 3 runs), all arms in one session, every arm answered every prompt; lower = cheaper`,
+    aria: (s) => `Claude Code with Opus 5.5, ${s.n} answers in one session, billed output tokens as percent of the same model with no ruleset.` },
   { collect: () => collect(SONNET_DIR), arms: ARMS, suffix: '-sonnet', line: '100% = no ruleset',
     bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]],
     title: 'Claude Code + Sonnet 5.5: billed output tokens, % of the same model with no ruleset',
@@ -178,7 +189,7 @@ const CHARTS = [
   { collect: collectCost, arms: TERM_ARMS, suffix: '-cost', line: '100% = no ruleset',
     bars: (th) => [th.bars[0], th.bars[0], th.bars[0], th.bars[3]],
     title: 'Cost of real agent tasks, % of the same agent with no ruleset',
-    sub: (s) => `${s.tasks} noisy-command tasks (failing test, 391-test suite, bug in a big commit), Haiku 4.5, ${s.n} runs each${s.allPassed ? ', all fixed' : ''}; no RTK; cached ruleset prompts not counted`,
+    sub: (s) => `${s.tasks} noisy-command tasks (failing test, 391-test suite, bug in a big commit, red release), Haiku 4.5, ${s.n} runs each${s.allPassed ? ', all fixed' : ''}; no RTK; cached ruleset prompts not counted`,
     aria: (s) => `Total cost of ${s.tasks} real agent tasks with noisy commands, as percent of the same agent with no ruleset, no RTK in any arm, each ruleset's own cached prompt not counted.` },
 ];
 
