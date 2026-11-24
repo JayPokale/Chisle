@@ -42,6 +42,7 @@ ARMS=vanilla,chisle,chisle-hook RAW_DIR=benchmarks/agentic/raw-2 node benchmarks
 | `greensuite` | Adding hour units means changing a validation regex, a parsing regex and the unit table; every `npm test` prints 391 passing results (16k chars) | `1.5h`, `1h0m5s` and a bare `h` (must still throw), plus the visible suite |
 | `gitregress` | The last commit, a 159-line "modernise" refactor (16.5k-char diff), renamed every export and quietly started taxing the pre-discount subtotal | Taxed-after-discount totals; reverting the file to `HEAD~1` brings back the old export names and fails |
 | `releasered` | Green at the `v2.0.0` tag, red six commits later: a per-line discount rewrite taxes the pre-discount subtotal, and the thousands-separator change pads cents on the wrong side. Every `npm test` prints 517 results (27k chars, 8 failing); `git diff v2.0.0` is 10.5k chars | Both fixes, with more amounts and regions than the visible failures; the other four commits (currencies, US states, line discounts, separators) must survive; test files unchanged |
+| `diffreview` | Branch `refactor/modules` is sold as a pure refactor (quote style, arrow functions, `money.js` split, renamed locals, a shared `assertInt`, `@example` docs), so every line changes: `git diff main` is 28.7k chars. Its tests pass; two behaviour changes hide in it that no visible test covers (an unknown discount code now gives no discount instead of throwing; `assertInt(qty, 0, …)` accepts a quantity of 0) | Both behaviours back to `main`'s, on the branch, with the split modules and `validate.js` kept; the branch's own tests still pass (added tests are fine) |
 
 `noisylog` was added on 2026-10-01, before any run that includes it. It was
 meant to give the `chisle-hook` arm something to compress, but a smoke run
@@ -58,7 +59,13 @@ repo before the agent starts; it builds `HEAD~1` from `HEAD` by undoing the
 refactor's renames and style changes. `releasered` (2026-11-24) combines
 everything in one task: noisy test runs before and after, history and diffs to
 read, two root causes in two files, and edits; its `setup.js` builds the tag
-and six commits from three authors. Results:
+and six commits from three authors. `diffreview` (2026-11-24) is the diff-heavy
+one: the bugs are only findable by reading the branch diff, and the full diff is
+large enough that Chisle's size tiers elide its middle (both bug lines included)
+into a spill file. Its first run (`raw-diffreview-v1/`) is void: a rate-refresh
+commit on the branch was itself a behaviour change, so agents rightly reverted
+it and the hidden test, which wanted it kept, failed them; it also rejected
+added regression tests. Results:
 [`docs/benchmarks.md`](../../docs/benchmarks.md).
 
 ## Metrics

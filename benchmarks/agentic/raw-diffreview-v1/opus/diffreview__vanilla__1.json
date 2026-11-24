@@ -1,0 +1,73 @@
+{
+ "fixture": "diffreview",
+ "arm": "vanilla",
+ "seed": 1,
+ "out_tokens": 4946,
+ "input_tokens": 315468,
+ "cost_usd": 0.4296768,
+ "turns": 8,
+ "answer": "The branch changed behaviour in three places. I fixed all three and kept the refactor: the module split, `assertInt`, the arrow functions, the renames and the style changes.\n\n**Behaviour changes found and fixed:**\n\n1. **Unknown discount codes stopped raising an error** (`src/discount.js`). The refactor merged the two checks into `if (!code || !entry) return 0`. On `main`, a bad code like `'BOGUS'` throws `unknown code: BOGUS`. On the branch it quietly gave no discount, so a typo in a promo code went unnoticed. I put the two checks back as they were.\n\n2. **A quantity of 0 was accepted** (`src/lineItems.js`). When `qty` moved to `assertInt`, the minimum became `0`, but `main` requires `qty >= 1`. A zero-quantity line would have gone into the invoice. The minimum is now `1` again. Price and line-discount checks still use `0`, which matches `main`.\n\n3. **Exchange rates changed** (`src/currency.js`). Commit 4376a4e, \"refresh display rates to the 2026-11-21 close\", changed 29 of the 32 rates, so every non-USD invoice showed different amounts. That's a data change, not a refactor, so I put back `main`'s rates. If you want the new rates, re-apply that commit as its own change.\n\nThe tests passed through all of this because they build their expected values from the code itself (`FX_RATES`, `DISCOUNT_CODES`) and never tried a bad code or a zero quantity. I added three tests: a bad code must throw, a quantity of 0 must be rejected, and three rates are pinned to `main`'s values.\n\n**Checks:**\n- `npm test`: 520 passed.\n- I ran 10,087 inputs (normal values, bad values and edge cases) through every exported function on both `main` and this branch. After the fixes the results match exactly. Before them, 797 differed.\n\n**Two things to know:**\n- The changes are **staged but not committed**. The commit failed because no git author name or email is set here, and I didn't change your git settings. Once one is set, run `git commit`.\n- `src/money.js` was removed, so any code that still does `require('./money')` will break. Nothing in this repo does, and the package is private. If something outside the repo uses that path, a small `src/money.js` that re-exports from the two new files would keep it working.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "git log --oneline main..HEAD && git diff --stat main HEAD && git diff main HEAD",
+   "chars": 28940
+  },
+  {
+   "tool": "Bash",
+   "input": "git ls-files && cat package.json; grep -rn \"money'\\|money\\\"\" --include=*.js . | grep -v node_modules",
+   "chars": 845
+  },
+  {
+   "tool": "Bash",
+   "input": "cat CHANGELOG.md; git diff main HEAD -- CHANGELOG.md; cat test/run.js | head -30",
+   "chars": 1406
+  },
+  {
+   "tool": "Bash",
+   "input": "python3 - <<'EOF'\nimport re,subprocess\nmain=subprocess.check_output(['git','show','main:src/currency",
+   "chars": 3908
+  },
+  {
+   "tool": "Bash",
+   "input": "W=$(mktemp -d) && git worktree add -q $W/main main && cat > $W/diff.js <<'EOF'\nconst [a,b]=process.a",
+   "chars": 43
+  },
+  {
+   "tool": "Bash",
+   "input": "python3 - <<'EOF'\np='test/discount.test.js';s=open(p).read()\ns=s.replace(\"module.exports = cases\",\"c",
+   "chars": 374,
+   "error": true
+  },
+  {
+   "tool": "Bash",
+   "input": "git status --short",
+   "chars": 131
+  }
+ ],
+ "request_prompts": [
+  18071,
+  38217,
+  39137,
+  40145,
+  43257,
+  44768,
+  45818,
+  46055
+ ],
+ "pass": false,
+ "test_output": "FAIL refreshed EUR rate kept -> 920 want 940\nFAIL test files edited",
+ "files_created": [],
+ "files_touched": [
+  "src/currency.js",
+  "src/discount.js",
+  "src/lineItems.js",
+  "test/currency.test.js",
+  "test/discount.test.js",
+  "test/invoice.test.js"
+ ],
+ "loc_before": 362,
+ "loc_after": 366,
+ "loc_delta": 4,
+ "deps_added": []
+}

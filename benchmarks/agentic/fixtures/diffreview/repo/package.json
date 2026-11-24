@@ -1,0 +1,1 @@
+{ "name": "invoicing", "version": "2.1.0-rc.1", "private": true, "scripts": { "test": "node test/run.js" } }

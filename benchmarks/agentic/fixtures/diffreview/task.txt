@@ -1,0 +1,1 @@
+Branch `refactor/modules` (checked out) is meant to be a pure refactor of `main`: no behaviour change. Its tests pass, but a reviewer says it changes behaviour somewhere. Compare it with `main`, find every behaviour change it makes and fix them on this branch, keeping the refactor itself.
