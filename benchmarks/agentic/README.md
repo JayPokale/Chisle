@@ -41,6 +41,7 @@ ARMS=vanilla,chisle,chisle-hook RAW_DIR=benchmarks/agentic/raw-2 node benchmarks
 | `routing-catalog` | A regional courier catalog uses an exclusive weight check for inclusive service maxima | A caller-only fix misses exact-boundary quotes, eligible-service discovery, manifests, and quote audits |
 | `greensuite` | Adding hour units means changing a validation regex, a parsing regex and the unit table; every `npm test` prints 391 passing results (16k chars) | `1.5h`, `1h0m5s` and a bare `h` (must still throw), plus the visible suite |
 | `gitregress` | The last commit, a 159-line "modernise" refactor (16.5k-char diff), renamed every export and quietly started taxing the pre-discount subtotal | Taxed-after-discount totals; reverting the file to `HEAD~1` brings back the old export names and fails |
+| `releasered` | Green at the `v2.0.0` tag, red six commits later: a per-line discount rewrite taxes the pre-discount subtotal, and the thousands-separator change pads cents on the wrong side. Every `npm test` prints 517 results (27k chars, 8 failing); `git diff v2.0.0` is 10.5k chars | Both fixes, with more amounts and regions than the visible failures; the other four commits (currencies, US states, line discounts, separators) must survive; test files unchanged |
 
 `noisylog` was added on 2026-10-01, before any run that includes it. It was
 meant to give the `chisle-hook` arm something to compress, but a smoke run
@@ -54,7 +55,10 @@ includes them, to measure the command filters against rulesets that leave tool
 output alone. `gitregress` needs git history, which can't be committed as a
 nested `.git`, so it ships a `setup.js` that the runner executes in the copied
 repo before the agent starts; it builds `HEAD~1` from `HEAD` by undoing the
-refactor's renames and style changes. Results:
+refactor's renames and style changes. `releasered` (2026-11-24) combines
+everything in one task: noisy test runs before and after, history and diffs to
+read, two root causes in two files, and edits; its `setup.js` builds the tag
+and six commits from three authors. Results:
 [`docs/benchmarks.md`](../../docs/benchmarks.md).
 
 ## Metrics

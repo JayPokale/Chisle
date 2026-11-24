@@ -1,0 +1,50 @@
+{
+ "fixture": "releasered",
+ "arm": "vanilla",
+ "seed": 1,
+ "out_tokens": 861,
+ "input_tokens": 128078,
+ "cost_usd": 0.0928146,
+ "turns": 5,
+ "answer": "`npm test` is green again: 517 of 517 pass. I haven't committed the fix.\n\nTwo commits since v2.0.0 each introduced a bug. Both were in source, so I didn't touch the tests.\n\n- **`4188e9a` (Invoice: per-line discount groundwork)** set `taxable = subtotal` in `src/invoice.js`, so tax was computed before the order-level code (e.g. SPRING10) came off. I changed it to `subtotal - discount`. This fixed the two `buildInvoice SPRING10 in CA-ON` failures and the CA-ON total row in `renderInvoice`.\n- **`958d3ae` (Money: thousands separators)** changed `String(abs % 100).padStart(2, \"0\")` to `padEnd` in `src/money.js`. That made 1 cent print as `$0.10` instead of `$0.01`. I changed it back to `padStart`. This fixed the four `formatMoney` failures and the `PIN-03` render row.\n\nThe line discounts, empty-invoice check, JSDoc, thousands separators, new currencies and new US states are all still there.",
+ "tool_calls": [
+  {
+   "tool": "Bash",
+   "input": "git log --oneline v2.0.0..HEAD; npm test 2>&1 | tail -40",
+   "chars": 1855
+  },
+  {
+   "tool": "Bash",
+   "input": "npm test 2>&1 | grep -E \"✕|●\" | head -30; git diff v2.0.0 HEAD --stat",
+   "chars": 1201
+  },
+  {
+   "tool": "Bash",
+   "input": "git diff v2.0.0 HEAD -- src/money.js src/invoice.js src/lineItems.js src/render.js src/discount.js t",
+   "chars": 9176
+  },
+  {
+   "tool": "Bash",
+   "input": "sed -i 's/const taxable = subtotal;/const taxable = subtotal - discount;/' src/invoice.js\nsed -i 's/",
+   "chars": 130
+  }
+ ],
+ "request_prompts": [
+  17917,
+  24673,
+  25432,
+  29891,
+  30165
+ ],
+ "pass": true,
+ "test_output": "",
+ "files_created": [],
+ "files_touched": [
+  "src/invoice.js",
+  "src/money.js"
+ ],
+ "loc_before": 350,
+ "loc_after": 350,
+ "loc_delta": 0,
+ "deps_added": []
+}

@@ -1,0 +1,1 @@
+`npm test` was green at the v2.0.0 tag and is red on main now. Find which commits since the tag broke it and fix the source, not the tests, keeping everything else those commits added. Run the full test suite before you finish; it must be green.
