@@ -19,26 +19,27 @@ const ARMS = [
 // raw-314-sonnet-direct/ and raw-314-direct/ (Chisle 3.14, 39 answers per arm and
 // model in one session, every arm answered every prompt).
 const ROWS = [
-  { label: "billed tokens · Opus 5.5", caveman: "86%", ponytail: "58%", chisle: "51%" },
-  { label: "billed tokens · Sonnet 5.5", caveman: "78%", ponytail: "73%", chisle: "61%" },
-  { label: "billed tokens · Haiku 4.5", caveman: "96%", ponytail: "115%", chisle: "91%" },
-  { label: "answer length · Opus 5.5", caveman: "83%", ponytail: "59%", chisle: "50%" },
-  { label: "answer length · Sonnet 5.5", caveman: "77%", ponytail: "64%", chisle: "57%" },
-  { label: "answer length · Haiku 4.5", caveman: "76%", ponytail: "70%", chisle: "61%" },
+  { label: "billed tokens · Opus 5.5", caveman: 86, ponytail: 58, chisle: 51 },
+  { label: "billed tokens · Sonnet 5.5", caveman: 78, ponytail: 73, chisle: 61 },
+  { label: "billed tokens · Haiku 4.5", caveman: 96, ponytail: 115, chisle: 91 },
+  { label: "answer length · Opus 5.5", caveman: 83, ponytail: 59, chisle: 50 },
+  { label: "answer length · Sonnet 5.5", caveman: 77, ponytail: 64, chisle: 57 },
+  { label: "answer length · Haiku 4.5", caveman: 76, ponytail: 70, chisle: 61 },
+  // benchmarks/agentic/raw-releasered{,-sonnet,-opus}/: one task with tests, git
+  // history, diffs and two fixes; 5 runs on Haiku, 3 on Sonnet and Opus, all fixed.
+  { label: "cost · red release · Haiku 4.5", caveman: 97, ponytail: 102, chisle: 61 },
+  { label: "cost · red release · Sonnet 5.5", caveman: 94, ponytail: 104, chisle: 88 },
+  { label: "cost · red release · Opus 5.5", caveman: 97, ponytail: 102, chisle: 81 },
+  // The last two cards share the final row on wide screens (see Benchmarks below).
   // benchmarks/results/raw-314-commands/commands.json: 37 shell commands; caveman and
   // ponytail are rulesets only, so they pass tool output through untouched.
-  { label: "terminal output read · 37 commands", caveman: "100%", ponytail: "100%", chisle: "28%" },
+  { label: "terminal output read · 37 commands", caveman: 100, ponytail: 100, chisle: 28 },
   // benchmarks/agentic/raw-{noisylog,commands,releasered}/: four real tasks with
   // noisy commands (failing test, 391-test green suite, bug in a big commit, red
   // release), Haiku 4.5, 3-5 runs per arm per task, no RTK in any arm, every run
   // fixed its task; each ruleset's own cached prompt not counted. Matches
   // assets/benchmark-cost.svg.
-  { label: "cost · 4 real agent tasks · Haiku 4.5", caveman: "108%", ponytail: "103%", chisle: "73%" },
-  // benchmarks/agentic/raw-releasered{,-sonnet,-opus}/: one task with tests, git
-  // history, diffs and two fixes; 5 runs on Haiku, 3 on Sonnet and Opus, all fixed.
-  { label: "cost · red release · Haiku 4.5", caveman: "97%", ponytail: "102%", chisle: "61%" },
-  { label: "cost · red release · Sonnet 5.5", caveman: "94%", ponytail: "104%", chisle: "88%" },
-  { label: "cost · red release · Opus 5.5", caveman: "97%", ponytail: "102%", chisle: "81%" },
+  { label: "cost · 4 real agent tasks · Haiku 4.5", caveman: 108, ponytail: 103, chisle: 73 },
 ];
 
 // Correctness, Chisle 3.14 vs bare, Haiku 4.5: benchmarks/quality/raw-314/ and
@@ -48,9 +49,55 @@ const CORRECT = [
   { label: "real repos, hidden tests, 7 fixtures × 5 seeds", bare: "31 / 35", chisle: "31 / 35" },
 ];
 
+// Bars run on a fixed scale so cards compare at a glance; the bare model is the
+// dashed line at 100%.
+const SCALE = 125;
+const RIVALS = ["caveman", "ponytail", "chisle"] as const;
+
+function Comparison({ row, show, delay, span }: { row: (typeof ROWS)[number]; show: boolean; delay: number; span: string }) {
+  const [metric, ...context] = row.label.split(" · ");
+  const summary = RIVALS.map((k) => `${k} ${row[k]}%`).join(", ");
+  return (
+    <figure className={`rounded-xl border border-line bg-bg p-4 ${span}`} aria-label={`${row.label}, % of the bare model: ${summary}`}>
+      <figcaption className="text-sm">
+        <span className="font-semibold">{metric}</span>
+        <span className="text-dim"> · {context.join(" · ")}</span>
+      </figcaption>
+      <div className="mt-3 space-y-2" aria-hidden="true">
+        {RIVALS.map((k, j) => {
+          const v = row[k];
+          const self = k === "chisle";
+          return (
+            <div key={k} className="grid grid-cols-[4.25rem_1fr_2.75rem] items-center gap-2 text-xs">
+              <span className={self ? "font-semibold text-accent" : "text-dim"}>{k}</span>
+              <div className="relative h-4 rounded bg-raised">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={show ? { width: `${(Math.min(v, SCALE) / SCALE) * 100}%` } : {}}
+                  transition={{ duration: 0.9, delay: delay + j * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                  className={`h-full rounded ${self ? "bg-gradient-to-r from-brand to-[#ffc56b]" : "bg-dim/35"}`}
+                />
+                <span
+                  className="absolute -inset-y-1 border-l border-dashed border-fg/50"
+                  style={{ left: `${(100 / SCALE) * 100}%` }}
+                />
+              </div>
+              <span className={`text-right tabular-nums ${self ? "font-semibold text-accent" : v > 100 ? "text-waste" : "text-dim"}`}>
+                {v}%
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </figure>
+  );
+}
+
 export default function Benchmarks() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
+  const cmpRef = useRef<HTMLDivElement>(null);
+  const cmpInView = useInView(cmpRef, { once: true, margin: "-80px" });
 
   return (
     <section id="numbers" className="border-y border-line bg-surface py-28">
@@ -105,28 +152,21 @@ export default function Benchmarks() {
             on Opus. On the failing-test task alone, Chisle 3.14 costs 47%
             less than 3.13.
           </p>
-          <div className="pane-scroll mt-6 overflow-x-auto rounded-xl border border-line bg-bg px-5 py-2">
-            <table className="w-full text-left text-sm">
-              <thead className="text-xs uppercase tracking-wide text-dim">
-                <tr>
-                  <th className="py-2 pr-4 font-medium">metric</th>
-                  <th className="py-2 pr-4 text-right font-medium">caveman</th>
-                  <th className="py-2 pr-4 text-right font-medium">ponytail</th>
-                  <th className="py-2 text-right font-medium text-accent">chisle</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line">
-                {ROWS.map((r) => (
-                  <tr key={r.label} className="transition-colors hover:bg-accent-soft/40">
-                    <td className="py-2 pr-4">{r.label}</td>
-                    <td className="py-2 pr-4 text-right text-dim tabular-nums">{r.caveman}</td>
-                    <td className="py-2 pr-4 text-right text-dim tabular-nums">{r.ponytail}</td>
-                    <td className="py-2 text-right font-semibold text-accent tabular-nums">{r.chisle}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div ref={cmpRef} className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+            {ROWS.map((r, i) => (
+              <Comparison
+                key={r.label}
+                row={r}
+                show={cmpInView}
+                delay={(i % 3) * 0.08}
+                // Rows of three model cards; the two single cards close on a half-width pair.
+                span={i < ROWS.length - 2 ? "lg:col-span-2" : i === ROWS.length - 1 ? "sm:col-span-2 lg:col-span-3" : "lg:col-span-3"}
+              />
+            ))}
           </div>
+          <p className="mt-3 text-xs text-dim">
+            Dashed line: the bare model (100%). Shorter bars are cheaper; amber is Chisle.
+          </p>
           <h3 className="mt-16 text-lg font-semibold tracking-tight">Correctness: shorter, not wronger</h3>
           <p className="mt-2 max-w-xl text-sm text-dim">
             Auto-graded, no judge model. Neither gap is significant (Fisher p = 0.498, 0.738).
