@@ -26,7 +26,7 @@ module.exports = async function setup(ctx) {
           mode: config.getDefaultMode(),
           sessionId: event.sessionID,
           callId: event.id,
-          command: event.args && event.args.command,
+          command: event.input && event.input.command,
         });
         if (updated == null || updated.length >= text.length) return text;
         core.recordSavings(text.length - updated.length, config.getOpencodeStateDir());
