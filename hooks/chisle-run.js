@@ -106,13 +106,33 @@ function hook(input) {
   const payload = JSON.parse(input.replace(/^\uFEFF/, ''));
   const env = process.env;
   if (process.platform === 'win32' || env.CHISLE_COMPRESS === '0' || env.CHISLE_COMPRESS_FILTERS === '0' ||
-      env.CHISLE_COMPRESS_WRAP === '0' || payload.tool_name !== 'Bash') return;
+      env.CHISLE_COMPRESS_WRAP === '0') return;
+  const prefix = `${quote(process.execPath)} ${quote(__filename)} -- `;
+
+  // Antigravity (agy) PreToolUse payload: { toolCall: { name: "run_command", args: { CommandLine } } }
+  if (payload.toolCall) {
+    const tc = payload.toolCall;
+    if (tc.name !== 'run_command' || !tc.args || typeof tc.args.CommandLine !== 'string') return;
+    if (tc.args.CommandLine.includes('chisle-run.js')) return;
+    const { getDefaultMode, getAntigravityDir, readFlag } = require('./chisle-config');
+    const agyDir = getAntigravityDir();
+    const mode = readFlag(path.join(agyDir, '.chisle-active')) || getDefaultMode();
+    if (mode === 'off') return;
+    const agyPrefix = `${quote(process.execPath)} ${quote(__filename)} --state-dir ${quote(agyDir)} -- `;
+    const next = rewriteCommand(tc.args.CommandLine, agyPrefix);
+    if (!next) return;
+    // Emit 'ask' (never 'allow') so rewritten compound/install commands still go
+    // through Antigravity's permission gate and Always-Allow cache.
+    process.stdout.write(JSON.stringify({ decision: 'ask', overwrite: { CommandLine: next } }));
+    return;
+  }
+
+  if (payload.tool_name !== 'Bash') return;
   if (payload.permission_mode !== 'bypassPermissions' && env.CHISLE_COMPRESS_WRAP !== '1') return;
   const { getClaudeDir, readFlag } = require('./chisle-config');
   const mode = readFlag(path.join(getClaudeDir(), '.chisle-active'));
   if (!mode || mode === 'off') return;
   const toolInput = payload.tool_input || {};
-  const prefix = `${quote(process.execPath)} ${quote(__filename)} -- `;
   const next = rewriteCommand(toolInput.command, prefix, guardedPrograms(payload.cwd, getClaudeDir()));
   if (!next) return;
   process.stdout.write(JSON.stringify({
@@ -120,7 +140,7 @@ function hook(input) {
   }));
 }
 
-function run(argv) {
+function run(argv, stateDirOverride) {
   const command = argv.map(quote).join(' ');
   const child = spawn(argv[0], argv.slice(1), { stdio: ['inherit', 'pipe', 'pipe'] });
   // With `2>&1` (or Claude Code capturing both into one file) stdout and
@@ -146,15 +166,16 @@ function run(argv) {
     try {
       const { transform, limitsFor, recordSavings } = require('./chisle-compress-output');
       const { getClaudeDir } = require('./chisle-config');
+      const stateDir = stateDirOverride || process.env.CHISLE_STATE_DIR || getClaudeDir();
       let saved = 0;
       res = raw.map((buf) => {
         const text = buf.toString('utf8');
-        const t = text && transform(text, limitsFor(), 'Bash', getClaudeDir(), command);
+        const t = text && transform(text, limitsFor(), 'Bash', stateDir, command);
         if (t == null) return buf;
         saved += text.length - t.length;
         return t.endsWith('\n') || !text.endsWith('\n') ? t : t + '\n';
       });
-      if (saved > 0) recordSavings(saved, getClaudeDir());
+      if (saved > 0) recordSavings(saved, stateDir);
     } catch (_) { res = raw; } // filtering must never eat output
     process.stdout.write(res[0]);
     process.stderr.write(res[1]);
@@ -164,8 +185,13 @@ function run(argv) {
 
 if (require.main === module) {
   const dash = process.argv.indexOf('--');
-  if (dash > 1 && process.argv.length > dash + 1) run(process.argv.slice(dash + 1));
-  else {
+  if (dash > 1 && process.argv.length > dash + 1) {
+    let stateDir = null;
+    for (let i = 2; i < dash; i++) {
+      if (process.argv[i] === '--state-dir' && i + 1 < dash && process.argv[i + 1]) stateDir = process.argv[++i];
+    }
+    run(process.argv.slice(dash + 1), stateDir);
+  } else {
     let input = '';
     process.stdin.on('data', c => { input += c; });
     process.stdin.on('end', () => { try { hook(input); } catch (_) {} });

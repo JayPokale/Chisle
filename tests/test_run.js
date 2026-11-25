@@ -101,3 +101,84 @@ process.stderr.write('warn: flaky\\n'); process.exit(3);`);
   assert.match(missing.stderr, /chisle-no-such-cmd: command not found/);
   fs.rmSync(dir, { recursive: true, force: true });
 });
+
+test('hook: Antigravity PreToolUse rewrites wrappable run_command and ignores non-wrappable', { skip: process.platform === 'win32' }, () => {
+  const emptyAgyDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-agy-empty-'));
+  const call = (payload, env = {}) => {
+    const r = spawnSync(process.execPath, [RUNNER], {
+      input: JSON.stringify(payload), encoding: 'utf8',
+      env: { ...process.env, AGY_CONFIG_DIR: emptyAgyDir, CHISLE_DEFAULT_MODE: 'on', CHISLE_COMPRESS: '', CHISLE_COMPRESS_FILTERS: '', CHISLE_COMPRESS_WRAP: '', ...env },
+    });
+    return r.stdout ? JSON.parse(r.stdout) : null;
+  };
+  const out = call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't1', name: 'run_command', args: { CommandLine: 'npm test' } },
+  });
+  assert.equal(out.decision, 'ask');
+  assert.ok(out.overwrite.CommandLine.endsWith(' -- npm test') && out.overwrite.CommandLine.includes('--state-dir') && out.overwrite.CommandLine.includes('chisle-run.js'));
+  const compound = call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't1b', name: 'run_command', args: { CommandLine: 'rm -rf /tmp/x && npm test' } },
+  });
+  assert.equal(compound.decision, 'ask');
+  assert.ok(compound.overwrite.CommandLine.startsWith('rm -rf /tmp/x && ') && compound.overwrite.CommandLine.endsWith(' -- npm test'));
+  assert.equal(call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't2', name: 'run_command', args: { CommandLine: 'git status' } },
+  }), null);
+  assert.equal(call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't3', name: 'view_file', args: { Path: 'a.js' } },
+  }), null);
+  assert.equal(call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't4', name: 'run_command', args: { CommandLine: 'npm test' } },
+  }, { CHISLE_DEFAULT_MODE: 'off' }), null);
+  const flagDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-agy-flag-'));
+  fs.writeFileSync(path.join(flagDir, '.chisle-active'), 'off');
+  assert.equal(call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't5', name: 'run_command', args: { CommandLine: 'npm test' } },
+  }, { AGY_CONFIG_DIR: flagDir }), null);
+  assert.equal(call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't6', name: 'run_command', args: { CommandLine: 'node /other/chisle-run.js -- npm test' } },
+  }), null);
+  fs.rmSync(flagDir, { recursive: true, force: true });
+  fs.rmSync(emptyAgyDir, { recursive: true, force: true });
+});
+
+test('runner: --state-dir routes stats away from CLAUDE_CONFIG_DIR', { skip: process.platform === 'win32' }, () => {
+  const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-agy-runner-')));
+  const claudeDir = path.join(dir, 'claude');
+  const agyDir = path.join(dir, 'agy');
+  fs.mkdirSync(claudeDir, { recursive: true });
+  fs.mkdirSync(agyDir, { recursive: true });
+  const script = path.join(dir, 'fake-test.js');
+  const passes = Array.from({ length: 30 }, (_, i) => `--- PASS: TestOk${i} (0.00s)`).join('\n');
+  fs.writeFileSync(script, `process.stdout.write(${JSON.stringify(passes + '\n--- FAIL: TestBad (0.00s)\nFAIL\n')}); process.exit(3);`);
+  const shim = path.join(dir, 'go');
+  fs.writeFileSync(shim, `#!/bin/sh\nexec "${process.execPath}" "${script}"\n`, { mode: 0o755 });
+  const r = spawnSync(process.execPath, [RUNNER, '--state-dir', agyDir, '--', 'go', 'test', './...'], {
+    encoding: 'utf8',
+    env: { ...process.env, PATH: `${dir}${path.delimiter}${process.env.PATH}`, CLAUDE_CONFIG_DIR: claudeDir },
+  });
+  assert.equal(r.status, 3);
+  assert.equal(r.stdout, '--- FAIL: TestBad (0.00s)\nFAIL\n');
+  const agyStats = JSON.parse(fs.readFileSync(path.join(agyDir, '.chisle-compress-stats.json'), 'utf8'));
+  assert.ok(agyStats.savedChars > 0);
+  assert.equal(agyStats.events, 1);
+  assert.equal(fs.existsSync(path.join(claudeDir, '.chisle-compress-stats.json')), false);
+
+  const envStateDir = path.join(dir, 'env-state');
+  fs.mkdirSync(envStateDir, { recursive: true });
+  const r2 = spawnSync(process.execPath, [RUNNER, '--', 'go', 'test', './...'], {
+    encoding: 'utf8',
+    env: { ...process.env, PATH: `${dir}${path.delimiter}${process.env.PATH}`, CLAUDE_CONFIG_DIR: claudeDir, CHISLE_STATE_DIR: envStateDir },
+  });
+  assert.equal(r2.status, 3);
+  assert.ok(fs.existsSync(path.join(envStateDir, '.chisle-compress-stats.json')));
+  assert.equal(fs.existsSync(path.join(claudeDir, '.chisle-compress-stats.json')), false);
+  fs.rmSync(dir, { recursive: true, force: true });
+});

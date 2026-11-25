@@ -73,10 +73,65 @@ test('Antigravity rule lands in .agents/rules as an always-on workspace rule', (
   const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-proj-'));
   const r = runCLI(['--only', 'antigravity'], { cwd: proj });
   const ruleFile = path.join(proj, '.agents', 'rules', 'chisle.md');
+  const hooksFile = path.join(proj, '.agents', 'hooks.json');
   assert.match(r.out, /installed:/);
   // Antigravity ignores a workspace rule without a `trigger` in its frontmatter.
   assert.match(fs.readFileSync(ruleFile, 'utf8'), /^---\ntrigger: always_on\n/);
+  const hooks = JSON.parse(fs.readFileSync(hooksFile, 'utf8'));
+  assert.equal(hooks.chisle.PreToolUse[0].matcher, 'run_command');
+  assert.equal(hooks.chisle.PreToolUse[0].hooks[0].command, 'node ./chisle-hooks/chisle-run.js');
+  const installedRunner = path.join(proj, '.agents', 'chisle-hooks', 'chisle-run.js');
+  assert.ok(fs.existsSync(installedRunner));
+  if (process.platform !== 'win32') {
+    const hookRes = execFileSync(process.execPath, [installedRunner], {
+      input: JSON.stringify({ hookEventName: 'PreToolUse', toolCall: { id: 't1', name: 'run_command', args: { CommandLine: 'npm test' } } }),
+      encoding: 'utf8',
+      env: { ...process.env, CHISLE_DEFAULT_MODE: 'on', CHISLE_COMPRESS_WRAP: '' },
+    });
+    const parsed = JSON.parse(hookRes);
+    assert.equal(parsed.decision, 'ask');
+    assert.ok(parsed.overwrite.CommandLine.endsWith(' -- npm test'));
+  }
   fs.rmSync(proj, { recursive: true, force: true });
+});
+
+test('Antigravity installer merges existing hooks.json and hooks.chisle, self-heals stale commands, and rejects invalid or non-object hooks.json without partial writes', () => {
+  const proj1 = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-agy-merge-'));
+  fs.mkdirSync(path.join(proj1, '.agents'), { recursive: true });
+  const hooksFile1 = path.join(proj1, '.agents', 'hooks.json');
+  fs.writeFileSync(hooksFile1, JSON.stringify({
+    custom: { PostToolUse: [] },
+    chisle: {
+      PostToolUse: [{ matcher: 'view_file', hooks: [] }],
+      PreToolUse: [
+        { matcher: 'other', hooks: [] },
+        { matcher: 'run_command', hooks: [{ type: 'command', command: 'echo sibling' }, { type: 'command', command: 'node /stale/chisle-hooks/chisle-run.js' }] },
+      ],
+    },
+  }));
+  const r1 = runCLI(['--only', 'antigravity'], { cwd: proj1 });
+  assert.equal(r1.status, 0);
+  const merged = JSON.parse(fs.readFileSync(hooksFile1, 'utf8'));
+  assert.deepEqual(merged.custom, { PostToolUse: [] });
+  assert.deepEqual(merged.chisle.PostToolUse, [{ matcher: 'view_file', hooks: [] }]);
+  assert.equal(merged.chisle.PreToolUse.length, 2);
+  assert.equal(merged.chisle.PreToolUse[0].matcher, 'other');
+  assert.equal(merged.chisle.PreToolUse[1].hooks[0].command, 'echo sibling');
+  assert.equal(merged.chisle.PreToolUse[1].hooks[1].command, 'node ./chisle-hooks/chisle-run.js');
+  fs.rmSync(proj1, { recursive: true, force: true });
+
+  for (const bad of ['{bad json', '[]']) {
+    const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-agy-bad-'));
+    fs.mkdirSync(path.join(proj, '.agents'), { recursive: true });
+    const hooksFile = path.join(proj, '.agents', 'hooks.json');
+    fs.writeFileSync(hooksFile, bad);
+    const r = runCLI(['--only', 'antigravity'], { cwd: proj });
+    assert.equal(r.status, 1);
+    assert.equal(fs.readFileSync(hooksFile, 'utf8'), bad);
+    assert.equal(fs.existsSync(path.join(proj, '.agents', 'rules', 'chisle.md')), false);
+    assert.equal(fs.existsSync(path.join(proj, '.agents', 'chisle-hooks')), false);
+    fs.rmSync(proj, { recursive: true, force: true });
+  }
 });
 
 test('Pi package manifest ships extension and skill', () => {

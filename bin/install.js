@@ -33,7 +33,7 @@ const cp = require('child_process');
 const SETTINGS = require('./lib/settings');
 const MCP = require('./lib/mcp');
 const TOOLS = require('./lib/tools');
-const { getOpencodeDir, getOpencodeStateDir, getConfigDir } = require('../hooks/chisle-config');
+const { getOpencodeDir, getOpencodeStateDir, getConfigDir, getAntigravityDir } = require('../hooks/chisle-config');
 
 const REPO = 'JayPokale/Chisle';
 const IS_WIN = process.platform === 'win32';
@@ -692,7 +692,100 @@ function installHermes(ctx) {
   process.stdout.write('\n');
 }
 
-// ── Project-scoped rule agents (Cursor/Windsurf/Cline/Kiro/Copilot/Antigravity)
+// ── Antigravity (agy) ───────────────────────────────────────────────────────
+// Project-scoped: writes .agents/rules/chisle.md and (on Unix) copies the
+// runner/compressor into .agents/chisle-hooks/ + merges a PreToolUse
+// run_command hook into .agents/hooks.json using a relative path (Antigravity
+// runs hooks with the hooks.json directory as CWD).
+function installAntigravity(ctx, prov) {
+  const { say, note, warn, opts, results } = ctx;
+  results.detected++;
+  say(`→ ${prov.label} detected`);
+  const src = path.join(REPO_ROOT, prov.rule);
+  const cwd = process.cwd();
+  const dst = path.join(cwd, prov.rule);
+  const hooksDir = path.join(cwd, '.agents', 'chisle-hooks');
+  const hooksJson = path.join(cwd, '.agents', 'hooks.json');
+
+  if (!fs.existsSync(src)) { warn(`  missing source rule ${prov.rule} (run scripts/build-rules.js)`); results.failed.push([prov.id, 'source rule missing']); process.stdout.write('\n'); return; }
+
+  let hooks = {};
+  if (!IS_WIN && fs.existsSync(hooksJson)) {
+    let parsed;
+    try { parsed = JSON.parse(fs.readFileSync(hooksJson, 'utf8')); }
+    catch (e) { warn(`  invalid JSON in ${hooksJson}`); results.failed.push([prov.id, `invalid JSON in ${hooksJson}`]); process.stdout.write('\n'); return; }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      warn(`  expected JSON object in ${hooksJson}`);
+      results.failed.push([prov.id, `expected JSON object in ${hooksJson}`]); process.stdout.write('\n'); return;
+    }
+    hooks = parsed;
+  }
+
+  if (opts.dryRun) {
+    if (!fs.existsSync(dst) || opts.force) note(`  would write ${dst} (project-scoped)`);
+    else note(`  ${prov.rule} already in this project (--force to overwrite)`);
+    if (!IS_WIN) {
+      note(`  would copy runner/compressor to ${hooksDir}`);
+      note(`  would register PreToolUse hook in ${hooksJson}`);
+    }
+    results.installed.push(prov.id);
+    process.stdout.write('\n');
+    return;
+  }
+
+  try {
+    let didInstall = false;
+    if (!fs.existsSync(dst) || opts.force) {
+      fs.mkdirSync(path.dirname(dst), { recursive: true });
+      fs.copyFileSync(src, dst);
+      process.stdout.write(`  installed: ${dst}  (project-scoped)\n`);
+      didInstall = true;
+    } else {
+      note(`  ${prov.rule} already in this project (--force to overwrite)`);
+    }
+
+    if (!IS_WIN) {
+      fs.mkdirSync(hooksDir, { recursive: true });
+      for (const f of ['chisle-run.js', 'chisle-compress-output.js', 'chisle-command-filters.js', 'chisle-config.js']) {
+        fs.copyFileSync(path.join(REPO_ROOT, 'hooks', f), path.join(hooksDir, f));
+      }
+      fs.writeFileSync(path.join(hooksDir, 'package.json'), '{ "type": "commonjs" }\n');
+
+      const hookCmd = 'node ./chisle-hooks/chisle-run.js';
+      const hookItem = { type: 'command', command: hookCmd, timeout: 10 };
+      const chisleCfg = (hooks.chisle && typeof hooks.chisle === 'object' && !Array.isArray(hooks.chisle)) ? hooks.chisle : {};
+      const pre = Array.isArray(chisleCfg.PreToolUse) ? chisleCfg.PreToolUse.slice() : [];
+      const idx = pre.findIndex(e => e && e.matcher === 'run_command' && Array.isArray(e.hooks) &&
+        e.hooks.some(h => typeof h?.command === 'string' && h.command.includes('chisle-run.js')));
+      let hooksChanged = false;
+      if (idx === -1) {
+        pre.push({ matcher: 'run_command', hooks: [hookItem] });
+        hooksChanged = true;
+      } else {
+        const entry = pre[idx];
+        const hIdx = entry.hooks.findIndex(h => typeof h?.command === 'string' && h.command.includes('chisle-run.js'));
+        if (entry.hooks[hIdx].command !== hookCmd || opts.force) {
+          const nextHooks = entry.hooks.slice();
+          nextHooks[hIdx] = hookItem;
+          pre[idx] = { ...entry, hooks: nextHooks };
+          hooksChanged = true;
+        }
+      }
+      if (hooksChanged) {
+        hooks.chisle = { ...chisleCfg, PreToolUse: pre };
+        fs.writeFileSync(hooksJson, JSON.stringify(hooks, null, 2) + '\n', { mode: 0o644 });
+        process.stdout.write(`  installed: ${hooksJson}\n`);
+        didInstall = true;
+      }
+    }
+
+    if (didInstall) results.installed.push(prov.id);
+    else results.skipped.push([prov.id, IS_WIN ? 'already in project' : 'already in project; hooks refreshed']);
+  } catch (e) { results.failed.push([prov.id, (e && e.message) || 'install failed']); }
+  process.stdout.write('\n');
+}
+
+// ── Project-scoped rule agents (Cursor/Windsurf/Cline/Kiro/Copilot) ─────────
 function installProjectRule(ctx, prov) {
   const { say, note, warn, opts, results } = ctx;
   results.detected++;
@@ -844,6 +937,28 @@ function uninstall(ctx) {
     }
   }
 
+  if (wants('antigravity')) {
+    const agyHooksDir = path.join(process.cwd(), '.agents', 'chisle-hooks');
+    if (fs.existsSync(agyHooksDir)) {
+      if (!opts.dryRun) fs.rmSync(agyHooksDir, { recursive: true, force: true });
+      note('  removed ' + agyHooksDir); touched++;
+    }
+    const agyHooksJson = path.join(process.cwd(), '.agents', 'hooks.json');
+    if (fs.existsSync(agyHooksJson)) {
+      try {
+        const parsed = JSON.parse(fs.readFileSync(agyHooksJson, 'utf8'));
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && parsed.chisle) {
+          delete parsed.chisle;
+          if (!opts.dryRun) {
+            if (Object.keys(parsed).length === 0) fs.rmSync(agyHooksJson, { force: true });
+            else fs.writeFileSync(agyHooksJson, JSON.stringify(parsed, null, 2) + '\n', { mode: 0o644 });
+          }
+          note('  removed chisle hook from ' + agyHooksJson); touched++;
+        }
+      } catch (_) {}
+    }
+  }
+
   // MCP servers routed through the proxy by `npx chisle mcp wrap`: restore
   // their original commands before anything else could remove the proxy.
   if (!opts.only.length) {
@@ -924,6 +1039,7 @@ function printStats(c, opts) {
   const only = opts.only.length === 1 ? opts.only[0] : null;
   const dir = only === 'opencode' ? opencodeStateDir()
     : only === 'copilot-cli' ? copilotDir()
+    : only === 'antigravity' ? getAntigravityDir()
     : claudeDir(opts);
   const p = path.join(dir, '.chisle-compress-stats.json');
   process.stdout.write(c.orange('chisle') + ': tool-output savings\n\n');
@@ -1085,6 +1201,7 @@ function main() {
     else if (p.id === 'opencode') installOpencode(ctx);
     else if (p.id === 'hermes') installHermes(ctx);
     else if (p.id === 'copilot-cli') installCopilotCli(ctx);
+    else if (p.id === 'antigravity') installAntigravity(ctx, p);
     else installProjectRule(ctx, p);
   }
 
