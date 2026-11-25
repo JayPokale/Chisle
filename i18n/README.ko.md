@@ -13,6 +13,7 @@
   <img src="https://img.shields.io/badge/agents-13-d78a3c?style=flat-square" alt="Works with 13 agents">
   <a href="../LICENSE"><img src="https://img.shields.io/badge/license-MIT-d78a3c?style=flat-square" alt="MIT license"></a>
   <a href="https://github.com/JayPokale"><img src="https://img.shields.io/github/followers/JayPokale?style=flat-square&logo=github&color=d78a3c&label=follow%20%40JayPokale" alt="Follow @JayPokale on GitHub"></a>
+  <a href="https://github.com/sponsors/JayPokale"><img src="https://img.shields.io/badge/Sponsor-EA4AAA?style=flat-square&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub"></a>
   <a href="https://buymeacoffee.com/jaypokale3b"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=flat-square&logo=buymeacoffee&logoColor=black" alt="Buy me a coffee"></a>
 </p>
 
@@ -248,6 +249,8 @@ irm https://raw.githubusercontent.com/JayPokale/Chisle/main/install.ps1 | iex
     </picture>
   </a>
 </p>
+
+<p align="center"><a href="https://github.com/sponsors/JayPokale">💖 GitHub에서 후원하기</a> (월간 또는 일회성) · <a href="https://buymeacoffee.com/jaypokale3b">☕ 커피 한 잔 사주기</a></p>
 
 <p align="center"><a href="https://github.com/JayPokale/Chisle/stargazers">⭐ 저장소에 별 주기</a>: 토큰은 하나도 들지 않습니다.</p>
 

@@ -51,6 +51,15 @@ export default async function Community() {
                 Follow @JayPokale
               </a>
               <a
+                href="https://github.com/sponsors/JayPokale"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-md bg-[#bf3989] px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5"
+              >
+                <span aria-hidden>♥</span>
+                Sponsor on GitHub
+              </a>
+              <a
                 href="https://buymeacoffee.com/jaypokale3b"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -61,7 +70,7 @@ export default async function Community() {
               </a>
             </div>
             <p className="mt-6 text-xs text-dim">
-              Free and MIT, but every benchmark run costs real API money. A coffee keeps them coming.
+              Free and MIT, but every benchmark run costs real API money. A sponsorship or a coffee keeps them coming.
             </p>
             <p className="mt-2 text-xs text-dim">
               Co-engineered with Claude, Codex &amp; Antigravity · descended from caveman &amp; ponytail
