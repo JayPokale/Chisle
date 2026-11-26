@@ -313,6 +313,28 @@ test('no filtering: unknown commands, rtk, and pipes into anything but head/tail
   assert.equal(filterCommand('cat log.txt', GIT_STATUS), null);
 });
 
+test('an unrecognised segment that prints disables filtering for the whole call', () => {
+  // Blank lines in `m.py` must survive: shortStatus would skip them.
+  const file = 'import os\n\n\ndef f():\n    return 1\n';
+  const status = GIT_STATUS + '\n' + file;
+  assert.ok(filterCommand('git status', GIT_STATUS));
+  assert.equal(filterCommand('git status && cat m.py', status), null);
+  assert.equal(filterCommand('cat m.py; git status', status), null);
+  assert.equal(kindsFor('git diff; cat fix.patch'), null);
+  assert.equal(kindsFor('npm test; cat old.tap'), null);
+  assert.equal(kindsFor('grep -rn x src; cat errors.log'), null);
+  assert.equal(kindsFor('git log -3; cat notes.md'), null);
+  assert.equal(kindsFor('git status\ncat m.py'), null);
+});
+
+test('segments that print nothing keep filtering on', () => {
+  assert.deepEqual([...kindsFor('cd app && git status')], ['git-status']);
+  assert.deepEqual([...kindsFor('export CI=1 && npm test')], ['test']);
+  assert.deepEqual([...kindsFor('CI=1; NAME="a b"; npm test')], ['test']);
+  assert.deepEqual([...kindsFor('cd "my app"; git status;')], ['git-status']);
+  assert.ok(filterCommand('cd app && git status', GIT_STATUS));
+});
+
 test('hook: small Bash output is filtered via tool_input.command', () => {
   const prev = process.env.CHISLE_COMPRESS_FILTERS;
   delete process.env.CHISLE_COMPRESS_FILTERS;
