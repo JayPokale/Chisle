@@ -102,15 +102,29 @@ process.stderr.write('warn: flaky\\n'); process.exit(3);`);
   fs.rmSync(dir, { recursive: true, force: true });
 });
 
-test('hook: Antigravity PreToolUse rewrites wrappable run_command and ignores non-wrappable', { skip: process.platform === 'win32' }, () => {
+test('hook: Antigravity PreToolUse rewrites wrappable run_command, gates on always-proceed, and respects deny/ask rules', { skip: process.platform === 'win32' }, () => {
   const emptyAgyDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-agy-empty-'));
+  const agyCliDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-agy-cli-'));
+  const writeSettings = (obj) => fs.writeFileSync(path.join(agyCliDir, 'settings.json'), JSON.stringify(obj));
   const call = (payload, env = {}) => {
     const r = spawnSync(process.execPath, [RUNNER], {
       input: JSON.stringify(payload), encoding: 'utf8',
-      env: { ...process.env, AGY_CONFIG_DIR: emptyAgyDir, CHISLE_DEFAULT_MODE: 'on', CHISLE_COMPRESS: '', CHISLE_COMPRESS_FILTERS: '', CHISLE_COMPRESS_WRAP: '', ...env },
+      env: { ...process.env, AGY_CONFIG_DIR: emptyAgyDir, AGY_CLI_DIR: agyCliDir, CHISLE_DEFAULT_MODE: 'on', CHISLE_COMPRESS: '', CHISLE_COMPRESS_FILTERS: '', CHISLE_COMPRESS_WRAP: '', ...env },
     });
     return r.stdout ? JSON.parse(r.stdout) : null;
   };
+  // Without always-proceed or CHISLE_COMPRESS_WRAP=1, skip wrapping so Always-Allow rules stay intact.
+  writeSettings({ toolPermission: 'default' });
+  assert.equal(call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't0', name: 'run_command', args: { CommandLine: 'npm test' } },
+  }), null);
+  assert.ok(call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't0b', name: 'run_command', args: { CommandLine: 'npm test' } },
+  }, { CHISLE_COMPRESS_WRAP: '1' }).overwrite.CommandLine.endsWith(' -- npm test'));
+
+  writeSettings({ toolPermission: 'always-proceed' });
   const out = call({
     hookEventName: 'PreToolUse',
     toolCall: { id: 't1', name: 'run_command', args: { CommandLine: 'npm test' } },
@@ -145,7 +159,29 @@ test('hook: Antigravity PreToolUse rewrites wrappable run_command and ignores no
     hookEventName: 'PreToolUse',
     toolCall: { id: 't6', name: 'run_command', args: { CommandLine: 'node /other/chisle-run.js -- npm test' } },
   }), null);
+
+  // Guarded deny/ask rules skip rewriting matching programs (and * / regex: skip all).
+  writeSettings({ toolPermission: 'always-proceed', permissions: { deny: ['command(npm install)'], ask: ['unsandboxed(cargo)'] } });
+  assert.equal(call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't7', name: 'run_command', args: { CommandLine: 'npm install' } },
+  }), null);
+  assert.equal(call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't8', name: 'run_command', args: { CommandLine: 'cargo test' } },
+  }), null);
+  assert.ok(call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't9', name: 'run_command', args: { CommandLine: 'go test ./...' } },
+  }).overwrite.CommandLine.endsWith(' -- go test ./...'));
+  writeSettings({ toolPermission: 'always-proceed', permissions: { deny: ['command(regex:npm .*)'] } });
+  assert.equal(call({
+    hookEventName: 'PreToolUse',
+    toolCall: { id: 't10', name: 'run_command', args: { CommandLine: 'go test ./...' } },
+  }), null);
+
   fs.rmSync(flagDir, { recursive: true, force: true });
+  fs.rmSync(agyCliDir, { recursive: true, force: true });
   fs.rmSync(emptyAgyDir, { recursive: true, force: true });
 });
 

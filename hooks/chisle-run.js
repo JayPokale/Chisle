@@ -102,6 +102,29 @@ function guardedPrograms(cwd, claudeDir) {
   return out;
 }
 
+// Programs named by deny/ask rules in Antigravity CLI settings.json.
+// https://antigravity.google/docs/permissions
+function readAntigravitySettings() {
+  const cliDir = process.env.AGY_CLI_DIR || path.join(process.env.CHISLE_HOME || os.homedir(), '.gemini', 'antigravity-cli');
+  try { return JSON.parse(fs.readFileSync(path.join(cliDir, 'settings.json'), 'utf8')) || {}; }
+  catch (_) { return {}; }
+}
+
+function guardedAntigravityPrograms(settings) {
+  const out = new Set();
+  const perms = settings && settings.permissions;
+  if (!perms || typeof perms !== 'object') return out;
+  for (const rule of [].concat(perms.deny || [], perms.ask || [])) {
+    if (typeof rule !== 'string') continue;
+    const m = rule.match(/^(?:command|unsandboxed)\((.*)\)$/);
+    if (!m) continue;
+    const target = (m[1] || '').trim();
+    if (!target || target.includes('*') || target.startsWith('regex:')) { out.add('*'); continue; }
+    out.add(target.split(/\s+/)[0]);
+  }
+  return out;
+}
+
 function hook(input) {
   const payload = JSON.parse(input.replace(/^\uFEFF/, ''));
   const env = process.env;
@@ -110,19 +133,22 @@ function hook(input) {
   const prefix = `${quote(process.execPath)} ${quote(__filename)} -- `;
 
   // Antigravity (agy) PreToolUse payload: { toolCall: { name: "run_command", args: { CommandLine } } }
+  // https://antigravity.google/docs/hooks
   if (payload.toolCall) {
     const tc = payload.toolCall;
     if (tc.name !== 'run_command' || !tc.args || typeof tc.args.CommandLine !== 'string') return;
     if (tc.args.CommandLine.includes('chisle-run.js')) return;
+    const agySettings = readAntigravitySettings();
+    if (agySettings.toolPermission !== 'always-proceed' && env.CHISLE_COMPRESS_WRAP !== '1') return;
     const { getDefaultMode, getAntigravityDir, readFlag } = require('./chisle-config');
     const agyDir = getAntigravityDir();
     const mode = readFlag(path.join(agyDir, '.chisle-active')) || getDefaultMode();
     if (mode === 'off') return;
     const agyPrefix = `${quote(process.execPath)} ${quote(__filename)} --state-dir ${quote(agyDir)} -- `;
-    const next = rewriteCommand(tc.args.CommandLine, agyPrefix);
+    const next = rewriteCommand(tc.args.CommandLine, agyPrefix, guardedAntigravityPrograms(agySettings));
     if (!next) return;
     // Emit 'ask' (never 'allow') so rewritten compound/install commands still go
-    // through Antigravity's permission gate and Always-Allow cache.
+    // through Antigravity's permission gate.
     process.stdout.write(JSON.stringify({ decision: 'ask', overwrite: { CommandLine: next } }));
     return;
   }

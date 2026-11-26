@@ -24,7 +24,7 @@ to every agent that supports a rules/context file. One source, many targets.
 | Cline | `.clinerules/chisle.md` | plain markdown |
 | Kiro | `.kiro/steering/chisle.md` | `inclusion: always` |
 | GitHub Copilot | `.github/copilot-instructions.md` | plain markdown |
-| Antigravity (IDE + `agy` CLI) | `.agents/rules/chisle.md` | `trigger: always_on` ([rules docs](https://antigravity.google/docs/rules)) |
+| Antigravity (IDE + `agy` CLI) | `.agents/rules/chisle.md` + `.agents/hooks.json` + `.agents/chisle-hooks/` | `trigger: always_on` ([rules docs](https://antigravity.google/docs/rules)) + Unix `PreToolUse` hook ([hooks docs](https://antigravity.google/docs/hooks)) |
 | OpenCode | `<config root>/AGENTS.md` (fenced block) + `<config root>/skills/` + version-matched plugin under `<config root>/plugins/` | global ruleset + Agent Skills + compression plugin |
 | Hermes Agent | `~/.hermes/skills/` | Agent Skills (`/chisle` commands) |
 

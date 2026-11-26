@@ -86,7 +86,7 @@ test('Antigravity rule lands in .agents/rules as an always-on workspace rule', (
     const hookRes = execFileSync(process.execPath, [installedRunner], {
       input: JSON.stringify({ hookEventName: 'PreToolUse', toolCall: { id: 't1', name: 'run_command', args: { CommandLine: 'npm test' } } }),
       encoding: 'utf8',
-      env: { ...process.env, CHISLE_DEFAULT_MODE: 'on', CHISLE_COMPRESS_WRAP: '' },
+      env: { ...process.env, CHISLE_DEFAULT_MODE: 'on', CHISLE_COMPRESS_WRAP: '1' },
     });
     const parsed = JSON.parse(hookRes);
     assert.equal(parsed.decision, 'ask');
@@ -118,6 +118,16 @@ test('Antigravity installer merges existing hooks.json and hooks.chisle, self-he
   assert.equal(merged.chisle.PreToolUse[0].matcher, 'other');
   assert.equal(merged.chisle.PreToolUse[1].hooks[0].command, 'echo sibling');
   assert.equal(merged.chisle.PreToolUse[1].hooks[1].command, 'node ./chisle-hooks/chisle-run.js');
+
+  const u1 = runCLI(['--uninstall', '--only', 'antigravity'], { cwd: proj1 });
+  assert.equal(u1.status, 0);
+  assert.equal(fs.existsSync(path.join(proj1, '.agents', 'chisle-hooks')), false);
+  const afterUninstall = JSON.parse(fs.readFileSync(hooksFile1, 'utf8'));
+  assert.deepEqual(afterUninstall.custom, { PostToolUse: [] });
+  assert.deepEqual(afterUninstall.chisle.PostToolUse, [{ matcher: 'view_file', hooks: [] }]);
+  assert.equal(afterUninstall.chisle.PreToolUse.length, 2);
+  assert.equal(afterUninstall.chisle.PreToolUse[0].matcher, 'other');
+  assert.deepEqual(afterUninstall.chisle.PreToolUse[1].hooks, [{ type: 'command', command: 'echo sibling' }]);
   fs.rmSync(proj1, { recursive: true, force: true });
 
   for (const bad of ['{bad json', '[]']) {

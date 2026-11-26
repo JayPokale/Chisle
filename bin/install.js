@@ -777,6 +777,7 @@ function installAntigravity(ctx, prov) {
         process.stdout.write(`  installed: ${hooksJson}\n`);
         didInstall = true;
       }
+      note('  .agents/chisle-hooks/ is a local copy; re-run after upgrading Chisle (safe to .gitignore)');
     }
 
     if (didInstall) results.installed.push(prov.id);
@@ -947,13 +948,34 @@ function uninstall(ctx) {
     if (fs.existsSync(agyHooksJson)) {
       try {
         const parsed = JSON.parse(fs.readFileSync(agyHooksJson, 'utf8'));
-        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && parsed.chisle) {
-          delete parsed.chisle;
-          if (!opts.dryRun) {
-            if (Object.keys(parsed).length === 0) fs.rmSync(agyHooksJson, { force: true });
-            else fs.writeFileSync(agyHooksJson, JSON.stringify(parsed, null, 2) + '\n', { mode: 0o644 });
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && parsed.chisle && typeof parsed.chisle === 'object' && !Array.isArray(parsed.chisle)) {
+          let removed = false;
+          if (Array.isArray(parsed.chisle.PreToolUse)) {
+            const nextPre = [];
+            for (const entry of parsed.chisle.PreToolUse) {
+              if (entry && Array.isArray(entry.hooks)) {
+                const nextHooks = entry.hooks.filter(h => !(typeof h?.command === 'string' && h.command.includes('chisle-run.js')));
+                if (nextHooks.length !== entry.hooks.length) {
+                  removed = true;
+                  if (nextHooks.length > 0) nextPre.push({ ...entry, hooks: nextHooks });
+                } else {
+                  nextPre.push(entry);
+                }
+              } else {
+                nextPre.push(entry);
+              }
+            }
+            if (nextPre.length > 0) parsed.chisle.PreToolUse = nextPre;
+            else delete parsed.chisle.PreToolUse;
           }
-          note('  removed chisle hook from ' + agyHooksJson); touched++;
+          if (removed) {
+            if (Object.keys(parsed.chisle).length === 0) delete parsed.chisle;
+            if (!opts.dryRun) {
+              if (Object.keys(parsed).length === 0) fs.rmSync(agyHooksJson, { force: true });
+              else fs.writeFileSync(agyHooksJson, JSON.stringify(parsed, null, 2) + '\n', { mode: 0o644 });
+            }
+            note('  removed chisle hook from ' + agyHooksJson); touched++;
+          }
         }
       } catch (_) {}
     }
