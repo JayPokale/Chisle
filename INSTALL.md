@@ -17,7 +17,8 @@ Detects supported agents and installs Chisle for each:
 | Copilot CLI | fenced ruleset in `~/.copilot/copilot-instructions.md` + `postToolUse` compression hook | global |
 | OpenCode | fenced ruleset + skills + compression plugin under the configured OpenCode root | global |
 | Hermes Agent | skills in `~/.hermes/skills` (Agent Skills standard, `/chisle` commands) | global |
-| Cursor / Windsurf / Cline / Kiro / Copilot / Antigravity | rule file in current project | project |
+| Antigravity | `.agents/rules/chisle.md` + Unix `PreToolUse` hook (`.agents/hooks.json`, `.agents/chisle-hooks/`) | project |
+| Cursor / Windsurf / Cline / Kiro / Copilot | rule file in current project | project |
 
 ```bash
 npx chisle --list          # detect only
@@ -183,7 +184,7 @@ Add `--only <id>` to update one agent. The native command is listed where the ag
 | Cline | `npx chisle@latest --update --only cline` | **Run inside the project.** |
 | Kiro | `npx chisle@latest --update --only kiro` | **Run inside the project.** |
 | GitHub Copilot | `npx chisle@latest --update --only copilot` | **Run inside the project.** |
-| Antigravity | `npx chisle@latest --update --only antigravity` | **Run inside the project.** Writes `.agents/rules/chisle.md`. |
+| Antigravity | `npx chisle@latest --update --only antigravity` | **Run inside the project.** Refreshes `.agents/rules/chisle.md`, `.agents/chisle-hooks/`, and `.agents/hooks.json` (on Unix). |
 
 The last six keep their rule file inside the repo, because that is how those agents load rules. `--update` looks for that file in the current directory, so running it from `~` reports *"Nothing to update"* even when the project is set up correctly. Run it once per repo that has one.
 

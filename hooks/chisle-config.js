@@ -64,6 +64,10 @@ function getCopilotDir() {
   return process.env.COPILOT_HOME || path.join(os.homedir(), '.copilot');
 }
 
+function getAntigravityDir() {
+  return process.env.AGY_CONFIG_DIR || path.join(process.env.CHISLE_HOME || os.homedir(), '.gemini', 'config');
+}
+
 function getConfigDir() {
   if (process.env.XDG_CONFIG_HOME) {
     return path.join(process.env.XDG_CONFIG_HOME, 'chisle');
@@ -357,7 +361,7 @@ function readFlag(flagPath) {
 }
 
 module.exports = {
-  LEGACY_MODES, legacySetting, getDefaultMode, getClaudeDir, getCopilotDir, getOpencodeDir, getOpencodeStateDir, getConfigDir,
+  LEGACY_MODES, legacySetting, getDefaultMode, getClaudeDir, getCopilotDir, getAntigravityDir, getOpencodeDir, getOpencodeStateDir, getConfigDir,
   VALID_MODES, safeWriteFlag, readFlag,
   PROSE_HEADINGS, CODE_HEADINGS, getSections, filterSections,
   getActiveOutputStyle, explicitSections, resolveSections,

@@ -5,6 +5,9 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+- **Antigravity `PreToolUse` command-wrapping hook.** On Unix, `npx chisle --only antigravity` now copies the runner/compressor into `.agents/chisle-hooks/` and merges a `PreToolUse` `run_command` hook into `.agents/hooks.json` (preserving sibling hooks on both install and uninstall). Wraps commands when Antigravity CLI `toolPermission` is `always-proceed` (or `CHISLE_COMPRESS_WRAP=1`), skips programs guarded by `permissions.deny`/`permissions.ask` in `~/.gemini/antigravity-cli/settings.json`, and routes compression stats to `~/.gemini/config` via `--state-dir`.
+
 ## [3.14.2] - 2026-11-19
 
 Patch: the star prompt reports star and follow separately, and the site shows each agent's logo.
