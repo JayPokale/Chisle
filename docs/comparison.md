@@ -67,7 +67,7 @@ Never. Input validation, error handling that prevents data loss, security, and a
 File an issue. That's a bug, not the design. Terse ≠ incomplete: keep the fix, cut the fluff. If it dropped the fix, it failed its own rules and we want to know.
 
 **Does it work outside Claude Code?**
-Yes. It ships to Pi, OpenCode, Copilot CLI, Hermes, Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and Copilot. Pi and Claude Code get live mode switching, status badge, and input compression; OpenCode and Copilot CLI get input compression without the live toggle; the static-rule agents get the always-on ruleset, plus MCP output compression via `npx chisle mcp wrap`. See [agent portability](agent-portability.md).
+Yes. It ships to Pi, OpenCode, Copilot CLI, Hermes, Cursor, Windsurf, Cline, Kiro, Antigravity, Codex, Gemini, and Copilot. Pi and Claude Code get live mode switching, status badge, and input compression; OpenCode, Copilot CLI, and Antigravity (Unix `PreToolUse` hook) get input compression without the live toggle; the static-rule agents get the always-on ruleset, plus MCP output compression via `npx chisle mcp wrap`. See [agent portability](agent-portability.md).
 
 **Why "Chisle"?**
 CHISLE is a demolition charge. Your token bill is the building. The only thing it detonates is verbosity.

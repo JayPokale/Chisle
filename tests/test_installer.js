@@ -92,6 +92,10 @@ test('Antigravity rule lands in .agents/rules as an always-on workspace rule', (
     assert.equal(parsed.decision, 'ask');
     assert.ok(parsed.overwrite.CommandLine.endsWith(' -- npm test'));
   }
+  const u = runCLI(['--uninstall', '--only', 'antigravity'], { cwd: proj });
+  assert.equal(u.status, 0);
+  assert.equal(fs.existsSync(hooksFile), false);
+  assert.equal(fs.existsSync(path.join(proj, '.agents', 'chisle-hooks')), false);
   fs.rmSync(proj, { recursive: true, force: true });
 });
 
