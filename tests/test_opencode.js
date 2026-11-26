@@ -367,7 +367,7 @@ test('recordSavings, spill, and dedup accept a symlinked state root', (t) => {
     // The hook returns the path as given (the symlink); the file must exist
     // inside the REAL directory the root points at.
     assert.equal(path.dirname(recovery), path.join(root, 'chisle-spill'));
-    assert.equal(fs.realpathSync(path.dirname(recovery)), path.join(outside, 'chisle-spill'));
+    assert.equal(fs.realpathSync(path.dirname(recovery)), path.join(fs.realpathSync(outside), 'chisle-spill'));
     assert.deepEqual(fs.readFileSync(recovery), Buffer.from(text));
     assert.equal(fs.existsSync(path.join(outside, 'chisle-dedup')), true);
 
@@ -792,6 +792,9 @@ test('installed plugin still compresses when the config dir is type:module', asy
       env: Object.assign({}, process.env, {
         HOME: home, USERPROFILE: home, CHISLE_HOME: home,
         XDG_CONFIG_HOME: '', OPENCODE_CONFIG_DIR: '',
+        // No opencode on PATH → the v1 plugin this test loads, even when the
+        // developer has OpenCode v2 installed.
+        PATH: '',
       }),
     });
     assert.equal(r.status, 0, r.stderr);
