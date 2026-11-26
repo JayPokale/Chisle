@@ -99,7 +99,13 @@ function classify(segment) {
 }
 
 // Segments that print nothing, so they cannot be mangled by a filter.
-const SILENT = /^(?:cd(?:\s|$)|export\s+[A-Za-z_]|(?:[A-Za-z_]\w*=\S*\s*)+$)/;
+const SILENT = /^(?:cd(?:\s|$)|export\s+[A-Za-z_]|(?:true|:)$|(?:[A-Za-z_]\w*=\S*(?:\s+|$))+$)/;
+
+// Command line → segments. A backslash-newline continues the line, so it is
+// not a boundary.
+function segmentsOf(command) {
+  return stripQuotes(command).replace(/\\\r?\n/g, ' ').split(/&&|\|\||;|\n/);
+}
 
 // Kinds to filter for a whole command line, or null. One unrecognised segment
 // that prints (`git status && cat m.py`) means null: the filters run over the
@@ -107,7 +113,7 @@ const SILENT = /^(?:cd(?:\s|$)|export\s+[A-Za-z_]|(?:[A-Za-z_]\w*=\S*\s*)+$)/;
 function kindsFor(command) {
   if (typeof command !== 'string' || !command.trim()) return null;
   const kinds = new Set();
-  for (const seg of stripQuotes(command).split(/&&|\|\||;|\n/)) {
+  for (const seg of segmentsOf(command)) {
     const s = seg.trim();
     if (!s || SILENT.test(s)) continue;
     const c = classify(s);
@@ -427,7 +433,7 @@ function filterCommand(command, text) {
   if (typeof text !== 'string' || !text) return null;
   const kinds = kindsFor(command);
   if (!kinds) return null;
-  const segs = stripQuotes(command).split(/&&|\|\||;|\n/).map(s => s.trim() && classify(s.trim())).filter(Boolean);
+  const segs = segmentsOf(command).map(s => s.trim() && classify(s.trim())).filter(Boolean);
   const has = (flag) => segs.some(c => c.flags.has(flag));
 
   // Progress bars redraw with \r; only the last frame was ever visible.
