@@ -333,7 +333,8 @@ function compactGitLog(lines) {
     if (keep.length < body.length) out.push(`  [+${body.length - keep.length} lines]`);
     // Stat block or patch (if any) follows.
     for (; j < lines.length && !/^commit [0-9a-f]{40}/.test(lines[j]); j++) {
-      if (many && !lines[j].trim()) continue;
+      // Only truly empty lines: a blank context line in a patch is ' '.
+      if (many && lines[j] === '') continue;
       out.push(lines[j]);
     }
     i = j - 1;

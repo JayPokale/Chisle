@@ -152,6 +152,16 @@ test('git log: several commits cap bodies (never stats), shared author named onc
   assert.match(filterCommand('git log', two), /^a{10} Subject a \(2026-11-17 Ada\)\n  x\nb{10} Subject b \(2026-11-17 Bo\)\n  y$/);
 });
 
+test('git log -p: several commits keep blank context lines in their hunks', () => {
+  // The second hunk line is one space: an empty line of x.js as context.
+  const patch = ['diff --git a/x.js b/x.js', 'index 1111111..2222222 100644', '--- a/x.js', '+++ b/x.js',
+    '@@ -1,3 +1,3 @@', ' a', ' ', '-old', '+new', ''].join('\n');
+  const text = commit('a', 'Ada', []) + '\n' + patch + '\n' + commit('b', 'Ada', []) + '\n' + patch;
+  const out = filterCommand('git log -p -2', text);
+  assert.equal(out.split('\n').filter(l => l === ' ').length, 2);
+  assert.match(out, /@@ -1,3 \+1,3 @@\n a\n \n-old\n\+new/);
+});
+
 test('git diff: headers become one path line, hunks untouched', () => {
   const text = `diff --git a/x.js b/x.js
 index 1111111..2222222 100644
