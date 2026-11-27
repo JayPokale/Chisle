@@ -282,7 +282,9 @@ test('mcp wrap covers Codex TOML: only command/args lines change, unwrap restore
 test('mcp wrap covers Antigravity mcp_config.json and VS Code Copilot mcp.json ("servers")', () => {
   const { home, xdg, env } = isolated();
   const ag = path.join(home, '.gemini', 'config', 'mcp_config.json');
-  const vs = path.join(xdg, 'Code', 'User', 'mcp.json');
+  // VS Code's user dir: ~/Library/Application Support on macOS, else APPDATA/XDG (both `xdg` here).
+  const vsBase = process.platform === 'darwin' ? path.join(home, 'Library', 'Application Support') : xdg;
+  const vs = path.join(vsBase, 'Code', 'User', 'mcp.json');
   const agOrig = { mcpServers: { fs: { command: 'npx', args: ['-y', 'server-fs'] } } };
   const vsOrig = { servers: { mem: { type: 'stdio', command: 'npx', args: ['-y', 'server-memory'] }, web: { type: 'http', url: 'https://x/mcp' } }, inputs: [] };
   for (const [f, o] of [[ag, agOrig], [vs, vsOrig]]) { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, JSON.stringify(o, null, 2)); }

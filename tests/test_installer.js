@@ -447,8 +447,10 @@ test('--help advertises --update', () => {
 
 function mkHome() { return fs.mkdtempSync(path.join(os.tmpdir(), 'chisle-home-')); }
 
+// Empty PATH: no opencode found means the v1 layout, even when the developer
+// has OpenCode v2 installed. Tests that need a version pass fakeOpencode().
 function isolatedOpencodeEnv(home, extra) {
-  return { CHISLE_HOME: home, XDG_CONFIG_HOME: '', OPENCODE_CONFIG_DIR: '', ...extra };
+  return { CHISLE_HOME: home, XDG_CONFIG_HOME: '', OPENCODE_CONFIG_DIR: '', PATH: '', ...extra };
 }
 
 function repoSkill(rel) { return fs.readFileSync(path.join(__dirname, '..', 'skills', rel), 'utf8'); }
