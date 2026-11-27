@@ -313,6 +313,51 @@ test('no filtering: unknown commands, rtk, and pipes into anything but head/tail
   assert.equal(filterCommand('cat log.txt', GIT_STATUS), null);
 });
 
+test('an unrecognised segment that prints disables filtering for the whole call', () => {
+  // Blank lines in `m.py` must survive: shortStatus would skip them.
+  const file = 'import os\n\n\ndef f():\n    return 1\n';
+  const status = GIT_STATUS + '\n' + file;
+  assert.ok(filterCommand('git status', GIT_STATUS));
+  assert.equal(filterCommand('git status && cat m.py', status), null);
+  assert.equal(filterCommand('cat m.py; git status', file + '\n' + GIT_STATUS), null);
+  assert.equal(kindsFor('git diff; cat fix.patch'), null);
+  assert.equal(kindsFor('npm test; cat old.tap'), null);
+  assert.equal(kindsFor('grep -rn x src; cat errors.log'), null);
+  assert.equal(kindsFor('git log -3; cat notes.md'), null);
+  assert.equal(kindsFor('git status\ncat m.py'), null);
+  // `||` and a segment piped into something else are segments too.
+  assert.equal(kindsFor('npm test || echo FAILED'), null);
+  assert.equal(kindsFor('cat f || true'), null);
+  assert.equal(kindsFor('git status | cat && git log -3'), null);
+  assert.equal(kindsFor('npm i | grep WARN && git status'), null);
+  assert.deepEqual([...kindsFor('git status | head -5')], ['git-status']);
+});
+
+test('segments that print nothing keep filtering on', () => {
+  assert.deepEqual([...kindsFor('cd app && git status')], ['git-status']);
+  assert.deepEqual([...kindsFor('export CI=1 && npm test')], ['test']);
+  assert.deepEqual([...kindsFor('CI=1; NAME="a b"; npm test')], ['test']);
+  assert.deepEqual([...kindsFor('cd "my app"; git status;')], ['git-status']);
+  assert.deepEqual([...kindsFor('git status && true')], ['git-status']);
+  assert.deepEqual([...kindsFor('git status; :')], ['git-status']);
+  assert.equal(kindsFor('git status && : x'), null);
+  assert.ok(filterCommand('cd app && git status', GIT_STATUS));
+});
+
+test('a backslash-newline continues the command instead of starting a segment', () => {
+  assert.deepEqual([...kindsFor('pytest tests/ \\\n  -k foo -q')], ['test']);
+  assert.deepEqual([...kindsFor('npm test \\\n  --verbose')], ['test']);
+  assert.deepEqual([...kindsFor('git log \\\n  -n 5')].sort(), ['git-diff', 'git-log']);
+  assert.equal(kindsFor('git status \\\n  && cat m.py'), null);
+});
+
+test('SILENT matching is linear on long assignment-like segments', () => {
+  const t0 = Date.now();
+  assert.deepEqual([...kindsFor('git status && ' + 'a='.repeat(5000) + '!')], ['git-status']);
+  assert.equal(kindsFor('git status && ' + 'a='.repeat(5000) + ' x'), null);
+  assert.ok(Date.now() - t0 < 200, `took ${Date.now() - t0} ms`);
+});
+
 test('hook: small Bash output is filtered via tool_input.command', () => {
   const prev = process.env.CHISLE_COMPRESS_FILTERS;
   delete process.env.CHISLE_COMPRESS_FILTERS;
